@@ -20,4 +20,9 @@ namespace tsil::parser {
     get_node->id = context->ic_right->getText();
     return AV(context, ast::KindGetNode, get_node);
   }
+
+  std::any TsilASTVisitor::visitAtom_identifier(
+      TsilParser::Atom_identifierContext* ctx) {
+    return visitIdentifier(ctx->identifier());
+  }
 } // namespace tsil::parser

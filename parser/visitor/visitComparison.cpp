@@ -24,4 +24,9 @@ namespace tsil::parser {
     }
     return AV(context, ast::KindBinaryNode, binary_node);
   }
+
+  std::any TsilASTVisitor::visitComparison_op(
+      TsilParser::Comparison_opContext* ctx) {
+    return nullptr;
+  }
 } // namespace tsil::parser

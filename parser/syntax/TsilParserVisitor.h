@@ -45,23 +45,23 @@ public:
 
     virtual std::any visitCall(TsilParser::CallContext *context) = 0;
 
-    virtual std::any visitNumber(TsilParser::NumberContext *context) = 0;
-
-    virtual std::any visitIdentifier(TsilParser::IdentifierContext *context) = 0;
-
     virtual std::any visitNegative(TsilParser::NegativeContext *context) = 0;
 
     virtual std::any visitNot(TsilParser::NotContext *context) = 0;
 
-    virtual std::any visitString(TsilParser::StringContext *context) = 0;
+    virtual std::any visitAtom_number(TsilParser::Atom_numberContext *context) = 0;
 
     virtual std::any visitBitwise_not(TsilParser::Bitwise_notContext *context) = 0;
 
     virtual std::any visitGet(TsilParser::GetContext *context) = 0;
 
+    virtual std::any visitAtom_identifier(TsilParser::Atom_identifierContext *context) = 0;
+
     virtual std::any visitPositive(TsilParser::PositiveContext *context) = 0;
 
     virtual std::any visitNested(TsilParser::NestedContext *context) = 0;
+
+    virtual std::any visitAtom_string(TsilParser::Atom_stringContext *context) = 0;
 
     virtual std::any visitArithmetic_mul(TsilParser::Arithmetic_mulContext *context) = 0;
 
@@ -98,6 +98,12 @@ public:
     virtual std::any visitComparison_op(TsilParser::Comparison_opContext *context) = 0;
 
     virtual std::any visitLogical_op(TsilParser::Logical_opContext *context) = 0;
+
+    virtual std::any visitNumber(TsilParser::NumberContext *context) = 0;
+
+    virtual std::any visitString(TsilParser::StringContext *context) = 0;
+
+    virtual std::any visitIdentifier(TsilParser::IdentifierContext *context) = 0;
 
 
 };

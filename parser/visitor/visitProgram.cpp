@@ -7,9 +7,9 @@ namespace tsil::parser {
       body.push_back(AAV(visitProgram_element(program_element)));
     }
     processASTBody(body);
-    const auto block_node = new ast::BlockNode();
-    block_node->body = body;
-    return AV(ast::KindBlockNode, block_node);
+    const auto program_node = new ast::ProgramNode();
+    program_node->body = body;
+    return AV(ast::KindProgramNode, program_node);
   }
 
   std::any TsilASTVisitor::visitProgram_element(

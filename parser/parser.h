@@ -62,9 +62,16 @@ namespace tsil::parser {
 
     std::any visitNumber(TsilParser::NumberContext* ctx) override;
 
+    std::any visitAtom_number(TsilParser::Atom_numberContext* ctx) override;
+
     std::any visitString(TsilParser::StringContext* ctx) override;
 
+    std::any visitAtom_string(TsilParser::Atom_stringContext* ctx) override;
+
     std::any visitIdentifier(TsilParser::IdentifierContext* ctx) override;
+
+    std::any visitAtom_identifier(
+        TsilParser::Atom_identifierContext* ctx) override;
 
     std::any visitGet(TsilParser::GetContext* ctx) override;
 
@@ -131,7 +138,7 @@ namespace tsil::parser {
   class TsilParserResult {
    public:
     std::vector<TsilParserError> errors;
-    tsil::ast::ASTValue* ast_value;
+    tsil::ast::ProgramNode* program_node;
   };
 
   class TsilParserErrorListener final : public antlr4::BaseErrorListener {

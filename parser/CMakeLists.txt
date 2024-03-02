@@ -16,6 +16,7 @@ set(TSIL_PARSER_SRC
         visitor/visitDefine.cpp
         visitor/visitDiia.cpp
         visitor/visitFile.cpp
+        visitor/visitGet.cpp
         visitor/visitIdentifier.cpp
         visitor/visitIf.cpp
         visitor/visitNegative.cpp
@@ -25,17 +26,18 @@ set(TSIL_PARSER_SRC
         visitor/visitParams.cpp
         visitor/visitPositive.cpp
         visitor/visitProgram.cpp
+        visitor/visitSet.cpp
         visitor/visitString.cpp
         visitor/visitStructure.cpp
         visitor/visitLogical.cpp
         visitor/visitType.cpp
+        visitor/visitValue_atom.cpp
         visitor/visitWhile.cpp
         ast.h
         parser.cpp
         parser.h
         tools.cpp
         tools.h
-        main.cpp
 )
 
 add_subdirectory(syntax)

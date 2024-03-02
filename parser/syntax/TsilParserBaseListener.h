@@ -55,20 +55,14 @@ public:
   virtual void enterCall(TsilParser::CallContext * /*ctx*/) override { }
   virtual void exitCall(TsilParser::CallContext * /*ctx*/) override { }
 
-  virtual void enterNumber(TsilParser::NumberContext * /*ctx*/) override { }
-  virtual void exitNumber(TsilParser::NumberContext * /*ctx*/) override { }
-
-  virtual void enterIdentifier(TsilParser::IdentifierContext * /*ctx*/) override { }
-  virtual void exitIdentifier(TsilParser::IdentifierContext * /*ctx*/) override { }
-
   virtual void enterNegative(TsilParser::NegativeContext * /*ctx*/) override { }
   virtual void exitNegative(TsilParser::NegativeContext * /*ctx*/) override { }
 
   virtual void enterNot(TsilParser::NotContext * /*ctx*/) override { }
   virtual void exitNot(TsilParser::NotContext * /*ctx*/) override { }
 
-  virtual void enterString(TsilParser::StringContext * /*ctx*/) override { }
-  virtual void exitString(TsilParser::StringContext * /*ctx*/) override { }
+  virtual void enterAtom_number(TsilParser::Atom_numberContext * /*ctx*/) override { }
+  virtual void exitAtom_number(TsilParser::Atom_numberContext * /*ctx*/) override { }
 
   virtual void enterBitwise_not(TsilParser::Bitwise_notContext * /*ctx*/) override { }
   virtual void exitBitwise_not(TsilParser::Bitwise_notContext * /*ctx*/) override { }
@@ -76,11 +70,17 @@ public:
   virtual void enterGet(TsilParser::GetContext * /*ctx*/) override { }
   virtual void exitGet(TsilParser::GetContext * /*ctx*/) override { }
 
+  virtual void enterAtom_identifier(TsilParser::Atom_identifierContext * /*ctx*/) override { }
+  virtual void exitAtom_identifier(TsilParser::Atom_identifierContext * /*ctx*/) override { }
+
   virtual void enterPositive(TsilParser::PositiveContext * /*ctx*/) override { }
   virtual void exitPositive(TsilParser::PositiveContext * /*ctx*/) override { }
 
   virtual void enterNested(TsilParser::NestedContext * /*ctx*/) override { }
   virtual void exitNested(TsilParser::NestedContext * /*ctx*/) override { }
+
+  virtual void enterAtom_string(TsilParser::Atom_stringContext * /*ctx*/) override { }
+  virtual void exitAtom_string(TsilParser::Atom_stringContext * /*ctx*/) override { }
 
   virtual void enterArithmetic_mul(TsilParser::Arithmetic_mulContext * /*ctx*/) override { }
   virtual void exitArithmetic_mul(TsilParser::Arithmetic_mulContext * /*ctx*/) override { }
@@ -135,6 +135,15 @@ public:
 
   virtual void enterLogical_op(TsilParser::Logical_opContext * /*ctx*/) override { }
   virtual void exitLogical_op(TsilParser::Logical_opContext * /*ctx*/) override { }
+
+  virtual void enterNumber(TsilParser::NumberContext * /*ctx*/) override { }
+  virtual void exitNumber(TsilParser::NumberContext * /*ctx*/) override { }
+
+  virtual void enterString(TsilParser::StringContext * /*ctx*/) override { }
+  virtual void exitString(TsilParser::StringContext * /*ctx*/) override { }
+
+  virtual void enterIdentifier(TsilParser::IdentifierContext * /*ctx*/) override { }
+  virtual void exitIdentifier(TsilParser::IdentifierContext * /*ctx*/) override { }
 
 
   virtual void enterEveryRule(antlr4::ParserRuleContext * /*ctx*/) override { }

@@ -53,20 +53,14 @@ public:
   virtual void enterCall(TsilParser::CallContext *ctx) = 0;
   virtual void exitCall(TsilParser::CallContext *ctx) = 0;
 
-  virtual void enterNumber(TsilParser::NumberContext *ctx) = 0;
-  virtual void exitNumber(TsilParser::NumberContext *ctx) = 0;
-
-  virtual void enterIdentifier(TsilParser::IdentifierContext *ctx) = 0;
-  virtual void exitIdentifier(TsilParser::IdentifierContext *ctx) = 0;
-
   virtual void enterNegative(TsilParser::NegativeContext *ctx) = 0;
   virtual void exitNegative(TsilParser::NegativeContext *ctx) = 0;
 
   virtual void enterNot(TsilParser::NotContext *ctx) = 0;
   virtual void exitNot(TsilParser::NotContext *ctx) = 0;
 
-  virtual void enterString(TsilParser::StringContext *ctx) = 0;
-  virtual void exitString(TsilParser::StringContext *ctx) = 0;
+  virtual void enterAtom_number(TsilParser::Atom_numberContext *ctx) = 0;
+  virtual void exitAtom_number(TsilParser::Atom_numberContext *ctx) = 0;
 
   virtual void enterBitwise_not(TsilParser::Bitwise_notContext *ctx) = 0;
   virtual void exitBitwise_not(TsilParser::Bitwise_notContext *ctx) = 0;
@@ -74,11 +68,17 @@ public:
   virtual void enterGet(TsilParser::GetContext *ctx) = 0;
   virtual void exitGet(TsilParser::GetContext *ctx) = 0;
 
+  virtual void enterAtom_identifier(TsilParser::Atom_identifierContext *ctx) = 0;
+  virtual void exitAtom_identifier(TsilParser::Atom_identifierContext *ctx) = 0;
+
   virtual void enterPositive(TsilParser::PositiveContext *ctx) = 0;
   virtual void exitPositive(TsilParser::PositiveContext *ctx) = 0;
 
   virtual void enterNested(TsilParser::NestedContext *ctx) = 0;
   virtual void exitNested(TsilParser::NestedContext *ctx) = 0;
+
+  virtual void enterAtom_string(TsilParser::Atom_stringContext *ctx) = 0;
+  virtual void exitAtom_string(TsilParser::Atom_stringContext *ctx) = 0;
 
   virtual void enterArithmetic_mul(TsilParser::Arithmetic_mulContext *ctx) = 0;
   virtual void exitArithmetic_mul(TsilParser::Arithmetic_mulContext *ctx) = 0;
@@ -133,6 +133,15 @@ public:
 
   virtual void enterLogical_op(TsilParser::Logical_opContext *ctx) = 0;
   virtual void exitLogical_op(TsilParser::Logical_opContext *ctx) = 0;
+
+  virtual void enterNumber(TsilParser::NumberContext *ctx) = 0;
+  virtual void exitNumber(TsilParser::NumberContext *ctx) = 0;
+
+  virtual void enterString(TsilParser::StringContext *ctx) = 0;
+  virtual void exitString(TsilParser::StringContext *ctx) = 0;
+
+  virtual void enterIdentifier(TsilParser::IdentifierContext *ctx) = 0;
+  virtual void exitIdentifier(TsilParser::IdentifierContext *ctx) = 0;
 
 
 };

@@ -24,6 +24,7 @@ namespace tsil::ast {
   struct IfNode;
   struct NumberNode;
   struct ParamNode;
+  struct ProgramNode;
   struct ReturnNode;
   struct StringNode;
   struct StructureNode;
@@ -88,6 +89,7 @@ namespace tsil::ast {
     KindIfNode,
     KindNumberNode,
     KindParamNode,
+    KindProgramNode,
     KindReturnNode,
     KindStringNode,
     KindStructureNode,
@@ -97,6 +99,8 @@ namespace tsil::ast {
     KindWhileNode,
     KindBlockNode,
   };
+
+  std::string ast_value_kind_to_string(ASTValueKind kind);
 
   union ASTValueData {
     void* ref;
@@ -115,6 +119,7 @@ namespace tsil::ast {
     tsil::ast::IfNode* IfNode;
     tsil::ast::NumberNode* NumberNode;
     tsil::ast::ParamNode* ParamNode;
+    tsil::ast::ProgramNode* ProgramNode;
     tsil::ast::ReturnNode* ReturnNode;
     tsil::ast::StringNode* StringNode;
     tsil::ast::StructureNode* StructureNode;
@@ -283,6 +288,16 @@ namespace tsil::ast {
     static ASTValue* ast_value(ParamNode* node) {
       const auto value = new ASTValue(KindParamNode);
       value->data.ParamNode = node;
+      return value;
+    }
+  };
+
+  struct ProgramNode {
+    std::vector<ASTValue*> body;
+
+    static ASTValue* ast_value(ProgramNode* node) {
+      const auto value = new ASTValue(KindProgramNode);
+      value->data.ProgramNode = node;
       return value;
     }
   };

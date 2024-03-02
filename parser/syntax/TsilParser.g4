@@ -6,29 +6,29 @@ options {
 
 file: f_program=program EOF;
 
-program: (program_element ';')*;
-program_element: structure | diia | if | while | expr | define | assign | set | ';';
+program: program_element*;
+program_element: structure | diia | if | while | define | assign | set | (expr ';') | ';';
 
-structure: 'структура' s_name=ID '{' (s_params=structure_params)? '}';
+structure: 'структура' s_name=identifier '{' (s_params=structure_params)? '}';
 structure_params: (structure_param ';')+;
-structure_param: sp_name=ID sp_type=type;
+structure_param: sp_name=identifier sp_type=type;
 
-diia: ('дія' | d_type=type) d_name=ID '(' d_params=params? ')' '{' (d_body=body)? '}';
+diia: ('дія' | d_type=type) d_name=identifier '(' d_params=params? ')' '{' (d_body=body)? '}';
 
 if: 'якщо' i_value=expr '{' (i_body=body)? '}';
 
 while: 'поки' w_value=expr '{' (w_body=body)? '}';
 
-define: ('ціль' | d_type=type) d_assign=assign;
+define: ('ціль' | d_type=type) d_id=identifier '=' d_value=expr;
 
-assign: a_id=ID '=' a_value=expr;
+assign: a_id=identifier '=' a_value=expr;
 
-set: identifiers_chain '=' set_value=expr;
+set: s_left=identifiers_chain '=' s_value=expr;
 
-atom: NUMBER #number
-    | STRING #string
-    | ID #identifier
-    | c_left=atom '.' c_right=ID #get
+atom: number #atom_number
+    | string #atom_string
+    | identifier #atom_identifier
+    | g_left=atom '.' g_id=identifier #get
     | c_value=atom '(' (c_args=args)? ')' #call
     | '+' p_value=atom  #positive
     | '-' n_value=atom  #negative
@@ -51,13 +51,17 @@ type: ID;
 args: expr (',' expr)* (',')?;
 
 params: param (',' param)* (',')?;
-param: p_type=type p_name=ID;
+param: p_type=type p_name=identifier;
 
-body: (body_element_or_return ';')+;
+body: body_element_or_return+;
 body_element_or_return: body_element | return_body_element;
-body_element: if | while | expr | define | assign | set | ';';
+body_element: if | while | define | assign | set | (expr ';') | ';';
 return_body_element: 'вернути' rbl_value=expr;
 
 bitwise_op: '^' | '|' | '&' | '<' '<' | '>' '>';
 comparison_op: '=' '=' | '!' '=' | '>' | '<' | '>' '=' | '<' '=';
 logical_op: '|' '|' | '&' '&';
+
+number: NUMBER;
+string: STRING;
+identifier: ID;

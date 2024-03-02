@@ -15,4 +15,8 @@ namespace tsil::parser {
     }
     return AV(context, ast::KindLogicalNode, logical_node);
   }
+
+  std::any TsilASTVisitor::visitLogical_op(TsilParser::Logical_opContext* ctx) {
+    return nullptr;
+  }
 } // namespace tsil::parser

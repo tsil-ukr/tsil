@@ -67,14 +67,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitNumber(TsilParser::NumberContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitIdentifier(TsilParser::IdentifierContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitNegative(TsilParser::NegativeContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -83,7 +75,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitString(TsilParser::StringContext *ctx) override {
+  virtual std::any visitAtom_number(TsilParser::Atom_numberContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -95,11 +87,19 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitAtom_identifier(TsilParser::Atom_identifierContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitPositive(TsilParser::PositiveContext *ctx) override {
     return visitChildren(ctx);
   }
 
   virtual std::any visitNested(TsilParser::NestedContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitAtom_string(TsilParser::Atom_stringContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -172,6 +172,18 @@ public:
   }
 
   virtual std::any visitLogical_op(TsilParser::Logical_opContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitNumber(TsilParser::NumberContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitString(TsilParser::StringContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitIdentifier(TsilParser::IdentifierContext *ctx) override {
     return visitChildren(ctx);
   }
 

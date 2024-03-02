@@ -18,8 +18,8 @@ public:
     MOD = 18, POWER = 19, AND = 20, OR = 21, PAREN_OPEN = 22, PAREN_CLOSE = 23, 
     BRACKET_OPEN = 24, BRACKET_CLOSE = 25, QUESTION = 26, COLON = 27, TILDA = 28, 
     QUOTE = 29, DOUBLE_QUOTE = 30, EXCLAMATION = 31, COMA = 32, SEMICOLON = 33, 
-    QUOTE_OPEN = 34, QUOTE_CLOSE = 35, INTEGER = 36, NUMBER = 37, ID = 38, 
-    STRING = 39, NL = 40, WS = 41
+    QUOTE_OPEN = 34, QUOTE_CLOSE = 35, NUMBER = 36, ID = 37, STRING = 38, 
+    NL = 39, WS = 40
   };
 
   explicit TsilLexer(antlr4::CharStream *input);

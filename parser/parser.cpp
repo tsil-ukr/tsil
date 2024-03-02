@@ -1,5 +1,65 @@
 #include "parser.h"
 
+namespace tsil::ast {
+  std::string ast_value_kind_to_string(ast::ASTValueKind kind) {
+    {
+      switch (kind) {
+        case ast::KindNone:
+          return "None";
+        case ast::KindArgNode:
+          return "ArgNode";
+        case ast::KindAssignNode:
+          return "AssignNode";
+        case ast::KindBinaryNode:
+          return "BinaryNode";
+        case ast::KindBreakNode:
+          return "BreakNode";
+        case ast::KindCallNode:
+          return "CallNode";
+        case ast::KindDefineNode:
+          return "DefineNode";
+        case ast::KindGetNode:
+          return "GetNode";
+        case ast::KindSetNode:
+          return "SetNode";
+        case ast::KindComparisonNode:
+          return "ComparisonNode";
+        case ast::KindContinueNode:
+          return "ContinueNode";
+        case ast::KindDiiaNode:
+          return "DiiaNode";
+        case ast::KindIdentifierNode:
+          return "IdentifierNode";
+        case ast::KindIfNode:
+          return "IfNode";
+        case ast::KindNumberNode:
+          return "NumberNode";
+        case ast::KindParamNode:
+          return "ParamNode";
+        case ast::KindProgramNode:
+          return "ProgramNode";
+        case ast::KindReturnNode:
+          return "ReturnNode";
+        case ast::KindStringNode:
+          return "StringNode";
+        case ast::KindStructureNode:
+          return "StructureNode";
+        case ast::KindLogicalNode:
+          return "LogicalNode";
+        case ast::KindTypeNode:
+          return "TypeNode";
+        case ast::KindUnaryNode:
+          return "UnaryNode";
+        case ast::KindWhileNode:
+          return "WhileNode";
+        case ast::KindBlockNode:
+          return "BlockNode";
+      }
+      return "Unknown";
+    }
+  }
+} // namespace tsil::ast
+
 namespace tsil::parser {
   void FILL(ast::ASTValue* ast_value, antlr4::ParserRuleContext* context) {
     ast_value->start_line = context->getStart()->getLine();
@@ -97,13 +157,25 @@ namespace tsil::parser {
             dynamic_cast<TsilParser::NumberContext*>(context)) {
       return visitNumber(number_context);
     }
+    if (const auto atom_number_context =
+            dynamic_cast<TsilParser::Atom_numberContext*>(context)) {
+      return visitAtom_number(atom_number_context);
+    }
     if (const auto string_context =
             dynamic_cast<TsilParser::StringContext*>(context)) {
       return visitString(string_context);
     }
+    if (const auto atom_string_context =
+            dynamic_cast<TsilParser::Atom_stringContext*>(context)) {
+      return visitAtom_string(atom_string_context);
+    }
     if (const auto identifier_context =
             dynamic_cast<TsilParser::IdentifierContext*>(context)) {
       return visitIdentifier(identifier_context);
+    }
+    if (const auto atom_identifier_context =
+            dynamic_cast<TsilParser::Atom_identifierContext*>(context)) {
+      return visitAtom_identifier(atom_identifier_context);
     }
     if (const auto get_context =
             dynamic_cast<TsilParser::GetContext*>(context)) {
@@ -257,7 +329,7 @@ namespace tsil::parser {
     const auto ast_value = AAV(visitor->visitFile(tree));
 
     auto parser_result = TsilParserResult();
-    parser_result.ast_value = ast_value;
+    parser_result.program_node = ast_value->data.ProgramNode;
 
     return parser_result;
   }
