@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
@@ -146,6 +147,7 @@ using namespace llvm;
 //
 
 void path_to_splav_name(const std::string& path,
+                        std::string& exec_name,
                         std::string& object_name,
                         std::string& danis_name) {
   const auto canonical_path = std::filesystem::canonical(path).string();
@@ -157,130 +159,201 @@ void path_to_splav_name(const std::string& path,
 
   const auto name = fs_path.stem().string();
 
+  exec_name = name;
   object_name = name + ".сплав";
   danis_name = name + ".даніс";
+}
+
+void parse_buda(const std::string& data,
+                std::unordered_map<std::string, std::string>& buda) {
+  std::istringstream iss(data);
+  std::string line;
+  while (std::getline(iss, line)) {
+    const auto pos = line.find('=');
+    if (pos == std::string::npos) {
+      continue;
+    }
+    const auto key = line.substr(0, pos);
+    const auto value = line.substr(pos + 1);
+    buda[key] = value;
+  }
 }
 
 int main(int argc, char** argv) {
   const auto args = std::vector<std::string>(argv, argv + argc);
   const auto& command = args[1];
-  const auto& path = args[2];
 
-  std::string splav_name;
-  std::string danis_name;
-  path_to_splav_name(path, splav_name, danis_name);
+  if (command == "сплавити") {
+    if (args.size() < 3) {
+      std::cerr << "Не вказано модуль!" << std::endl;
+      return 1;
+    }
 
-  std::string code;
+    const auto& path = args[2];
 
-  std::ifstream file(path);
-  std::string line;
-  while (std::getline(file, line)) {
-    code += line + "\n";
-  }
+    std::ifstream file(path);
+    if (!file.is_open()) {
+      std::cerr << path << std::endl;
+      return 1;
+    }
 
-  code += "\n\nсплав ц32 main() { вернути старт(); }";
+    std::string exec_name;
+    std::string splav_name;
+    std::string danis_name;
+    path_to_splav_name(path, exec_name, splav_name, danis_name);
 
-  const auto parser_result = tsil::parser::parse(code);
-  if (parser_result.program_node) {
-    const auto state = new tsil::compiler::CompilationState();
+    std::string code;
 
-    state->Context = new LLVMContext();
-    state->Module = new Module(splav_name, *state->Context);
-    state->Builder = new IRBuilder<>(*state->Context);
+    std::string line;
+    while (std::getline(file, line)) {
+      code += line + "\n";
+    }
 
-    state->globalScope = new tsil::compiler::CompilationScope();
-    state->globalScope->state = state;
+    code += "\n\nсплав ц32 main() { вернути старт(); }";
 
-    const auto voidType = new tsil::compiler::Type();
-    voidType->lltype = Type::getVoidTy(*state->Context);
-    state->globalScope->types["обʼєкт"] = voidType;
+    const auto parser_result = tsil::parser::parse(code);
+    if (parser_result.program_node) {
+      const auto state = new tsil::compiler::CompilationState();
 
-    const auto int8Type = new tsil::compiler::Type();
-    int8Type->lltype = Type::getInt8Ty(*state->Context);
-    state->globalScope->types["ц8"] = int8Type;
+      state->Context = new LLVMContext();
+      state->Module = new Module(splav_name, *state->Context);
+      state->Builder = new IRBuilder<>(*state->Context);
 
-    const auto int16Type = new tsil::compiler::Type();
-    int16Type->lltype = Type::getInt16Ty(*state->Context);
-    state->globalScope->types["ц16"] = int16Type;
+      state->globalScope = new tsil::compiler::CompilationScope();
+      state->globalScope->state = state;
 
-    const auto int32Type = new tsil::compiler::Type();
-    int32Type->lltype = Type::getInt32Ty(*state->Context);
-    state->globalScope->types["ц32"] = int32Type;
+      const auto voidType = new tsil::compiler::Type();
+      voidType->lltype = Type::getVoidTy(*state->Context);
+      state->globalScope->types["обʼєкт"] = voidType;
 
-    const auto int64Type = new tsil::compiler::Type();
-    int64Type->lltype = Type::getInt64Ty(*state->Context);
-    state->globalScope->types["ц64"] = int64Type;
+      const auto int8Type = new tsil::compiler::Type();
+      int8Type->lltype = Type::getInt8Ty(*state->Context);
+      state->globalScope->types["ц8"] = int8Type;
 
-    const auto floatType = new tsil::compiler::Type();
-    floatType->lltype = Type::getFloatTy(*state->Context);
-    state->globalScope->types["д32"] = floatType;
+      const auto int16Type = new tsil::compiler::Type();
+      int16Type->lltype = Type::getInt16Ty(*state->Context);
+      state->globalScope->types["ц16"] = int16Type;
 
-    const auto doubleType = new tsil::compiler::Type();
-    doubleType->lltype = Type::getDoubleTy(*state->Context);
-    state->globalScope->types["д64"] = doubleType;
+      const auto int32Type = new tsil::compiler::Type();
+      int32Type->lltype = Type::getInt32Ty(*state->Context);
+      state->globalScope->types["ц32"] = int32Type;
 
-    for (const auto& ast_value : parser_result.program_node->body) {
-      if (ast_value == nullptr) {
-        continue;
+      const auto int64Type = new tsil::compiler::Type();
+      int64Type->lltype = Type::getInt64Ty(*state->Context);
+      state->globalScope->types["ц64"] = int64Type;
+
+      const auto floatType = new tsil::compiler::Type();
+      floatType->lltype = Type::getFloatTy(*state->Context);
+      state->globalScope->types["д32"] = floatType;
+
+      const auto doubleType = new tsil::compiler::Type();
+      doubleType->lltype = Type::getDoubleTy(*state->Context);
+      state->globalScope->types["д64"] = doubleType;
+
+      for (const auto& ast_value : parser_result.program_node->body) {
+        if (ast_value == nullptr) {
+          continue;
+        }
+        if (ast_value->kind == tsil::ast::KindNone) {
+          continue;
+        }
+        const auto result = state->globalScope->compile_ast_value(ast_value);
+        if (result.error) {
+          std::cerr << "Failed to compile: " << result.error->message
+                    << std::endl;
+          return 1;
+        }
       }
-      if (ast_value->kind == tsil::ast::KindNone) {
-        continue;
-      }
-      const auto result = state->globalScope->compile_ast_value(ast_value);
-      if (result.error) {
-        std::cerr << "Failed to compile: " << result.error->message
-                  << std::endl;
+      InitializeAllTargetInfos();
+      InitializeAllTargets();
+      InitializeAllTargetMCs();
+      InitializeAllAsmParsers();
+      InitializeAllAsmPrinters();
+
+      auto TargetTriple = sys::getDefaultTargetTriple();
+      state->Module->setTargetTriple(TargetTriple);
+
+      std::string Error;
+      auto Target = TargetRegistry::lookupTarget(TargetTriple, Error);
+
+      if (!Target) {
+        errs() << Error;
         return 1;
       }
-    }
-    InitializeAllTargetInfos();
-    InitializeAllTargets();
-    InitializeAllTargetMCs();
-    InitializeAllAsmParsers();
-    InitializeAllAsmPrinters();
 
-    auto TargetTriple = sys::getDefaultTargetTriple();
-    state->Module->setTargetTriple(TargetTriple);
+      auto CPU = "generic";
+      auto Features = "";
 
-    std::string Error;
-    auto Target = TargetRegistry::lookupTarget(TargetTriple, Error);
+      TargetOptions opt;
+      auto TheTargetMachine = Target->createTargetMachine(
+          TargetTriple, CPU, Features, opt, Reloc::PIC_);
 
-    if (!Target) {
-      errs() << Error;
+      state->Module->setDataLayout(TheTargetMachine->createDataLayout());
+
+      mkdir("./результат", 0777);
+
+      std::ofstream buda;
+      buda.open("./результат/буда");
+      buda << "компілятор=clang++\n";
+      buda << "запуск=" + exec_name + "\n";
+      buda << "сплав=" + splav_name + "\n";
+      buda.close();
+
+      std::error_code EC;
+      raw_fd_ostream dest("./результат/" + splav_name, EC, sys::fs::OF_None);
+
+      if (EC) {
+        errs() << "Could not open file: " << EC.message();
+        return 1;
+      }
+
+      legacy::PassManager pass;
+      auto FileType = CodeGenFileType::CGFT_ObjectFile;
+
+      if (TheTargetMachine->addPassesToEmitFile(pass, dest, nullptr,
+                                                FileType)) {
+        errs() << "TheTargetMachine can't emit a file of this type";
+        return 1;
+      }
+
+      pass.run(*state->Module);
+      dest.flush();
+    } else {
+      std::cerr << "Failed to parse: " << parser_result.errors[0].message
+                << std::endl;
       return 1;
     }
-
-    auto CPU = "generic";
-    auto Features = "";
-
-    TargetOptions opt;
-    auto TheTargetMachine = Target->createTargetMachine(
-        TargetTriple, CPU, Features, opt, Reloc::PIC_);
-
-    state->Module->setDataLayout(TheTargetMachine->createDataLayout());
-
-    std::error_code EC;
-    raw_fd_ostream dest(splav_name, EC, sys::fs::OF_None);
-
-    if (EC) {
-      errs() << "Could not open file: " << EC.message();
+  } else if (command == "збудувати") {
+    const auto buda_path = "./результат/буда";
+    std::ifstream buda_file(buda_path);
+    if (!buda_file.is_open()) {
+      std::cerr << "Не вдалось прочитати файл: " << buda_path << std::endl;
       return 1;
     }
-
-    legacy::PassManager pass;
-    auto FileType = CodeGenFileType::CGFT_ObjectFile;
-
-    if (TheTargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
-      errs() << "TheTargetMachine can't emit a file of this type";
-      return 1;
+    std::string buda_data;
+    std::string line;
+    while (std::getline(buda_file, line)) {
+      buda_data += line + "\n";
     }
-
-    pass.run(*state->Module);
-    dest.flush();
-  } else {
-    std::cerr << "Failed to parse: " << parser_result.errors[0].message
-              << std::endl;
-    return 1;
+    std::unordered_map<std::string, std::string> buda;
+    parse_buda(buda_data, buda);
+    const auto compiler = buda["компілятор"];
+    const auto exec_name = buda["запуск"];
+    const auto splav_name = buda["сплав"];
+    FILE* pipe = popen(std::string(compiler + " -o ./результат/" + exec_name +
+                                   " ./результат/" + splav_name)
+                           .c_str(),
+                       "r");
+    if (pipe) {
+      char buffer[128];
+      while (!feof(pipe)) {
+        if (fgets(buffer, 128, pipe) != nullptr) {
+          // Process output line by line (here, printing)
+          printf("%s", buffer);
+        }
+      }
+      pclose(pipe);
+    }
   }
 
   return 0;
