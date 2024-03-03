@@ -310,21 +310,21 @@ int main(int argc, char** argv) {
 
       std::ofstream buda;
       buda.open("./сплав/буда");
-      buda << "компілятор=clang++\n";
-      buda << "запуск=" + exec_name + "\n";
-      buda << "object=" + splav_name + "\n";
+      buda << "пакувальник=clang++\n";
+      buda << "вихід=./сплав/" + exec_name + "\n";
+      buda << "обʼєкти=./сплав/" + splav_name;
       if (args.size() > 3) {
         auto begin = args.begin() + 3;
         auto end = args.end();
-        buda << "link=";
+        buda << " ";
         for (auto it = begin; it != end; ++it) {
           buda << *it;
           if (it + 1 != end) {
             buda << " ";
           }
         }
-        buda << "\n";
       }
+      buda << "\n";
       buda.close();
 
       std::error_code EC;
@@ -365,14 +365,12 @@ int main(int argc, char** argv) {
     }
     std::unordered_map<std::string, std::string> buda;
     parse_buda(buda_data, buda);
-    const auto compiler = buda["компілятор"];
-    const auto exec_name = buda["запуск"];
-    const auto splav_name = buda["object"];
-    const auto link_files = buda["link"];
-    FILE* pipe = popen(std::string(compiler + " -o ./сплав/" + exec_name +
-                                   " ./сплав/" + splav_name + " " + link_files)
-                           .c_str(),
-                       "r");
+    const auto compiler = buda["пакувальник"];
+    const auto exec_name = buda["вихід"];
+    const auto objects = buda["обʼєкти"];
+    FILE* pipe = popen(
+        std::string(compiler + " -o " + exec_name + " " + objects).c_str(),
+        "r");
     if (pipe) {
       char buffer[128];
       while (!feof(pipe)) {
