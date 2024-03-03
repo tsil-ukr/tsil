@@ -353,7 +353,8 @@ int main(int argc, char** argv) {
   InitializeModule();
 
   const auto args = std::vector<std::string>(argv, argv + argc);
-  const auto& path = args[1];
+  const auto& command = args[1];
+  const auto& path = args[2];
 
   std::string code;
 
