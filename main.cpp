@@ -180,7 +180,7 @@ void parse_buda(const std::string& data,
 }
 
 int main(int argc, char** argv) {
-  const auto args = std::vector<std::string>(argv, argv + argc);
+  auto args = std::vector<std::string>(argv, argv + argc);
   const auto& command = args[1];
 
   if (command == "сплавити") {
@@ -313,6 +313,18 @@ int main(int argc, char** argv) {
       buda << "компілятор=clang++\n";
       buda << "запуск=" + exec_name + "\n";
       buda << "object=" + splav_name + "\n";
+      if (args.size() > 3) {
+        auto begin = args.begin() + 3;
+        auto end = args.end();
+        buda << "link=";
+        for (auto it = begin; it != end; ++it) {
+          buda << *it;
+          if (it + 1 != end) {
+            buda << " ";
+          }
+        }
+        buda << "\n";
+      }
       buda.close();
 
       std::error_code EC;
@@ -356,8 +368,9 @@ int main(int argc, char** argv) {
     const auto compiler = buda["компілятор"];
     const auto exec_name = buda["запуск"];
     const auto splav_name = buda["object"];
+    const auto link_files = buda["link"];
     FILE* pipe = popen(std::string(compiler + " -o ./сплав/" + exec_name +
-                                   " ./сплав/" + splav_name)
+                                   " ./сплав/" + splav_name + " " + link_files)
                            .c_str(),
                        "r");
     if (pipe) {
