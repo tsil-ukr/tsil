@@ -6,8 +6,6 @@ namespace tsil::ast {
       switch (kind) {
         case ast::KindNone:
           return "None";
-        case ast::KindArgNode:
-          return "ArgNode";
         case ast::KindAssignNode:
           return "AssignNode";
         case ast::KindBinaryNode:

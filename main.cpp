@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "compiler/compiler.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/BasicBlock.h"
@@ -28,14 +29,8 @@
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/TargetParser/Host.h"
-#include "parser/parser.h"
 
 using namespace llvm;
-
-static std::unique_ptr<LLVMContext> TheContext;
-static std::unique_ptr<Module> TheModule;
-static std::unique_ptr<IRBuilder<>> Builder;
-static std::map<std::string, Value*> NamedValues;
 //
 // Value* LogErrorV(const char* Str) {
 //  LogError(Str);
@@ -150,193 +145,9 @@ static std::map<std::string, Value*> NamedValues;
 //}
 //
 
-static void InitializeModule() {
-  TheContext = std::make_unique<LLVMContext>();
-  TheModule = std::make_unique<Module>("tsil module", *TheContext);
-  Builder = std::make_unique<IRBuilder<>>(*TheContext);
-}
-
-struct CompilationScope {
-  std::map<std::string, Value*> variables;
-
-  inline bool has_variable(const std::string& name) {
-    return variables.find(name) != variables.end();
-  }
-
-  inline Value* get_variable(const std::string& name) {
-    return variables.at(name);
-  }
-
-  inline void set_variable(const std::string& name, Value* value) {
-    variables.insert_or_assign(name, value);
-  }
-};
-
-struct CompilerError {
-  std::string message;
-};
-
-struct CompilerResult {
-  Value* result;
-  CompilerError* error;
-};
-
-CompilerResult ok(Value* result) {
-  return {result, nullptr};
-}
-
-CompilerResult error(const std::string& message) {
-  return {nullptr, new CompilerError{message}};
-}
-
-Type* getType(tsil::ast::TypeNode* type_node) {
-  if (type_node->id == "обʼєкт") {
-    return Type::getVoidTy(*TheContext);
-  } else if (type_node->id == "ц8") {
-    return Type::getInt8Ty(*TheContext);
-  } else if (type_node->id == "ц16") {
-    return Type::getInt16Ty(*TheContext);
-  } else if (type_node->id == "ц32") {
-    return Type::getInt32Ty(*TheContext);
-  } else if (type_node->id == "ц64") {
-    return Type::getInt64Ty(*TheContext);
-  } else if (type_node->id == "д8") {
-    return Type::getDoubleTy(*TheContext);
-  } else if (type_node->id == "д32") {
-    return Type::getFloatTy(*TheContext);
-  } else if (type_node->id == "д64") {
-    return Type::getDoubleTy(*TheContext);
-  }
-  return nullptr;
-}
-
-Function* makeDiiaFromHead(tsil::ast::DiiaHeadNode* diia_head_node) {
-  std::vector<Type*> Params;
-  for (const auto& param : diia_head_node->params) {
-    const auto param_node = param->data.ParamNode;
-    Params.push_back(getType(param_node->type->data.TypeNode));
-  }
-
-  Type* Result = diia_head_node->type
-                     ? getType(diia_head_node->type->data.TypeNode)
-                     : Type::getVoidTy(*TheContext);
-
-  FunctionType* FT = FunctionType::get(Result, Params, false);
-  Function* F =
-      Function::Create(FT,
-                       diia_head_node->splav ? Function::ExternalLinkage
-                                             : Function::PrivateLinkage,
-                       diia_head_node->id, TheModule.get());
-  return F;
-}
-
-CompilerResult compile_ast_value(CompilationScope* scope,
-                                 const tsil::ast::ASTValue* ast_value) {
-  if (ast_value->kind == tsil::ast::KindDefineNode) {
-    const auto define_node = ast_value->data.DefineNode;
-    if (scope->has_variable(define_node->id)) {
-      return error("Variable already defined");
-    }
-    auto value_result = compile_ast_value(scope, define_node->value);
-    if (value_result.error) {
-      return value_result;
-    }
-    scope->set_variable(define_node->id, value_result.result);
-    return ok(nullptr);
-  }
-  if (ast_value->kind == tsil::ast::KindAssignNode) {
-    const auto diia_node = ast_value->data.DiiaNode;
-    return error("Not implemented");
-  }
-  if (ast_value->kind == tsil::ast::KindNumberNode) {
-    const auto number_node = ast_value->data.NumberNode;
-    return ok(
-        ConstantFP::get(*TheContext, APFloat(std::stod(number_node->value))));
-  }
-  if (ast_value->kind == tsil::ast::KindStringNode) {
-    const auto string_node = ast_value->data.StringNode;
-    return ok(Builder->CreateGlobalStringPtr(string_node->value));
-  }
-  if (ast_value->kind == tsil::ast::KindIdentifierNode) {
-    const auto identifier_node = ast_value->data.IdentifierNode;
-    if (!scope->has_variable(identifier_node->name)) {
-      return error("Variable not defined");
-    }
-    return ok(scope->get_variable(identifier_node->name));
-  }
-  if (ast_value->kind == tsil::ast::KindDiiaNode) {
-    const auto diia_node = ast_value->data.DiiaNode;
-    auto F = makeDiiaFromHead(diia_node->head);
-    BasicBlock* BB = BasicBlock::Create(*TheContext, "entry", F);
-    Builder->SetInsertPoint(BB);
-
-    for (const auto& body_ast_value : diia_node->body) {
-      if (body_ast_value == nullptr) {
-        continue;
-      }
-      if (body_ast_value->kind == tsil::ast::KindNone) {
-        continue;
-      }
-      if (body_ast_value->kind == tsil::ast::KindReturnNode) {
-        auto result =
-            compile_ast_value(scope, body_ast_value->data.ReturnNode->value);
-        if (result.error) {
-          return result;
-        }
-        Builder->CreateRet(result.result);
-      } else {
-        auto result = compile_ast_value(scope, body_ast_value);
-        if (result.error) {
-          return result;
-        }
-      }
-    }
-    Builder->CreateRet(nullptr);
-    return ok(F);
-  }
-  if (ast_value->kind == tsil::ast::KindDiiaDeclarationNode) {
-    const auto diia_declaration_node = ast_value->data.DiiaDeclarationNode;
-    makeDiiaFromHead(diia_declaration_node->head);
-    return ok(nullptr);
-  }
-  if (ast_value->kind == tsil::ast::KindCallNode) {
-    const auto call_node = ast_value->data.CallNode;
-    const auto name = call_node->value->data.IdentifierNode->name;
-    Function* F = TheModule->getFunction(name);
-    if (!F) {
-      return error("Unknown function referenced: " + name);
-    }
-    if (!F->isVarArg()) {
-      if (F->arg_size() != call_node->args.size()) {
-        return error("Incorrect # arguments passed");
-      }
-    }
-    std::vector<Value*> ArgsV;
-    for (const auto& arg : call_node->args) {
-      auto arg_result = compile_ast_value(scope, arg);
-      if (arg_result.error) {
-        return arg_result;
-      }
-      ArgsV.push_back(arg_result.result);
-    }
-    if (F->getReturnType() == Type::getVoidTy(*TheContext)) {
-      return ok(Builder->CreateCall(F, ArgsV));
-    }
-    return ok(Builder->CreateCall(F, ArgsV, "calltmp"));
-  }
-  if (ast_value->kind == tsil::ast::KindIfNode) {
-    const auto if_node = ast_value->data.IfNode;
-    return error("Not implemented");
-  }
-  if (ast_value->kind == tsil::ast::KindStructureNode) {
-    const auto structure_node = ast_value->data.StructureNode;
-    return error("Not implemented");
-  }
-  return error("Unknown ASTValue kind: " +
-               ast_value_kind_to_string(ast_value->kind));
-}
-
-void path_to_object_name(const std::string& path, std::string& object_name) {
+void path_to_splav_name(const std::string& path,
+                        std::string& object_name,
+                        std::string& danis_name) {
   const auto canonical_path = std::filesystem::canonical(path).string();
 
   const auto fs_path = std::filesystem::path(canonical_path);
@@ -347,14 +158,17 @@ void path_to_object_name(const std::string& path, std::string& object_name) {
   const auto name = fs_path.stem().string();
 
   object_name = name + ".сплав";
+  danis_name = name + ".даніс";
 }
 
 int main(int argc, char** argv) {
-  InitializeModule();
-
   const auto args = std::vector<std::string>(argv, argv + argc);
   const auto& command = args[1];
   const auto& path = args[2];
+
+  std::string splav_name;
+  std::string danis_name;
+  path_to_splav_name(path, splav_name, danis_name);
 
   std::string code;
 
@@ -368,7 +182,43 @@ int main(int argc, char** argv) {
 
   const auto parser_result = tsil::parser::parse(code);
   if (parser_result.program_node) {
-    const auto scope = new CompilationScope();
+    const auto state = new tsil::compiler::CompilationState();
+
+    state->Context = new LLVMContext();
+    state->Module = new Module(splav_name, *state->Context);
+    state->Builder = new IRBuilder<>(*state->Context);
+
+    state->globalScope = new tsil::compiler::CompilationScope();
+    state->globalScope->state = state;
+
+    const auto voidType = new tsil::compiler::Type();
+    voidType->lltype = Type::getVoidTy(*state->Context);
+    state->globalScope->types["обʼєкт"] = voidType;
+
+    const auto int8Type = new tsil::compiler::Type();
+    int8Type->lltype = Type::getInt8Ty(*state->Context);
+    state->globalScope->types["ц8"] = int8Type;
+
+    const auto int16Type = new tsil::compiler::Type();
+    int16Type->lltype = Type::getInt16Ty(*state->Context);
+    state->globalScope->types["ц16"] = int16Type;
+
+    const auto int32Type = new tsil::compiler::Type();
+    int32Type->lltype = Type::getInt32Ty(*state->Context);
+    state->globalScope->types["ц32"] = int32Type;
+
+    const auto int64Type = new tsil::compiler::Type();
+    int64Type->lltype = Type::getInt64Ty(*state->Context);
+    state->globalScope->types["ц64"] = int64Type;
+
+    const auto floatType = new tsil::compiler::Type();
+    floatType->lltype = Type::getFloatTy(*state->Context);
+    state->globalScope->types["д32"] = floatType;
+
+    const auto doubleType = new tsil::compiler::Type();
+    doubleType->lltype = Type::getDoubleTy(*state->Context);
+    state->globalScope->types["д64"] = doubleType;
+
     for (const auto& ast_value : parser_result.program_node->body) {
       if (ast_value == nullptr) {
         continue;
@@ -376,7 +226,7 @@ int main(int argc, char** argv) {
       if (ast_value->kind == tsil::ast::KindNone) {
         continue;
       }
-      const auto result = compile_ast_value(scope, ast_value);
+      const auto result = state->globalScope->compile_ast_value(ast_value);
       if (result.error) {
         std::cerr << "Failed to compile: " << result.error->message
                   << std::endl;
@@ -390,7 +240,7 @@ int main(int argc, char** argv) {
     InitializeAllAsmPrinters();
 
     auto TargetTriple = sys::getDefaultTargetTriple();
-    TheModule->setTargetTriple(TargetTriple);
+    state->Module->setTargetTriple(TargetTriple);
 
     std::string Error;
     auto Target = TargetRegistry::lookupTarget(TargetTriple, Error);
@@ -407,13 +257,10 @@ int main(int argc, char** argv) {
     auto TheTargetMachine = Target->createTargetMachine(
         TargetTriple, CPU, Features, opt, Reloc::PIC_);
 
-    TheModule->setDataLayout(TheTargetMachine->createDataLayout());
-
-    std::string name;
-    path_to_object_name(path, name);
+    state->Module->setDataLayout(TheTargetMachine->createDataLayout());
 
     std::error_code EC;
-    raw_fd_ostream dest(name, EC, sys::fs::OF_None);
+    raw_fd_ostream dest(splav_name, EC, sys::fs::OF_None);
 
     if (EC) {
       errs() << "Could not open file: " << EC.message();
@@ -428,7 +275,7 @@ int main(int argc, char** argv) {
       return 1;
     }
 
-    pass.run(*TheModule);
+    pass.run(*state->Module);
     dest.flush();
   } else {
     std::cerr << "Failed to parse: " << parser_result.errors[0].message

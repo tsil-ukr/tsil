@@ -76,7 +76,6 @@ namespace tsil::ast {
 
   enum ASTValueKind {
     KindNone,
-    KindArgNode,
     KindAssignNode,
     KindBinaryNode,
     KindBreakNode,
