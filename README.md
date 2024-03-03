@@ -1,3 +1,5 @@
+<img src="./assets/logo.png" width="100" height="100" />
+
 # ОЗЦ
 
 Компілятор Цілі.
