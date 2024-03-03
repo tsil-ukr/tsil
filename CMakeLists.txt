@@ -19,6 +19,6 @@ set(TSIL_SRC
 )
 
 add_executable(tsil ${TSIL_SRC})
-target_link_libraries(tsil tsil_parser LLVM)
+target_link_libraries(tsil PRIVATE tsil_parser LLVM)
 target_compile_options(tsil PRIVATE -fexceptions)
 set_target_properties(tsil PROPERTIES OUTPUT_NAME "ціль")

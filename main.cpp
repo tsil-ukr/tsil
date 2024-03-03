@@ -160,7 +160,7 @@ void path_to_splav_name(const std::string& path,
   const auto name = fs_path.stem().string();
 
   exec_name = name;
-  object_name = name + ".сплав";
+  object_name = name + ".o";
   danis_name = name + ".даніс";
 }
 
@@ -209,7 +209,7 @@ int main(int argc, char** argv) {
       code += line + "\n";
     }
 
-    code += "\n\nсплав ц32 main() { вернути старт(); }";
+    code += "\n\nекстерн ц32 main() { вернути старт(); }";
 
     const auto parser_result = tsil::parser::parse(code);
     if (parser_result.program_node) {
@@ -249,6 +249,22 @@ int main(int argc, char** argv) {
       const auto doubleType = new tsil::compiler::Type();
       doubleType->lltype = Type::getDoubleTy(*state->Context);
       state->globalScope->types["д64"] = doubleType;
+
+      const auto uint8Type = new tsil::compiler::Type();
+      uint8Type->lltype = Type::getInt8Ty(*state->Context);
+      state->globalScope->types["б8"] = uint8Type;
+
+      const auto uint16Type = new tsil::compiler::Type();
+      uint16Type->lltype = Type::getInt16Ty(*state->Context);
+      state->globalScope->types["б16"] = uint16Type;
+
+      const auto uint32Type = new tsil::compiler::Type();
+      uint32Type->lltype = Type::getInt32Ty(*state->Context);
+      state->globalScope->types["б32"] = uint32Type;
+
+      const auto uint64Type = new tsil::compiler::Type();
+      uint64Type->lltype = Type::getInt64Ty(*state->Context);
+      state->globalScope->types["б64"] = uint64Type;
 
       for (const auto& ast_value : parser_result.program_node->body) {
         if (ast_value == nullptr) {
@@ -290,17 +306,17 @@ int main(int argc, char** argv) {
 
       state->Module->setDataLayout(TheTargetMachine->createDataLayout());
 
-      mkdir("./результат", 0777);
+      mkdir("./сплав", 0777);
 
       std::ofstream buda;
-      buda.open("./результат/буда");
+      buda.open("./сплав/буда");
       buda << "компілятор=clang++\n";
       buda << "запуск=" + exec_name + "\n";
-      buda << "сплав=" + splav_name + "\n";
+      buda << "object=" + splav_name + "\n";
       buda.close();
 
       std::error_code EC;
-      raw_fd_ostream dest("./результат/" + splav_name, EC, sys::fs::OF_None);
+      raw_fd_ostream dest("./сплав/" + splav_name, EC, sys::fs::OF_None);
 
       if (EC) {
         errs() << "Could not open file: " << EC.message();
@@ -324,7 +340,7 @@ int main(int argc, char** argv) {
       return 1;
     }
   } else if (command == "збудувати") {
-    const auto buda_path = "./результат/буда";
+    const auto buda_path = "./сплав/буда";
     std::ifstream buda_file(buda_path);
     if (!buda_file.is_open()) {
       std::cerr << "Не вдалось прочитати файл: " << buda_path << std::endl;
@@ -339,9 +355,9 @@ int main(int argc, char** argv) {
     parse_buda(buda_data, buda);
     const auto compiler = buda["компілятор"];
     const auto exec_name = buda["запуск"];
-    const auto splav_name = buda["сплав"];
-    FILE* pipe = popen(std::string(compiler + " -o ./результат/" + exec_name +
-                                   " ./результат/" + splav_name)
+    const auto splav_name = buda["object"];
+    FILE* pipe = popen(std::string(compiler + " -o ./сплав/" + exec_name +
+                                   " ./сплав/" + splav_name)
                            .c_str(),
                        "r");
     if (pipe) {

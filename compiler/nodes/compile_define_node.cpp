@@ -5,7 +5,7 @@ namespace tsil::compiler {
       tsil::ast::ASTValue* ast_value) {
     const auto define_node = ast_value->data.DefineNode;
     if (this->has_variable(define_node->id)) {
-      return error("Variable already defined");
+      return error("Ціль \"" + define_node->id + "\" вже визначена");
     }
     auto value_result = this->compile_ast_value(define_node->value);
     if (value_result.error) {

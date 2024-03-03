@@ -188,10 +188,11 @@ namespace tsil::ast {
   struct ContinueNode {};
 
   struct DiiaHeadNode {
-    bool splav;
+    bool is_extern;
+    ASTValue* type;
     std::string id;
     std::vector<ASTValue*> params;
-    ASTValue* type;
+    bool is_variadic;
   };
 
   struct DiiaNode {
@@ -201,6 +202,7 @@ namespace tsil::ast {
 
   struct DiiaDeclarationNode {
     DiiaHeadNode* head;
+    std::string as;
   };
 
   struct IdentifierNode {

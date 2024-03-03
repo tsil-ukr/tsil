@@ -9,7 +9,8 @@ KW_ELSE: 'інакше';
 KW_WHILE: 'поки';
 KW_RETURN: 'вернути';
 KW_STRUCT: 'структура';
-KW_SPLAV: 'сплав';
+KW_EXTERN: 'екстерн';
+KW_AS: 'як';
 
 EQUAL: '=';
 GREATER: '>';
