@@ -309,6 +309,11 @@ int main(int argc, char** argv) {
   Function* F = Function::Create(FT, Function::ExternalLinkage, "printf",
                                  TheModule.get());
 
+  FunctionType* pFT = FunctionType::get(
+      Type::getVoidTy(*TheContext), {Type::getInt8PtrTy(*TheContext)}, false);
+  Function* pF =
+      Function::Create(FT, Function::ExternalLinkage, "друк", TheModule.get());
+
   const auto parser_result = tsil::parser::parse(code);
   if (parser_result.program_node) {
     const auto scope = new CompilationScope();
