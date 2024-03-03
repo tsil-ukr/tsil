@@ -9,6 +9,7 @@ KW_ELSE: 'інакше';
 KW_WHILE: 'поки';
 KW_RETURN: 'вернути';
 KW_STRUCT: 'структура';
+KW_SPLAV: 'сплав';
 
 EQUAL: '=';
 GREATER: '>';

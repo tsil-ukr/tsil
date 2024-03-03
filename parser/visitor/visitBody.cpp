@@ -7,16 +7,18 @@ namespace tsil::parser {
       const auto ast_value = AAV(visitBody_element_or_return(body_element));
       if (ast_value->kind == ast::KindIdentifierNode) {
         if (ast_value->data.IdentifierNode->name == "перервати") {
-          const auto break_ast_value =
-              ast::BreakNode::ast_value(new ast::BreakNode());
+          const auto break_ast_value = new ast::ASTValue();
+          break_ast_value->kind = ast::KindBreakNode;
+          break_ast_value->data.BreakNode = new ast::BreakNode();
           break_ast_value->start_line = ast_value->start_line;
           break_ast_value->start_column = ast_value->start_column;
           break_ast_value->end_line = ast_value->end_line;
           break_ast_value->end_column = ast_value->end_column;
           body.push_back(break_ast_value);
         } else if (ast_value->data.IdentifierNode->name == "продовжити") {
-          const auto continue_ast_value =
-              ast::ContinueNode::ast_value(new ast::ContinueNode());
+          const auto continue_ast_value = new ast::ASTValue();
+          continue_ast_value->kind = ast::KindContinueNode;
+          continue_ast_value->data.ContinueNode = new ast::ContinueNode();
           continue_ast_value->start_line = ast_value->start_line;
           continue_ast_value->start_column = ast_value->start_column;
           continue_ast_value->end_line = ast_value->end_line;

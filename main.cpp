@@ -189,6 +189,47 @@ CompilerResult error(const std::string& message) {
   return {nullptr, new CompilerError{message}};
 }
 
+Type* getType(tsil::ast::TypeNode* type_node) {
+  if (type_node->id == "обʼєкт") {
+    return Type::getVoidTy(*TheContext);
+  } else if (type_node->id == "ц8") {
+    return Type::getInt8Ty(*TheContext);
+  } else if (type_node->id == "ц16") {
+    return Type::getInt16Ty(*TheContext);
+  } else if (type_node->id == "ц32") {
+    return Type::getInt32Ty(*TheContext);
+  } else if (type_node->id == "ц64") {
+    return Type::getInt64Ty(*TheContext);
+  } else if (type_node->id == "д8") {
+    return Type::getDoubleTy(*TheContext);
+  } else if (type_node->id == "д32") {
+    return Type::getFloatTy(*TheContext);
+  } else if (type_node->id == "д64") {
+    return Type::getDoubleTy(*TheContext);
+  }
+  return nullptr;
+}
+
+Function* makeDiiaFromHead(tsil::ast::DiiaHeadNode* diia_head_node) {
+  std::vector<Type*> Params;
+  for (const auto& param : diia_head_node->params) {
+    const auto param_node = param->data.ParamNode;
+    Params.push_back(getType(param_node->type->data.TypeNode));
+  }
+
+  Type* Result = diia_head_node->type
+                     ? getType(diia_head_node->type->data.TypeNode)
+                     : Type::getVoidTy(*TheContext);
+
+  FunctionType* FT = FunctionType::get(Result, Params, false);
+  Function* F =
+      Function::Create(FT,
+                       diia_head_node->splav ? Function::ExternalLinkage
+                                             : Function::PrivateLinkage,
+                       diia_head_node->id, TheModule.get());
+  return F;
+}
+
 CompilerResult compile_ast_value(CompilationScope* scope,
                                  const tsil::ast::ASTValue* ast_value) {
   if (ast_value->kind == tsil::ast::KindDefineNode) {
@@ -225,19 +266,37 @@ CompilerResult compile_ast_value(CompilationScope* scope,
   }
   if (ast_value->kind == tsil::ast::KindDiiaNode) {
     const auto diia_node = ast_value->data.DiiaNode;
-    FunctionType* FT = FunctionType::get(Type::getVoidTy(*TheContext), false);
-    Function* F = Function::Create(FT, Function::ExternalLinkage, diia_node->id,
-                                   TheModule.get());
+    auto F = makeDiiaFromHead(diia_node->head);
     BasicBlock* BB = BasicBlock::Create(*TheContext, "entry", F);
     Builder->SetInsertPoint(BB);
 
-    for (const auto& body : diia_node->body) {
-      auto result = compile_ast_value(scope, body);
-      if (result.error) {
-        return result;
+    for (const auto& body_ast_value : diia_node->body) {
+      if (body_ast_value == nullptr) {
+        continue;
+      }
+      if (body_ast_value->kind == tsil::ast::KindNone) {
+        continue;
+      }
+      if (body_ast_value->kind == tsil::ast::KindReturnNode) {
+        auto result =
+            compile_ast_value(scope, body_ast_value->data.ReturnNode->value);
+        if (result.error) {
+          return result;
+        }
+        Builder->CreateRet(result.result);
+      } else {
+        auto result = compile_ast_value(scope, body_ast_value);
+        if (result.error) {
+          return result;
+        }
       }
     }
     Builder->CreateRet(nullptr);
+    return ok(F);
+  }
+  if (ast_value->kind == tsil::ast::KindDiiaDeclarationNode) {
+    const auto diia_declaration_node = ast_value->data.DiiaDeclarationNode;
+    makeDiiaFromHead(diia_declaration_node->head);
     return ok(nullptr);
   }
   if (ast_value->kind == tsil::ast::KindCallNode) {
@@ -245,7 +304,7 @@ CompilerResult compile_ast_value(CompilationScope* scope,
     const auto name = call_node->value->data.IdentifierNode->name;
     Function* F = TheModule->getFunction(name);
     if (!F) {
-      return error("Unknown function referenced");
+      return error("Unknown function referenced: " + name);
     }
     if (!F->isVarArg()) {
       if (F->arg_size() != call_node->args.size()) {
@@ -287,7 +346,7 @@ void path_to_object_name(const std::string& path, std::string& object_name) {
 
   const auto name = fs_path.stem().string();
 
-  object_name = name + ".o";
+  object_name = name + ".сплав";
 }
 
 int main(int argc, char** argv) {
@@ -304,15 +363,7 @@ int main(int argc, char** argv) {
     code += line + "\n";
   }
 
-  FunctionType* FT = FunctionType::get(Type::getInt32Ty(*TheContext),
-                                       {Type::getInt8PtrTy(*TheContext)}, true);
-  Function* F = Function::Create(FT, Function::ExternalLinkage, "printf",
-                                 TheModule.get());
-
-  FunctionType* pFT = FunctionType::get(
-      Type::getVoidTy(*TheContext), {Type::getInt8PtrTy(*TheContext)}, false);
-  Function* pF =
-      Function::Create(FT, Function::ExternalLinkage, "друк", TheModule.get());
+  code += "\n\nсплав ц32 main() { вернути старт(); }";
 
   const auto parser_result = tsil::parser::parse(code);
   if (parser_result.program_node) {

@@ -26,8 +26,12 @@ namespace tsil::ast {
           return "ComparisonNode";
         case ast::KindContinueNode:
           return "ContinueNode";
+        case ast::KindDiiaHeadNode:
+          return "DiiaHeadNode";
         case ast::KindDiiaNode:
           return "DiiaNode";
+        case ast::KindDiiaDeclarationNode:
+          return "DiiaDeclarationNode";
         case ast::KindIdentifierNode:
           return "IdentifierNode";
         case ast::KindIfNode:
@@ -133,6 +137,10 @@ namespace tsil::parser {
     if (const auto diia_context =
             dynamic_cast<TsilParser::DiiaContext*>(context)) {
       return visitDiia(diia_context);
+    }
+    if (const auto diia_declaration_context =
+            dynamic_cast<TsilParser::Diia_declarationContext*>(context)) {
+      return visitDiia_declaration(diia_declaration_context);
     }
     if (const auto if_context = dynamic_cast<TsilParser::IfContext*>(context)) {
       return visitIf(if_context);

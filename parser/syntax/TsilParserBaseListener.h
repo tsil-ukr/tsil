@@ -34,8 +34,14 @@ public:
   virtual void enterStructure_param(TsilParser::Structure_paramContext * /*ctx*/) override { }
   virtual void exitStructure_param(TsilParser::Structure_paramContext * /*ctx*/) override { }
 
+  virtual void enterDiia_head(TsilParser::Diia_headContext * /*ctx*/) override { }
+  virtual void exitDiia_head(TsilParser::Diia_headContext * /*ctx*/) override { }
+
   virtual void enterDiia(TsilParser::DiiaContext * /*ctx*/) override { }
   virtual void exitDiia(TsilParser::DiiaContext * /*ctx*/) override { }
+
+  virtual void enterDiia_declaration(TsilParser::Diia_declarationContext * /*ctx*/) override { }
+  virtual void exitDiia_declaration(TsilParser::Diia_declarationContext * /*ctx*/) override { }
 
   virtual void enterIf(TsilParser::IfContext * /*ctx*/) override { }
   virtual void exitIf(TsilParser::IfContext * /*ctx*/) override { }

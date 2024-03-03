@@ -39,7 +39,15 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitDiia_head(TsilParser::Diia_headContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitDiia(TsilParser::DiiaContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitDiia_declaration(TsilParser::Diia_declarationContext *ctx) override {
     return visitChildren(ctx);
   }
 

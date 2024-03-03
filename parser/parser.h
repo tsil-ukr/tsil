@@ -50,6 +50,8 @@ namespace tsil::parser {
 
     std::any visitDiia(TsilParser::DiiaContext* ctx) override;
 
+    std::any visitDiia_declaration(TsilParser::Diia_declarationContext *ctx) override;
+
     std::any visitIf(TsilParser::IfContext* ctx) override;
 
     std::any visitWhile(TsilParser::WhileContext* ctx) override;

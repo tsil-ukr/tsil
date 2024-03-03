@@ -7,13 +7,15 @@ options {
 file: f_program=program EOF;
 
 program: program_element*;
-program_element: structure | diia | if | while | define | assign | set | (expr ';') | ';';
+program_element: structure | diia_declaration |  diia | if | while | define | assign | set | (expr ';') | ';';
 
 structure: 'структура' s_name=identifier '{' (s_params=structure_params)? '}';
 structure_params: (structure_param ';')+;
 structure_param: sp_name=identifier sp_type=type;
 
-diia: ('дія' | d_type=type) d_name=identifier '(' d_params=params? ')' '{' (d_body=body)? '}';
+diia_head: ('дія' | d_type=type) d_name=identifier '(' (d_params=params)? ')';
+diia: (d_splav='сплав')? d_head=diia_head '{' (d_body=body)? '}';
+diia_declaration: (d_splav='сплав')? d_head=diia_head ';';
 
 if: 'якщо' i_value=expr '{' (i_body=body)? '}';
 

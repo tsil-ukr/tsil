@@ -17,6 +17,9 @@ namespace tsil::parser {
     if (context->structure()) {
       return visitStructure(context->structure());
     }
+    if (context->diia_declaration()) {
+      return visitDiia_declaration(context->diia_declaration());
+    }
     if (context->diia()) {
       return visitDiia(context->diia());
     }

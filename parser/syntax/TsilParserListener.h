@@ -32,8 +32,14 @@ public:
   virtual void enterStructure_param(TsilParser::Structure_paramContext *ctx) = 0;
   virtual void exitStructure_param(TsilParser::Structure_paramContext *ctx) = 0;
 
+  virtual void enterDiia_head(TsilParser::Diia_headContext *ctx) = 0;
+  virtual void exitDiia_head(TsilParser::Diia_headContext *ctx) = 0;
+
   virtual void enterDiia(TsilParser::DiiaContext *ctx) = 0;
   virtual void exitDiia(TsilParser::DiiaContext *ctx) = 0;
+
+  virtual void enterDiia_declaration(TsilParser::Diia_declarationContext *ctx) = 0;
+  virtual void exitDiia_declaration(TsilParser::Diia_declarationContext *ctx) = 0;
 
   virtual void enterIf(TsilParser::IfContext *ctx) = 0;
   virtual void exitIf(TsilParser::IfContext *ctx) = 0;
