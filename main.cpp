@@ -224,7 +224,7 @@ int main(int argc, char** argv) {
 
       const auto voidType = new tsil::compiler::Type();
       voidType->lltype = Type::getVoidTy(*state->Context);
-      state->globalScope->types["обʼєкт"] = voidType;
+      state->globalScope->types["комірка"] = voidType;
 
       const auto int8Type = new tsil::compiler::Type();
       int8Type->lltype = Type::getInt8Ty(*state->Context);
@@ -313,8 +313,8 @@ int main(int argc, char** argv) {
       buda << "пакувальник=clang++\n";
       buda << "вихід=./сплав/" + exec_name + "\n";
       buda << "обʼєкти=./сплав/" + splav_name;
-      if (args.size() > 3) {
-        auto begin = args.begin() + 3;
+      if (args.size() > 4) {
+        auto begin = args.begin() + 4;
         auto end = args.end();
         buda << " ";
         for (auto it = begin; it != end; ++it) {
