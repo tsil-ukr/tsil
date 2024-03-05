@@ -645,9 +645,11 @@ public:
   Identifiers_chainContext* identifiers_chain(int precedence);
   class  TypeContext : public antlr4::ParserRuleContext {
   public:
+    antlr4::Token *t_pointer = nullptr;
     TypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *MULTIPLY();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

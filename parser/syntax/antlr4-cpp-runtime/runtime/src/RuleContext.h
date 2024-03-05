@@ -12,12 +12,12 @@ namespace antlr4 {
   /** A rule context is a record of a single rule invocation.
    *
    *  We form a stack of these context objects using the parent
-   *  pointer. A parent pointer of null indicates that the current
+   *  is_pointer. A parent is_pointer of null indicates that the current
    *  context is the bottom of the stack. The ParserRuleContext subclass
    *  as a children list so that we can turn this data structure into a
    *  tree.
    *
-   *  The root node always has a null pointer and invokingState of -1.
+   *  The root node always has a null is_pointer and invokingState of -1.
    *
    *  Upon entry to parsing, the first invoked rule function creates a
    *  context object (asubclass specialized for that rule such as

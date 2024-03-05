@@ -306,29 +306,8 @@ int main(int argc, char** argv) {
 
       state->Module->setDataLayout(TheTargetMachine->createDataLayout());
 
-      mkdir("./сплав", 0777);
-
-      std::ofstream buda;
-      buda.open("./сплав/буда");
-      buda << "пакувальник=clang++\n";
-      buda << "вихід=./сплав/" + exec_name + "\n";
-      buda << "обʼєкти=./сплав/" + splav_name;
-      if (args.size() > 4) {
-        auto begin = args.begin() + 4;
-        auto end = args.end();
-        buda << " ";
-        for (auto it = begin; it != end; ++it) {
-          buda << *it;
-          if (it + 1 != end) {
-            buda << " ";
-          }
-        }
-      }
-      buda << "\n";
-      buda.close();
-
       std::error_code EC;
-      raw_fd_ostream dest("./сплав/" + splav_name, EC, sys::fs::OF_None);
+      raw_fd_ostream dest("./" + splav_name, EC, sys::fs::OF_None);
 
       if (EC) {
         errs() << "Could not open file: " << EC.message();
@@ -350,36 +329,6 @@ int main(int argc, char** argv) {
       std::cerr << "Failed to parse: " << parser_result.errors[0].message
                 << std::endl;
       return 1;
-    }
-  } else if (command == "збудувати") {
-    const auto buda_path = "./сплав/буда";
-    std::ifstream buda_file(buda_path);
-    if (!buda_file.is_open()) {
-      std::cerr << "Не вдалось прочитати файл: " << buda_path << std::endl;
-      return 1;
-    }
-    std::string buda_data;
-    std::string line;
-    while (std::getline(buda_file, line)) {
-      buda_data += line + "\n";
-    }
-    std::unordered_map<std::string, std::string> buda;
-    parse_buda(buda_data, buda);
-    const auto compiler = buda["пакувальник"];
-    const auto exec_name = buda["вихід"];
-    const auto objects = buda["обʼєкти"];
-    FILE* pipe = popen(
-        std::string(compiler + " -o " + exec_name + " " + objects).c_str(),
-        "r");
-    if (pipe) {
-      char buffer[128];
-      while (!feof(pipe)) {
-        if (fgets(buffer, 128, pipe) != nullptr) {
-          // Process output line by line (here, printing)
-          printf("%s", buffer);
-        }
-      }
-      pclose(pipe);
     }
   }
 

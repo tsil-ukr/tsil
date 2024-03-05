@@ -17,7 +17,7 @@ namespace antlr4 {
   /// <summary>
   /// A parser simulator that mimics what ANTLR's generated
   ///  parser code does. A ParserATNSimulator is used to make
-  ///  predictions via adaptivePredict but this class moves a pointer through the
+  ///  predictions via adaptivePredict but this class moves a is_pointer through the
   ///  ATN to simulate parsing. ParserATNSimulator just
   ///  makes us efficient rather than having to backtrack, for example.
   ///

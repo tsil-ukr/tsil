@@ -11,8 +11,8 @@ using namespace antlr4;
 
 namespace {
 
-// Create a normal shared pointer if the configurations are to be deleted. If not, then
-// the shared pointer is created with a deleter that does nothing.
+// Create a normal shared is_pointer if the configurations are to be deleted. If not, then
+// the shared is_pointer is created with a deleter that does nothing.
 Ref<atn::ATNConfigSet> buildConfigsRef(atn::ATNConfigSet *configs, bool deleteConfigs) {
   if (deleteConfigs) {
     return Ref<atn::ATNConfigSet>(configs);

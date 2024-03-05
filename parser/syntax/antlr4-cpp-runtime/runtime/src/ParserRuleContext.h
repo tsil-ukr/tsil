@@ -62,7 +62,7 @@ namespace antlr4 {
     Token *stop;
 
     /// The exception that forced this rule to return. If the rule successfully
-    /// completed, this is "null exception pointer".
+    /// completed, this is "null exception is_pointer".
     std::exception_ptr exception;
 
     ParserRuleContext();

@@ -41,7 +41,7 @@ namespace antlrcpp {
 
   // Convenience functions to avoid lengthy dynamic_cast() != nullptr checks in many places.
   template <typename T1, typename T2>
-  inline bool is(T2 *obj) { // For pointer types.
+  inline bool is(T2 *obj) { // For is_pointer types.
     return dynamic_cast<typename std::add_const<T1>::type>(obj) != nullptr;
   }
 
@@ -59,7 +59,7 @@ namespace antlrcpp {
     return ss.str();
   }
 
-  // Get the error text from an exception pointer or the current exception.
+  // Get the error text from an exception is_pointer or the current exception.
   ANTLR4CPP_PUBLIC std::string what(std::exception_ptr eptr = std::current_exception());
 
 } // namespace antlrcpp

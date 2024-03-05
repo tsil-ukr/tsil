@@ -379,9 +379,9 @@ namespace antlr4 {
 
     /** How to create a token leaf node associated with a parent.
      *  Typically, the terminal node to create is not a function of the parent
-     *  but this method must still set the parent pointer of the terminal node
+     *  but this method must still set the parent is_pointer of the terminal node
      *  returned. I would prefer having {@link ParserRuleContext#addAnyChild(ParseTree)}
-     *  set the parent pointer, but the parent pointer is implementation dependent
+     *  set the parent is_pointer, but the parent is_pointer is implementation dependent
      *  and currently there is no setParent() in {@link TerminalNode} (and can't
      *  add method in Java 1.7 without breaking backward compatibility).
      *
@@ -391,9 +391,9 @@ namespace antlr4 {
 
     /** How to create an error node, given a token, associated with a parent.
        *  Typically, the error node to create is not a function of the parent
-       *  but this method must still set the parent pointer of the terminal node
+       *  but this method must still set the parent is_pointer of the terminal node
        *  returned. I would prefer having {@link ParserRuleContext#addAnyChild(ParseTree)}
-       *  set the parent pointer, but the parent pointer is implementation dependent
+       *  set the parent is_pointer, but the parent is_pointer is implementation dependent
        *  and currently there is no setParent() in {@link ErrorNode} (and can't
        *  add method in Java 1.7 without breaking backward compatibility).
        *

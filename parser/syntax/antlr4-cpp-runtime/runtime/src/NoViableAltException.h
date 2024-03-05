@@ -27,7 +27,7 @@ namespace antlr4 {
 
   private:
     /// Which configurations did we try at input.index() that couldn't match input.LT(1)?
-    /// Shared pointer that conditionally deletes the configurations (based on flag
+    /// Shared is_pointer that conditionally deletes the configurations (based on flag
     /// passed during construction)
     Ref<atn::ATNConfigSet> _deadEndConfigs;
 

@@ -6,21 +6,27 @@ namespace tsil::compiler {
     std::vector<llvm::Type*> Params;
     for (const auto& param : diia_head_node->params) {
       const auto param_node = param->data.ParamNode;
-      const auto type = this->get_type(param_node->type->data.TypeNode);
-      if (!type) {
-        return error("Тип не знайдено");
+      if (param_node->type->data.TypeNode->is_pointer) {
+        Params.push_back(llvm::Type::getVoidTy(*this->state->Context));
+      } else {
+        const auto type = this->get_type(param_node->type->data.TypeNode);
+        if (!type) {
+          return error("Тип не знайдено");
+        }
+        Params.push_back(type->lltype);
       }
-      Params.push_back(type->lltype);
     }
 
     llvm::Type* Result = llvm::Type::getVoidTy(*this->state->Context);
     if (diia_head_node->type) {
-      const auto result_type =
-          this->get_type(diia_head_node->type->data.TypeNode);
-      if (!result_type) {
-        return error("Тип не знайдено");
+      if (!diia_head_node->type->data.TypeNode->is_pointer) {
+        const auto result_type =
+            this->get_type(diia_head_node->type->data.TypeNode);
+        if (!result_type) {
+          return error("Тип не знайдено");
+        }
+        Result = result_type->lltype;
       }
-      Result = result_type->lltype;
     }
 
     llvm::FunctionType* FT =

@@ -48,7 +48,7 @@ expr: atom #value_atom
 
 identifiers_chain: ic_id=ID |  ic_left=identifiers_chain '.' ic_right=ID;
 
-type: ID;
+type: ID (t_pointer='*')?;
 
 args: expr (',' expr)* (',')?;
 

@@ -13,7 +13,7 @@ namespace antlrcpp {
 
   template <typename To, typename From>
   To downCast(From* from) {
-    static_assert(std::is_pointer_v<To>, "Target type not a pointer.");
+    static_assert(std::is_pointer_v<To>, "Target type not a is_pointer.");
     static_assert(std::is_base_of_v<From, std::remove_pointer_t<To>>, "Target type not derived from source type.");
   #if !defined(__GNUC__) || defined(__GXX_RTTI)
     assert(from == nullptr || dynamic_cast<To>(from) != nullptr);

@@ -249,6 +249,7 @@ namespace tsil::ast {
 
   struct TypeNode {
     std::string id;
+    bool is_pointer;
   };
 
   struct UnaryNode {
