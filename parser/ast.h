@@ -240,6 +240,7 @@ namespace tsil::ast {
   };
 
   struct StringNode {
+    std::string prefix;
     std::string value;
   };
 

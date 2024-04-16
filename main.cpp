@@ -222,9 +222,9 @@ int main(int argc, char** argv) {
 
       const auto voidType = new tsil::compiler::Type();
       voidType->type = tsil::compiler::TypeTypeNative;
-      voidType->name = "комірка";
-      voidType->LT = Type::getVoidTy(*state->Context);
-      state->types["комірка"] = voidType;
+      voidType->name = "невідома_комірка";
+      voidType->LT = PointerType::get(Type::getVoidTy(*state->Context), 0);
+      state->types["невідома_комірка"] = voidType;
       state->voidType = voidType;
 
       const auto int8Type = new tsil::compiler::Type();
@@ -296,6 +296,32 @@ int main(int argc, char** argv) {
       uint64Type->LT = Type::getInt64Ty(*state->Context);
       state->types["б64"] = uint64Type;
       state->uint64Type = uint64Type;
+
+      /*
+       * структура текст {
+       *   розмір: ц64; // розмір даних мінус 1
+       *   дані: комірка<ц8>; // останній байт завжди 0
+       * }
+       */
+      const auto stringStructure = new tsil::compiler::Structure();
+      stringStructure->name = "текст";
+      stringStructure->fields.insert_or_assign(
+          "розмір",
+          tsil::compiler::StructureField{
+              .index = 0, .type = int64Type, .generic_type_index = 0});
+      stringStructure->fields.insert_or_assign(
+          "дані", tsil::compiler::StructureField{
+                      .index = 1, .type = voidType, .generic_type_index = 0});
+      state->structures.insert_or_assign("текст", stringStructure);
+
+      const auto textTypeResult = state->globalScope->makeType("текст", {});
+      if (!textTypeResult.type) {
+        std::cerr << "Не вдалось створити тип: " << textTypeResult.error
+                  << std::endl;
+        return 1;
+      }
+      state->types["текст"] = textTypeResult.type;
+      state->textType = textTypeResult.type;
 
       for (const auto& ast_value : parser_result.program_node->body) {
         if (ast_value == nullptr) {

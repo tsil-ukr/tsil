@@ -33,6 +33,25 @@ namespace tsil::compiler {
     replace_all(string_value, "\\'", "\'");
     replace_all(string_value, "\\\"", "\"");
     const auto LV = this->state->Builder->CreateGlobalStringPtr(string_value);
-    return {this->makeType("комірка", {}).type, LV, nullptr};
+    if (string_node->prefix == "сі") {
+      return {this->state->voidType, LV, nullptr};
+    }
+    const auto LF = this->state->Builder->GetInsertBlock()->getParent();
+    const auto LAI =
+        this->createEntryBlockAlloca(this->state->textType->LT, LF);
+    const auto lengthLGEP = this->state->Builder->CreateGEP(
+        this->state->textType->LT, LAI,
+        {this->state->Builder->getInt32(0), this->state->Builder->getInt32(0)});
+    this->state->Builder->CreateStore(
+        llvm::ConstantInt::get(*state->Context,
+                               llvm::APInt(64, string_value.size())),
+        lengthLGEP);
+    const auto dataLGEP = this->state->Builder->CreateGEP(
+        this->state->textType->LT, LAI,
+        {this->state->Builder->getInt32(0), this->state->Builder->getInt32(1)});
+    this->state->Builder->CreateStore(LV, dataLGEP);
+    const auto LLOAD =
+        this->state->Builder->CreateLoad(LAI->getAllocatedType(), LAI);
+    return {this->state->textType, LLOAD, nullptr};
   }
 } // namespace tsil::compiler

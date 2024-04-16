@@ -119,6 +119,7 @@ namespace tsil::compiler {
     Type* uint16Type = nullptr;
     Type* uint32Type = nullptr;
     Type* uint64Type = nullptr;
+    Type* textType = nullptr;
   };
 
   struct MakeTypeResult {
@@ -162,7 +163,7 @@ namespace tsil::compiler {
         tsil::ast::ASTValue* ast_value);
     CompilerStructureResult compile_structure_node(
         tsil::ast::ASTValue* ast_value);
-    CompilerValueResult compile_set_node(tsil::ast::ASTValue* ast_value);
+    CompilerResult compile_set_node(tsil::ast::ASTValue* ast_value);
     CompilerValueResult compile_get_node(tsil::ast::ASTValue* ast_value);
     CompilerValueResult compile_get_pointer_node(
         tsil::ast::ASTValue* ast_value);

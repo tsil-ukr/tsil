@@ -68,5 +68,5 @@ comparison_op: '=' '=' | '!' '=' | '>' | '<' | '>' '=' | '<' '=';
 logical_op: '|' '|' | '&' '&';
 
 number: NUMBER;
-string: STRING;
+string: (s_prefix=ID)?  STRING;
 identifier: ID;

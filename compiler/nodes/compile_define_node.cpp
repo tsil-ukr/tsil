@@ -22,20 +22,28 @@ namespace tsil::compiler {
       type = type_result.type;
     }
     if (define_node->value) {
-      const auto value_result = this->compile_ast_value(define_node->value);
+      auto value_result = this->compile_ast_value(define_node->value);
       if (value_result.error) {
         return {value_result.error};
       }
-      if (!type) {
+      if (type) {
+        value_result.LV =
+            value_result.type->castToLV(this, type, value_result.LV);
+        if (!value_result.LV) {
+          return {new CompilerError("Тип \"" + value_result.type->name +
+                                    "\" не сумісний з типом \"" + type->name +
+                                    "\"")};
+        }
+      } else {
         type = value_result.type;
       }
-      llvm::Function* F = this->state->Builder->GetInsertBlock()->getParent();
-      llvm::AllocaInst* LAI = this->createEntryBlockAlloca(type->LT, F);
+      llvm::Function* LF = this->state->Builder->GetInsertBlock()->getParent();
+      llvm::AllocaInst* LAI = this->createEntryBlockAlloca(type->LT, LF);
       this->state->Builder->CreateStore(value_result.LV, LAI);
       this->set_variable(define_node->id, {type, LAI});
     } else {
-      llvm::Function* F = this->state->Builder->GetInsertBlock()->getParent();
-      llvm::AllocaInst* LAI = this->createEntryBlockAlloca(type->LT, F);
+      llvm::Function* LF = this->state->Builder->GetInsertBlock()->getParent();
+      llvm::AllocaInst* LAI = this->createEntryBlockAlloca(type->LT, LF);
       this->set_variable(define_node->id, {type, LAI});
     }
     return {nullptr};
