@@ -1,65 +1,102 @@
 #include "../compiler.h"
 
 namespace tsil::compiler {
-  CompilerResult CompilationScope::compile_diia_head_node(
-      tsil::ast::DiiaHeadNode* diia_head_node) {
-    std::vector<llvm::Type*> Params;
-    for (const auto& param : diia_head_node->params) {
-      const auto param_node = param->data.ParamNode;
-      if (param_node->type->data.TypeNode->is_pointer) {
-        Params.push_back(llvm::Type::getVoidTy(*this->state->Context));
-      } else {
-        const auto type = this->get_type(param_node->type->data.TypeNode);
-        if (!type) {
-          return error("Тип не знайдено");
-        }
-        Params.push_back(type->lltype);
+  MakeTypeResult CompilationScope::makeTypeFromTypeNodeASTValue(
+      tsil::ast::ASTValue* ast_value) {
+    const auto type_node = ast_value->data.TypeNode;
+    const auto type_name = type_node->id;
+    std::vector<Type*> generic_values;
+    for (const auto& generic_ast_value : type_node->generics) {
+      const auto generic_type_node = generic_ast_value->data.TypeNode;
+      const auto generic_type_result = this->makeType(
+          generic_type_node->id, {}); // todo: handle inner generics
+      if (!generic_type_result.type) {
+        return {nullptr, generic_type_result.error};
       }
+      generic_values.push_back(generic_type_result.type);
     }
-
-    llvm::Type* Result = llvm::Type::getVoidTy(*this->state->Context);
-    if (diia_head_node->type) {
-      if (!diia_head_node->type->data.TypeNode->is_pointer) {
-        const auto result_type =
-            this->get_type(diia_head_node->type->data.TypeNode);
-        if (!result_type) {
-          return error("Тип не знайдено");
-        }
-        Result = result_type->lltype;
-      }
+    const auto type_result = this->makeType(type_name, generic_values);
+    if (!type_result.type) {
+      return {nullptr, type_result.error};
     }
-
-    llvm::FunctionType* FT =
-        llvm::FunctionType::get(Result, Params, diia_head_node->is_variadic);
-    llvm::Function* F = llvm::Function::Create(
-        FT,
-        diia_head_node->is_extern ? llvm::Function::ExternalLinkage
-                                  : llvm::Function::PrivateLinkage,
-        diia_head_node->id, this->state->Module);
-    this->set_variable(diia_head_node->id, new Value(F));
-    return ok(F, nullptr);
+    return {type_result.type, ""};
   }
 
-  CompilerResult CompilationScope::compile_diia_node(
+  CompilerDiiaResult CompilationScope::compile_diia_head_node(
+      tsil::ast::DiiaHeadNode* diia_head_node) {
+    if (this->has_variable(diia_head_node->id)) {
+      return {nullptr, nullptr,
+              new CompilerError("Субʼєкт \"" + diia_head_node->id +
+                                "\" вже визначено")};
+    }
+    const auto diia_type = new Type();
+    diia_type->type = TypeTypeDiia;
+    diia_type->name = diia_head_node->id;
+    diia_type->diia_is_extern = diia_head_node->is_extern;
+    diia_type->diia_is_variadic = diia_head_node->is_variadic;
+    diia_type->diia_result_type = nullptr;
+    for (const auto& param_ast_value : diia_head_node->params) {
+      const auto param_node = param_ast_value->data.ParamNode;
+      const auto type_result =
+          this->makeTypeFromTypeNodeASTValue(param_node->type);
+      if (!type_result.type) {
+        return {nullptr, nullptr, new CompilerError(type_result.error)};
+      }
+      diia_type->diia_parameters.push_back(
+          TypeDiiaParameter{.name = param_node->id, .type = type_result.type});
+    }
+    if (diia_head_node->type) {
+      const auto type_result =
+          this->makeTypeFromTypeNodeASTValue(diia_head_node->type);
+      if (!type_result.type) {
+        return {nullptr, nullptr, new CompilerError(type_result.error)};
+      }
+      diia_type->diia_result_type = type_result.type;
+    }
+    std::vector<llvm::Type*> LDParams;
+    for (const auto& param : diia_type->diia_parameters) {
+      LDParams.push_back(param.type->LT);
+    }
+    llvm::Type* LDResultType = llvm::Type::getVoidTy(*state->Context);
+    if (diia_type->diia_result_type) {
+      LDResultType = diia_type->diia_result_type->LT;
+    }
+    llvm::Function::LinkageTypes linkage = llvm::Function::PrivateLinkage;
+    if (diia_type->diia_is_extern) {
+      linkage = llvm::Function::ExternalLinkage;
+    }
+    const auto LF = llvm::Function::Create(
+        llvm::FunctionType::get(LDResultType, LDParams,
+                                diia_type->diia_is_variadic),
+        linkage, diia_type->name, state->Module);
+    this->set_variable(diia_type->name, {diia_type, LF});
+    return {diia_type, LF, nullptr};
+  }
+
+  CompilerDiiaResult CompilationScope::compile_diia_node(
       tsil::ast::ASTValue* ast_value) {
     const auto diia_node = ast_value->data.DiiaNode;
     auto diia_head_result = this->compile_diia_head_node(diia_node->head);
     if (diia_head_result.error) {
       return diia_head_result;
     }
-    const auto F = diia_head_result.result->as_function();
+    const auto diia_type = diia_head_result.type;
+    const auto LF = diia_head_result.LF;
     const auto diia_scope = new CompilationScope(this, this->state);
-    for (const auto& param : diia_node->head->params) {
-      const auto param_node = param->data.ParamNode;
-      const auto type = diia_scope->get_type(param_node->type->data.TypeNode);
-      const auto arg = F->arg_begin();
-      arg->setName(param_node->id);
-      diia_scope->set_variable(param_node->id, new Value(arg));
-    }
-    llvm::BasicBlock* BB =
-        llvm::BasicBlock::Create(*diia_scope->state->Context, "entry", F);
+
+    const auto BB =
+        llvm::BasicBlock::Create(*diia_scope->state->Context, "entry", LF);
     diia_scope->state->Builder->SetInsertPoint(BB);
 
+    for (const auto& parameter : diia_type->diia_parameters) {
+      const auto arg = LF->arg_begin();
+      arg->setName(parameter.name);
+      const auto LAI = this->createEntryBlockAlloca(arg->getType(), LF);
+      this->state->Builder->CreateStore(arg, LAI);
+      diia_scope->set_variable(parameter.name, {parameter.type, LAI});
+    }
+
+    bool returned = false;
     for (const auto& body_ast_value : diia_node->body) {
       if (body_ast_value == nullptr) {
         continue;
@@ -67,33 +104,60 @@ namespace tsil::compiler {
       if (body_ast_value->kind == tsil::ast::KindNone) {
         continue;
       }
-      if (body_ast_value->kind == tsil::ast::KindReturnNode) {
-        auto result = diia_scope->compile_ast_value(
-            body_ast_value->data.ReturnNode->value);
+      if (body_ast_value->kind == ast::KindDefineNode) {
+        const auto result = this->compile_define_node(body_ast_value);
         if (result.error) {
-          return result;
+          return {nullptr, nullptr, result.error};
         }
-        verifyFunction(*F);
-        diia_scope->state->Builder->CreateRet(result.result->llval);
+      } else if (body_ast_value->kind == ast::KindAssignNode) {
+        const auto result = this->compile_assign_node(body_ast_value);
+        if (result.error) {
+          return {nullptr, nullptr, result.error};
+        }
+      } else if (body_ast_value->kind == ast::KindSetNode) {
+        const auto result = this->compile_set_node(body_ast_value);
+        if (result.error) {
+          return {nullptr, nullptr, result.error};
+        }
+      } else if (body_ast_value->kind == tsil::ast::KindReturnNode) {
+        const auto return_result = diia_scope->compile_ast_value(
+            body_ast_value->data.ReturnNode->value);
+        if (return_result.error) {
+          return {nullptr, nullptr, return_result.error};
+        }
+        verifyFunction(*LF);
+        const auto returnCastLV = return_result.type->castToLV(
+            diia_scope, diia_type->diia_result_type, return_result.LV);
+        if (!returnCastLV) {
+          return {nullptr, nullptr,
+                  new CompilerError("Невірний тип результату дії \"" +
+                                    diia_type->name + "\"")};
+        }
+        diia_scope->state->Builder->CreateRet(returnCastLV);
+        returned = true;
+        break;
       } else {
         auto result = diia_scope->compile_ast_value(body_ast_value);
         if (result.error) {
-          return result;
+          return {nullptr, nullptr, result.error};
         }
       }
     }
-    verifyFunction(*F);
-    diia_scope->state->Builder->CreateRet(nullptr);
+    verifyFunction(*LF);
+    if (!returned) {
+      diia_scope->state->Builder->CreateRetVoid();
+    }
     return diia_head_result;
   }
 
-  CompilerResult CompilationScope::compile_diia_declaration_node(
+  CompilerDiiaResult CompilationScope::compile_diia_declaration_node(
       tsil::ast::ASTValue* ast_value) {
     const auto diia_declaration_node = ast_value->data.DiiaDeclarationNode;
     auto diia_head_result =
         this->compile_diia_head_node(diia_declaration_node->head);
     if (!diia_declaration_node->as.empty()) {
-      this->set_variable(diia_declaration_node->as, diia_head_result.result);
+      this->set_variable(diia_declaration_node->as,
+                         {diia_head_result.type, diia_head_result.LF});
     }
     return diia_head_result;
   }

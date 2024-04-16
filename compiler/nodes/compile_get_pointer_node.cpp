@@ -1,36 +1,48 @@
 #include "../compiler.h"
 
 namespace tsil::compiler {
-  CompilerValueResult CompilationScope::compile_get_node(
+  CompilerValueResult CompilationScope::compile_get_pointer_node(
       tsil::ast::ASTValue* ast_value) {
-    const auto get_node = ast_value->data.GetNode;
-    CompilerValueResult left;
-    if (get_node->left->kind == tsil::ast::KindIdentifierNode) {
-      if (!this->has_variable(get_node->left->data.IdentifierNode->name)) {
-        return {nullptr, nullptr,
-                new CompilerError("Ціль \"" +
-                                  get_node->left->data.IdentifierNode->name +
-                                  "\" не визначено")};
+    const auto get_pointer_node = ast_value->data.GetPointerNode;
+    if (get_pointer_node->value->kind == ast::KindIdentifierNode) {
+      const auto identifier_node = get_pointer_node->value->data.IdentifierNode;
+      if (this->has_variable(identifier_node->name)) {
+        const auto variable = this->get_variable(identifier_node->name);
+        return {variable.first, variable.second, nullptr};
       }
-      const auto variable =
-          this->get_variable(get_node->left->data.IdentifierNode->name);
-      left = {variable.first, variable.second, nullptr};
-    } else {
-      left = this->compile_ast_value(get_node->left);
+      if (this->state->structures.contains(identifier_node->name)) {
+        return {nullptr, nullptr,
+                new CompilerError("Субʼєкт \"" + identifier_node->name +
+                                  "\" не можна використовувати як значення")};
+      }
+      return {nullptr, nullptr,
+              new CompilerError("Субʼєкт \"" + identifier_node->name +
+                                "\" не визначено")};
+    } else if (get_pointer_node->value->kind == ast::KindGetNode) {
+      const auto get_node = get_pointer_node->value->data.GetNode;
+      CompilerValueResult left = this->compile_ast_value(get_node->left);
       if (left.error) {
         return left;
       }
+      if (left.type->type != TypeTypeStructureInstance) {
+        return {nullptr, nullptr, new CompilerError("Тип не є структурою")};
+      }
+      if (!left.type->structure_instance_fields.contains(get_node->id)) {
+        return {nullptr, nullptr,
+                new CompilerError("Властивість \"" + get_node->id +
+                                  "\" не знайдено")};
+      }
+      const auto field = left.type->structure_instance_fields[get_node->id];
+      const auto LV = this->state->Builder->CreateGEP(
+          left.type->LT, left.LV,
+          {llvm::ConstantInt::get(*this->state->Context, llvm::APInt(32, 0)),
+           llvm::ConstantInt::get(*this->state->Context,
+                                  llvm::APInt(32, field.index))},
+          "gep");
+      return {field.type, LV, nullptr};
+
+    } else {
+      return this->compile_ast_value(get_pointer_node->value);
     }
-    if (!left.type->structure) {
-      return {nullptr, nullptr, new CompilerError("Тип не є структурою")};
-    }
-    const auto LV = this->state->Builder->CreateGEP(
-        left.type->LT, left.LV,
-        {llvm::ConstantInt::get(*this->state->Context, llvm::APInt(32, 0)),
-         llvm::ConstantInt::get(*this->state->Context, llvm::APInt(32, 0))},
-        "g");
-    llvm::Value* loaded_member =
-        this->state->Builder->CreateLoad(left.type->LT, LV);
-    return {left.type, loaded_member, nullptr};
   }
 } // namespace tsil::compiler

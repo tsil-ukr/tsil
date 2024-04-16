@@ -9,11 +9,13 @@ file: f_program=program EOF;
 program: program_element*;
 program_element: structure | diia_declaration |  diia | if | while | define | assign | set | (expr ';') | ';';
 
-structure: 'структура' s_name=identifier '{' (s_params=structure_params)? '}';
+structure: 'структура' s_name=identifier ('<' s_generics=structure_generics '>')? '{' (s_params=structure_params)? '}';
+structure_generics: structure_generic (',' structure_generic)*;
+structure_generic: sg_name=identifier;
 structure_params: (structure_param ';')+;
-structure_param: sp_name=identifier sp_type=type;
+structure_param: sp_name=identifier ':' sp_type=type;
 
-diia_head: ('дія' | d_type=type) d_name=identifier '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')';
+diia_head: 'дія' d_name=identifier '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' (':' d_type=type)?;
 diia: (d_extern='екстерн')? d_head=diia_head '{' (d_body=body)? '}';
 diia_declaration: (d_extern='екстерн')? d_head=diia_head  ('як' d_as=identifier)? ';';
 
@@ -21,11 +23,12 @@ if: 'якщо' i_value=expr '{' (i_body=body)? '}';
 
 while: 'поки' w_value=expr '{' (w_body=body)? '}';
 
-define: ('ціль' | d_type=type) d_id=identifier '=' d_value=expr;
+define: 'ціль' d_id=identifier (':' d_type=type)? '=' d_value=expr
+      | 'ціль' d_id=identifier ':' d_type=type;
 
 assign: a_id=identifier '=' a_value=expr;
 
-set: s_left=identifiers_chain '=' s_value=expr;
+set: s_left=identifiers_chain '.' s_id=identifier '=' s_value=expr;
 
 atom: number #atom_number
     | string #atom_string
@@ -48,12 +51,12 @@ expr: atom #value_atom
 
 identifiers_chain: ic_id=ID |  ic_left=identifiers_chain '.' ic_right=ID;
 
-type: ID (t_pointer='*')?;
+type: identifier ('<' t_first_generic_type=type (',' type)* '>')?;
 
 args: expr (',' expr)* (',')?;
 
 params: param (',' param)* (',')?;
-param: p_type=type p_name=identifier;
+param: p_name=identifier ':' p_type=type;
 
 body: body_element_or_return+;
 body_element_or_return: body_element | return_body_element;

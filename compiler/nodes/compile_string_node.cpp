@@ -14,7 +14,7 @@ namespace tsil::compiler {
     }
   }
 
-  CompilerResult CompilationScope::compile_string_node(
+  CompilerValueResult CompilationScope::compile_string_node(
       tsil::ast::ASTValue* ast_value) {
     const auto string_node = ast_value->data.StringNode;
     auto string_value = string_node->value;
@@ -32,8 +32,7 @@ namespace tsil::compiler {
     replace_all(string_value, "\\?", "\?");
     replace_all(string_value, "\\'", "\'");
     replace_all(string_value, "\\\"", "\"");
-    const auto llval =
-        this->state->Builder->CreateGlobalStringPtr(string_value);
-    return ok(llval, nullptr);
+    const auto LV = this->state->Builder->CreateGlobalStringPtr(string_value);
+    return {this->makeType("комірка", {}).type, LV, nullptr};
   }
 } // namespace tsil::compiler

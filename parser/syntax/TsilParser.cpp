@@ -53,12 +53,12 @@ void tsilparserParserInitialize() {
 #endif
   auto staticData = std::make_unique<TsilParserStaticData>(
     std::vector<std::string>{
-      "file", "program", "program_element", "structure", "structure_params", 
-      "structure_param", "diia_head", "diia", "diia_declaration", "if", 
-      "while", "define", "assign", "set", "atom", "expr", "identifiers_chain", 
-      "type", "args", "params", "param", "body", "body_element_or_return", 
-      "body_element", "return_body_element", "bitwise_op", "comparison_op", 
-      "logical_op", "number", "string", "identifier"
+      "file", "program", "program_element", "structure", "structure_generics", 
+      "structure_generic", "structure_params", "structure_param", "diia_head", 
+      "diia", "diia_declaration", "if", "while", "define", "assign", "set", 
+      "atom", "expr", "identifiers_chain", "type", "args", "params", "param", 
+      "body", "body_element_or_return", "body_element", "return_body_element", 
+      "bitwise_op", "comparison_op", "logical_op", "number", "string", "identifier"
     },
     std::vector<std::string>{
       "", "'\\u0446\\u0456\\u043B\\u044C'", "'\\u0434\\u0456\\u044F'", "'\\u0437\\u0431\\u0435\\u0440\\u0435\\u0433\\u0442\\u0438'", 
@@ -81,116 +81,131 @@ void tsilparserParserInitialize() {
     }
   );
   static const int32_t serializedATNSegment[] = {
-  	4,1,42,327,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
+  	4,1,42,369,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
   	7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,
   	14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,
   	21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,7,27,2,28,7,
-  	28,2,29,7,29,2,30,7,30,1,0,1,0,1,0,1,1,5,1,67,8,1,10,1,12,1,70,9,1,1,
-  	2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,84,8,2,1,3,1,3,1,3,
-  	1,3,3,3,90,8,3,1,3,1,3,1,4,1,4,1,4,4,4,97,8,4,11,4,12,4,98,1,5,1,5,1,
-  	5,1,6,1,6,3,6,106,8,6,1,6,1,6,1,6,3,6,111,8,6,1,6,1,6,1,6,1,6,3,6,117,
-  	8,6,1,6,1,6,1,7,3,7,122,8,7,1,7,1,7,1,7,3,7,127,8,7,1,7,1,7,1,8,3,8,132,
-  	8,8,1,8,1,8,1,8,3,8,137,8,8,1,8,1,8,1,9,1,9,1,9,1,9,3,9,145,8,9,1,9,1,
-  	9,1,10,1,10,1,10,1,10,3,10,153,8,10,1,10,1,10,1,11,1,11,3,11,159,8,11,
-  	1,11,1,11,1,11,1,11,1,12,1,12,1,12,1,12,1,13,1,13,1,13,1,13,1,14,1,14,
-  	1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,
-  	3,14,189,8,14,1,14,1,14,1,14,1,14,1,14,1,14,3,14,197,8,14,1,14,5,14,200,
-  	8,14,10,14,12,14,203,9,14,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,
-  	1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,5,15,226,
-  	8,15,10,15,12,15,229,9,15,1,16,1,16,1,16,1,16,1,16,1,16,5,16,237,8,16,
-  	10,16,12,16,240,9,16,1,17,1,17,3,17,244,8,17,1,18,1,18,1,18,5,18,249,
-  	8,18,10,18,12,18,252,9,18,1,18,3,18,255,8,18,1,19,1,19,1,19,5,19,260,
-  	8,19,10,19,12,19,263,9,19,1,19,3,19,266,8,19,1,20,1,20,1,20,1,21,4,21,
-  	272,8,21,11,21,12,21,273,1,22,1,22,3,22,278,8,22,1,23,1,23,1,23,1,23,
-  	1,23,1,23,1,23,1,23,1,23,3,23,289,8,23,1,24,1,24,1,24,1,25,1,25,1,25,
-  	1,25,1,25,1,25,1,25,3,25,301,8,25,1,26,1,26,1,26,1,26,1,26,1,26,1,26,
-  	1,26,1,26,1,26,3,26,313,8,26,1,27,1,27,1,27,1,27,3,27,319,8,27,1,28,1,
-  	28,1,29,1,29,1,30,1,30,1,30,0,3,28,30,32,31,0,2,4,6,8,10,12,14,16,18,
-  	20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,0,2,1,
-  	0,18,20,1,0,16,17,356,0,62,1,0,0,0,2,68,1,0,0,0,4,83,1,0,0,0,6,85,1,0,
-  	0,0,8,96,1,0,0,0,10,100,1,0,0,0,12,105,1,0,0,0,14,121,1,0,0,0,16,131,
-  	1,0,0,0,18,140,1,0,0,0,20,148,1,0,0,0,22,158,1,0,0,0,24,164,1,0,0,0,26,
-  	168,1,0,0,0,28,188,1,0,0,0,30,204,1,0,0,0,32,230,1,0,0,0,34,241,1,0,0,
-  	0,36,245,1,0,0,0,38,256,1,0,0,0,40,267,1,0,0,0,42,271,1,0,0,0,44,277,
-  	1,0,0,0,46,288,1,0,0,0,48,290,1,0,0,0,50,300,1,0,0,0,52,312,1,0,0,0,54,
-  	318,1,0,0,0,56,320,1,0,0,0,58,322,1,0,0,0,60,324,1,0,0,0,62,63,3,2,1,
-  	0,63,64,5,0,0,1,64,1,1,0,0,0,65,67,3,4,2,0,66,65,1,0,0,0,67,70,1,0,0,
-  	0,68,66,1,0,0,0,68,69,1,0,0,0,69,3,1,0,0,0,70,68,1,0,0,0,71,84,3,6,3,
-  	0,72,84,3,16,8,0,73,84,3,14,7,0,74,84,3,18,9,0,75,84,3,20,10,0,76,84,
-  	3,22,11,0,77,84,3,24,12,0,78,84,3,26,13,0,79,80,3,30,15,0,80,81,5,35,
-  	0,0,81,84,1,0,0,0,82,84,5,35,0,0,83,71,1,0,0,0,83,72,1,0,0,0,83,73,1,
-  	0,0,0,83,74,1,0,0,0,83,75,1,0,0,0,83,76,1,0,0,0,83,77,1,0,0,0,83,78,1,
-  	0,0,0,83,79,1,0,0,0,83,82,1,0,0,0,84,5,1,0,0,0,85,86,5,9,0,0,86,87,3,
-  	60,30,0,87,89,5,36,0,0,88,90,3,8,4,0,89,88,1,0,0,0,89,90,1,0,0,0,90,91,
-  	1,0,0,0,91,92,5,37,0,0,92,7,1,0,0,0,93,94,3,10,5,0,94,95,5,35,0,0,95,
-  	97,1,0,0,0,96,93,1,0,0,0,97,98,1,0,0,0,98,96,1,0,0,0,98,99,1,0,0,0,99,
-  	9,1,0,0,0,100,101,3,60,30,0,101,102,3,34,17,0,102,11,1,0,0,0,103,106,
-  	5,2,0,0,104,106,3,34,17,0,105,103,1,0,0,0,105,104,1,0,0,0,106,107,1,0,
-  	0,0,107,108,3,60,30,0,108,110,5,24,0,0,109,111,3,38,19,0,110,109,1,0,
-  	0,0,110,111,1,0,0,0,111,116,1,0,0,0,112,113,5,34,0,0,113,114,5,15,0,0,
-  	114,115,5,15,0,0,115,117,5,15,0,0,116,112,1,0,0,0,116,117,1,0,0,0,117,
-  	118,1,0,0,0,118,119,5,25,0,0,119,13,1,0,0,0,120,122,5,10,0,0,121,120,
-  	1,0,0,0,121,122,1,0,0,0,122,123,1,0,0,0,123,124,3,12,6,0,124,126,5,36,
-  	0,0,125,127,3,42,21,0,126,125,1,0,0,0,126,127,1,0,0,0,127,128,1,0,0,0,
-  	128,129,5,37,0,0,129,15,1,0,0,0,130,132,5,10,0,0,131,130,1,0,0,0,131,
-  	132,1,0,0,0,132,133,1,0,0,0,133,136,3,12,6,0,134,135,5,11,0,0,135,137,
-  	3,60,30,0,136,134,1,0,0,0,136,137,1,0,0,0,137,138,1,0,0,0,138,139,5,35,
-  	0,0,139,17,1,0,0,0,140,141,5,5,0,0,141,142,3,30,15,0,142,144,5,36,0,0,
-  	143,145,3,42,21,0,144,143,1,0,0,0,144,145,1,0,0,0,145,146,1,0,0,0,146,
-  	147,5,37,0,0,147,19,1,0,0,0,148,149,5,7,0,0,149,150,3,30,15,0,150,152,
-  	5,36,0,0,151,153,3,42,21,0,152,151,1,0,0,0,152,153,1,0,0,0,153,154,1,
-  	0,0,0,154,155,5,37,0,0,155,21,1,0,0,0,156,159,5,1,0,0,157,159,3,34,17,
-  	0,158,156,1,0,0,0,158,157,1,0,0,0,159,160,1,0,0,0,160,161,3,60,30,0,161,
-  	162,5,12,0,0,162,163,3,30,15,0,163,23,1,0,0,0,164,165,3,60,30,0,165,166,
-  	5,12,0,0,166,167,3,30,15,0,167,25,1,0,0,0,168,169,3,32,16,0,169,170,5,
-  	12,0,0,170,171,3,30,15,0,171,27,1,0,0,0,172,173,6,14,-1,0,173,189,3,56,
-  	28,0,174,189,3,58,29,0,175,189,3,60,30,0,176,177,5,16,0,0,177,189,3,28,
-  	14,5,178,179,5,17,0,0,179,189,3,28,14,4,180,181,5,33,0,0,181,189,3,28,
-  	14,3,182,183,5,30,0,0,183,189,3,28,14,2,184,185,5,24,0,0,185,186,3,30,
-  	15,0,186,187,5,25,0,0,187,189,1,0,0,0,188,172,1,0,0,0,188,174,1,0,0,0,
-  	188,175,1,0,0,0,188,176,1,0,0,0,188,178,1,0,0,0,188,180,1,0,0,0,188,182,
-  	1,0,0,0,188,184,1,0,0,0,189,201,1,0,0,0,190,191,10,7,0,0,191,192,5,15,
-  	0,0,192,200,3,60,30,0,193,194,10,6,0,0,194,196,5,24,0,0,195,197,3,36,
-  	18,0,196,195,1,0,0,0,196,197,1,0,0,0,197,198,1,0,0,0,198,200,5,25,0,0,
-  	199,190,1,0,0,0,199,193,1,0,0,0,200,203,1,0,0,0,201,199,1,0,0,0,201,202,
-  	1,0,0,0,202,29,1,0,0,0,203,201,1,0,0,0,204,205,6,15,-1,0,205,206,3,28,
-  	14,0,206,227,1,0,0,0,207,208,10,5,0,0,208,209,7,0,0,0,209,226,3,30,15,
-  	6,210,211,10,4,0,0,211,212,7,1,0,0,212,226,3,30,15,5,213,214,10,3,0,0,
-  	214,215,3,50,25,0,215,216,3,30,15,4,216,226,1,0,0,0,217,218,10,2,0,0,
-  	218,219,3,52,26,0,219,220,3,30,15,3,220,226,1,0,0,0,221,222,10,1,0,0,
-  	222,223,3,54,27,0,223,224,3,30,15,2,224,226,1,0,0,0,225,207,1,0,0,0,225,
-  	210,1,0,0,0,225,213,1,0,0,0,225,217,1,0,0,0,225,221,1,0,0,0,226,229,1,
-  	0,0,0,227,225,1,0,0,0,227,228,1,0,0,0,228,31,1,0,0,0,229,227,1,0,0,0,
-  	230,231,6,16,-1,0,231,232,5,39,0,0,232,238,1,0,0,0,233,234,10,1,0,0,234,
-  	235,5,15,0,0,235,237,5,39,0,0,236,233,1,0,0,0,237,240,1,0,0,0,238,236,
-  	1,0,0,0,238,239,1,0,0,0,239,33,1,0,0,0,240,238,1,0,0,0,241,243,5,39,0,
-  	0,242,244,5,18,0,0,243,242,1,0,0,0,243,244,1,0,0,0,244,35,1,0,0,0,245,
-  	250,3,30,15,0,246,247,5,34,0,0,247,249,3,30,15,0,248,246,1,0,0,0,249,
-  	252,1,0,0,0,250,248,1,0,0,0,250,251,1,0,0,0,251,254,1,0,0,0,252,250,1,
-  	0,0,0,253,255,5,34,0,0,254,253,1,0,0,0,254,255,1,0,0,0,255,37,1,0,0,0,
-  	256,261,3,40,20,0,257,258,5,34,0,0,258,260,3,40,20,0,259,257,1,0,0,0,
-  	260,263,1,0,0,0,261,259,1,0,0,0,261,262,1,0,0,0,262,265,1,0,0,0,263,261,
-  	1,0,0,0,264,266,5,34,0,0,265,264,1,0,0,0,265,266,1,0,0,0,266,39,1,0,0,
-  	0,267,268,3,34,17,0,268,269,3,60,30,0,269,41,1,0,0,0,270,272,3,44,22,
-  	0,271,270,1,0,0,0,272,273,1,0,0,0,273,271,1,0,0,0,273,274,1,0,0,0,274,
-  	43,1,0,0,0,275,278,3,46,23,0,276,278,3,48,24,0,277,275,1,0,0,0,277,276,
-  	1,0,0,0,278,45,1,0,0,0,279,289,3,18,9,0,280,289,3,20,10,0,281,289,3,22,
-  	11,0,282,289,3,24,12,0,283,289,3,26,13,0,284,285,3,30,15,0,285,286,5,
-  	35,0,0,286,289,1,0,0,0,287,289,5,35,0,0,288,279,1,0,0,0,288,280,1,0,0,
-  	0,288,281,1,0,0,0,288,282,1,0,0,0,288,283,1,0,0,0,288,284,1,0,0,0,288,
-  	287,1,0,0,0,289,47,1,0,0,0,290,291,5,8,0,0,291,292,3,30,15,0,292,49,1,
-  	0,0,0,293,301,5,21,0,0,294,301,5,23,0,0,295,301,5,22,0,0,296,297,5,14,
-  	0,0,297,301,5,14,0,0,298,299,5,13,0,0,299,301,5,13,0,0,300,293,1,0,0,
-  	0,300,294,1,0,0,0,300,295,1,0,0,0,300,296,1,0,0,0,300,298,1,0,0,0,301,
-  	51,1,0,0,0,302,303,5,12,0,0,303,313,5,12,0,0,304,305,5,33,0,0,305,313,
-  	5,12,0,0,306,313,5,13,0,0,307,313,5,14,0,0,308,309,5,13,0,0,309,313,5,
-  	12,0,0,310,311,5,14,0,0,311,313,5,12,0,0,312,302,1,0,0,0,312,304,1,0,
-  	0,0,312,306,1,0,0,0,312,307,1,0,0,0,312,308,1,0,0,0,312,310,1,0,0,0,313,
-  	53,1,0,0,0,314,315,5,23,0,0,315,319,5,23,0,0,316,317,5,22,0,0,317,319,
-  	5,22,0,0,318,314,1,0,0,0,318,316,1,0,0,0,319,55,1,0,0,0,320,321,5,38,
-  	0,0,321,57,1,0,0,0,322,323,5,40,0,0,323,59,1,0,0,0,324,325,5,39,0,0,325,
-  	61,1,0,0,0,32,68,83,89,98,105,110,116,121,126,131,136,144,152,158,188,
-  	196,199,201,225,227,238,243,250,254,261,265,273,277,288,300,312,318
+  	28,2,29,7,29,2,30,7,30,2,31,7,31,2,32,7,32,1,0,1,0,1,0,1,1,5,1,71,8,1,
+  	10,1,12,1,74,9,1,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,
+  	88,8,2,1,3,1,3,1,3,1,3,1,3,1,3,3,3,96,8,3,1,3,1,3,3,3,100,8,3,1,3,1,3,
+  	1,4,1,4,1,4,5,4,107,8,4,10,4,12,4,110,9,4,1,5,1,5,1,6,1,6,1,6,4,6,117,
+  	8,6,11,6,12,6,118,1,7,1,7,1,7,1,7,1,8,1,8,1,8,1,8,3,8,129,8,8,1,8,1,8,
+  	1,8,1,8,3,8,135,8,8,1,8,1,8,1,8,3,8,140,8,8,1,9,3,9,143,8,9,1,9,1,9,1,
+  	9,3,9,148,8,9,1,9,1,9,1,10,3,10,153,8,10,1,10,1,10,1,10,3,10,158,8,10,
+  	1,10,1,10,1,11,1,11,1,11,1,11,3,11,166,8,11,1,11,1,11,1,12,1,12,1,12,
+  	1,12,3,12,174,8,12,1,12,1,12,1,13,1,13,1,13,1,13,3,13,182,8,13,1,13,1,
+  	13,1,13,1,13,1,13,1,13,1,13,1,13,3,13,192,8,13,1,14,1,14,1,14,1,14,1,
+  	15,1,15,1,15,1,15,1,15,1,15,1,16,1,16,1,16,1,16,1,16,1,16,1,16,1,16,1,
+  	16,1,16,1,16,1,16,1,16,1,16,1,16,1,16,3,16,220,8,16,1,16,1,16,1,16,1,
+  	16,1,16,1,16,3,16,228,8,16,1,16,5,16,231,8,16,10,16,12,16,234,9,16,1,
+  	17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,17,1,
+  	17,1,17,1,17,1,17,1,17,1,17,1,17,5,17,257,8,17,10,17,12,17,260,9,17,1,
+  	18,1,18,1,18,1,18,1,18,1,18,5,18,268,8,18,10,18,12,18,271,9,18,1,19,1,
+  	19,1,19,1,19,1,19,5,19,278,8,19,10,19,12,19,281,9,19,1,19,1,19,3,19,285,
+  	8,19,1,20,1,20,1,20,5,20,290,8,20,10,20,12,20,293,9,20,1,20,3,20,296,
+  	8,20,1,21,1,21,1,21,5,21,301,8,21,10,21,12,21,304,9,21,1,21,3,21,307,
+  	8,21,1,22,1,22,1,22,1,22,1,23,4,23,314,8,23,11,23,12,23,315,1,24,1,24,
+  	3,24,320,8,24,1,25,1,25,1,25,1,25,1,25,1,25,1,25,1,25,1,25,3,25,331,8,
+  	25,1,26,1,26,1,26,1,27,1,27,1,27,1,27,1,27,1,27,1,27,3,27,343,8,27,1,
+  	28,1,28,1,28,1,28,1,28,1,28,1,28,1,28,1,28,1,28,3,28,355,8,28,1,29,1,
+  	29,1,29,1,29,3,29,361,8,29,1,30,1,30,1,31,1,31,1,32,1,32,1,32,0,3,32,
+  	34,36,33,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,
+  	44,46,48,50,52,54,56,58,60,62,64,0,2,1,0,18,20,1,0,16,17,400,0,66,1,0,
+  	0,0,2,72,1,0,0,0,4,87,1,0,0,0,6,89,1,0,0,0,8,103,1,0,0,0,10,111,1,0,0,
+  	0,12,116,1,0,0,0,14,120,1,0,0,0,16,124,1,0,0,0,18,142,1,0,0,0,20,152,
+  	1,0,0,0,22,161,1,0,0,0,24,169,1,0,0,0,26,191,1,0,0,0,28,193,1,0,0,0,30,
+  	197,1,0,0,0,32,219,1,0,0,0,34,235,1,0,0,0,36,261,1,0,0,0,38,272,1,0,0,
+  	0,40,286,1,0,0,0,42,297,1,0,0,0,44,308,1,0,0,0,46,313,1,0,0,0,48,319,
+  	1,0,0,0,50,330,1,0,0,0,52,332,1,0,0,0,54,342,1,0,0,0,56,354,1,0,0,0,58,
+  	360,1,0,0,0,60,362,1,0,0,0,62,364,1,0,0,0,64,366,1,0,0,0,66,67,3,2,1,
+  	0,67,68,5,0,0,1,68,1,1,0,0,0,69,71,3,4,2,0,70,69,1,0,0,0,71,74,1,0,0,
+  	0,72,70,1,0,0,0,72,73,1,0,0,0,73,3,1,0,0,0,74,72,1,0,0,0,75,88,3,6,3,
+  	0,76,88,3,20,10,0,77,88,3,18,9,0,78,88,3,22,11,0,79,88,3,24,12,0,80,88,
+  	3,26,13,0,81,88,3,28,14,0,82,88,3,30,15,0,83,84,3,34,17,0,84,85,5,35,
+  	0,0,85,88,1,0,0,0,86,88,5,35,0,0,87,75,1,0,0,0,87,76,1,0,0,0,87,77,1,
+  	0,0,0,87,78,1,0,0,0,87,79,1,0,0,0,87,80,1,0,0,0,87,81,1,0,0,0,87,82,1,
+  	0,0,0,87,83,1,0,0,0,87,86,1,0,0,0,88,5,1,0,0,0,89,90,5,9,0,0,90,95,3,
+  	64,32,0,91,92,5,14,0,0,92,93,3,8,4,0,93,94,5,13,0,0,94,96,1,0,0,0,95,
+  	91,1,0,0,0,95,96,1,0,0,0,96,97,1,0,0,0,97,99,5,36,0,0,98,100,3,12,6,0,
+  	99,98,1,0,0,0,99,100,1,0,0,0,100,101,1,0,0,0,101,102,5,37,0,0,102,7,1,
+  	0,0,0,103,108,3,10,5,0,104,105,5,34,0,0,105,107,3,10,5,0,106,104,1,0,
+  	0,0,107,110,1,0,0,0,108,106,1,0,0,0,108,109,1,0,0,0,109,9,1,0,0,0,110,
+  	108,1,0,0,0,111,112,3,64,32,0,112,11,1,0,0,0,113,114,3,14,7,0,114,115,
+  	5,35,0,0,115,117,1,0,0,0,116,113,1,0,0,0,117,118,1,0,0,0,118,116,1,0,
+  	0,0,118,119,1,0,0,0,119,13,1,0,0,0,120,121,3,64,32,0,121,122,5,29,0,0,
+  	122,123,3,38,19,0,123,15,1,0,0,0,124,125,5,2,0,0,125,126,3,64,32,0,126,
+  	128,5,24,0,0,127,129,3,42,21,0,128,127,1,0,0,0,128,129,1,0,0,0,129,134,
+  	1,0,0,0,130,131,5,34,0,0,131,132,5,15,0,0,132,133,5,15,0,0,133,135,5,
+  	15,0,0,134,130,1,0,0,0,134,135,1,0,0,0,135,136,1,0,0,0,136,139,5,25,0,
+  	0,137,138,5,29,0,0,138,140,3,38,19,0,139,137,1,0,0,0,139,140,1,0,0,0,
+  	140,17,1,0,0,0,141,143,5,10,0,0,142,141,1,0,0,0,142,143,1,0,0,0,143,144,
+  	1,0,0,0,144,145,3,16,8,0,145,147,5,36,0,0,146,148,3,46,23,0,147,146,1,
+  	0,0,0,147,148,1,0,0,0,148,149,1,0,0,0,149,150,5,37,0,0,150,19,1,0,0,0,
+  	151,153,5,10,0,0,152,151,1,0,0,0,152,153,1,0,0,0,153,154,1,0,0,0,154,
+  	157,3,16,8,0,155,156,5,11,0,0,156,158,3,64,32,0,157,155,1,0,0,0,157,158,
+  	1,0,0,0,158,159,1,0,0,0,159,160,5,35,0,0,160,21,1,0,0,0,161,162,5,5,0,
+  	0,162,163,3,34,17,0,163,165,5,36,0,0,164,166,3,46,23,0,165,164,1,0,0,
+  	0,165,166,1,0,0,0,166,167,1,0,0,0,167,168,5,37,0,0,168,23,1,0,0,0,169,
+  	170,5,7,0,0,170,171,3,34,17,0,171,173,5,36,0,0,172,174,3,46,23,0,173,
+  	172,1,0,0,0,173,174,1,0,0,0,174,175,1,0,0,0,175,176,5,37,0,0,176,25,1,
+  	0,0,0,177,178,5,1,0,0,178,181,3,64,32,0,179,180,5,29,0,0,180,182,3,38,
+  	19,0,181,179,1,0,0,0,181,182,1,0,0,0,182,183,1,0,0,0,183,184,5,12,0,0,
+  	184,185,3,34,17,0,185,192,1,0,0,0,186,187,5,1,0,0,187,188,3,64,32,0,188,
+  	189,5,29,0,0,189,190,3,38,19,0,190,192,1,0,0,0,191,177,1,0,0,0,191,186,
+  	1,0,0,0,192,27,1,0,0,0,193,194,3,64,32,0,194,195,5,12,0,0,195,196,3,34,
+  	17,0,196,29,1,0,0,0,197,198,3,36,18,0,198,199,5,15,0,0,199,200,3,64,32,
+  	0,200,201,5,12,0,0,201,202,3,34,17,0,202,31,1,0,0,0,203,204,6,16,-1,0,
+  	204,220,3,60,30,0,205,220,3,62,31,0,206,220,3,64,32,0,207,208,5,16,0,
+  	0,208,220,3,32,16,5,209,210,5,17,0,0,210,220,3,32,16,4,211,212,5,33,0,
+  	0,212,220,3,32,16,3,213,214,5,30,0,0,214,220,3,32,16,2,215,216,5,24,0,
+  	0,216,217,3,34,17,0,217,218,5,25,0,0,218,220,1,0,0,0,219,203,1,0,0,0,
+  	219,205,1,0,0,0,219,206,1,0,0,0,219,207,1,0,0,0,219,209,1,0,0,0,219,211,
+  	1,0,0,0,219,213,1,0,0,0,219,215,1,0,0,0,220,232,1,0,0,0,221,222,10,7,
+  	0,0,222,223,5,15,0,0,223,231,3,64,32,0,224,225,10,6,0,0,225,227,5,24,
+  	0,0,226,228,3,40,20,0,227,226,1,0,0,0,227,228,1,0,0,0,228,229,1,0,0,0,
+  	229,231,5,25,0,0,230,221,1,0,0,0,230,224,1,0,0,0,231,234,1,0,0,0,232,
+  	230,1,0,0,0,232,233,1,0,0,0,233,33,1,0,0,0,234,232,1,0,0,0,235,236,6,
+  	17,-1,0,236,237,3,32,16,0,237,258,1,0,0,0,238,239,10,5,0,0,239,240,7,
+  	0,0,0,240,257,3,34,17,6,241,242,10,4,0,0,242,243,7,1,0,0,243,257,3,34,
+  	17,5,244,245,10,3,0,0,245,246,3,54,27,0,246,247,3,34,17,4,247,257,1,0,
+  	0,0,248,249,10,2,0,0,249,250,3,56,28,0,250,251,3,34,17,3,251,257,1,0,
+  	0,0,252,253,10,1,0,0,253,254,3,58,29,0,254,255,3,34,17,2,255,257,1,0,
+  	0,0,256,238,1,0,0,0,256,241,1,0,0,0,256,244,1,0,0,0,256,248,1,0,0,0,256,
+  	252,1,0,0,0,257,260,1,0,0,0,258,256,1,0,0,0,258,259,1,0,0,0,259,35,1,
+  	0,0,0,260,258,1,0,0,0,261,262,6,18,-1,0,262,263,5,39,0,0,263,269,1,0,
+  	0,0,264,265,10,1,0,0,265,266,5,15,0,0,266,268,5,39,0,0,267,264,1,0,0,
+  	0,268,271,1,0,0,0,269,267,1,0,0,0,269,270,1,0,0,0,270,37,1,0,0,0,271,
+  	269,1,0,0,0,272,284,3,64,32,0,273,274,5,14,0,0,274,279,3,38,19,0,275,
+  	276,5,34,0,0,276,278,3,38,19,0,277,275,1,0,0,0,278,281,1,0,0,0,279,277,
+  	1,0,0,0,279,280,1,0,0,0,280,282,1,0,0,0,281,279,1,0,0,0,282,283,5,13,
+  	0,0,283,285,1,0,0,0,284,273,1,0,0,0,284,285,1,0,0,0,285,39,1,0,0,0,286,
+  	291,3,34,17,0,287,288,5,34,0,0,288,290,3,34,17,0,289,287,1,0,0,0,290,
+  	293,1,0,0,0,291,289,1,0,0,0,291,292,1,0,0,0,292,295,1,0,0,0,293,291,1,
+  	0,0,0,294,296,5,34,0,0,295,294,1,0,0,0,295,296,1,0,0,0,296,41,1,0,0,0,
+  	297,302,3,44,22,0,298,299,5,34,0,0,299,301,3,44,22,0,300,298,1,0,0,0,
+  	301,304,1,0,0,0,302,300,1,0,0,0,302,303,1,0,0,0,303,306,1,0,0,0,304,302,
+  	1,0,0,0,305,307,5,34,0,0,306,305,1,0,0,0,306,307,1,0,0,0,307,43,1,0,0,
+  	0,308,309,3,64,32,0,309,310,5,29,0,0,310,311,3,38,19,0,311,45,1,0,0,0,
+  	312,314,3,48,24,0,313,312,1,0,0,0,314,315,1,0,0,0,315,313,1,0,0,0,315,
+  	316,1,0,0,0,316,47,1,0,0,0,317,320,3,50,25,0,318,320,3,52,26,0,319,317,
+  	1,0,0,0,319,318,1,0,0,0,320,49,1,0,0,0,321,331,3,22,11,0,322,331,3,24,
+  	12,0,323,331,3,26,13,0,324,331,3,28,14,0,325,331,3,30,15,0,326,327,3,
+  	34,17,0,327,328,5,35,0,0,328,331,1,0,0,0,329,331,5,35,0,0,330,321,1,0,
+  	0,0,330,322,1,0,0,0,330,323,1,0,0,0,330,324,1,0,0,0,330,325,1,0,0,0,330,
+  	326,1,0,0,0,330,329,1,0,0,0,331,51,1,0,0,0,332,333,5,8,0,0,333,334,3,
+  	34,17,0,334,53,1,0,0,0,335,343,5,21,0,0,336,343,5,23,0,0,337,343,5,22,
+  	0,0,338,339,5,14,0,0,339,343,5,14,0,0,340,341,5,13,0,0,341,343,5,13,0,
+  	0,342,335,1,0,0,0,342,336,1,0,0,0,342,337,1,0,0,0,342,338,1,0,0,0,342,
+  	340,1,0,0,0,343,55,1,0,0,0,344,345,5,12,0,0,345,355,5,12,0,0,346,347,
+  	5,33,0,0,347,355,5,12,0,0,348,355,5,13,0,0,349,355,5,14,0,0,350,351,5,
+  	13,0,0,351,355,5,12,0,0,352,353,5,14,0,0,353,355,5,12,0,0,354,344,1,0,
+  	0,0,354,346,1,0,0,0,354,348,1,0,0,0,354,349,1,0,0,0,354,350,1,0,0,0,354,
+  	352,1,0,0,0,355,57,1,0,0,0,356,357,5,23,0,0,357,361,5,23,0,0,358,359,
+  	5,22,0,0,359,361,5,22,0,0,360,356,1,0,0,0,360,358,1,0,0,0,361,59,1,0,
+  	0,0,362,363,5,38,0,0,363,61,1,0,0,0,364,365,5,40,0,0,365,63,1,0,0,0,366,
+  	367,5,39,0,0,367,65,1,0,0,0,36,72,87,95,99,108,118,128,134,139,142,147,
+  	152,157,165,173,181,191,219,227,230,232,256,258,269,279,284,291,295,302,
+  	306,315,319,330,342,354,360
   };
   staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
 
@@ -291,9 +306,9 @@ TsilParser::FileContext* TsilParser::file() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(62);
+    setState(66);
     antlrcpp::downCast<FileContext *>(_localctx)->f_program = program();
-    setState(63);
+    setState(67);
     match(TsilParser::EOF);
    
   }
@@ -359,14 +374,14 @@ TsilParser::ProgramContext* TsilParser::program() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(68);
+    setState(72);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 1968185738918) != 0)) {
-      setState(65);
+      setState(69);
       program_element();
-      setState(70);
+      setState(74);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
@@ -464,77 +479,77 @@ TsilParser::Program_elementContext* TsilParser::program_element() {
     exitRule();
   });
   try {
-    setState(83);
+    setState(87);
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 1, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(71);
+      setState(75);
       structure();
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(72);
+      setState(76);
       diia_declaration();
       break;
     }
 
     case 3: {
       enterOuterAlt(_localctx, 3);
-      setState(73);
+      setState(77);
       diia();
       break;
     }
 
     case 4: {
       enterOuterAlt(_localctx, 4);
-      setState(74);
+      setState(78);
       if_();
       break;
     }
 
     case 5: {
       enterOuterAlt(_localctx, 5);
-      setState(75);
+      setState(79);
       while_();
       break;
     }
 
     case 6: {
       enterOuterAlt(_localctx, 6);
-      setState(76);
+      setState(80);
       define();
       break;
     }
 
     case 7: {
       enterOuterAlt(_localctx, 7);
-      setState(77);
+      setState(81);
       assign();
       break;
     }
 
     case 8: {
       enterOuterAlt(_localctx, 8);
-      setState(78);
+      setState(82);
       set();
       break;
     }
 
     case 9: {
       enterOuterAlt(_localctx, 9);
-      setState(79);
+      setState(83);
       expr(0);
-      setState(80);
+      setState(84);
       match(TsilParser::SEMICOLON);
       break;
     }
 
     case 10: {
       enterOuterAlt(_localctx, 10);
-      setState(82);
+      setState(86);
       match(TsilParser::SEMICOLON);
       break;
     }
@@ -573,6 +588,18 @@ tree::TerminalNode* TsilParser::StructureContext::QUOTE_CLOSE() {
 
 TsilParser::IdentifierContext* TsilParser::StructureContext::identifier() {
   return getRuleContext<TsilParser::IdentifierContext>(0);
+}
+
+tree::TerminalNode* TsilParser::StructureContext::LESSER() {
+  return getToken(TsilParser::LESSER, 0);
+}
+
+tree::TerminalNode* TsilParser::StructureContext::GREATER() {
+  return getToken(TsilParser::GREATER, 0);
+}
+
+TsilParser::Structure_genericsContext* TsilParser::StructureContext::structure_generics() {
+  return getRuleContext<TsilParser::Structure_genericsContext>(0);
 }
 
 TsilParser::Structure_paramsContext* TsilParser::StructureContext::structure_params() {
@@ -618,22 +645,181 @@ TsilParser::StructureContext* TsilParser::structure() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(85);
-    match(TsilParser::KW_STRUCT);
-    setState(86);
-    antlrcpp::downCast<StructureContext *>(_localctx)->s_name = identifier();
-    setState(87);
-    match(TsilParser::QUOTE_OPEN);
     setState(89);
+    match(TsilParser::KW_STRUCT);
+    setState(90);
+    antlrcpp::downCast<StructureContext *>(_localctx)->s_name = identifier();
+    setState(95);
+    _errHandler->sync(this);
+
+    _la = _input->LA(1);
+    if (_la == TsilParser::LESSER) {
+      setState(91);
+      match(TsilParser::LESSER);
+      setState(92);
+      antlrcpp::downCast<StructureContext *>(_localctx)->s_generics = structure_generics();
+      setState(93);
+      match(TsilParser::GREATER);
+    }
+    setState(97);
+    match(TsilParser::QUOTE_OPEN);
+    setState(99);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == TsilParser::ID) {
-      setState(88);
+      setState(98);
       antlrcpp::downCast<StructureContext *>(_localctx)->s_params = structure_params();
     }
-    setState(91);
+    setState(101);
     match(TsilParser::QUOTE_CLOSE);
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- Structure_genericsContext ------------------------------------------------------------------
+
+TsilParser::Structure_genericsContext::Structure_genericsContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+std::vector<TsilParser::Structure_genericContext *> TsilParser::Structure_genericsContext::structure_generic() {
+  return getRuleContexts<TsilParser::Structure_genericContext>();
+}
+
+TsilParser::Structure_genericContext* TsilParser::Structure_genericsContext::structure_generic(size_t i) {
+  return getRuleContext<TsilParser::Structure_genericContext>(i);
+}
+
+std::vector<tree::TerminalNode *> TsilParser::Structure_genericsContext::COMA() {
+  return getTokens(TsilParser::COMA);
+}
+
+tree::TerminalNode* TsilParser::Structure_genericsContext::COMA(size_t i) {
+  return getToken(TsilParser::COMA, i);
+}
+
+
+size_t TsilParser::Structure_genericsContext::getRuleIndex() const {
+  return TsilParser::RuleStructure_generics;
+}
+
+void TsilParser::Structure_genericsContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<TsilParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterStructure_generics(this);
+}
+
+void TsilParser::Structure_genericsContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<TsilParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitStructure_generics(this);
+}
+
+
+std::any TsilParser::Structure_genericsContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<TsilParserVisitor*>(visitor))
+    return parserVisitor->visitStructure_generics(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+TsilParser::Structure_genericsContext* TsilParser::structure_generics() {
+  Structure_genericsContext *_localctx = _tracker.createInstance<Structure_genericsContext>(_ctx, getState());
+  enterRule(_localctx, 8, TsilParser::RuleStructure_generics);
+  size_t _la = 0;
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(103);
+    structure_generic();
+    setState(108);
+    _errHandler->sync(this);
+    _la = _input->LA(1);
+    while (_la == TsilParser::COMA) {
+      setState(104);
+      match(TsilParser::COMA);
+      setState(105);
+      structure_generic();
+      setState(110);
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+    }
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- Structure_genericContext ------------------------------------------------------------------
+
+TsilParser::Structure_genericContext::Structure_genericContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+TsilParser::IdentifierContext* TsilParser::Structure_genericContext::identifier() {
+  return getRuleContext<TsilParser::IdentifierContext>(0);
+}
+
+
+size_t TsilParser::Structure_genericContext::getRuleIndex() const {
+  return TsilParser::RuleStructure_generic;
+}
+
+void TsilParser::Structure_genericContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<TsilParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterStructure_generic(this);
+}
+
+void TsilParser::Structure_genericContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<TsilParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitStructure_generic(this);
+}
+
+
+std::any TsilParser::Structure_genericContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<TsilParserVisitor*>(visitor))
+    return parserVisitor->visitStructure_generic(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+TsilParser::Structure_genericContext* TsilParser::structure_generic() {
+  Structure_genericContext *_localctx = _tracker.createInstance<Structure_genericContext>(_ctx, getState());
+  enterRule(_localctx, 10, TsilParser::RuleStructure_generic);
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(111);
+    antlrcpp::downCast<Structure_genericContext *>(_localctx)->sg_name = identifier();
    
   }
   catch (RecognitionException &e) {
@@ -694,7 +880,7 @@ std::any TsilParser::Structure_paramsContext::accept(tree::ParseTreeVisitor *vis
 
 TsilParser::Structure_paramsContext* TsilParser::structure_params() {
   Structure_paramsContext *_localctx = _tracker.createInstance<Structure_paramsContext>(_ctx, getState());
-  enterRule(_localctx, 8, TsilParser::RuleStructure_params);
+  enterRule(_localctx, 12, TsilParser::RuleStructure_params);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -706,15 +892,15 @@ TsilParser::Structure_paramsContext* TsilParser::structure_params() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(96); 
+    setState(116); 
     _errHandler->sync(this);
     _la = _input->LA(1);
     do {
-      setState(93);
+      setState(113);
       structure_param();
-      setState(94);
+      setState(114);
       match(TsilParser::SEMICOLON);
-      setState(98); 
+      setState(118); 
       _errHandler->sync(this);
       _la = _input->LA(1);
     } while (_la == TsilParser::ID);
@@ -733,6 +919,10 @@ TsilParser::Structure_paramsContext* TsilParser::structure_params() {
 
 TsilParser::Structure_paramContext::Structure_paramContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* TsilParser::Structure_paramContext::COLON() {
+  return getToken(TsilParser::COLON, 0);
 }
 
 TsilParser::IdentifierContext* TsilParser::Structure_paramContext::identifier() {
@@ -770,7 +960,7 @@ std::any TsilParser::Structure_paramContext::accept(tree::ParseTreeVisitor *visi
 
 TsilParser::Structure_paramContext* TsilParser::structure_param() {
   Structure_paramContext *_localctx = _tracker.createInstance<Structure_paramContext>(_ctx, getState());
-  enterRule(_localctx, 10, TsilParser::RuleStructure_param);
+  enterRule(_localctx, 14, TsilParser::RuleStructure_param);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -781,9 +971,11 @@ TsilParser::Structure_paramContext* TsilParser::structure_param() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(100);
+    setState(120);
     antlrcpp::downCast<Structure_paramContext *>(_localctx)->sp_name = identifier();
-    setState(101);
+    setState(121);
+    match(TsilParser::COLON);
+    setState(122);
     antlrcpp::downCast<Structure_paramContext *>(_localctx)->sp_type = type();
    
   }
@@ -802,6 +994,10 @@ TsilParser::Diia_headContext::Diia_headContext(ParserRuleContext *parent, size_t
   : ParserRuleContext(parent, invokingState) {
 }
 
+tree::TerminalNode* TsilParser::Diia_headContext::KW_DIIA() {
+  return getToken(TsilParser::KW_DIIA, 0);
+}
+
 tree::TerminalNode* TsilParser::Diia_headContext::PAREN_OPEN() {
   return getToken(TsilParser::PAREN_OPEN, 0);
 }
@@ -814,14 +1010,6 @@ TsilParser::IdentifierContext* TsilParser::Diia_headContext::identifier() {
   return getRuleContext<TsilParser::IdentifierContext>(0);
 }
 
-tree::TerminalNode* TsilParser::Diia_headContext::KW_DIIA() {
-  return getToken(TsilParser::KW_DIIA, 0);
-}
-
-TsilParser::TypeContext* TsilParser::Diia_headContext::type() {
-  return getRuleContext<TsilParser::TypeContext>(0);
-}
-
 std::vector<tree::TerminalNode *> TsilParser::Diia_headContext::DOT() {
   return getTokens(TsilParser::DOT);
 }
@@ -830,12 +1018,20 @@ tree::TerminalNode* TsilParser::Diia_headContext::DOT(size_t i) {
   return getToken(TsilParser::DOT, i);
 }
 
+tree::TerminalNode* TsilParser::Diia_headContext::COLON() {
+  return getToken(TsilParser::COLON, 0);
+}
+
 TsilParser::ParamsContext* TsilParser::Diia_headContext::params() {
   return getRuleContext<TsilParser::ParamsContext>(0);
 }
 
 tree::TerminalNode* TsilParser::Diia_headContext::COMA() {
   return getToken(TsilParser::COMA, 0);
+}
+
+TsilParser::TypeContext* TsilParser::Diia_headContext::type() {
+  return getRuleContext<TsilParser::TypeContext>(0);
 }
 
 
@@ -865,7 +1061,7 @@ std::any TsilParser::Diia_headContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::Diia_headContext* TsilParser::diia_head() {
   Diia_headContext *_localctx = _tracker.createInstance<Diia_headContext>(_ctx, getState());
-  enterRule(_localctx, 12, TsilParser::RuleDiia_head);
+  enterRule(_localctx, 16, TsilParser::RuleDiia_head);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -877,52 +1073,46 @@ TsilParser::Diia_headContext* TsilParser::diia_head() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(105);
-    _errHandler->sync(this);
-    switch (_input->LA(1)) {
-      case TsilParser::KW_DIIA: {
-        setState(103);
-        match(TsilParser::KW_DIIA);
-        break;
-      }
-
-      case TsilParser::ID: {
-        setState(104);
-        antlrcpp::downCast<Diia_headContext *>(_localctx)->d_type = type();
-        break;
-      }
-
-    default:
-      throw NoViableAltException(this);
-    }
-    setState(107);
+    setState(124);
+    match(TsilParser::KW_DIIA);
+    setState(125);
     antlrcpp::downCast<Diia_headContext *>(_localctx)->d_name = identifier();
-    setState(108);
+    setState(126);
     match(TsilParser::PAREN_OPEN);
-    setState(110);
+    setState(128);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == TsilParser::ID) {
-      setState(109);
+      setState(127);
       antlrcpp::downCast<Diia_headContext *>(_localctx)->d_params = params();
     }
-    setState(116);
+    setState(134);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == TsilParser::COMA) {
-      setState(112);
+      setState(130);
       antlrcpp::downCast<Diia_headContext *>(_localctx)->d_variadic = match(TsilParser::COMA);
-      setState(113);
+      setState(131);
       match(TsilParser::DOT);
-      setState(114);
+      setState(132);
       match(TsilParser::DOT);
-      setState(115);
+      setState(133);
       match(TsilParser::DOT);
     }
-    setState(118);
+    setState(136);
     match(TsilParser::PAREN_CLOSE);
+    setState(139);
+    _errHandler->sync(this);
+
+    _la = _input->LA(1);
+    if (_la == TsilParser::COLON) {
+      setState(137);
+      match(TsilParser::COLON);
+      setState(138);
+      antlrcpp::downCast<Diia_headContext *>(_localctx)->d_type = type();
+    }
    
   }
   catch (RecognitionException &e) {
@@ -987,7 +1177,7 @@ std::any TsilParser::DiiaContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::DiiaContext* TsilParser::diia() {
   DiiaContext *_localctx = _tracker.createInstance<DiiaContext>(_ctx, getState());
-  enterRule(_localctx, 14, TsilParser::RuleDiia);
+  enterRule(_localctx, 18, TsilParser::RuleDiia);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -999,28 +1189,28 @@ TsilParser::DiiaContext* TsilParser::diia() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(121);
+    setState(142);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == TsilParser::KW_EXTERN) {
-      setState(120);
+      setState(141);
       antlrcpp::downCast<DiiaContext *>(_localctx)->d_extern = match(TsilParser::KW_EXTERN);
     }
-    setState(123);
+    setState(144);
     antlrcpp::downCast<DiiaContext *>(_localctx)->d_head = diia_head();
-    setState(124);
+    setState(145);
     match(TsilParser::QUOTE_OPEN);
-    setState(126);
+    setState(147);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 1968185737634) != 0)) {
-      setState(125);
+      setState(146);
       antlrcpp::downCast<DiiaContext *>(_localctx)->d_body = body();
     }
-    setState(128);
+    setState(149);
     match(TsilParser::QUOTE_CLOSE);
    
   }
@@ -1086,7 +1276,7 @@ std::any TsilParser::Diia_declarationContext::accept(tree::ParseTreeVisitor *vis
 
 TsilParser::Diia_declarationContext* TsilParser::diia_declaration() {
   Diia_declarationContext *_localctx = _tracker.createInstance<Diia_declarationContext>(_ctx, getState());
-  enterRule(_localctx, 16, TsilParser::RuleDiia_declaration);
+  enterRule(_localctx, 20, TsilParser::RuleDiia_declaration);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1098,27 +1288,27 @@ TsilParser::Diia_declarationContext* TsilParser::diia_declaration() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(131);
+    setState(152);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == TsilParser::KW_EXTERN) {
-      setState(130);
+      setState(151);
       antlrcpp::downCast<Diia_declarationContext *>(_localctx)->d_extern = match(TsilParser::KW_EXTERN);
     }
-    setState(133);
+    setState(154);
     antlrcpp::downCast<Diia_declarationContext *>(_localctx)->d_head = diia_head();
-    setState(136);
+    setState(157);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == TsilParser::KW_AS) {
-      setState(134);
+      setState(155);
       match(TsilParser::KW_AS);
-      setState(135);
+      setState(156);
       antlrcpp::downCast<Diia_declarationContext *>(_localctx)->d_as = identifier();
     }
-    setState(138);
+    setState(159);
     match(TsilParser::SEMICOLON);
    
   }
@@ -1184,7 +1374,7 @@ std::any TsilParser::IfContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::IfContext* TsilParser::if_() {
   IfContext *_localctx = _tracker.createInstance<IfContext>(_ctx, getState());
-  enterRule(_localctx, 18, TsilParser::RuleIf);
+  enterRule(_localctx, 22, TsilParser::RuleIf);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1196,22 +1386,22 @@ TsilParser::IfContext* TsilParser::if_() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(140);
+    setState(161);
     match(TsilParser::KW_IF);
-    setState(141);
+    setState(162);
     antlrcpp::downCast<IfContext *>(_localctx)->i_value = expr(0);
-    setState(142);
+    setState(163);
     match(TsilParser::QUOTE_OPEN);
-    setState(144);
+    setState(165);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 1968185737634) != 0)) {
-      setState(143);
+      setState(164);
       antlrcpp::downCast<IfContext *>(_localctx)->i_body = body();
     }
-    setState(146);
+    setState(167);
     match(TsilParser::QUOTE_CLOSE);
    
   }
@@ -1277,7 +1467,7 @@ std::any TsilParser::WhileContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::WhileContext* TsilParser::while_() {
   WhileContext *_localctx = _tracker.createInstance<WhileContext>(_ctx, getState());
-  enterRule(_localctx, 20, TsilParser::RuleWhile);
+  enterRule(_localctx, 24, TsilParser::RuleWhile);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1289,22 +1479,22 @@ TsilParser::WhileContext* TsilParser::while_() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(148);
+    setState(169);
     match(TsilParser::KW_WHILE);
-    setState(149);
+    setState(170);
     antlrcpp::downCast<WhileContext *>(_localctx)->w_value = expr(0);
-    setState(150);
+    setState(171);
     match(TsilParser::QUOTE_OPEN);
-    setState(152);
+    setState(173);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 1968185737634) != 0)) {
-      setState(151);
+      setState(172);
       antlrcpp::downCast<WhileContext *>(_localctx)->w_body = body();
     }
-    setState(154);
+    setState(175);
     match(TsilParser::QUOTE_CLOSE);
    
   }
@@ -1323,6 +1513,10 @@ TsilParser::DefineContext::DefineContext(ParserRuleContext *parent, size_t invok
   : ParserRuleContext(parent, invokingState) {
 }
 
+tree::TerminalNode* TsilParser::DefineContext::KW_TSIL() {
+  return getToken(TsilParser::KW_TSIL, 0);
+}
+
 tree::TerminalNode* TsilParser::DefineContext::EQUAL() {
   return getToken(TsilParser::EQUAL, 0);
 }
@@ -1335,8 +1529,8 @@ TsilParser::ExprContext* TsilParser::DefineContext::expr() {
   return getRuleContext<TsilParser::ExprContext>(0);
 }
 
-tree::TerminalNode* TsilParser::DefineContext::KW_TSIL() {
-  return getToken(TsilParser::KW_TSIL, 0);
+tree::TerminalNode* TsilParser::DefineContext::COLON() {
+  return getToken(TsilParser::COLON, 0);
 }
 
 TsilParser::TypeContext* TsilParser::DefineContext::type() {
@@ -1370,7 +1564,8 @@ std::any TsilParser::DefineContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::DefineContext* TsilParser::define() {
   DefineContext *_localctx = _tracker.createInstance<DefineContext>(_ctx, getState());
-  enterRule(_localctx, 22, TsilParser::RuleDefine);
+  enterRule(_localctx, 26, TsilParser::RuleDefine);
+  size_t _la = 0;
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -1380,31 +1575,48 @@ TsilParser::DefineContext* TsilParser::define() {
     exitRule();
   });
   try {
-    enterOuterAlt(_localctx, 1);
-    setState(158);
+    setState(191);
     _errHandler->sync(this);
-    switch (_input->LA(1)) {
-      case TsilParser::KW_TSIL: {
-        setState(156);
-        match(TsilParser::KW_TSIL);
-        break;
-      }
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 16, _ctx)) {
+    case 1: {
+      enterOuterAlt(_localctx, 1);
+      setState(177);
+      match(TsilParser::KW_TSIL);
+      setState(178);
+      antlrcpp::downCast<DefineContext *>(_localctx)->d_id = identifier();
+      setState(181);
+      _errHandler->sync(this);
 
-      case TsilParser::ID: {
-        setState(157);
+      _la = _input->LA(1);
+      if (_la == TsilParser::COLON) {
+        setState(179);
+        match(TsilParser::COLON);
+        setState(180);
         antlrcpp::downCast<DefineContext *>(_localctx)->d_type = type();
-        break;
       }
+      setState(183);
+      match(TsilParser::EQUAL);
+      setState(184);
+      antlrcpp::downCast<DefineContext *>(_localctx)->d_value = expr(0);
+      break;
+    }
+
+    case 2: {
+      enterOuterAlt(_localctx, 2);
+      setState(186);
+      match(TsilParser::KW_TSIL);
+      setState(187);
+      antlrcpp::downCast<DefineContext *>(_localctx)->d_id = identifier();
+      setState(188);
+      match(TsilParser::COLON);
+      setState(189);
+      antlrcpp::downCast<DefineContext *>(_localctx)->d_type = type();
+      break;
+    }
 
     default:
-      throw NoViableAltException(this);
+      break;
     }
-    setState(160);
-    antlrcpp::downCast<DefineContext *>(_localctx)->d_id = identifier();
-    setState(161);
-    match(TsilParser::EQUAL);
-    setState(162);
-    antlrcpp::downCast<DefineContext *>(_localctx)->d_value = expr(0);
    
   }
   catch (RecognitionException &e) {
@@ -1461,7 +1673,7 @@ std::any TsilParser::AssignContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::AssignContext* TsilParser::assign() {
   AssignContext *_localctx = _tracker.createInstance<AssignContext>(_ctx, getState());
-  enterRule(_localctx, 24, TsilParser::RuleAssign);
+  enterRule(_localctx, 28, TsilParser::RuleAssign);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -1472,11 +1684,11 @@ TsilParser::AssignContext* TsilParser::assign() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(164);
+    setState(193);
     antlrcpp::downCast<AssignContext *>(_localctx)->a_id = identifier();
-    setState(165);
+    setState(194);
     match(TsilParser::EQUAL);
-    setState(166);
+    setState(195);
     antlrcpp::downCast<AssignContext *>(_localctx)->a_value = expr(0);
    
   }
@@ -1495,12 +1707,20 @@ TsilParser::SetContext::SetContext(ParserRuleContext *parent, size_t invokingSta
   : ParserRuleContext(parent, invokingState) {
 }
 
+tree::TerminalNode* TsilParser::SetContext::DOT() {
+  return getToken(TsilParser::DOT, 0);
+}
+
 tree::TerminalNode* TsilParser::SetContext::EQUAL() {
   return getToken(TsilParser::EQUAL, 0);
 }
 
 TsilParser::Identifiers_chainContext* TsilParser::SetContext::identifiers_chain() {
   return getRuleContext<TsilParser::Identifiers_chainContext>(0);
+}
+
+TsilParser::IdentifierContext* TsilParser::SetContext::identifier() {
+  return getRuleContext<TsilParser::IdentifierContext>(0);
 }
 
 TsilParser::ExprContext* TsilParser::SetContext::expr() {
@@ -1534,7 +1754,7 @@ std::any TsilParser::SetContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::SetContext* TsilParser::set() {
   SetContext *_localctx = _tracker.createInstance<SetContext>(_ctx, getState());
-  enterRule(_localctx, 26, TsilParser::RuleSet);
+  enterRule(_localctx, 30, TsilParser::RuleSet);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -1545,11 +1765,15 @@ TsilParser::SetContext* TsilParser::set() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(168);
+    setState(197);
     antlrcpp::downCast<SetContext *>(_localctx)->s_left = identifiers_chain(0);
-    setState(169);
+    setState(198);
+    match(TsilParser::DOT);
+    setState(199);
+    antlrcpp::downCast<SetContext *>(_localctx)->s_id = identifier();
+    setState(200);
     match(TsilParser::EQUAL);
-    setState(170);
+    setState(201);
     antlrcpp::downCast<SetContext *>(_localctx)->s_value = expr(0);
    
   }
@@ -1882,8 +2106,8 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
   TsilParser::AtomContext *_localctx = _tracker.createInstance<AtomContext>(_ctx, parentState);
   TsilParser::AtomContext *previousContext = _localctx;
   (void)previousContext; // Silence compiler, in case the context is not used by generated code.
-  size_t startState = 28;
-  enterRecursionRule(_localctx, 28, TsilParser::RuleAtom, precedence);
+  size_t startState = 32;
+  enterRecursionRule(_localctx, 32, TsilParser::RuleAtom, precedence);
 
     size_t _la = 0;
 
@@ -1897,7 +2121,7 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(188);
+    setState(219);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case TsilParser::NUMBER: {
@@ -1905,7 +2129,7 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
         _ctx = _localctx;
         previousContext = _localctx;
 
-        setState(173);
+        setState(204);
         number();
         break;
       }
@@ -1914,7 +2138,7 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
         _localctx = _tracker.createInstance<Atom_stringContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(174);
+        setState(205);
         string();
         break;
       }
@@ -1923,7 +2147,7 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
         _localctx = _tracker.createInstance<Atom_identifierContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(175);
+        setState(206);
         identifier();
         break;
       }
@@ -1932,9 +2156,9 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
         _localctx = _tracker.createInstance<PositiveContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(176);
+        setState(207);
         match(TsilParser::PLUS);
-        setState(177);
+        setState(208);
         antlrcpp::downCast<PositiveContext *>(_localctx)->p_value = atom(5);
         break;
       }
@@ -1943,9 +2167,9 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
         _localctx = _tracker.createInstance<NegativeContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(178);
+        setState(209);
         match(TsilParser::MINUS);
-        setState(179);
+        setState(210);
         antlrcpp::downCast<NegativeContext *>(_localctx)->n_value = atom(4);
         break;
       }
@@ -1954,9 +2178,9 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
         _localctx = _tracker.createInstance<NotContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(180);
+        setState(211);
         match(TsilParser::EXCLAMATION);
-        setState(181);
+        setState(212);
         antlrcpp::downCast<NotContext *>(_localctx)->n_value = atom(3);
         break;
       }
@@ -1965,9 +2189,9 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
         _localctx = _tracker.createInstance<Bitwise_notContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(182);
+        setState(213);
         match(TsilParser::TILDA);
-        setState(183);
+        setState(214);
         antlrcpp::downCast<Bitwise_notContext *>(_localctx)->bn_value = atom(2);
         break;
       }
@@ -1976,11 +2200,11 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
         _localctx = _tracker.createInstance<NestedContext>(_localctx);
         _ctx = _localctx;
         previousContext = _localctx;
-        setState(184);
+        setState(215);
         match(TsilParser::PAREN_OPEN);
-        setState(185);
+        setState(216);
         antlrcpp::downCast<NestedContext *>(_localctx)->n_value = expr(0);
-        setState(186);
+        setState(217);
         match(TsilParser::PAREN_CLOSE);
         break;
       }
@@ -1989,28 +2213,28 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
       throw NoViableAltException(this);
     }
     _ctx->stop = _input->LT(-1);
-    setState(201);
+    setState(232);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 17, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 20, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
           triggerExitRuleEvent();
         previousContext = _localctx;
-        setState(199);
+        setState(230);
         _errHandler->sync(this);
-        switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 16, _ctx)) {
+        switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 19, _ctx)) {
         case 1: {
           auto newContext = _tracker.createInstance<GetContext>(_tracker.createInstance<AtomContext>(parentContext, parentState));
           _localctx = newContext;
           newContext->g_left = previousContext;
           pushNewRecursionContext(newContext, startState, RuleAtom);
-          setState(190);
+          setState(221);
 
           if (!(precpred(_ctx, 7))) throw FailedPredicateException(this, "precpred(_ctx, 7)");
-          setState(191);
+          setState(222);
           match(TsilParser::DOT);
-          setState(192);
+          setState(223);
           antlrcpp::downCast<GetContext *>(_localctx)->g_id = identifier();
           break;
         }
@@ -2020,21 +2244,21 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
           _localctx = newContext;
           newContext->c_value = previousContext;
           pushNewRecursionContext(newContext, startState, RuleAtom);
-          setState(193);
+          setState(224);
 
           if (!(precpred(_ctx, 6))) throw FailedPredicateException(this, "precpred(_ctx, 6)");
-          setState(194);
+          setState(225);
           match(TsilParser::PAREN_OPEN);
-          setState(196);
+          setState(227);
           _errHandler->sync(this);
 
           _la = _input->LA(1);
           if ((((_la & ~ 0x3fULL) == 0) &&
             ((1ULL << _la) & 1933825998848) != 0)) {
-            setState(195);
+            setState(226);
             antlrcpp::downCast<CallContext *>(_localctx)->c_args = args();
           }
-          setState(198);
+          setState(229);
           match(TsilParser::PAREN_CLOSE);
           break;
         }
@@ -2043,9 +2267,9 @@ TsilParser::AtomContext* TsilParser::atom(int precedence) {
           break;
         } 
       }
-      setState(203);
+      setState(234);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 17, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 20, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -2284,8 +2508,8 @@ TsilParser::ExprContext* TsilParser::expr(int precedence) {
   TsilParser::ExprContext *_localctx = _tracker.createInstance<ExprContext>(_ctx, parentState);
   TsilParser::ExprContext *previousContext = _localctx;
   (void)previousContext; // Silence compiler, in case the context is not used by generated code.
-  size_t startState = 30;
-  enterRecursionRule(_localctx, 30, TsilParser::RuleExpr, precedence);
+  size_t startState = 34;
+  enterRecursionRule(_localctx, 34, TsilParser::RuleExpr, precedence);
 
     size_t _la = 0;
 
@@ -2303,29 +2527,29 @@ TsilParser::ExprContext* TsilParser::expr(int precedence) {
     _ctx = _localctx;
     previousContext = _localctx;
 
-    setState(205);
+    setState(236);
     atom(0);
     _ctx->stop = _input->LT(-1);
-    setState(227);
+    setState(258);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 19, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 22, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
           triggerExitRuleEvent();
         previousContext = _localctx;
-        setState(225);
+        setState(256);
         _errHandler->sync(this);
-        switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 18, _ctx)) {
+        switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 21, _ctx)) {
         case 1: {
           auto newContext = _tracker.createInstance<Arithmetic_mulContext>(_tracker.createInstance<ExprContext>(parentContext, parentState));
           _localctx = newContext;
           newContext->a_left = previousContext;
           pushNewRecursionContext(newContext, startState, RuleExpr);
-          setState(207);
+          setState(238);
 
           if (!(precpred(_ctx, 5))) throw FailedPredicateException(this, "precpred(_ctx, 5)");
-          setState(208);
+          setState(239);
           antlrcpp::downCast<Arithmetic_mulContext *>(_localctx)->a_operation = _input->LT(1);
           _la = _input->LA(1);
           if (!((((_la & ~ 0x3fULL) == 0) &&
@@ -2336,7 +2560,7 @@ TsilParser::ExprContext* TsilParser::expr(int precedence) {
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(209);
+          setState(240);
           antlrcpp::downCast<Arithmetic_mulContext *>(_localctx)->a_right = expr(6);
           break;
         }
@@ -2346,10 +2570,10 @@ TsilParser::ExprContext* TsilParser::expr(int precedence) {
           _localctx = newContext;
           newContext->a_left = previousContext;
           pushNewRecursionContext(newContext, startState, RuleExpr);
-          setState(210);
+          setState(241);
 
           if (!(precpred(_ctx, 4))) throw FailedPredicateException(this, "precpred(_ctx, 4)");
-          setState(211);
+          setState(242);
           antlrcpp::downCast<Arithmetic_addContext *>(_localctx)->a_operation = _input->LT(1);
           _la = _input->LA(1);
           if (!(_la == TsilParser::PLUS
@@ -2361,7 +2585,7 @@ TsilParser::ExprContext* TsilParser::expr(int precedence) {
             _errHandler->reportMatch(this);
             consume();
           }
-          setState(212);
+          setState(243);
           antlrcpp::downCast<Arithmetic_addContext *>(_localctx)->a_right = expr(5);
           break;
         }
@@ -2371,12 +2595,12 @@ TsilParser::ExprContext* TsilParser::expr(int precedence) {
           _localctx = newContext;
           newContext->b_left = previousContext;
           pushNewRecursionContext(newContext, startState, RuleExpr);
-          setState(213);
+          setState(244);
 
           if (!(precpred(_ctx, 3))) throw FailedPredicateException(this, "precpred(_ctx, 3)");
-          setState(214);
+          setState(245);
           antlrcpp::downCast<BitwiseContext *>(_localctx)->b_operation = bitwise_op();
-          setState(215);
+          setState(246);
           antlrcpp::downCast<BitwiseContext *>(_localctx)->b_right = expr(4);
           break;
         }
@@ -2386,12 +2610,12 @@ TsilParser::ExprContext* TsilParser::expr(int precedence) {
           _localctx = newContext;
           newContext->c_left = previousContext;
           pushNewRecursionContext(newContext, startState, RuleExpr);
-          setState(217);
+          setState(248);
 
           if (!(precpred(_ctx, 2))) throw FailedPredicateException(this, "precpred(_ctx, 2)");
-          setState(218);
+          setState(249);
           antlrcpp::downCast<ComparisonContext *>(_localctx)->c_operation = comparison_op();
-          setState(219);
+          setState(250);
           antlrcpp::downCast<ComparisonContext *>(_localctx)->c_right = expr(3);
           break;
         }
@@ -2401,12 +2625,12 @@ TsilParser::ExprContext* TsilParser::expr(int precedence) {
           _localctx = newContext;
           newContext->t_left = previousContext;
           pushNewRecursionContext(newContext, startState, RuleExpr);
-          setState(221);
+          setState(252);
 
           if (!(precpred(_ctx, 1))) throw FailedPredicateException(this, "precpred(_ctx, 1)");
-          setState(222);
+          setState(253);
           antlrcpp::downCast<LogicalContext *>(_localctx)->t_operation = logical_op();
-          setState(223);
+          setState(254);
           antlrcpp::downCast<LogicalContext *>(_localctx)->t_right = expr(2);
           break;
         }
@@ -2415,9 +2639,9 @@ TsilParser::ExprContext* TsilParser::expr(int precedence) {
           break;
         } 
       }
-      setState(229);
+      setState(260);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 19, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 22, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -2482,8 +2706,8 @@ TsilParser::Identifiers_chainContext* TsilParser::identifiers_chain(int preceden
   TsilParser::Identifiers_chainContext *_localctx = _tracker.createInstance<Identifiers_chainContext>(_ctx, parentState);
   TsilParser::Identifiers_chainContext *previousContext = _localctx;
   (void)previousContext; // Silence compiler, in case the context is not used by generated code.
-  size_t startState = 32;
-  enterRecursionRule(_localctx, 32, TsilParser::RuleIdentifiers_chain, precedence);
+  size_t startState = 36;
+  enterRecursionRule(_localctx, 36, TsilParser::RuleIdentifiers_chain, precedence);
 
     
 
@@ -2497,12 +2721,12 @@ TsilParser::Identifiers_chainContext* TsilParser::identifiers_chain(int preceden
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(231);
+    setState(262);
     antlrcpp::downCast<Identifiers_chainContext *>(_localctx)->ic_id = match(TsilParser::ID);
     _ctx->stop = _input->LT(-1);
-    setState(238);
+    setState(269);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 20, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 23, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
         if (!_parseListeners.empty())
@@ -2511,17 +2735,17 @@ TsilParser::Identifiers_chainContext* TsilParser::identifiers_chain(int preceden
         _localctx = _tracker.createInstance<Identifiers_chainContext>(parentContext, parentState);
         _localctx->ic_left = previousContext;
         pushNewRecursionContext(_localctx, startState, RuleIdentifiers_chain);
-        setState(233);
+        setState(264);
 
         if (!(precpred(_ctx, 1))) throw FailedPredicateException(this, "precpred(_ctx, 1)");
-        setState(234);
+        setState(265);
         match(TsilParser::DOT);
-        setState(235);
+        setState(266);
         antlrcpp::downCast<Identifiers_chainContext *>(_localctx)->ic_right = match(TsilParser::ID); 
       }
-      setState(240);
+      setState(271);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 20, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 23, _ctx);
     }
   }
   catch (RecognitionException &e) {
@@ -2538,12 +2762,32 @@ TsilParser::TypeContext::TypeContext(ParserRuleContext *parent, size_t invokingS
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* TsilParser::TypeContext::ID() {
-  return getToken(TsilParser::ID, 0);
+TsilParser::IdentifierContext* TsilParser::TypeContext::identifier() {
+  return getRuleContext<TsilParser::IdentifierContext>(0);
 }
 
-tree::TerminalNode* TsilParser::TypeContext::MULTIPLY() {
-  return getToken(TsilParser::MULTIPLY, 0);
+tree::TerminalNode* TsilParser::TypeContext::LESSER() {
+  return getToken(TsilParser::LESSER, 0);
+}
+
+tree::TerminalNode* TsilParser::TypeContext::GREATER() {
+  return getToken(TsilParser::GREATER, 0);
+}
+
+std::vector<TsilParser::TypeContext *> TsilParser::TypeContext::type() {
+  return getRuleContexts<TsilParser::TypeContext>();
+}
+
+TsilParser::TypeContext* TsilParser::TypeContext::type(size_t i) {
+  return getRuleContext<TsilParser::TypeContext>(i);
+}
+
+std::vector<tree::TerminalNode *> TsilParser::TypeContext::COMA() {
+  return getTokens(TsilParser::COMA);
+}
+
+tree::TerminalNode* TsilParser::TypeContext::COMA(size_t i) {
+  return getToken(TsilParser::COMA, i);
 }
 
 
@@ -2573,7 +2817,7 @@ std::any TsilParser::TypeContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::TypeContext* TsilParser::type() {
   TypeContext *_localctx = _tracker.createInstance<TypeContext>(_ctx, getState());
-  enterRule(_localctx, 34, TsilParser::RuleType);
+  enterRule(_localctx, 38, TsilParser::RuleType);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -2585,15 +2829,31 @@ TsilParser::TypeContext* TsilParser::type() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(241);
-    match(TsilParser::ID);
-    setState(243);
+    setState(272);
+    identifier();
+    setState(284);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
-    if (_la == TsilParser::MULTIPLY) {
-      setState(242);
-      antlrcpp::downCast<TypeContext *>(_localctx)->t_pointer = match(TsilParser::MULTIPLY);
+    if (_la == TsilParser::LESSER) {
+      setState(273);
+      match(TsilParser::LESSER);
+      setState(274);
+      antlrcpp::downCast<TypeContext *>(_localctx)->t_first_generic_type = type();
+      setState(279);
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+      while (_la == TsilParser::COMA) {
+        setState(275);
+        match(TsilParser::COMA);
+        setState(276);
+        type();
+        setState(281);
+        _errHandler->sync(this);
+        _la = _input->LA(1);
+      }
+      setState(282);
+      match(TsilParser::GREATER);
     }
    
   }
@@ -2655,7 +2915,7 @@ std::any TsilParser::ArgsContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::ArgsContext* TsilParser::args() {
   ArgsContext *_localctx = _tracker.createInstance<ArgsContext>(_ctx, getState());
-  enterRule(_localctx, 36, TsilParser::RuleArgs);
+  enterRule(_localctx, 40, TsilParser::RuleArgs);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -2668,28 +2928,28 @@ TsilParser::ArgsContext* TsilParser::args() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(245);
+    setState(286);
     expr(0);
-    setState(250);
+    setState(291);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 22, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 26, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(246);
+        setState(287);
         match(TsilParser::COMA);
-        setState(247);
+        setState(288);
         expr(0); 
       }
-      setState(252);
+      setState(293);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 22, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 26, _ctx);
     }
-    setState(254);
+    setState(295);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == TsilParser::COMA) {
-      setState(253);
+      setState(294);
       match(TsilParser::COMA);
     }
    
@@ -2752,7 +3012,7 @@ std::any TsilParser::ParamsContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::ParamsContext* TsilParser::params() {
   ParamsContext *_localctx = _tracker.createInstance<ParamsContext>(_ctx, getState());
-  enterRule(_localctx, 38, TsilParser::RuleParams);
+  enterRule(_localctx, 42, TsilParser::RuleParams);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -2764,28 +3024,28 @@ TsilParser::ParamsContext* TsilParser::params() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(256);
+    setState(297);
     param();
-    setState(261);
+    setState(302);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 24, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 28, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(257);
+        setState(298);
         match(TsilParser::COMA);
-        setState(258);
+        setState(299);
         param(); 
       }
-      setState(263);
+      setState(304);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 24, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 28, _ctx);
     }
-    setState(265);
+    setState(306);
     _errHandler->sync(this);
 
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 25, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 29, _ctx)) {
     case 1: {
-      setState(264);
+      setState(305);
       match(TsilParser::COMA);
       break;
     }
@@ -2810,12 +3070,16 @@ TsilParser::ParamContext::ParamContext(ParserRuleContext *parent, size_t invokin
   : ParserRuleContext(parent, invokingState) {
 }
 
-TsilParser::TypeContext* TsilParser::ParamContext::type() {
-  return getRuleContext<TsilParser::TypeContext>(0);
+tree::TerminalNode* TsilParser::ParamContext::COLON() {
+  return getToken(TsilParser::COLON, 0);
 }
 
 TsilParser::IdentifierContext* TsilParser::ParamContext::identifier() {
   return getRuleContext<TsilParser::IdentifierContext>(0);
+}
+
+TsilParser::TypeContext* TsilParser::ParamContext::type() {
+  return getRuleContext<TsilParser::TypeContext>(0);
 }
 
 
@@ -2845,7 +3109,7 @@ std::any TsilParser::ParamContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::ParamContext* TsilParser::param() {
   ParamContext *_localctx = _tracker.createInstance<ParamContext>(_ctx, getState());
-  enterRule(_localctx, 40, TsilParser::RuleParam);
+  enterRule(_localctx, 44, TsilParser::RuleParam);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -2856,10 +3120,12 @@ TsilParser::ParamContext* TsilParser::param() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(267);
-    antlrcpp::downCast<ParamContext *>(_localctx)->p_type = type();
-    setState(268);
+    setState(308);
     antlrcpp::downCast<ParamContext *>(_localctx)->p_name = identifier();
+    setState(309);
+    match(TsilParser::COLON);
+    setState(310);
+    antlrcpp::downCast<ParamContext *>(_localctx)->p_type = type();
    
   }
   catch (RecognitionException &e) {
@@ -2912,7 +3178,7 @@ std::any TsilParser::BodyContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::BodyContext* TsilParser::body() {
   BodyContext *_localctx = _tracker.createInstance<BodyContext>(_ctx, getState());
-  enterRule(_localctx, 42, TsilParser::RuleBody);
+  enterRule(_localctx, 46, TsilParser::RuleBody);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -2924,13 +3190,13 @@ TsilParser::BodyContext* TsilParser::body() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(271); 
+    setState(313); 
     _errHandler->sync(this);
     _la = _input->LA(1);
     do {
-      setState(270);
+      setState(312);
       body_element_or_return();
-      setState(273); 
+      setState(315); 
       _errHandler->sync(this);
       _la = _input->LA(1);
     } while ((((_la & ~ 0x3fULL) == 0) &&
@@ -2987,7 +3253,7 @@ std::any TsilParser::Body_element_or_returnContext::accept(tree::ParseTreeVisito
 
 TsilParser::Body_element_or_returnContext* TsilParser::body_element_or_return() {
   Body_element_or_returnContext *_localctx = _tracker.createInstance<Body_element_or_returnContext>(_ctx, getState());
-  enterRule(_localctx, 44, TsilParser::RuleBody_element_or_return);
+  enterRule(_localctx, 48, TsilParser::RuleBody_element_or_return);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -2997,7 +3263,7 @@ TsilParser::Body_element_or_returnContext* TsilParser::body_element_or_return() 
     exitRule();
   });
   try {
-    setState(277);
+    setState(319);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case TsilParser::KW_TSIL:
@@ -3013,14 +3279,14 @@ TsilParser::Body_element_or_returnContext* TsilParser::body_element_or_return() 
       case TsilParser::ID:
       case TsilParser::STRING: {
         enterOuterAlt(_localctx, 1);
-        setState(275);
+        setState(317);
         body_element();
         break;
       }
 
       case TsilParser::KW_RETURN: {
         enterOuterAlt(_localctx, 2);
-        setState(276);
+        setState(318);
         return_body_element();
         break;
       }
@@ -3100,7 +3366,7 @@ std::any TsilParser::Body_elementContext::accept(tree::ParseTreeVisitor *visitor
 
 TsilParser::Body_elementContext* TsilParser::body_element() {
   Body_elementContext *_localctx = _tracker.createInstance<Body_elementContext>(_ctx, getState());
-  enterRule(_localctx, 46, TsilParser::RuleBody_element);
+  enterRule(_localctx, 50, TsilParser::RuleBody_element);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -3110,56 +3376,56 @@ TsilParser::Body_elementContext* TsilParser::body_element() {
     exitRule();
   });
   try {
-    setState(288);
+    setState(330);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 28, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 32, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(279);
+      setState(321);
       if_();
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(280);
+      setState(322);
       while_();
       break;
     }
 
     case 3: {
       enterOuterAlt(_localctx, 3);
-      setState(281);
+      setState(323);
       define();
       break;
     }
 
     case 4: {
       enterOuterAlt(_localctx, 4);
-      setState(282);
+      setState(324);
       assign();
       break;
     }
 
     case 5: {
       enterOuterAlt(_localctx, 5);
-      setState(283);
+      setState(325);
       set();
       break;
     }
 
     case 6: {
       enterOuterAlt(_localctx, 6);
-      setState(284);
+      setState(326);
       expr(0);
-      setState(285);
+      setState(327);
       match(TsilParser::SEMICOLON);
       break;
     }
 
     case 7: {
       enterOuterAlt(_localctx, 7);
-      setState(287);
+      setState(329);
       match(TsilParser::SEMICOLON);
       break;
     }
@@ -3219,7 +3485,7 @@ std::any TsilParser::Return_body_elementContext::accept(tree::ParseTreeVisitor *
 
 TsilParser::Return_body_elementContext* TsilParser::return_body_element() {
   Return_body_elementContext *_localctx = _tracker.createInstance<Return_body_elementContext>(_ctx, getState());
-  enterRule(_localctx, 48, TsilParser::RuleReturn_body_element);
+  enterRule(_localctx, 52, TsilParser::RuleReturn_body_element);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -3230,9 +3496,9 @@ TsilParser::Return_body_elementContext* TsilParser::return_body_element() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(290);
+    setState(332);
     match(TsilParser::KW_RETURN);
-    setState(291);
+    setState(333);
     antlrcpp::downCast<Return_body_elementContext *>(_localctx)->rbl_value = expr(0);
    
   }
@@ -3306,7 +3572,7 @@ std::any TsilParser::Bitwise_opContext::accept(tree::ParseTreeVisitor *visitor) 
 
 TsilParser::Bitwise_opContext* TsilParser::bitwise_op() {
   Bitwise_opContext *_localctx = _tracker.createInstance<Bitwise_opContext>(_ctx, getState());
-  enterRule(_localctx, 50, TsilParser::RuleBitwise_op);
+  enterRule(_localctx, 54, TsilParser::RuleBitwise_op);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -3316,44 +3582,44 @@ TsilParser::Bitwise_opContext* TsilParser::bitwise_op() {
     exitRule();
   });
   try {
-    setState(300);
+    setState(342);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case TsilParser::POWER: {
         enterOuterAlt(_localctx, 1);
-        setState(293);
+        setState(335);
         match(TsilParser::POWER);
         break;
       }
 
       case TsilParser::OR: {
         enterOuterAlt(_localctx, 2);
-        setState(294);
+        setState(336);
         match(TsilParser::OR);
         break;
       }
 
       case TsilParser::AND: {
         enterOuterAlt(_localctx, 3);
-        setState(295);
+        setState(337);
         match(TsilParser::AND);
         break;
       }
 
       case TsilParser::LESSER: {
         enterOuterAlt(_localctx, 4);
-        setState(296);
+        setState(338);
         match(TsilParser::LESSER);
-        setState(297);
+        setState(339);
         match(TsilParser::LESSER);
         break;
       }
 
       case TsilParser::GREATER: {
         enterOuterAlt(_localctx, 5);
-        setState(298);
+        setState(340);
         match(TsilParser::GREATER);
-        setState(299);
+        setState(341);
         match(TsilParser::GREATER);
         break;
       }
@@ -3425,7 +3691,7 @@ std::any TsilParser::Comparison_opContext::accept(tree::ParseTreeVisitor *visito
 
 TsilParser::Comparison_opContext* TsilParser::comparison_op() {
   Comparison_opContext *_localctx = _tracker.createInstance<Comparison_opContext>(_ctx, getState());
-  enterRule(_localctx, 52, TsilParser::RuleComparison_op);
+  enterRule(_localctx, 56, TsilParser::RuleComparison_op);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -3435,55 +3701,55 @@ TsilParser::Comparison_opContext* TsilParser::comparison_op() {
     exitRule();
   });
   try {
-    setState(312);
+    setState(354);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 30, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 34, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(302);
+      setState(344);
       match(TsilParser::EQUAL);
-      setState(303);
+      setState(345);
       match(TsilParser::EQUAL);
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(304);
+      setState(346);
       match(TsilParser::EXCLAMATION);
-      setState(305);
+      setState(347);
       match(TsilParser::EQUAL);
       break;
     }
 
     case 3: {
       enterOuterAlt(_localctx, 3);
-      setState(306);
+      setState(348);
       match(TsilParser::GREATER);
       break;
     }
 
     case 4: {
       enterOuterAlt(_localctx, 4);
-      setState(307);
+      setState(349);
       match(TsilParser::LESSER);
       break;
     }
 
     case 5: {
       enterOuterAlt(_localctx, 5);
-      setState(308);
+      setState(350);
       match(TsilParser::GREATER);
-      setState(309);
+      setState(351);
       match(TsilParser::EQUAL);
       break;
     }
 
     case 6: {
       enterOuterAlt(_localctx, 6);
-      setState(310);
+      setState(352);
       match(TsilParser::LESSER);
-      setState(311);
+      setState(353);
       match(TsilParser::EQUAL);
       break;
     }
@@ -3551,7 +3817,7 @@ std::any TsilParser::Logical_opContext::accept(tree::ParseTreeVisitor *visitor) 
 
 TsilParser::Logical_opContext* TsilParser::logical_op() {
   Logical_opContext *_localctx = _tracker.createInstance<Logical_opContext>(_ctx, getState());
-  enterRule(_localctx, 54, TsilParser::RuleLogical_op);
+  enterRule(_localctx, 58, TsilParser::RuleLogical_op);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -3561,23 +3827,23 @@ TsilParser::Logical_opContext* TsilParser::logical_op() {
     exitRule();
   });
   try {
-    setState(318);
+    setState(360);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case TsilParser::OR: {
         enterOuterAlt(_localctx, 1);
-        setState(314);
+        setState(356);
         match(TsilParser::OR);
-        setState(315);
+        setState(357);
         match(TsilParser::OR);
         break;
       }
 
       case TsilParser::AND: {
         enterOuterAlt(_localctx, 2);
-        setState(316);
+        setState(358);
         match(TsilParser::AND);
-        setState(317);
+        setState(359);
         match(TsilParser::AND);
         break;
       }
@@ -3633,7 +3899,7 @@ std::any TsilParser::NumberContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::NumberContext* TsilParser::number() {
   NumberContext *_localctx = _tracker.createInstance<NumberContext>(_ctx, getState());
-  enterRule(_localctx, 56, TsilParser::RuleNumber);
+  enterRule(_localctx, 60, TsilParser::RuleNumber);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -3644,7 +3910,7 @@ TsilParser::NumberContext* TsilParser::number() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(320);
+    setState(362);
     match(TsilParser::NUMBER);
    
   }
@@ -3694,7 +3960,7 @@ std::any TsilParser::StringContext::accept(tree::ParseTreeVisitor *visitor) {
 
 TsilParser::StringContext* TsilParser::string() {
   StringContext *_localctx = _tracker.createInstance<StringContext>(_ctx, getState());
-  enterRule(_localctx, 58, TsilParser::RuleString);
+  enterRule(_localctx, 62, TsilParser::RuleString);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -3705,7 +3971,7 @@ TsilParser::StringContext* TsilParser::string() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(322);
+    setState(364);
     match(TsilParser::STRING);
    
   }
@@ -3755,7 +4021,7 @@ std::any TsilParser::IdentifierContext::accept(tree::ParseTreeVisitor *visitor) 
 
 TsilParser::IdentifierContext* TsilParser::identifier() {
   IdentifierContext *_localctx = _tracker.createInstance<IdentifierContext>(_ctx, getState());
-  enterRule(_localctx, 60, TsilParser::RuleIdentifier);
+  enterRule(_localctx, 64, TsilParser::RuleIdentifier);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -3766,7 +4032,7 @@ TsilParser::IdentifierContext* TsilParser::identifier() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(324);
+    setState(366);
     match(TsilParser::ID);
    
   }
@@ -3781,9 +4047,9 @@ TsilParser::IdentifierContext* TsilParser::identifier() {
 
 bool TsilParser::sempred(RuleContext *context, size_t ruleIndex, size_t predicateIndex) {
   switch (ruleIndex) {
-    case 14: return atomSempred(antlrcpp::downCast<AtomContext *>(context), predicateIndex);
-    case 15: return exprSempred(antlrcpp::downCast<ExprContext *>(context), predicateIndex);
-    case 16: return identifiers_chainSempred(antlrcpp::downCast<Identifiers_chainContext *>(context), predicateIndex);
+    case 16: return atomSempred(antlrcpp::downCast<AtomContext *>(context), predicateIndex);
+    case 17: return exprSempred(antlrcpp::downCast<ExprContext *>(context), predicateIndex);
+    case 18: return identifiers_chainSempred(antlrcpp::downCast<Identifiers_chainContext *>(context), predicateIndex);
 
   default:
     break;

@@ -26,6 +26,12 @@ public:
   virtual void enterStructure(TsilParser::StructureContext *ctx) = 0;
   virtual void exitStructure(TsilParser::StructureContext *ctx) = 0;
 
+  virtual void enterStructure_generics(TsilParser::Structure_genericsContext *ctx) = 0;
+  virtual void exitStructure_generics(TsilParser::Structure_genericsContext *ctx) = 0;
+
+  virtual void enterStructure_generic(TsilParser::Structure_genericContext *ctx) = 0;
+  virtual void exitStructure_generic(TsilParser::Structure_genericContext *ctx) = 0;
+
   virtual void enterStructure_params(TsilParser::Structure_paramsContext *ctx) = 0;
   virtual void exitStructure_params(TsilParser::Structure_paramsContext *ctx) = 0;
 

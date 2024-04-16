@@ -24,13 +24,14 @@ public:
 
   enum {
     RuleFile = 0, RuleProgram = 1, RuleProgram_element = 2, RuleStructure = 3, 
-    RuleStructure_params = 4, RuleStructure_param = 5, RuleDiia_head = 6, 
-    RuleDiia = 7, RuleDiia_declaration = 8, RuleIf = 9, RuleWhile = 10, 
-    RuleDefine = 11, RuleAssign = 12, RuleSet = 13, RuleAtom = 14, RuleExpr = 15, 
-    RuleIdentifiers_chain = 16, RuleType = 17, RuleArgs = 18, RuleParams = 19, 
-    RuleParam = 20, RuleBody = 21, RuleBody_element_or_return = 22, RuleBody_element = 23, 
-    RuleReturn_body_element = 24, RuleBitwise_op = 25, RuleComparison_op = 26, 
-    RuleLogical_op = 27, RuleNumber = 28, RuleString = 29, RuleIdentifier = 30
+    RuleStructure_generics = 4, RuleStructure_generic = 5, RuleStructure_params = 6, 
+    RuleStructure_param = 7, RuleDiia_head = 8, RuleDiia = 9, RuleDiia_declaration = 10, 
+    RuleIf = 11, RuleWhile = 12, RuleDefine = 13, RuleAssign = 14, RuleSet = 15, 
+    RuleAtom = 16, RuleExpr = 17, RuleIdentifiers_chain = 18, RuleType = 19, 
+    RuleArgs = 20, RuleParams = 21, RuleParam = 22, RuleBody = 23, RuleBody_element_or_return = 24, 
+    RuleBody_element = 25, RuleReturn_body_element = 26, RuleBitwise_op = 27, 
+    RuleComparison_op = 28, RuleLogical_op = 29, RuleNumber = 30, RuleString = 31, 
+    RuleIdentifier = 32
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -54,6 +55,8 @@ public:
   class ProgramContext;
   class Program_elementContext;
   class StructureContext;
+  class Structure_genericsContext;
+  class Structure_genericContext;
   class Structure_paramsContext;
   class Structure_paramContext;
   class Diia_headContext;
@@ -142,6 +145,7 @@ public:
   class  StructureContext : public antlr4::ParserRuleContext {
   public:
     TsilParser::IdentifierContext *s_name = nullptr;
+    TsilParser::Structure_genericsContext *s_generics = nullptr;
     TsilParser::Structure_paramsContext *s_params = nullptr;
     StructureContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
@@ -149,6 +153,9 @@ public:
     antlr4::tree::TerminalNode *QUOTE_OPEN();
     antlr4::tree::TerminalNode *QUOTE_CLOSE();
     IdentifierContext *identifier();
+    antlr4::tree::TerminalNode *LESSER();
+    antlr4::tree::TerminalNode *GREATER();
+    Structure_genericsContext *structure_generics();
     Structure_paramsContext *structure_params();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -159,6 +166,40 @@ public:
   };
 
   StructureContext* structure();
+
+  class  Structure_genericsContext : public antlr4::ParserRuleContext {
+  public:
+    Structure_genericsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    std::vector<Structure_genericContext *> structure_generic();
+    Structure_genericContext* structure_generic(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> COMA();
+    antlr4::tree::TerminalNode* COMA(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Structure_genericsContext* structure_generics();
+
+  class  Structure_genericContext : public antlr4::ParserRuleContext {
+  public:
+    TsilParser::IdentifierContext *sg_name = nullptr;
+    Structure_genericContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    IdentifierContext *identifier();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Structure_genericContext* structure_generic();
 
   class  Structure_paramsContext : public antlr4::ParserRuleContext {
   public:
@@ -184,6 +225,7 @@ public:
     TsilParser::TypeContext *sp_type = nullptr;
     Structure_paramContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *COLON();
     IdentifierContext *identifier();
     TypeContext *type();
 
@@ -198,21 +240,22 @@ public:
 
   class  Diia_headContext : public antlr4::ParserRuleContext {
   public:
-    TsilParser::TypeContext *d_type = nullptr;
     TsilParser::IdentifierContext *d_name = nullptr;
     TsilParser::ParamsContext *d_params = nullptr;
     antlr4::Token *d_variadic = nullptr;
+    TsilParser::TypeContext *d_type = nullptr;
     Diia_headContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_DIIA();
     antlr4::tree::TerminalNode *PAREN_OPEN();
     antlr4::tree::TerminalNode *PAREN_CLOSE();
     IdentifierContext *identifier();
-    antlr4::tree::TerminalNode *KW_DIIA();
-    TypeContext *type();
     std::vector<antlr4::tree::TerminalNode *> DOT();
     antlr4::tree::TerminalNode* DOT(size_t i);
+    antlr4::tree::TerminalNode *COLON();
     ParamsContext *params();
     antlr4::tree::TerminalNode *COMA();
+    TypeContext *type();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -311,15 +354,16 @@ public:
 
   class  DefineContext : public antlr4::ParserRuleContext {
   public:
-    TsilParser::TypeContext *d_type = nullptr;
     TsilParser::IdentifierContext *d_id = nullptr;
+    TsilParser::TypeContext *d_type = nullptr;
     TsilParser::ExprContext *d_value = nullptr;
     DefineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_TSIL();
     antlr4::tree::TerminalNode *EQUAL();
     IdentifierContext *identifier();
     ExprContext *expr();
-    antlr4::tree::TerminalNode *KW_TSIL();
+    antlr4::tree::TerminalNode *COLON();
     TypeContext *type();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -353,11 +397,14 @@ public:
   class  SetContext : public antlr4::ParserRuleContext {
   public:
     TsilParser::Identifiers_chainContext *s_left = nullptr;
+    TsilParser::IdentifierContext *s_id = nullptr;
     TsilParser::ExprContext *s_value = nullptr;
     SetContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *DOT();
     antlr4::tree::TerminalNode *EQUAL();
     Identifiers_chainContext *identifiers_chain();
+    IdentifierContext *identifier();
     ExprContext *expr();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -645,11 +692,16 @@ public:
   Identifiers_chainContext* identifiers_chain(int precedence);
   class  TypeContext : public antlr4::ParserRuleContext {
   public:
-    antlr4::Token *t_pointer = nullptr;
+    TsilParser::TypeContext *t_first_generic_type = nullptr;
     TypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *ID();
-    antlr4::tree::TerminalNode *MULTIPLY();
+    IdentifierContext *identifier();
+    antlr4::tree::TerminalNode *LESSER();
+    antlr4::tree::TerminalNode *GREATER();
+    std::vector<TypeContext *> type();
+    TypeContext* type(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> COMA();
+    antlr4::tree::TerminalNode* COMA(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -698,12 +750,13 @@ public:
 
   class  ParamContext : public antlr4::ParserRuleContext {
   public:
-    TsilParser::TypeContext *p_type = nullptr;
     TsilParser::IdentifierContext *p_name = nullptr;
+    TsilParser::TypeContext *p_type = nullptr;
     ParamContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    TypeContext *type();
+    antlr4::tree::TerminalNode *COLON();
     IdentifierContext *identifier();
+    TypeContext *type();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

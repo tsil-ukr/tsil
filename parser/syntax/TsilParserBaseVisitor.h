@@ -31,6 +31,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitStructure_generics(TsilParser::Structure_genericsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitStructure_generic(TsilParser::Structure_genericContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitStructure_params(TsilParser::Structure_paramsContext *ctx) override {
     return visitChildren(ctx);
   }

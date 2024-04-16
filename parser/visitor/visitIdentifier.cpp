@@ -16,7 +16,9 @@ namespace tsil::parser {
       return AV(context, ast::KindIdentifierNode, identifier_node);
     }
     const auto get_node = new ast::GetNode();
-    get_node->left = AAV(visitIdentifiers_chain(context->ic_left));
+    const auto get_pointer_node = new ast::GetPointerNode();
+    get_pointer_node->value = AAV(visitIdentifiers_chain(context->ic_left));
+    get_node->left = AV(context, ast::KindGetPointerNode, get_pointer_node);
     get_node->id = context->ic_right->getText();
     return AV(context, ast::KindGetNode, get_node);
   }

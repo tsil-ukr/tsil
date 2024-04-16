@@ -27,6 +27,10 @@ public:
 
     virtual std::any visitStructure(TsilParser::StructureContext *context) = 0;
 
+    virtual std::any visitStructure_generics(TsilParser::Structure_genericsContext *context) = 0;
+
+    virtual std::any visitStructure_generic(TsilParser::Structure_genericContext *context) = 0;
+
     virtual std::any visitStructure_params(TsilParser::Structure_paramsContext *context) = 0;
 
     virtual std::any visitStructure_param(TsilParser::Structure_paramContext *context) = 0;

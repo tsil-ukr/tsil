@@ -42,6 +42,12 @@ namespace tsil::parser {
 
     std::any visitStructure(TsilParser::StructureContext* ctx) override;
 
+    std::any visitStructure_generics(
+        TsilParser::Structure_genericsContext* ctx) override;
+
+    std::any visitStructure_generic(
+        TsilParser::Structure_genericContext* ctx) override;
+
     std::any visitStructure_params(
         TsilParser::Structure_paramsContext* ctx) override;
 
@@ -50,7 +56,8 @@ namespace tsil::parser {
 
     std::any visitDiia(TsilParser::DiiaContext* ctx) override;
 
-    std::any visitDiia_declaration(TsilParser::Diia_declarationContext *ctx) override;
+    std::any visitDiia_declaration(
+        TsilParser::Diia_declarationContext* ctx) override;
 
     std::any visitIf(TsilParser::IfContext* ctx) override;
 

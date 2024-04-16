@@ -209,8 +209,6 @@ int main(int argc, char** argv) {
       code += line + "\n";
     }
 
-    code += "\n\nекстерн ц32 main() { вернути старт(); }";
-
     const auto parser_result = tsil::parser::parse(code);
     if (parser_result.program_node) {
       const auto state = new tsil::compiler::CompilationState();
@@ -223,48 +221,81 @@ int main(int argc, char** argv) {
       state->globalScope->state = state;
 
       const auto voidType = new tsil::compiler::Type();
-      voidType->lltype = Type::getVoidTy(*state->Context);
-      state->globalScope->types["комірка"] = voidType;
+      voidType->type = tsil::compiler::TypeTypeNative;
+      voidType->name = "комірка";
+      voidType->LT = Type::getVoidTy(*state->Context);
+      state->types["комірка"] = voidType;
+      state->voidType = voidType;
 
       const auto int8Type = new tsil::compiler::Type();
-      int8Type->lltype = Type::getInt8Ty(*state->Context);
-      state->globalScope->types["ц8"] = int8Type;
+      int8Type->type = tsil::compiler::TypeTypeNative;
+      int8Type->name = "ц8";
+      int8Type->LT = Type::getInt8Ty(*state->Context);
+      state->types["ц8"] = int8Type;
+      state->int8Type = int8Type;
 
       const auto int16Type = new tsil::compiler::Type();
-      int16Type->lltype = Type::getInt16Ty(*state->Context);
-      state->globalScope->types["ц16"] = int16Type;
+      int16Type->type = tsil::compiler::TypeTypeNative;
+      int16Type->name = "ц16";
+      int16Type->LT = Type::getInt16Ty(*state->Context);
+      state->types["ц16"] = int16Type;
+      state->int16Type = int16Type;
 
       const auto int32Type = new tsil::compiler::Type();
-      int32Type->lltype = Type::getInt32Ty(*state->Context);
-      state->globalScope->types["ц32"] = int32Type;
+      int32Type->type = tsil::compiler::TypeTypeNative;
+      int32Type->name = "ц32";
+      int32Type->LT = Type::getInt32Ty(*state->Context);
+      state->types["ц32"] = int32Type;
+      state->int32Type = int32Type;
 
       const auto int64Type = new tsil::compiler::Type();
-      int64Type->lltype = Type::getInt64Ty(*state->Context);
-      state->globalScope->types["ц64"] = int64Type;
+      int64Type->type = tsil::compiler::TypeTypeNative;
+      int64Type->name = "ц64";
+      int64Type->LT = Type::getInt64Ty(*state->Context);
+      state->types["ц64"] = int64Type;
+      state->int64Type = int64Type;
 
       const auto floatType = new tsil::compiler::Type();
-      floatType->lltype = Type::getFloatTy(*state->Context);
-      state->globalScope->types["д32"] = floatType;
+      floatType->type = tsil::compiler::TypeTypeNative;
+      floatType->name = "д32";
+      floatType->LT = Type::getFloatTy(*state->Context);
+      state->types["д32"] = floatType;
+      state->floatType = floatType;
 
       const auto doubleType = new tsil::compiler::Type();
-      doubleType->lltype = Type::getDoubleTy(*state->Context);
-      state->globalScope->types["д64"] = doubleType;
+      doubleType->type = tsil::compiler::TypeTypeNative;
+      doubleType->name = "д64";
+      doubleType->LT = Type::getDoubleTy(*state->Context);
+      state->types["д64"] = doubleType;
+      state->doubleType = doubleType;
 
       const auto uint8Type = new tsil::compiler::Type();
-      uint8Type->lltype = Type::getInt8Ty(*state->Context);
-      state->globalScope->types["б8"] = uint8Type;
+      uint8Type->type = tsil::compiler::TypeTypeNative;
+      uint8Type->name = "б8";
+      uint8Type->LT = Type::getInt8Ty(*state->Context);
+      state->types["б8"] = uint8Type;
+      state->uint8Type = uint8Type;
 
       const auto uint16Type = new tsil::compiler::Type();
-      uint16Type->lltype = Type::getInt16Ty(*state->Context);
-      state->globalScope->types["б16"] = uint16Type;
+      uint16Type->type = tsil::compiler::TypeTypeNative;
+      uint16Type->name = "б16";
+      uint16Type->LT = Type::getInt16Ty(*state->Context);
+      state->types["б16"] = uint16Type;
+      state->uint16Type = uint16Type;
 
       const auto uint32Type = new tsil::compiler::Type();
-      uint32Type->lltype = Type::getInt32Ty(*state->Context);
-      state->globalScope->types["б32"] = uint32Type;
+      uint32Type->type = tsil::compiler::TypeTypeNative;
+      uint32Type->name = "б32";
+      uint32Type->LT = Type::getInt32Ty(*state->Context);
+      state->types["б32"] = uint32Type;
+      state->uint32Type = uint32Type;
 
       const auto uint64Type = new tsil::compiler::Type();
-      uint64Type->lltype = Type::getInt64Ty(*state->Context);
-      state->globalScope->types["б64"] = uint64Type;
+      uint64Type->type = tsil::compiler::TypeTypeNative;
+      uint64Type->name = "б64";
+      uint64Type->LT = Type::getInt64Ty(*state->Context);
+      state->types["б64"] = uint64Type;
+      state->uint64Type = uint64Type;
 
       for (const auto& ast_value : parser_result.program_node->body) {
         if (ast_value == nullptr) {
@@ -273,9 +304,31 @@ int main(int argc, char** argv) {
         if (ast_value->kind == tsil::ast::KindNone) {
           continue;
         }
-        const auto result = state->globalScope->compile_ast_value(ast_value);
-        if (result.error) {
-          std::cerr << "Failed to compile: " << result.error->message
+        if (ast_value->kind == tsil::ast::KindDiiaNode) {
+          const auto result = state->globalScope->compile_diia_node(ast_value);
+          if (result.error) {
+            std::cerr << "Не вдалось скомпілювати: " << result.error->message
+                      << std::endl;
+            return 1;
+          }
+        } else if (ast_value->kind == tsil::ast::KindDiiaDeclarationNode) {
+          const auto result =
+              state->globalScope->compile_diia_declaration_node(ast_value);
+          if (result.error) {
+            std::cerr << "Не вдалось скомпілювати: " << result.error->message
+                      << std::endl;
+            return 1;
+          }
+        } else if (ast_value->kind == tsil::ast::KindStructureNode) {
+          const auto result =
+              state->globalScope->compile_structure_node(ast_value);
+          if (result.error) {
+            std::cerr << "Не вдалось скомпілювати: " << result.error->message
+                      << std::endl;
+            return 1;
+          }
+        } else {
+          std::cerr << "Невідомий тип вказівки: " << ast_value->kind
                     << std::endl;
           return 1;
         }
@@ -322,6 +375,8 @@ int main(int argc, char** argv) {
         errs() << "TheTargetMachine can't emit a file of this type";
         return 1;
       }
+
+      state->Module->print(errs(), nullptr);
 
       pass.run(*state->Module);
       dest.flush();

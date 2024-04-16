@@ -56,6 +56,8 @@ namespace tsil::ast {
           return "WhileNode";
         case ast::KindBlockNode:
           return "BlockNode";
+        case ast::KindGetPointerNode:
+          return "GetPointerNode";
       }
       return "Unknown";
     }

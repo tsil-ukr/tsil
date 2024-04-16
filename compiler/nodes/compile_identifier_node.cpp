@@ -1,13 +1,22 @@
 #include "../compiler.h"
 
 namespace tsil::compiler {
-  CompilerResult CompilationScope::compile_identifier_node(
+  CompilerValueResult CompilationScope::compile_identifier_node(
       tsil::ast::ASTValue* ast_value) {
     const auto identifier_node = ast_value->data.IdentifierNode;
-    if (!this->has_variable(identifier_node->name)) {
-      return error("Ціль \"" + identifier_node->name + "\" не визначена");
+    if (this->has_variable(identifier_node->name)) {
+      const auto variable = this->get_variable(identifier_node->name);
+      const auto LV =
+          this->state->Builder->CreateLoad(variable.first->LT, variable.second);
+      return {variable.first, LV, nullptr};
     }
-    const auto value = this->get_variable(identifier_node->name);
-    return {value, nullptr};
+    if (this->state->structures.contains(identifier_node->name)) {
+      return {nullptr, nullptr,
+              new CompilerError("Субʼєкт \"" + identifier_node->name +
+                                "\" не можна використовувати як значення")};
+    }
+    return {nullptr, nullptr,
+            new CompilerError("Субʼєкт \"" + identifier_node->name +
+                              "\" не визначено")};
   }
 } // namespace tsil::compiler

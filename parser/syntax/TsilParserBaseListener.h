@@ -28,6 +28,12 @@ public:
   virtual void enterStructure(TsilParser::StructureContext * /*ctx*/) override { }
   virtual void exitStructure(TsilParser::StructureContext * /*ctx*/) override { }
 
+  virtual void enterStructure_generics(TsilParser::Structure_genericsContext * /*ctx*/) override { }
+  virtual void exitStructure_generics(TsilParser::Structure_genericsContext * /*ctx*/) override { }
+
+  virtual void enterStructure_generic(TsilParser::Structure_genericContext * /*ctx*/) override { }
+  virtual void exitStructure_generic(TsilParser::Structure_genericContext * /*ctx*/) override { }
+
   virtual void enterStructure_params(TsilParser::Structure_paramsContext * /*ctx*/) override { }
   virtual void exitStructure_params(TsilParser::Structure_paramsContext * /*ctx*/) override { }
 

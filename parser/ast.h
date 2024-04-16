@@ -16,6 +16,7 @@ namespace tsil::ast {
   struct CallNode;
   struct DefineNode;
   struct GetNode;
+  struct GetPointerNode;
   struct SetNode;
   struct ComparisonNode;
   struct ContinueNode;
@@ -82,6 +83,7 @@ namespace tsil::ast {
     KindCallNode,
     KindDefineNode,
     KindGetNode,
+    KindGetPointerNode,
     KindSetNode,
     KindComparisonNode,
     KindContinueNode,
@@ -114,6 +116,7 @@ namespace tsil::ast {
     tsil::ast::CallNode* CallNode;
     tsil::ast::DefineNode* DefineNode;
     tsil::ast::GetNode* GetNode;
+    tsil::ast::GetPointerNode* GetPointerNode;
     tsil::ast::SetNode* SetNode;
     tsil::ast::ComparisonNode* ComparisonNode;
     tsil::ast::ContinueNode* ContinueNode;
@@ -171,6 +174,10 @@ namespace tsil::ast {
   struct GetNode {
     ASTValue* left;
     std::string id;
+  };
+
+  struct GetPointerNode {
+    ASTValue* value;
   };
 
   struct SetNode {
@@ -238,6 +245,7 @@ namespace tsil::ast {
 
   struct StructureNode {
     std::string name;
+    std::vector<std::string> generic_definitions;
     std::vector<ASTValue*> params;
   };
 
@@ -249,7 +257,7 @@ namespace tsil::ast {
 
   struct TypeNode {
     std::string id;
-    bool is_pointer;
+    std::vector<ASTValue*> generics;
   };
 
   struct UnaryNode {

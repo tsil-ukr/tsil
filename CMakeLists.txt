@@ -7,18 +7,23 @@ add_subdirectory(parser)
 
 set(TSIL_SRC
         compiler/nodes/compile_ast_value.cpp
+        compiler/nodes/compile_assign_node.cpp
         compiler/nodes/compile_call_node.cpp
         compiler/nodes/compile_define_node.cpp
         compiler/nodes/compile_diia_node.cpp
+        compiler/nodes/compile_get_node.cpp
+        compiler/nodes/compile_get_pointer_node.cpp
         compiler/nodes/compile_identifier_node.cpp
         compiler/nodes/compile_number_node.cpp
+        compiler/nodes/compile_set_node.cpp
         compiler/nodes/compile_string_node.cpp
+        compiler/nodes/compile_structure_node.cpp
         compiler/compiler.cpp
         compiler/compiler.h
         main.cpp
 )
 
 add_executable(tsil ${TSIL_SRC})
-target_link_libraries(tsil PRIVATE tsil_parser LLVM)
-target_compile_options(tsil PRIVATE -fexceptions)
+target_link_libraries(tsil PUBLIC tsil_parser LLVM)
+target_compile_options(tsil PUBLIC -fexceptions)
 set_target_properties(tsil PROPERTIES OUTPUT_NAME "ціль")
