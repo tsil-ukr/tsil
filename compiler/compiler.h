@@ -29,6 +29,7 @@ namespace tsil::compiler {
 
   enum TypeType {
     TypeTypeNative,
+    TypeTypePointer,
     TypeTypeStructureInstance,
     TypeTypeDiia,
   };
@@ -46,6 +47,10 @@ namespace tsil::compiler {
   struct Type {
     TypeType type;
     std::string name;
+    Type* cached_pointer_type = nullptr;
+    std::vector<Type*> generic_values;
+    // pointer
+    Type* pointer_to = nullptr;
     // structure
     std::unordered_map<std::string, TypeStructureField>
         structure_instance_fields;
@@ -53,13 +58,16 @@ namespace tsil::compiler {
     bool diia_is_extern;
     std::vector<TypeDiiaParameter> diia_parameters;
     bool diia_is_variadic;
-    Type* diia_result_type;
+    Type* diia_result_type = nullptr;
     // llvm
-    llvm::Type* LT;
+    llvm::Type* LT = nullptr;
 
+    std::string getFullName();
+    Type* getPointerType();
     llvm::Value* castToLV(CompilationScope* scope,
                           Type* target_type,
                           llvm::Value* LV);
+    size_t getSizeOf(CompilationScope* scope);
   };
 
   struct StructureField {
@@ -108,7 +116,7 @@ namespace tsil::compiler {
     std::map<std::string, Structure*> structures;
     std::map<std::pair<Structure*, std::vector<Type*>>, Type*> types_cache;
 
-    Type* voidType = nullptr;
+    Type* voidPointerType = nullptr;
     Type* int8Type = nullptr;
     Type* int16Type = nullptr;
     Type* int32Type = nullptr;
@@ -167,5 +175,9 @@ namespace tsil::compiler {
     CompilerValueResult compile_get_node(tsil::ast::ASTValue* ast_value);
     CompilerValueResult compile_get_pointer_node(
         tsil::ast::ASTValue* ast_value);
+    CompilerValueResult compile_constructor_node(
+        tsil::ast::ASTValue* ast_value);
+    CompilerValueResult compile_sizeof_node(tsil::ast::ASTValue* ast_value);
+    CompilerValueResult compile_as_node(tsil::ast::ASTValue* ast_value);
   };
 } // namespace tsil::compiler

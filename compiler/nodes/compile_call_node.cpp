@@ -29,17 +29,15 @@ namespace tsil::compiler {
         return arg_result;
       }
       const auto parameter = variable.first->diia_parameters[arg_index];
-      const auto casted_LV =
-          parameter.type->castToLV(this, arg_result.type, arg_result.LV);
-      if (!casted_LV) {
+      if (arg_result.type != parameter.type) {
         return {nullptr, nullptr,
-                new CompilerError("Невірний тип параметра \"" + parameter.name +
-                                  "\" дії \"" + variable.first->name +
-                                  "\": очікується \"" + parameter.type->name +
-                                  "\", отримано \"" + arg_result.type->name +
-                                  "\"")};
+                new CompilerError(
+                    "Невірний тип параметра \"" + parameter.name + "\" дії \"" +
+                    variable.first->getFullName() + "\": очікується \"" +
+                    parameter.type->getFullName() + "\", отримано \"" +
+                    arg_result.type->getFullName() + "\"")};
       }
-      LArgs.push_back(casted_LV);
+      LArgs.push_back(arg_result.LV);
       arg_index++;
     }
     const auto LV = this->state->Builder->CreateCall(F, LArgs);

@@ -34,7 +34,7 @@ namespace tsil::compiler {
     replace_all(string_value, "\\\"", "\"");
     const auto LV = this->state->Builder->CreateGlobalStringPtr(string_value);
     if (string_node->prefix == "сі") {
-      return {this->state->voidType, LV, nullptr};
+      return {this->state->uint8Type->getPointerType(), LV, nullptr};
     }
     const auto LF = this->state->Builder->GetInsertBlock()->getParent();
     const auto LAI =

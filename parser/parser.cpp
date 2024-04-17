@@ -58,6 +58,14 @@ namespace tsil::ast {
           return "BlockNode";
         case ast::KindGetPointerNode:
           return "GetPointerNode";
+        case ast::KindConstructorNode:
+          return "ConstructorNode";
+        case ast::KindConstructorArgNode:
+          return "ConstructorArgNode";
+        case ast::KindSizeofNode:
+          return "SizeofNode";
+        case ast::KindAsNode:
+          return "AsNode";
       }
       return "Unknown";
     }
@@ -284,6 +292,33 @@ namespace tsil::parser {
     if (const auto return_body_element_context =
             dynamic_cast<TsilParser::Return_body_elementContext*>(context)) {
       return visitReturn_body_element(return_body_element_context);
+    }
+    if (const auto constructor_context =
+            dynamic_cast<TsilParser::ConstructorContext*>(context)) {
+      return visitConstructor(constructor_context);
+    }
+    if (const auto constructor_args_context =
+            dynamic_cast<TsilParser::Constructor_argsContext*>(context)) {
+      return visitConstructor_args(constructor_args_context);
+    }
+    if (const auto constructor_arg_context =
+            dynamic_cast<TsilParser::Constructor_argContext*>(context)) {
+      return visitConstructor_arg(constructor_arg_context);
+    }
+    if (const auto atom_constructor_context =
+            dynamic_cast<TsilParser::Atom_constructorContext*>(context)) {
+      return visitAtom_constructor(atom_constructor_context);
+    }
+    if (const auto sizeof_context =
+            dynamic_cast<TsilParser::SizeofContext*>(context)) {
+      return visitSizeof(sizeof_context);
+    }
+    if (const auto atom_sizeof_context =
+            dynamic_cast<TsilParser::Atom_sizeofContext*>(context)) {
+      return visitAtom_sizeof(atom_sizeof_context);
+    }
+    if (const auto as_context = dynamic_cast<TsilParser::AsContext*>(context)) {
+      return visitAs(as_context);
     }
     return nullptr;
   }

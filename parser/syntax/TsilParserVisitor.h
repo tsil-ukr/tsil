@@ -35,6 +35,12 @@ public:
 
     virtual std::any visitStructure_param(TsilParser::Structure_paramContext *context) = 0;
 
+    virtual std::any visitConstructor(TsilParser::ConstructorContext *context) = 0;
+
+    virtual std::any visitConstructor_args(TsilParser::Constructor_argsContext *context) = 0;
+
+    virtual std::any visitConstructor_arg(TsilParser::Constructor_argContext *context) = 0;
+
     virtual std::any visitDiia_head(TsilParser::Diia_headContext *context) = 0;
 
     virtual std::any visitDiia(TsilParser::DiiaContext *context) = 0;
@@ -50,6 +56,8 @@ public:
     virtual std::any visitAssign(TsilParser::AssignContext *context) = 0;
 
     virtual std::any visitSet(TsilParser::SetContext *context) = 0;
+
+    virtual std::any visitSizeof(TsilParser::SizeofContext *context) = 0;
 
     virtual std::any visitCall(TsilParser::CallContext *context) = 0;
 
@@ -73,15 +81,21 @@ public:
 
     virtual std::any visitArithmetic_mul(TsilParser::Arithmetic_mulContext *context) = 0;
 
+    virtual std::any visitAs(TsilParser::AsContext *context) = 0;
+
     virtual std::any visitArithmetic_add(TsilParser::Arithmetic_addContext *context) = 0;
 
     virtual std::any visitComparison(TsilParser::ComparisonContext *context) = 0;
+
+    virtual std::any visitAtom_constructor(TsilParser::Atom_constructorContext *context) = 0;
 
     virtual std::any visitBitwise(TsilParser::BitwiseContext *context) = 0;
 
     virtual std::any visitValue_atom(TsilParser::Value_atomContext *context) = 0;
 
     virtual std::any visitLogical(TsilParser::LogicalContext *context) = 0;
+
+    virtual std::any visitAtom_sizeof(TsilParser::Atom_sizeofContext *context) = 0;
 
     virtual std::any visitIdentifiers_chain(TsilParser::Identifiers_chainContext *context) = 0;
 

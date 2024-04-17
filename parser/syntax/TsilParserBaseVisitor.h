@@ -47,6 +47,18 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitConstructor(TsilParser::ConstructorContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitConstructor_args(TsilParser::Constructor_argsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitConstructor_arg(TsilParser::Constructor_argContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitDiia_head(TsilParser::Diia_headContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -76,6 +88,10 @@ public:
   }
 
   virtual std::any visitSet(TsilParser::SetContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSizeof(TsilParser::SizeofContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -123,11 +139,19 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitAs(TsilParser::AsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitArithmetic_add(TsilParser::Arithmetic_addContext *ctx) override {
     return visitChildren(ctx);
   }
 
   virtual std::any visitComparison(TsilParser::ComparisonContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitAtom_constructor(TsilParser::Atom_constructorContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -140,6 +164,10 @@ public:
   }
 
   virtual std::any visitLogical(TsilParser::LogicalContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitAtom_sizeof(TsilParser::Atom_sizeofContext *ctx) override {
     return visitChildren(ctx);
   }
 

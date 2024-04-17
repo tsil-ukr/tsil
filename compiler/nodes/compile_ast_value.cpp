@@ -21,6 +21,15 @@ namespace tsil::compiler {
     if (ast_value->kind == tsil::ast::KindGetPointerNode) {
       return this->compile_get_pointer_node(ast_value);
     }
+    if (ast_value->kind == tsil::ast::KindConstructorNode) {
+      return this->compile_constructor_node(ast_value);
+    }
+    if (ast_value->kind == tsil::ast::KindSizeofNode) {
+      return this->compile_sizeof_node(ast_value);
+    }
+    if (ast_value->kind == tsil::ast::KindAsNode) {
+      return this->compile_as_node(ast_value);
+    }
     return {nullptr, nullptr,
             new CompilerError(
                 "Unknown ASTValue kind: " +

@@ -12,8 +12,12 @@ program_element: structure | diia_declaration |  diia | if | while | define | as
 structure: 'структура' s_name=identifier ('<' s_generics=structure_generics '>')? '{' (s_params=structure_params)? '}';
 structure_generics: structure_generic (',' structure_generic)*;
 structure_generic: sg_name=identifier;
-structure_params: (structure_param ';')+;
+structure_params: structure_param (',' structure_param)* ','?;
 structure_param: sp_name=identifier ':' sp_type=type;
+
+constructor: (c_new='покласти')? c_type=type '{' (c_args=constructor_args)? '}';
+constructor_args: constructor_arg (',' constructor_arg)* ','?;
+constructor_arg: ca_name=identifier '=' ca_value=expr;
 
 diia_head: 'дія' d_name=identifier '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' (':' d_type=type)?;
 diia: (d_extern='екстерн')? d_head=diia_head '{' (d_body=body)? '}';
@@ -30,6 +34,8 @@ assign: a_id=identifier '=' a_value=expr;
 
 set: s_left=identifiers_chain '.' s_id=identifier '=' s_value=expr;
 
+sizeof: 'розмір типу' s_type=type;
+
 atom: number #atom_number
     | string #atom_string
     | identifier #atom_identifier
@@ -42,6 +48,9 @@ atom: number #atom_number
     | '(' n_value=expr ')' #nested;
 
 expr: atom #value_atom
+     | constructor #atom_constructor
+     | sizeof #atom_sizeof
+     | a_left=atom 'як' a_type=type #as
      | a_left=expr a_operation=('*' | '/' | '%') a_right=expr #arithmetic_mul
      | a_left=expr a_operation=('+' | '-') a_right=expr #arithmetic_add
      | b_left=expr b_operation=bitwise_op b_right=expr #bitwise

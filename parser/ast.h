@@ -36,6 +36,10 @@ namespace tsil::ast {
   struct UnaryNode;
   struct WhileNode;
   struct BlockNode;
+  struct ConstructorNode;
+  struct ConstructorArgNode;
+  struct SizeofNode;
+  struct AsNode;
 
   enum BinaryOp {
     ARITHMETIC_ADD,
@@ -103,6 +107,10 @@ namespace tsil::ast {
     KindUnaryNode,
     KindWhileNode,
     KindBlockNode,
+    KindConstructorNode,
+    KindConstructorArgNode,
+    KindSizeofNode,
+    KindAsNode,
   };
 
   std::string ast_value_kind_to_string(ASTValueKind kind);
@@ -136,6 +144,10 @@ namespace tsil::ast {
     tsil::ast::UnaryNode* UnaryNode;
     tsil::ast::WhileNode* WhileNode;
     tsil::ast::BlockNode* BlockNode;
+    tsil::ast::ConstructorNode* ConstructorNode;
+    tsil::ast::ConstructorArgNode* ConstructorArgNode;
+    tsil::ast::SizeofNode* SizeofNode;
+    tsil::ast::AsNode* AsNode;
   };
 
   struct ASTValue {
@@ -273,6 +285,25 @@ namespace tsil::ast {
 
   struct BlockNode {
     std::vector<ASTValue*> body;
+  };
+
+  struct ConstructorNode {
+    ASTValue* type;
+    std::vector<ASTValue*> args;
+  };
+
+  struct ConstructorArgNode {
+    std::string id;
+    ASTValue* value;
+  };
+
+  struct SizeofNode {
+    ASTValue* value;
+  };
+
+  struct AsNode {
+    ASTValue* value;
+    ASTValue* type;
   };
 } // namespace tsil::ast
 #endif // TSIL_AST_H

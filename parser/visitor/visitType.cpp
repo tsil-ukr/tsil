@@ -4,10 +4,9 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitType(TsilParser::TypeContext* context) {
     const auto type_node = new ast::TypeNode();
     type_node->id = context->identifier()->getText();
-    std::vector<ast::ASTValue*> generics;
     if (context->t_first_generic_type) {
       for (const auto generic : context->type()) {
-        generics.push_back(AAV(visitType(generic)));
+        type_node->generics.push_back(AAV(visitType(generic)));
       }
     }
     return AV(context, ast::KindTypeNode, type_node);

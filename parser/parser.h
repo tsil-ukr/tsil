@@ -136,6 +136,23 @@ namespace tsil::parser {
 
     std::any visitReturn_body_element(
         TsilParser::Return_body_elementContext* ctx) override;
+
+    std::any visitConstructor(TsilParser::ConstructorContext* ctx) override;
+
+    std::any visitConstructor_args(
+        TsilParser::Constructor_argsContext* ctx) override;
+
+    std::any visitConstructor_arg(
+        TsilParser::Constructor_argContext* ctx) override;
+
+    std::any visitAtom_constructor(
+        TsilParser::Atom_constructorContext* ctx) override;
+
+    std::any visitSizeof(TsilParser::SizeofContext* ctx) override;
+
+    std::any visitAtom_sizeof(TsilParser::Atom_sizeofContext* ctx) override;
+
+    std::any visitAs(TsilParser::AsContext* ctx) override;
   };
 
   struct TsilParserError {

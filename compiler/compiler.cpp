@@ -36,6 +36,13 @@ namespace tsil::compiler {
 
   MakeTypeResult CompilationScope::makeType(const std::string& name,
                                             std::vector<Type*> generic_values) {
+    if (name == "комірка") {
+      if (generic_values.empty()) {
+        return {this->state->voidPointerType};
+      }
+      const auto type = generic_values[0]->getPointerType();
+      return {type, ""};
+    }
     if (this->state->types.contains(name)) {
       if (!generic_values.empty()) {
         return {nullptr, "Тип \"" + name + "\" не є шаблонним"};
@@ -53,6 +60,7 @@ namespace tsil::compiler {
       const auto type = new Type();
       type->type = TypeTypeStructureInstance;
       type->name = name;
+      type->generic_values = generic_values;
       state->types_cache.insert_or_assign({structure, generic_values}, type);
       std::vector<llvm::Type*> LSElements;
       for (const auto& [structure_field_name, structure_field] :
@@ -80,6 +88,27 @@ namespace tsil::compiler {
     return {nullptr, "Структуру \"" + name + "\" не знайдено"};
   }
 
+  MakeTypeResult CompilationScope::makeTypeFromTypeNodeASTValue(
+      tsil::ast::ASTValue* ast_value) {
+    const auto type_node = ast_value->data.TypeNode;
+    const auto type_name = type_node->id;
+    std::vector<Type*> generic_values;
+    for (const auto& generic_ast_value : type_node->generics) {
+      const auto generic_type_node = generic_ast_value->data.TypeNode;
+      const auto generic_type_result = this->makeType(
+          generic_type_node->id, {}); // todo: handle inner generics
+      if (!generic_type_result.type) {
+        return {nullptr, generic_type_result.error};
+      }
+      generic_values.push_back(generic_type_result.type);
+    }
+    const auto type_result = this->makeType(type_name, generic_values);
+    if (!type_result.type) {
+      return {nullptr, type_result.error};
+    }
+    return {type_result.type, ""};
+  }
+
   Structure* CompilationScope::createStructure(
       const std::string& name,
       const std::vector<std::string>& generic_definitions,
@@ -96,6 +125,17 @@ namespace tsil::compiler {
                               llvm::Value* LV) {
     if (this == target_type) {
       return LV;
+    }
+    if (this->type == TypeTypePointer && target_type->type == TypeTypePointer) {
+      return scope->state->Builder->CreatePointerCast(LV, target_type->LT);
+    }
+    if (this == scope->state->voidPointerType &&
+        target_type->type == TypeTypePointer) {
+      return scope->state->Builder->CreatePointerCast(LV, target_type->LT);
+    }
+    if (this->type == TypeTypePointer &&
+        target_type == scope->state->voidPointerType) {
+      return scope->state->Builder->CreatePointerCast(LV, target_type->LT);
     }
     if (this == scope->state->int8Type &&
         target_type == scope->state->int16Type) {
@@ -178,5 +218,40 @@ namespace tsil::compiler {
       return scope->state->Builder->CreateSIToFP(LV, target_type->LT);
     }
     return nullptr;
+  }
+
+  std::string Type::getFullName() {
+    std::string result = this->name;
+    if (!this->generic_values.empty()) {
+      result += "<";
+      bool first = true;
+      for (const auto& generic_value_type : this->generic_values) {
+        if (!first) {
+          result += ", ";
+        }
+        first = false;
+        result += generic_value_type->getFullName();
+      }
+      result += ">";
+    }
+    return result;
+  }
+
+  Type* Type::getPointerType() {
+    if (this->cached_pointer_type) {
+      return this->cached_pointer_type;
+    }
+    const auto type = new Type();
+    type->type = TypeTypePointer;
+    type->name = "комірка";
+    type->pointer_to = this;
+    type->generic_values.push_back(this);
+    type->LT = llvm::PointerType::get(this->LT, 0);
+    this->cached_pointer_type = type;
+    return type;
+  }
+
+  size_t Type::getSizeOf(CompilationScope* scope) {
+    return 0; // todo
   }
 } // namespace tsil::compiler

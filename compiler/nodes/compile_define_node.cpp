@@ -27,12 +27,10 @@ namespace tsil::compiler {
         return {value_result.error};
       }
       if (type) {
-        value_result.LV =
-            value_result.type->castToLV(this, type, value_result.LV);
-        if (!value_result.LV) {
-          return {new CompilerError("Тип \"" + value_result.type->name +
-                                    "\" не сумісний з типом \"" + type->name +
-                                    "\"")};
+        if (value_result.type != type) {
+          return {new CompilerError(
+              "Тип \"" + value_result.type->getFullName() +
+              "\" не сумісний з типом \"" + type->getFullName() + "\"")};
         }
       } else {
         type = value_result.type;

@@ -1,27 +1,6 @@
 #include "../compiler.h"
 
 namespace tsil::compiler {
-  MakeTypeResult CompilationScope::makeTypeFromTypeNodeASTValue(
-      tsil::ast::ASTValue* ast_value) {
-    const auto type_node = ast_value->data.TypeNode;
-    const auto type_name = type_node->id;
-    std::vector<Type*> generic_values;
-    for (const auto& generic_ast_value : type_node->generics) {
-      const auto generic_type_node = generic_ast_value->data.TypeNode;
-      const auto generic_type_result = this->makeType(
-          generic_type_node->id, {}); // todo: handle inner generics
-      if (!generic_type_result.type) {
-        return {nullptr, generic_type_result.error};
-      }
-      generic_values.push_back(generic_type_result.type);
-    }
-    const auto type_result = this->makeType(type_name, generic_values);
-    if (!type_result.type) {
-      return {nullptr, type_result.error};
-    }
-    return {type_result.type, ""};
-  }
-
   CompilerDiiaResult CompilationScope::compile_diia_head_node(
       tsil::ast::DiiaHeadNode* diia_head_node) {
     if (this->has_variable(diia_head_node->id)) {
@@ -126,14 +105,12 @@ namespace tsil::compiler {
           return {nullptr, nullptr, return_result.error};
         }
         verifyFunction(*LF);
-        const auto returnCastLV = return_result.type->castToLV(
-            diia_scope, diia_type->diia_result_type, return_result.LV);
-        if (!returnCastLV) {
+        if (return_result.type != diia_type->diia_result_type) {
           return {nullptr, nullptr,
                   new CompilerError("Невірний тип результату дії \"" +
-                                    diia_type->name + "\"")};
+                                    diia_type->getFullName() + "\"")};
         }
-        diia_scope->state->Builder->CreateRet(returnCastLV);
+        diia_scope->state->Builder->CreateRet(return_result.LV);
         returned = true;
         break;
       } else {

@@ -7,12 +7,14 @@ set(TSIL_PARSER tsil_parser CACHE INTERNAL "")
 set(TSIL_PARSER_SRC
         visitor/visitArgs.cpp
         visitor/visitArithmetic.cpp
+        visitor/visitAs.cpp
         visitor/visitAssign.cpp
         visitor/visitBitwise.cpp
         visitor/visitBitwise_not.cpp
         visitor/visitBody.cpp
         visitor/visitCall.cpp
         visitor/visitComparison.cpp
+        visitor/visitConstructor.cpp
         visitor/visitDefine.cpp
         visitor/visitDiia.cpp
         visitor/visitFile.cpp
@@ -27,6 +29,7 @@ set(TSIL_PARSER_SRC
         visitor/visitPositive.cpp
         visitor/visitProgram.cpp
         visitor/visitSet.cpp
+        visitor/visitSizeof.cpp
         visitor/visitString.cpp
         visitor/visitStructure.cpp
         visitor/visitLogical.cpp

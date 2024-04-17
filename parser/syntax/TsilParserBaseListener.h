@@ -40,6 +40,15 @@ public:
   virtual void enterStructure_param(TsilParser::Structure_paramContext * /*ctx*/) override { }
   virtual void exitStructure_param(TsilParser::Structure_paramContext * /*ctx*/) override { }
 
+  virtual void enterConstructor(TsilParser::ConstructorContext * /*ctx*/) override { }
+  virtual void exitConstructor(TsilParser::ConstructorContext * /*ctx*/) override { }
+
+  virtual void enterConstructor_args(TsilParser::Constructor_argsContext * /*ctx*/) override { }
+  virtual void exitConstructor_args(TsilParser::Constructor_argsContext * /*ctx*/) override { }
+
+  virtual void enterConstructor_arg(TsilParser::Constructor_argContext * /*ctx*/) override { }
+  virtual void exitConstructor_arg(TsilParser::Constructor_argContext * /*ctx*/) override { }
+
   virtual void enterDiia_head(TsilParser::Diia_headContext * /*ctx*/) override { }
   virtual void exitDiia_head(TsilParser::Diia_headContext * /*ctx*/) override { }
 
@@ -63,6 +72,9 @@ public:
 
   virtual void enterSet(TsilParser::SetContext * /*ctx*/) override { }
   virtual void exitSet(TsilParser::SetContext * /*ctx*/) override { }
+
+  virtual void enterSizeof(TsilParser::SizeofContext * /*ctx*/) override { }
+  virtual void exitSizeof(TsilParser::SizeofContext * /*ctx*/) override { }
 
   virtual void enterCall(TsilParser::CallContext * /*ctx*/) override { }
   virtual void exitCall(TsilParser::CallContext * /*ctx*/) override { }
@@ -97,11 +109,17 @@ public:
   virtual void enterArithmetic_mul(TsilParser::Arithmetic_mulContext * /*ctx*/) override { }
   virtual void exitArithmetic_mul(TsilParser::Arithmetic_mulContext * /*ctx*/) override { }
 
+  virtual void enterAs(TsilParser::AsContext * /*ctx*/) override { }
+  virtual void exitAs(TsilParser::AsContext * /*ctx*/) override { }
+
   virtual void enterArithmetic_add(TsilParser::Arithmetic_addContext * /*ctx*/) override { }
   virtual void exitArithmetic_add(TsilParser::Arithmetic_addContext * /*ctx*/) override { }
 
   virtual void enterComparison(TsilParser::ComparisonContext * /*ctx*/) override { }
   virtual void exitComparison(TsilParser::ComparisonContext * /*ctx*/) override { }
+
+  virtual void enterAtom_constructor(TsilParser::Atom_constructorContext * /*ctx*/) override { }
+  virtual void exitAtom_constructor(TsilParser::Atom_constructorContext * /*ctx*/) override { }
 
   virtual void enterBitwise(TsilParser::BitwiseContext * /*ctx*/) override { }
   virtual void exitBitwise(TsilParser::BitwiseContext * /*ctx*/) override { }
@@ -111,6 +129,9 @@ public:
 
   virtual void enterLogical(TsilParser::LogicalContext * /*ctx*/) override { }
   virtual void exitLogical(TsilParser::LogicalContext * /*ctx*/) override { }
+
+  virtual void enterAtom_sizeof(TsilParser::Atom_sizeofContext * /*ctx*/) override { }
+  virtual void exitAtom_sizeof(TsilParser::Atom_sizeofContext * /*ctx*/) override { }
 
   virtual void enterIdentifiers_chain(TsilParser::Identifiers_chainContext * /*ctx*/) override { }
   virtual void exitIdentifiers_chain(TsilParser::Identifiers_chainContext * /*ctx*/) override { }

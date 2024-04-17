@@ -220,12 +220,13 @@ int main(int argc, char** argv) {
       state->globalScope = new tsil::compiler::CompilationScope();
       state->globalScope->state = state;
 
-      const auto voidType = new tsil::compiler::Type();
-      voidType->type = tsil::compiler::TypeTypeNative;
-      voidType->name = "невідома_комірка";
-      voidType->LT = PointerType::get(Type::getVoidTy(*state->Context), 0);
-      state->types["невідома_комірка"] = voidType;
-      state->voidType = voidType;
+      const auto voidPointerType = new tsil::compiler::Type();
+      voidPointerType->type = tsil::compiler::TypeTypeNative;
+      voidPointerType->name = "невідома_комірка";
+      voidPointerType->LT =
+          PointerType::get(Type::getVoidTy(*state->Context), 0);
+      state->types["невідома_комірка"] = voidPointerType;
+      state->voidPointerType = voidPointerType;
 
       const auto int8Type = new tsil::compiler::Type();
       int8Type->type = tsil::compiler::TypeTypeNative;
@@ -250,9 +251,9 @@ int main(int argc, char** argv) {
 
       const auto int64Type = new tsil::compiler::Type();
       int64Type->type = tsil::compiler::TypeTypeNative;
-      int64Type->name = "ц64";
+      int64Type->name = "ціле";
       int64Type->LT = Type::getInt64Ty(*state->Context);
-      state->types["ц64"] = int64Type;
+      state->types["ціле"] = int64Type;
       state->int64Type = int64Type;
 
       const auto floatType = new tsil::compiler::Type();
@@ -264,42 +265,42 @@ int main(int argc, char** argv) {
 
       const auto doubleType = new tsil::compiler::Type();
       doubleType->type = tsil::compiler::TypeTypeNative;
-      doubleType->name = "д64";
+      doubleType->name = "дійсне";
       doubleType->LT = Type::getDoubleTy(*state->Context);
-      state->types["д64"] = doubleType;
+      state->types["дійсне"] = doubleType;
       state->doubleType = doubleType;
 
       const auto uint8Type = new tsil::compiler::Type();
       uint8Type->type = tsil::compiler::TypeTypeNative;
-      uint8Type->name = "б8";
+      uint8Type->name = "п8";
       uint8Type->LT = Type::getInt8Ty(*state->Context);
-      state->types["б8"] = uint8Type;
+      state->types["п8"] = uint8Type;
       state->uint8Type = uint8Type;
 
       const auto uint16Type = new tsil::compiler::Type();
       uint16Type->type = tsil::compiler::TypeTypeNative;
-      uint16Type->name = "б16";
+      uint16Type->name = "п16";
       uint16Type->LT = Type::getInt16Ty(*state->Context);
-      state->types["б16"] = uint16Type;
+      state->types["п16"] = uint16Type;
       state->uint16Type = uint16Type;
 
       const auto uint32Type = new tsil::compiler::Type();
       uint32Type->type = tsil::compiler::TypeTypeNative;
-      uint32Type->name = "б32";
+      uint32Type->name = "п32";
       uint32Type->LT = Type::getInt32Ty(*state->Context);
-      state->types["б32"] = uint32Type;
+      state->types["п32"] = uint32Type;
       state->uint32Type = uint32Type;
 
       const auto uint64Type = new tsil::compiler::Type();
       uint64Type->type = tsil::compiler::TypeTypeNative;
-      uint64Type->name = "б64";
+      uint64Type->name = "позитивне";
       uint64Type->LT = Type::getInt64Ty(*state->Context);
-      state->types["б64"] = uint64Type;
+      state->types["позитивне"] = uint64Type;
       state->uint64Type = uint64Type;
 
       /*
        * структура текст {
-       *   розмір: ц64; // розмір даних мінус 1
+       *   розмір: ціле; // розмір даних мінус 1
        *   дані: комірка<ц8>; // останній байт завжди 0
        * }
        */
@@ -310,8 +311,10 @@ int main(int argc, char** argv) {
           tsil::compiler::StructureField{
               .index = 0, .type = int64Type, .generic_type_index = 0});
       stringStructure->fields.insert_or_assign(
-          "дані", tsil::compiler::StructureField{
-                      .index = 1, .type = voidType, .generic_type_index = 0});
+          "дані",
+          tsil::compiler::StructureField{.index = 1,
+                                         .type = uint8Type->getPointerType(),
+                                         .generic_type_index = 0});
       state->structures.insert_or_assign("текст", stringStructure);
 
       const auto textTypeResult = state->globalScope->makeType("текст", {});

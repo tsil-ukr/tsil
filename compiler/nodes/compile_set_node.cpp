@@ -21,13 +21,11 @@ namespace tsil::compiler {
     if (value_result.error) {
       return {value_result.error};
     }
-    const auto castedLV =
-        value_result.type->castToLV(this, field.type, value_result.LV);
-    if (!castedLV) {
+    if (value_result.type != field.type) {
       return {new CompilerError("Невірний тип властивості \"" + set_node->id +
-                                "\": очікується \"" + field.type->name +
-                                "\", отримано \"" + value_result.type->name +
-                                "\"")};
+                                "\": очікується \"" +
+                                field.type->getFullName() + "\", отримано \"" +
+                                value_result.type->getFullName() + "\"")};
     }
     const auto LV = this->state->Builder->CreateGEP(
         left_result.type->LT, left_result.LV,
@@ -35,7 +33,7 @@ namespace tsil::compiler {
          llvm::ConstantInt::get(*this->state->Context,
                                 llvm::APInt(32, field.index))},
         "set");
-    this->state->Builder->CreateStore(castedLV, LV);
+    this->state->Builder->CreateStore(value_result.LV, LV);
     return {nullptr};
   }
 } // namespace tsil::compiler

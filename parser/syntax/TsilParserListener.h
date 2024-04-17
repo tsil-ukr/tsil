@@ -38,6 +38,15 @@ public:
   virtual void enterStructure_param(TsilParser::Structure_paramContext *ctx) = 0;
   virtual void exitStructure_param(TsilParser::Structure_paramContext *ctx) = 0;
 
+  virtual void enterConstructor(TsilParser::ConstructorContext *ctx) = 0;
+  virtual void exitConstructor(TsilParser::ConstructorContext *ctx) = 0;
+
+  virtual void enterConstructor_args(TsilParser::Constructor_argsContext *ctx) = 0;
+  virtual void exitConstructor_args(TsilParser::Constructor_argsContext *ctx) = 0;
+
+  virtual void enterConstructor_arg(TsilParser::Constructor_argContext *ctx) = 0;
+  virtual void exitConstructor_arg(TsilParser::Constructor_argContext *ctx) = 0;
+
   virtual void enterDiia_head(TsilParser::Diia_headContext *ctx) = 0;
   virtual void exitDiia_head(TsilParser::Diia_headContext *ctx) = 0;
 
@@ -61,6 +70,9 @@ public:
 
   virtual void enterSet(TsilParser::SetContext *ctx) = 0;
   virtual void exitSet(TsilParser::SetContext *ctx) = 0;
+
+  virtual void enterSizeof(TsilParser::SizeofContext *ctx) = 0;
+  virtual void exitSizeof(TsilParser::SizeofContext *ctx) = 0;
 
   virtual void enterCall(TsilParser::CallContext *ctx) = 0;
   virtual void exitCall(TsilParser::CallContext *ctx) = 0;
@@ -95,11 +107,17 @@ public:
   virtual void enterArithmetic_mul(TsilParser::Arithmetic_mulContext *ctx) = 0;
   virtual void exitArithmetic_mul(TsilParser::Arithmetic_mulContext *ctx) = 0;
 
+  virtual void enterAs(TsilParser::AsContext *ctx) = 0;
+  virtual void exitAs(TsilParser::AsContext *ctx) = 0;
+
   virtual void enterArithmetic_add(TsilParser::Arithmetic_addContext *ctx) = 0;
   virtual void exitArithmetic_add(TsilParser::Arithmetic_addContext *ctx) = 0;
 
   virtual void enterComparison(TsilParser::ComparisonContext *ctx) = 0;
   virtual void exitComparison(TsilParser::ComparisonContext *ctx) = 0;
+
+  virtual void enterAtom_constructor(TsilParser::Atom_constructorContext *ctx) = 0;
+  virtual void exitAtom_constructor(TsilParser::Atom_constructorContext *ctx) = 0;
 
   virtual void enterBitwise(TsilParser::BitwiseContext *ctx) = 0;
   virtual void exitBitwise(TsilParser::BitwiseContext *ctx) = 0;
@@ -109,6 +127,9 @@ public:
 
   virtual void enterLogical(TsilParser::LogicalContext *ctx) = 0;
   virtual void exitLogical(TsilParser::LogicalContext *ctx) = 0;
+
+  virtual void enterAtom_sizeof(TsilParser::Atom_sizeofContext *ctx) = 0;
+  virtual void exitAtom_sizeof(TsilParser::Atom_sizeofContext *ctx) = 0;
 
   virtual void enterIdentifiers_chain(TsilParser::Identifiers_chainContext *ctx) = 0;
   virtual void exitIdentifiers_chain(TsilParser::Identifiers_chainContext *ctx) = 0;
