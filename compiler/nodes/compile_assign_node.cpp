@@ -2,6 +2,7 @@
 
 namespace tsil::compiler {
   CompilerResult CompilationScope::compile_assign_node(
+      x::Function* function,
       tsil::ast::ASTValue* ast_value) {
     const auto assign_node = ast_value->data.AssignNode;
     if (this->state->structures.contains(assign_node->id)) {
@@ -17,11 +18,13 @@ namespace tsil::compiler {
       return {new CompilerError("Неможливо перевизначити субʼєкт \"" +
                                 assign_node->id + "\"")};
     }
-    const auto value_result = this->compile_ast_value(assign_node->value);
+    const auto value_result =
+        this->compile_ast_value(function, assign_node->value);
     if (value_result.error) {
       return {value_result.error};
     }
-    this->state->Builder->CreateStore(value_result.LV, variable.second);
+    this->state->Module->pushFunctionBlockStoreInstruction(
+        function->blocks["entry"], value_result.LV, variable.second);
     return {nullptr};
   }
 } // namespace tsil::compiler

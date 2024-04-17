@@ -65,8 +65,6 @@ public:
 
     virtual std::any visitNot(TsilParser::NotContext *context) = 0;
 
-    virtual std::any visitAtom_number(TsilParser::Atom_numberContext *context) = 0;
-
     virtual std::any visitBitwise_not(TsilParser::Bitwise_notContext *context) = 0;
 
     virtual std::any visitGet(TsilParser::GetContext *context) = 0;
@@ -76,6 +74,10 @@ public:
     virtual std::any visitPositive(TsilParser::PositiveContext *context) = 0;
 
     virtual std::any visitNested(TsilParser::NestedContext *context) = 0;
+
+    virtual std::any visitValue_atom(TsilParser::Value_atomContext *context) = 0;
+
+    virtual std::any visitAtom_number(TsilParser::Atom_numberContext *context) = 0;
 
     virtual std::any visitAtom_string(TsilParser::Atom_stringContext *context) = 0;
 
@@ -91,7 +93,7 @@ public:
 
     virtual std::any visitBitwise(TsilParser::BitwiseContext *context) = 0;
 
-    virtual std::any visitValue_atom(TsilParser::Value_atomContext *context) = 0;
+    virtual std::any visitExpr_molecule(TsilParser::Expr_moleculeContext *context) = 0;
 
     virtual std::any visitLogical(TsilParser::LogicalContext *context) = 0;
 

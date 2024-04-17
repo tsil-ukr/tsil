@@ -1,25 +1,5 @@
-#include <llvm/IR/Value.h>
 #include "../parser/parser.h"
-#include "llvm/ADT/APFloat.h"
-#include "llvm/ADT/STLExtras.h"
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/Constants.h"
-#include "llvm/IR/DerivedTypes.h"
-#include "llvm/IR/Function.h"
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/Instructions.h"
-#include "llvm/IR/LLVMContext.h"
-#include "llvm/IR/LegacyPassManager.h"
-#include "llvm/IR/Module.h"
-#include "llvm/IR/Type.h"
-#include "llvm/IR/Verifier.h"
-#include "llvm/MC/TargetRegistry.h"
-#include "llvm/Support/FileSystem.h"
-#include "llvm/Support/TargetSelect.h"
-#include "llvm/Support/raw_ostream.h"
-#include "llvm/Target/TargetMachine.h"
-#include "llvm/Target/TargetOptions.h"
-#include "llvm/TargetParser/Host.h"
+#include "x.h"
 
 namespace tsil::compiler {
   struct Type;
@@ -60,13 +40,13 @@ namespace tsil::compiler {
     bool diia_is_variadic;
     Type* diia_result_type = nullptr;
     // llvm
-    llvm::Type* LT = nullptr;
+    x::Type* LT = nullptr;
 
     std::string getFullName();
-    Type* getPointerType();
-    llvm::Value* castToLV(CompilationScope* scope,
-                          Type* target_type,
-                          llvm::Value* LV);
+    Type* getPointerType(CompilationScope* scope);
+    x::Value* castToLV(CompilationScope* scope,
+                       Type* target_type,
+                       x::Value* LV);
     size_t getSizeOf(CompilationScope* scope);
   };
 
@@ -92,13 +72,13 @@ namespace tsil::compiler {
 
   struct CompilerValueResult {
     Type* type;
-    llvm::Value* LV;
+    x::Value* LV;
     CompilerError* error;
   };
 
   struct CompilerDiiaResult {
     Type* type;
-    llvm::Function* LF;
+    x::Value* LF;
     CompilerError* error;
   };
 
@@ -108,9 +88,7 @@ namespace tsil::compiler {
   };
 
   struct CompilationState {
-    llvm::LLVMContext* Context;
-    llvm::Module* Module;
-    llvm::IRBuilder<>* Builder;
+    x::Module* Module;
     CompilationScope* globalScope;
     std::map<std::string, Type*> types;
     std::map<std::string, Structure*> structures;
@@ -138,14 +116,12 @@ namespace tsil::compiler {
   struct CompilationScope {
     CompilationScope* parent;
     CompilationState* state;
-    std::map<std::string, std::pair<Type*, llvm::Value*>> variables;
+    std::map<std::string, std::pair<Type*, x::Value*>> variables;
 
     bool has_variable(const std::string& name) const;
-    std::pair<Type*, llvm::Value*> get_variable(const std::string& name);
+    std::pair<Type*, x::Value*> get_variable(const std::string& name);
     void set_variable(const std::string& name,
-                      std::pair<Type*, llvm::Value*> value);
-
-    llvm::AllocaInst* createEntryBlockAlloca(llvm::Type* T, llvm::Function* F);
+                      std::pair<Type*, x::Value*> value);
 
     MakeTypeResult makeType(const std::string& name,
                             std::vector<Type*> generic_values);
@@ -156,28 +132,45 @@ namespace tsil::compiler {
         const std::vector<std::string>& generic_definitions,
         const std::map<std::string, StructureField>& fields);
 
-    CompilerValueResult compile_ast_value(tsil::ast::ASTValue* ast_value);
-    CompilerValueResult compile_call_node(tsil::ast::ASTValue* ast_value);
-    CompilerValueResult compile_identifier_node(tsil::ast::ASTValue* ast_value);
     CompilerValueResult compile_number_node(tsil::ast::ASTValue* ast_value);
-    CompilerValueResult compile_string_node(tsil::ast::ASTValue* ast_value);
+    CompilerValueResult compile_string_node(x::Function* function,
+                                            tsil::ast::ASTValue* ast_value);
 
-    CompilerResult compile_define_node(tsil::ast::ASTValue* ast_value);
-    CompilerResult compile_assign_node(tsil::ast::ASTValue* ast_value);
+    CompilerValueResult compile_ast_value(x::Function* function,
+                                          tsil::ast::ASTValue* ast_value);
+    CompilerValueResult compile_call_node(x::Function* function,
+                                          tsil::ast::ASTValue* ast_value);
+    CompilerValueResult compile_identifier_node(x::Function* function,
+                                                tsil::ast::ASTValue* ast_value);
+
+    CompilerResult compile_define_node(x::Function* function,
+                                       tsil::ast::ASTValue* ast_value);
+    CompilerResult compile_assign_node(x::Function* function,
+                                       tsil::ast::ASTValue* ast_value);
+    CompilerResult compile_set_node(x::Function* function,
+                                    tsil::ast::ASTValue* ast_value);
+    CompilerValueResult compile_get_node(x::Function* function,
+                                         tsil::ast::ASTValue* ast_value);
+    CompilerValueResult compile_get_pointer_node(
+        x::Function* function,
+        tsil::ast::ASTValue* ast_value);
+
+    CompilerValueResult compile_constructor_node(
+        x::Function* function,
+        tsil::ast::ASTValue* ast_value);
+
+    CompilerValueResult compile_as_node(x::Function* function,
+                                        tsil::ast::ASTValue* ast_value);
+
     CompilerDiiaResult compile_diia_head_node(
         tsil::ast::DiiaHeadNode* diia_head_node);
     CompilerDiiaResult compile_diia_node(tsil::ast::ASTValue* ast_value);
     CompilerDiiaResult compile_diia_declaration_node(
         tsil::ast::ASTValue* ast_value);
+
     CompilerStructureResult compile_structure_node(
         tsil::ast::ASTValue* ast_value);
-    CompilerResult compile_set_node(tsil::ast::ASTValue* ast_value);
-    CompilerValueResult compile_get_node(tsil::ast::ASTValue* ast_value);
-    CompilerValueResult compile_get_pointer_node(
-        tsil::ast::ASTValue* ast_value);
-    CompilerValueResult compile_constructor_node(
-        tsil::ast::ASTValue* ast_value);
+
     CompilerValueResult compile_sizeof_node(tsil::ast::ASTValue* ast_value);
-    CompilerValueResult compile_as_node(tsil::ast::ASTValue* ast_value);
   };
 } // namespace tsil::compiler

@@ -2,6 +2,7 @@
 
 namespace tsil::compiler {
   CompilerValueResult CompilationScope::compile_get_pointer_node(
+      x::Function* function,
       tsil::ast::ASTValue* ast_value) {
     const auto get_pointer_node = ast_value->data.GetPointerNode;
     if (get_pointer_node->value->kind == ast::KindIdentifierNode) {
@@ -20,7 +21,8 @@ namespace tsil::compiler {
                                 "\" не визначено")};
     } else if (get_pointer_node->value->kind == ast::KindGetNode) {
       const auto get_node = get_pointer_node->value->data.GetNode;
-      CompilerValueResult left = this->compile_ast_value(get_node->left);
+      CompilerValueResult left =
+          this->compile_ast_value(function, get_node->left);
       if (left.error) {
         return left;
       }
@@ -33,16 +35,14 @@ namespace tsil::compiler {
                                   "\" не знайдено")};
       }
       const auto field = left.type->structure_instance_fields[get_node->id];
-      const auto LV = this->state->Builder->CreateGEP(
-          left.type->LT, left.LV,
-          {llvm::ConstantInt::get(*this->state->Context, llvm::APInt(32, 0)),
-           llvm::ConstantInt::get(*this->state->Context,
-                                  llvm::APInt(32, field.index))},
-          "gep");
+      const auto LV =
+          this->state->Module->pushFunctionBlockGetElementPtrInstruction(
+              function->blocks["entry"], left.type->LT, left.LV,
+              {0, static_cast<unsigned long>(field.index)});
       return {field.type, LV, nullptr};
 
     } else {
-      return this->compile_ast_value(get_pointer_node->value);
+      return this->compile_ast_value(function, get_pointer_node->value);
     }
   }
 } // namespace tsil::compiler

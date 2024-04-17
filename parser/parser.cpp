@@ -320,6 +320,10 @@ namespace tsil::parser {
     if (const auto as_context = dynamic_cast<TsilParser::AsContext*>(context)) {
       return visitAs(as_context);
     }
+    if (const auto expr_molecule_context =
+            dynamic_cast<TsilParser::Expr_moleculeContext*>(context)) {
+      return visitExpr_molecule(expr_molecule_context);
+    }
     return nullptr;
   }
 

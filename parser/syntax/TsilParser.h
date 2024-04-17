@@ -28,11 +28,11 @@ public:
     RuleStructure_param = 7, RuleConstructor = 8, RuleConstructor_args = 9, 
     RuleConstructor_arg = 10, RuleDiia_head = 11, RuleDiia = 12, RuleDiia_declaration = 13, 
     RuleIf = 14, RuleWhile = 15, RuleDefine = 16, RuleAssign = 17, RuleSet = 18, 
-    RuleSizeof = 19, RuleAtom = 20, RuleExpr = 21, RuleIdentifiers_chain = 22, 
-    RuleType = 23, RuleArgs = 24, RuleParams = 25, RuleParam = 26, RuleBody = 27, 
-    RuleBody_element_or_return = 28, RuleBody_element = 29, RuleReturn_body_element = 30, 
-    RuleBitwise_op = 31, RuleComparison_op = 32, RuleLogical_op = 33, RuleNumber = 34, 
-    RuleString = 35, RuleIdentifier = 36
+    RuleSizeof = 19, RuleAtom = 20, RuleMolecule = 21, RuleExpr = 22, RuleIdentifiers_chain = 23, 
+    RuleType = 24, RuleArgs = 25, RuleParams = 26, RuleParam = 27, RuleBody = 28, 
+    RuleBody_element_or_return = 29, RuleBody_element = 30, RuleReturn_body_element = 31, 
+    RuleBitwise_op = 32, RuleComparison_op = 33, RuleLogical_op = 34, RuleNumber = 35, 
+    RuleString = 36, RuleIdentifier = 37
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -73,6 +73,7 @@ public:
   class SetContext;
   class SizeofContext;
   class AtomContext;
+  class MoleculeContext;
   class ExprContext;
   class Identifiers_chainContext;
   class TypeContext;
@@ -552,17 +553,6 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  Atom_numberContext : public AtomContext {
-  public:
-    Atom_numberContext(AtomContext *ctx);
-
-    NumberContext *number();
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
   class  Bitwise_notContext : public AtomContext {
   public:
     Bitwise_notContext(AtomContext *ctx);
@@ -629,9 +619,46 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  Atom_stringContext : public AtomContext {
+  AtomContext* atom();
+  AtomContext* atom(int precedence);
+  class  MoleculeContext : public antlr4::ParserRuleContext {
   public:
-    Atom_stringContext(AtomContext *ctx);
+    MoleculeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+   
+    MoleculeContext() = default;
+    void copyFrom(MoleculeContext *context);
+    using antlr4::ParserRuleContext::copyFrom;
+
+    virtual size_t getRuleIndex() const override;
+
+   
+  };
+
+  class  Atom_numberContext : public MoleculeContext {
+  public:
+    Atom_numberContext(MoleculeContext *ctx);
+
+    NumberContext *number();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Value_atomContext : public MoleculeContext {
+  public:
+    Value_atomContext(MoleculeContext *ctx);
+
+    AtomContext *atom();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Atom_stringContext : public MoleculeContext {
+  public:
+    Atom_stringContext(MoleculeContext *ctx);
 
     StringContext *string();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -640,8 +667,8 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  AtomContext* atom();
-  AtomContext* atom(int precedence);
+  MoleculeContext* molecule();
+
   class  ExprContext : public antlr4::ParserRuleContext {
   public:
     ExprContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -677,10 +704,10 @@ public:
   public:
     AsContext(ExprContext *ctx);
 
-    TsilParser::AtomContext *a_left = nullptr;
+    TsilParser::MoleculeContext *a_left = nullptr;
     TsilParser::TypeContext *a_type = nullptr;
     antlr4::tree::TerminalNode *KW_AS();
-    AtomContext *atom();
+    MoleculeContext *molecule();
     TypeContext *type();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -748,11 +775,11 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  Value_atomContext : public ExprContext {
+  class  Expr_moleculeContext : public ExprContext {
   public:
-    Value_atomContext(ExprContext *ctx);
+    Expr_moleculeContext(ExprContext *ctx);
 
-    AtomContext *atom();
+    MoleculeContext *molecule();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 

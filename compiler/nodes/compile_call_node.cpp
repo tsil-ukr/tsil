@@ -2,6 +2,7 @@
 
 namespace tsil::compiler {
   CompilerValueResult CompilationScope::compile_call_node(
+      x::Function* function,
       tsil::ast::ASTValue* ast_value) {
     const auto call_node = ast_value->data.CallNode;
     const auto name = call_node->value->data.IdentifierNode->name;
@@ -20,11 +21,11 @@ namespace tsil::compiler {
       return {nullptr, nullptr,
               new CompilerError("Забагато аргументів для дії")};
     }
-    const auto F = llvm::cast<llvm::Function>(variable.second);
-    std::vector<llvm::Value*> LArgs;
+    const auto F = variable.second->function;
+    std::vector<x::Value*> LArgs;
     int arg_index = 0;
     for (const auto& arg_ast_value : call_node->args) {
-      auto arg_result = this->compile_ast_value(arg_ast_value);
+      auto arg_result = this->compile_ast_value(function, arg_ast_value);
       if (arg_result.error) {
         return arg_result;
       }
@@ -40,7 +41,8 @@ namespace tsil::compiler {
       LArgs.push_back(arg_result.LV);
       arg_index++;
     }
-    const auto LV = this->state->Builder->CreateCall(F, LArgs);
+    const auto LV = this->state->Module->pushFunctionBlockCallInstruction(
+        function->blocks["entry"], variable.second, LArgs);
     return {variable.first->diia_result_type, LV, nullptr};
   }
 } // namespace tsil::compiler

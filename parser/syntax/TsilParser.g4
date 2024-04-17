@@ -36,9 +36,7 @@ set: s_left=identifiers_chain '.' s_id=identifier '=' s_value=expr;
 
 sizeof: 'розмір типу' s_type=type;
 
-atom: number #atom_number
-    | string #atom_string
-    | identifier #atom_identifier
+atom: identifier #atom_identifier
     | g_left=atom '.' g_id=identifier #get
     | c_value=atom '(' (c_args=args)? ')' #call
     | '+' p_value=atom  #positive
@@ -47,16 +45,21 @@ atom: number #atom_number
     | '~' bn_value=atom  #bitwise_not
     | '(' n_value=expr ')' #nested;
 
-expr: atom #value_atom
-     | constructor #atom_constructor
-     | sizeof #atom_sizeof
-     | a_left=atom 'як' a_type=type #as
-     | a_left=expr a_operation=('*' | '/' | '%') a_right=expr #arithmetic_mul
-     | a_left=expr a_operation=('+' | '-') a_right=expr #arithmetic_add
-     | b_left=expr b_operation=bitwise_op b_right=expr #bitwise
-     | c_left=expr c_operation=comparison_op c_right=expr #comparison
-     | t_left=expr t_operation=logical_op t_right=expr #logical
-     ;
+// wtf is this?
+molecule: atom #value_atom
+        | number #atom_number
+        | string #atom_string;
+
+expr: molecule #expr_molecule
+    | constructor #atom_constructor
+    | sizeof #atom_sizeof
+    | a_left=molecule 'як' a_type=type #as
+    | a_left=expr a_operation=('*' | '/' | '%') a_right=expr #arithmetic_mul
+    | a_left=expr a_operation=('+' | '-') a_right=expr #arithmetic_add
+    | b_left=expr b_operation=bitwise_op b_right=expr #bitwise
+    | c_left=expr c_operation=comparison_op c_right=expr #comparison
+    | t_left=expr t_operation=logical_op t_right=expr #logical
+    ;
 
 identifiers_chain: ic_id=ID |  ic_left=identifiers_chain '.' ic_right=ID;
 

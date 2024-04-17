@@ -32,22 +32,16 @@ namespace tsil::compiler {
       }
       diia_type->diia_result_type = type_result.type;
     }
-    std::vector<llvm::Type*> LDParams;
+    std::vector<x::Type*> LDParams;
     for (const auto& param : diia_type->diia_parameters) {
       LDParams.push_back(param.type->LT);
     }
-    llvm::Type* LDResultType = llvm::Type::getVoidTy(*state->Context);
+    x::Type* LDResultType = this->state->Module->voidType;
     if (diia_type->diia_result_type) {
       LDResultType = diia_type->diia_result_type->LT;
     }
-    llvm::Function::LinkageTypes linkage = llvm::Function::PrivateLinkage;
-    if (diia_type->diia_is_extern) {
-      linkage = llvm::Function::ExternalLinkage;
-    }
-    const auto LF = llvm::Function::Create(
-        llvm::FunctionType::get(LDResultType, LDParams,
-                                diia_type->diia_is_variadic),
-        linkage, diia_type->name, state->Module);
+    const auto LF = this->state->Module->declareFunction(
+        diia_type->name, LDResultType, LDParams);
     this->set_variable(diia_type->name, {diia_type, LF});
     return {diia_type, LF, nullptr};
   }
@@ -60,20 +54,20 @@ namespace tsil::compiler {
       return diia_head_result;
     }
     const auto diia_type = diia_head_result.type;
-    const auto LF = diia_head_result.LF;
+    const auto LF = diia_head_result.LF->function;
     const auto diia_scope = new CompilationScope(this, this->state);
 
-    const auto BB =
-        llvm::BasicBlock::Create(*diia_scope->state->Context, "entry", LF);
-    diia_scope->state->Builder->SetInsertPoint(BB);
+    const auto BB = this->state->Module->defineFunctionBlock(LF, "entry");
 
-    for (const auto& parameter : diia_type->diia_parameters) {
-      const auto arg = LF->arg_begin();
-      arg->setName(parameter.name);
-      const auto LAI = this->createEntryBlockAlloca(arg->getType(), LF);
-      this->state->Builder->CreateStore(arg, LAI);
-      diia_scope->set_variable(parameter.name, {parameter.type, LAI});
-    }
+    //    for (const auto& parameter : diia_type->diia_parameters) {
+    //      const auto LAI =
+    //      this->state->Module->pushFunctionBlockAllocaInstruction(
+    //          LF->blocks["entry"], parameter.type->LT);
+    //      this->state->Module->pushFunctionBlockStoreInstruction(
+    //          LF->blocks["entry"], LAI);
+    //      //      this->state->Builder->CreateStore(arg, LAI);
+    //      diia_scope->set_variable(parameter.name, {parameter.type, LAI});
+    //    }
 
     bool returned = false;
     for (const auto& body_ast_value : diia_node->body) {
@@ -84,45 +78,45 @@ namespace tsil::compiler {
         continue;
       }
       if (body_ast_value->kind == ast::KindDefineNode) {
-        const auto result = this->compile_define_node(body_ast_value);
+        const auto result = this->compile_define_node(LF, body_ast_value);
         if (result.error) {
           return {nullptr, nullptr, result.error};
         }
       } else if (body_ast_value->kind == ast::KindAssignNode) {
-        const auto result = this->compile_assign_node(body_ast_value);
+        const auto result = this->compile_assign_node(LF, body_ast_value);
         if (result.error) {
           return {nullptr, nullptr, result.error};
         }
       } else if (body_ast_value->kind == ast::KindSetNode) {
-        const auto result = this->compile_set_node(body_ast_value);
+        const auto result = this->compile_set_node(LF, body_ast_value);
         if (result.error) {
           return {nullptr, nullptr, result.error};
         }
       } else if (body_ast_value->kind == tsil::ast::KindReturnNode) {
         const auto return_result = diia_scope->compile_ast_value(
-            body_ast_value->data.ReturnNode->value);
+            LF, body_ast_value->data.ReturnNode->value);
         if (return_result.error) {
           return {nullptr, nullptr, return_result.error};
         }
-        verifyFunction(*LF);
         if (return_result.type != diia_type->diia_result_type) {
           return {nullptr, nullptr,
                   new CompilerError("Невірний тип результату дії \"" +
                                     diia_type->getFullName() + "\"")};
         }
-        diia_scope->state->Builder->CreateRet(return_result.LV);
+        diia_scope->state->Module->pushFunctionBlockRetInstruction(
+            LF->blocks["entry"], return_result.LV);
         returned = true;
         break;
       } else {
-        auto result = diia_scope->compile_ast_value(body_ast_value);
+        auto result = diia_scope->compile_ast_value(LF, body_ast_value);
         if (result.error) {
           return {nullptr, nullptr, result.error};
         }
       }
     }
-    verifyFunction(*LF);
     if (!returned) {
-      diia_scope->state->Builder->CreateRetVoid();
+      diia_scope->state->Module->pushFunctionBlockRetInstruction(
+          LF->blocks["entry"], nullptr);
     }
     return diia_head_result;
   }

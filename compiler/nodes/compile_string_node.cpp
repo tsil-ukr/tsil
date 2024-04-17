@@ -15,12 +15,16 @@ namespace tsil::compiler {
   }
 
   CompilerValueResult CompilationScope::compile_string_node(
+      x::Function* function,
       tsil::ast::ASTValue* ast_value) {
     const auto string_node = ast_value->data.StringNode;
     auto string_value = string_node->value;
     replace_all(string_value, "\\n", "\n");
+    replace_all(string_value, "\\н", "\n");
     replace_all(string_value, "\\t", "\t");
+    replace_all(string_value, "\\т", "\t");
     replace_all(string_value, "\\r", "\r");
+    replace_all(string_value, "\\р", "\r");
     replace_all(string_value, "\\\"", "\"");
     replace_all(string_value, "\\\\", "\\");
     replace_all(string_value, "\\0", "\0");
@@ -28,30 +32,32 @@ namespace tsil::compiler {
     replace_all(string_value, "\\b", "\b");
     replace_all(string_value, "\\f", "\f");
     replace_all(string_value, "\\v", "\v");
-    replace_all(string_value, "\\e", "\e");
+    //    replace_all(string_value, "\\e", "\e");
     replace_all(string_value, "\\?", "\?");
     replace_all(string_value, "\\'", "\'");
     replace_all(string_value, "\\\"", "\"");
-    const auto LV = this->state->Builder->CreateGlobalStringPtr(string_value);
+    const auto LV = this->state->Module->putStringConstant(string_value);
     if (string_node->prefix == "сі") {
-      return {this->state->uint8Type->getPointerType(), LV, nullptr};
+      return {this->state->uint8Type->getPointerType(this), LV, nullptr};
     }
-    const auto LF = this->state->Builder->GetInsertBlock()->getParent();
-    const auto LAI =
-        this->createEntryBlockAlloca(this->state->textType->LT, LF);
-    const auto lengthLGEP = this->state->Builder->CreateGEP(
-        this->state->textType->LT, LAI,
-        {this->state->Builder->getInt32(0), this->state->Builder->getInt32(0)});
-    this->state->Builder->CreateStore(
-        llvm::ConstantInt::get(*state->Context,
-                               llvm::APInt(64, string_value.size())),
+    const auto LAI = this->state->Module->pushFunctionBlockAllocaInstruction(
+        function->blocks["entry"], this->state->textType->LT);
+    const auto lengthLGEP =
+        this->state->Module->pushFunctionBlockGetElementPtrInstruction(
+            function->blocks["entry"], this->state->textType->LT, LAI, {0, 0});
+    this->state->Module->pushFunctionBlockStoreInstruction(
+        function->blocks["entry"],
+        new x::Value{.number =
+                         new x::Number(this->state->Module->int64Type,
+                                       std::to_string(string_value.size()))},
         lengthLGEP);
-    const auto dataLGEP = this->state->Builder->CreateGEP(
-        this->state->textType->LT, LAI,
-        {this->state->Builder->getInt32(0), this->state->Builder->getInt32(1)});
-    this->state->Builder->CreateStore(LV, dataLGEP);
-    const auto LLOAD =
-        this->state->Builder->CreateLoad(LAI->getAllocatedType(), LAI);
+    const auto dataLGEP =
+        this->state->Module->pushFunctionBlockGetElementPtrInstruction(
+            function->blocks["entry"], this->state->textType->LT, LAI, {0, 1});
+    this->state->Module->pushFunctionBlockStoreInstruction(
+        function->blocks["entry"], LV, dataLGEP);
+    const auto LLOAD = this->state->Module->pushFunctionBlockLoadInstruction(
+        function->blocks["entry"], LAI->instruction->alloca->type, LAI);
     return {this->state->textType, LLOAD, nullptr};
   }
 } // namespace tsil::compiler

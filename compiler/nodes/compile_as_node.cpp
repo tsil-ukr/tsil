@@ -2,9 +2,10 @@
 
 namespace tsil::compiler {
   CompilerValueResult CompilationScope::compile_as_node(
+      x::Function* function,
       tsil::ast::ASTValue* ast_value) {
     const auto as_node = ast_value->data.AsNode;
-    const auto left_result = this->compile_ast_value(as_node->value);
+    const auto left_result = this->compile_ast_value(function, as_node->value);
     if (left_result.error) {
       return left_result;
     }

@@ -11,7 +11,7 @@ namespace tsil::compiler {
     return false;
   }
 
-  std::pair<Type*, llvm::Value*> CompilationScope::get_variable(
+  std::pair<Type*, x::Value*> CompilationScope::get_variable(
       const std::string& name) {
     if (this->variables.contains(name)) {
       return this->variables[name];
@@ -23,15 +23,8 @@ namespace tsil::compiler {
   }
 
   void CompilationScope::set_variable(const std::string& name,
-                                      std::pair<Type*, llvm::Value*> value) {
+                                      std::pair<Type*, x::Value*> value) {
     this->variables.insert_or_assign(name, value);
-  }
-
-  llvm::AllocaInst* CompilationScope::createEntryBlockAlloca(
-      llvm::Type* T,
-      llvm::Function* F) {
-    llvm::IRBuilder<> TmpB(&F->getEntryBlock(), F->getEntryBlock().begin());
-    return TmpB.CreateAlloca(T, nullptr, "var");
   }
 
   MakeTypeResult CompilationScope::makeType(const std::string& name,
@@ -40,7 +33,7 @@ namespace tsil::compiler {
       if (generic_values.empty()) {
         return {this->state->voidPointerType};
       }
-      const auto type = generic_values[0]->getPointerType();
+      const auto type = generic_values[0]->getPointerType(this);
       return {type, ""};
     }
     if (this->state->types.contains(name)) {
@@ -62,7 +55,7 @@ namespace tsil::compiler {
       type->name = name;
       type->generic_values = generic_values;
       state->types_cache.insert_or_assign({structure, generic_values}, type);
-      std::vector<llvm::Type*> LSElements;
+      std::vector<x::Type*> LSElements(structure->fields.size());
       for (const auto& [structure_field_name, structure_field] :
            structure->fields) {
         if (structure_field.type) {
@@ -70,7 +63,7 @@ namespace tsil::compiler {
               structure_field_name,
               TypeStructureField{.index = structure_field.index,
                                  .type = structure_field.type});
-          LSElements.push_back(structure_field.type->LT);
+          LSElements[structure_field.index] = structure_field.type->LT;
         } else {
           const auto generic_type =
               generic_values[structure_field.generic_type_index];
@@ -78,11 +71,10 @@ namespace tsil::compiler {
               structure_field_name,
               TypeStructureField{.index = structure_field.index,
                                  .type = generic_type});
-          LSElements.push_back(generic_type->LT);
+          LSElements[structure_field.index] = generic_type->LT;
         }
       }
-      type->LT =
-          llvm::StructType::create(*this->state->Context, LSElements, "ST");
+      type->LT = this->state->Module->defineStructType(name, LSElements);
       return {type, ""};
     }
     return {nullptr, "Структуру \"" + name + "\" не знайдено"};
@@ -120,103 +112,112 @@ namespace tsil::compiler {
     return structure;
   }
 
-  llvm::Value* Type::castToLV(CompilationScope* scope,
-                              Type* target_type,
-                              llvm::Value* LV) {
+  x::Value* Type::castToLV(CompilationScope* scope,
+                           Type* target_type,
+                           x::Value* LV) {
     if (this == target_type) {
       return LV;
     }
-    if (this->type == TypeTypePointer && target_type->type == TypeTypePointer) {
-      return scope->state->Builder->CreatePointerCast(LV, target_type->LT);
+    if (LV->number) {
+      return new x::Value{.number = new x::Number{.type = target_type->LT,
+                                                  .value = LV->number->value}};
     }
-    if (this == scope->state->voidPointerType &&
-        target_type->type == TypeTypePointer) {
-      return scope->state->Builder->CreatePointerCast(LV, target_type->LT);
-    }
-    if (this->type == TypeTypePointer &&
-        target_type == scope->state->voidPointerType) {
-      return scope->state->Builder->CreatePointerCast(LV, target_type->LT);
-    }
-    if (this == scope->state->int8Type &&
-        target_type == scope->state->int16Type) {
-      return scope->state->Builder->CreateSExt(LV, target_type->LT);
-    }
-    if (this == scope->state->int8Type &&
-        target_type == scope->state->int32Type) {
-      return scope->state->Builder->CreateSExt(LV, target_type->LT);
-    }
-    if (this == scope->state->int8Type &&
-        target_type == scope->state->int64Type) {
-      return scope->state->Builder->CreateSExt(LV, target_type->LT);
-    }
-    if (this == scope->state->int16Type &&
-        target_type == scope->state->int32Type) {
-      return scope->state->Builder->CreateSExt(LV, target_type->LT);
-    }
-    if (this == scope->state->int16Type &&
-        target_type == scope->state->int64Type) {
-      return scope->state->Builder->CreateSExt(LV, target_type->LT);
-    }
-    if (this == scope->state->int32Type &&
-        target_type == scope->state->int64Type) {
-      return scope->state->Builder->CreateSExt(LV, target_type->LT);
-    }
-    if (this == scope->state->int16Type &&
-        target_type == scope->state->int8Type) {
-      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
-    }
-    if (this == scope->state->int32Type &&
-        target_type == scope->state->int8Type) {
-      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
-    }
-    if (this == scope->state->int32Type &&
-        target_type == scope->state->int16Type) {
-      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
-    }
-    if (this == scope->state->int64Type &&
-        target_type == scope->state->int8Type) {
-      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
-    }
-    if (this == scope->state->int64Type &&
-        target_type == scope->state->int16Type) {
-      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
-    }
-    if (this == scope->state->int64Type &&
-        target_type == scope->state->int32Type) {
-      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
-    }
-    if (this == scope->state->floatType &&
-        target_type == scope->state->int8Type) {
-      return scope->state->Builder->CreateFPToSI(LV, target_type->LT);
-    }
-    if (this == scope->state->floatType &&
-        target_type == scope->state->int16Type) {
-      return scope->state->Builder->CreateFPToSI(LV, target_type->LT);
-    }
-    if (this == scope->state->floatType &&
-        target_type == scope->state->int32Type) {
-      return scope->state->Builder->CreateFPToSI(LV, target_type->LT);
-    }
-    if (this == scope->state->floatType &&
-        target_type == scope->state->int64Type) {
-      return scope->state->Builder->CreateFPToSI(LV, target_type->LT);
-    }
-    if (this == scope->state->int8Type &&
-        target_type == scope->state->floatType) {
-      return scope->state->Builder->CreateSIToFP(LV, target_type->LT);
-    }
-    if (this == scope->state->int16Type &&
-        target_type == scope->state->floatType) {
-      return scope->state->Builder->CreateSIToFP(LV, target_type->LT);
-    }
-    if (this == scope->state->int32Type &&
-        target_type == scope->state->floatType) {
-      return scope->state->Builder->CreateSIToFP(LV, target_type->LT);
-    }
-    if (this == scope->state->int64Type &&
-        target_type == scope->state->floatType) {
-      return scope->state->Builder->CreateSIToFP(LV, target_type->LT);
-    }
+    return LV;
+    //    if (this->type == TypeTypePointer && target_type->type ==
+    //    TypeTypePointer) {
+    //      return scope->state->Builder->CreatePointerCast(LV,
+    //      target_type->LT);
+    //    }
+    //    if (this == scope->state->voidPointerType &&
+    //        target_type->type == TypeTypePointer) {
+    //      return scope->state->Builder->CreatePointerCast(LV,
+    //      target_type->LT);
+    //    }
+    //    if (this->type == TypeTypePointer &&
+    //        target_type == scope->state->voidPointerType) {
+    //      return scope->state->Builder->CreatePointerCast(LV,
+    //      target_type->LT);
+    //    }
+    //    if (this == scope->state->int8Type &&
+    //        target_type == scope->state->int16Type) {
+    //      return scope->state->Builder->CreateSExt(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int8Type &&
+    //        target_type == scope->state->int32Type) {
+    //      return scope->state->Builder->CreateSExt(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int8Type &&
+    //        target_type == scope->state->int64Type) {
+    //      return scope->state->Builder->CreateSExt(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int16Type &&
+    //        target_type == scope->state->int32Type) {
+    //      return scope->state->Builder->CreateSExt(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int16Type &&
+    //        target_type == scope->state->int64Type) {
+    //      return scope->state->Builder->CreateSExt(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int32Type &&
+    //        target_type == scope->state->int64Type) {
+    //      return scope->state->Builder->CreateSExt(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int16Type &&
+    //        target_type == scope->state->int8Type) {
+    //      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int32Type &&
+    //        target_type == scope->state->int8Type) {
+    //      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int32Type &&
+    //        target_type == scope->state->int16Type) {
+    //      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int64Type &&
+    //        target_type == scope->state->int8Type) {
+    //      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int64Type &&
+    //        target_type == scope->state->int16Type) {
+    //      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int64Type &&
+    //        target_type == scope->state->int32Type) {
+    //      return scope->state->Builder->CreateTrunc(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->floatType &&
+    //        target_type == scope->state->int8Type) {
+    //      return scope->state->Builder->CreateFPToSI(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->floatType &&
+    //        target_type == scope->state->int16Type) {
+    //      return scope->state->Builder->CreateFPToSI(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->floatType &&
+    //        target_type == scope->state->int32Type) {
+    //      return scope->state->Builder->CreateFPToSI(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->floatType &&
+    //        target_type == scope->state->int64Type) {
+    //      return scope->state->Builder->CreateFPToSI(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int8Type &&
+    //        target_type == scope->state->floatType) {
+    //      return scope->state->Builder->CreateSIToFP(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int16Type &&
+    //        target_type == scope->state->floatType) {
+    //      return scope->state->Builder->CreateSIToFP(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int32Type &&
+    //        target_type == scope->state->floatType) {
+    //      return scope->state->Builder->CreateSIToFP(LV, target_type->LT);
+    //    }
+    //    if (this == scope->state->int64Type &&
+    //        target_type == scope->state->floatType) {
+    //      return scope->state->Builder->CreateSIToFP(LV, target_type->LT);
+    //    }
     return nullptr;
   }
 
@@ -237,7 +238,7 @@ namespace tsil::compiler {
     return result;
   }
 
-  Type* Type::getPointerType() {
+  Type* Type::getPointerType(CompilationScope* scope) {
     if (this->cached_pointer_type) {
       return this->cached_pointer_type;
     }
@@ -246,7 +247,7 @@ namespace tsil::compiler {
     type->name = "комірка";
     type->pointer_to = this;
     type->generic_values.push_back(this);
-    type->LT = llvm::PointerType::get(this->LT, 0);
+    type->LT = scope->state->Module->pointerType;
     this->cached_pointer_type = type;
     return type;
   }

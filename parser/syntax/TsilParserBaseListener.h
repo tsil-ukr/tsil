@@ -85,9 +85,6 @@ public:
   virtual void enterNot(TsilParser::NotContext * /*ctx*/) override { }
   virtual void exitNot(TsilParser::NotContext * /*ctx*/) override { }
 
-  virtual void enterAtom_number(TsilParser::Atom_numberContext * /*ctx*/) override { }
-  virtual void exitAtom_number(TsilParser::Atom_numberContext * /*ctx*/) override { }
-
   virtual void enterBitwise_not(TsilParser::Bitwise_notContext * /*ctx*/) override { }
   virtual void exitBitwise_not(TsilParser::Bitwise_notContext * /*ctx*/) override { }
 
@@ -102,6 +99,12 @@ public:
 
   virtual void enterNested(TsilParser::NestedContext * /*ctx*/) override { }
   virtual void exitNested(TsilParser::NestedContext * /*ctx*/) override { }
+
+  virtual void enterValue_atom(TsilParser::Value_atomContext * /*ctx*/) override { }
+  virtual void exitValue_atom(TsilParser::Value_atomContext * /*ctx*/) override { }
+
+  virtual void enterAtom_number(TsilParser::Atom_numberContext * /*ctx*/) override { }
+  virtual void exitAtom_number(TsilParser::Atom_numberContext * /*ctx*/) override { }
 
   virtual void enterAtom_string(TsilParser::Atom_stringContext * /*ctx*/) override { }
   virtual void exitAtom_string(TsilParser::Atom_stringContext * /*ctx*/) override { }
@@ -124,8 +127,8 @@ public:
   virtual void enterBitwise(TsilParser::BitwiseContext * /*ctx*/) override { }
   virtual void exitBitwise(TsilParser::BitwiseContext * /*ctx*/) override { }
 
-  virtual void enterValue_atom(TsilParser::Value_atomContext * /*ctx*/) override { }
-  virtual void exitValue_atom(TsilParser::Value_atomContext * /*ctx*/) override { }
+  virtual void enterExpr_molecule(TsilParser::Expr_moleculeContext * /*ctx*/) override { }
+  virtual void exitExpr_molecule(TsilParser::Expr_moleculeContext * /*ctx*/) override { }
 
   virtual void enterLogical(TsilParser::LogicalContext * /*ctx*/) override { }
   virtual void exitLogical(TsilParser::LogicalContext * /*ctx*/) override { }

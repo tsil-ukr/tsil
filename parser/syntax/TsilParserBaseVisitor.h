@@ -107,10 +107,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitAtom_number(TsilParser::Atom_numberContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitBitwise_not(TsilParser::Bitwise_notContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -128,6 +124,14 @@ public:
   }
 
   virtual std::any visitNested(TsilParser::NestedContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitValue_atom(TsilParser::Value_atomContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitAtom_number(TsilParser::Atom_numberContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -159,7 +163,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitValue_atom(TsilParser::Value_atomContext *ctx) override {
+  virtual std::any visitExpr_molecule(TsilParser::Expr_moleculeContext *ctx) override {
     return visitChildren(ctx);
   }
 

@@ -153,6 +153,8 @@ namespace tsil::parser {
     std::any visitAtom_sizeof(TsilParser::Atom_sizeofContext* ctx) override;
 
     std::any visitAs(TsilParser::AsContext* ctx) override;
+
+    std::any visitExpr_molecule(TsilParser::Expr_moleculeContext* ctx) override;
   };
 
   struct TsilParserError {

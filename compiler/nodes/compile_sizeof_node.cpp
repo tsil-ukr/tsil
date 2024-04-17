@@ -11,7 +11,9 @@ namespace tsil::compiler {
     }
     const auto size = type_result.type->getSizeOf(this);
     return {this->state->int64Type,
-            llvm::ConstantInt::get(*state->Context, llvm::APInt(64, size)),
+            new x::Value{
+                .number = new x::Number{.type = this->state->Module->int64Type,
+                                        .value = std::to_string(size)}},
             nullptr};
   }
 } // namespace tsil::compiler

@@ -2,6 +2,7 @@
 
 namespace tsil::compiler {
   CompilerValueResult CompilationScope::compile_constructor_node(
+      x::Function* function,
       tsil::ast::ASTValue* ast_value) {
     const auto constructor_node = ast_value->data.ConstructorNode;
     const auto type_result =
@@ -12,9 +13,8 @@ namespace tsil::compiler {
     if (type_result.type->type != TypeTypeStructureInstance) {
       return {nullptr, nullptr, new CompilerError("Тип не є структурою")};
     }
-    llvm::Function* LF = this->state->Builder->GetInsertBlock()->getParent();
-    llvm::AllocaInst* LAI =
-        this->createEntryBlockAlloca(type_result.type->LT, LF);
+    const auto LAI = this->state->Module->pushFunctionBlockAllocaInstruction(
+        function->blocks["entry"], type_result.type->LT);
     for (const auto arg : constructor_node->args) {
       const auto constructor_arg_node = arg->data.ConstructorArgNode;
       if (!type_result.type->structure_instance_fields.contains(
@@ -26,7 +26,7 @@ namespace tsil::compiler {
       const auto field =
           type_result.type->structure_instance_fields[constructor_arg_node->id];
       const auto value_result =
-          this->compile_ast_value(constructor_arg_node->value);
+          this->compile_ast_value(function, constructor_arg_node->value);
       if (value_result.error) {
         return {nullptr, nullptr, value_result.error};
       }
@@ -38,16 +38,16 @@ namespace tsil::compiler {
                               field.type->getFullName() + "\", отримано \"" +
                               value_result.type->getFullName() + "\"")};
       }
-      const auto LV = this->state->Builder->CreateGEP(
-          type_result.type->LT, LAI,
-          {llvm::ConstantInt::get(*this->state->Context, llvm::APInt(32, 0)),
-           llvm::ConstantInt::get(*this->state->Context,
-                                  llvm::APInt(32, field.index))},
-          "set");
-      this->state->Builder->CreateStore(value_result.LV, LV);
+      const auto LV =
+          this->state->Module->pushFunctionBlockGetElementPtrInstruction(
+              function->blocks["entry"], type_result.type->LT, LAI,
+              {0, static_cast<unsigned long>(field.index)});
+      this->state->Module->pushFunctionBlockStoreInstruction(
+          function->blocks["entry"], value_result.LV, LV);
     }
-    llvm::Value* loaded_member =
-        this->state->Builder->CreateLoad(type_result.type->LT, LAI);
+    x::Value* loaded_member =
+        this->state->Module->pushFunctionBlockLoadInstruction(
+            function->blocks["entry"], type_result.type->LT, LAI);
     return {type_result.type, loaded_member, nullptr};
   }
 } // namespace tsil::compiler

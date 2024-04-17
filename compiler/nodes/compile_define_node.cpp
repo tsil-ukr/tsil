@@ -2,6 +2,7 @@
 
 namespace tsil::compiler {
   CompilerResult CompilationScope::compile_define_node(
+      x::Function* function,
       tsil::ast::ASTValue* ast_value) {
     const auto define_node = ast_value->data.DefineNode;
     if (this->has_variable(define_node->id)) {
@@ -22,7 +23,7 @@ namespace tsil::compiler {
       type = type_result.type;
     }
     if (define_node->value) {
-      auto value_result = this->compile_ast_value(define_node->value);
+      auto value_result = this->compile_ast_value(function, define_node->value);
       if (value_result.error) {
         return {value_result.error};
       }
@@ -35,13 +36,14 @@ namespace tsil::compiler {
       } else {
         type = value_result.type;
       }
-      llvm::Function* LF = this->state->Builder->GetInsertBlock()->getParent();
-      llvm::AllocaInst* LAI = this->createEntryBlockAlloca(type->LT, LF);
-      this->state->Builder->CreateStore(value_result.LV, LAI);
+      const auto LAI = this->state->Module->pushFunctionBlockAllocaInstruction(
+          function->blocks["entry"], type->LT);
+      this->state->Module->pushFunctionBlockStoreInstruction(
+          function->blocks["entry"], value_result.LV, LAI);
       this->set_variable(define_node->id, {type, LAI});
     } else {
-      llvm::Function* LF = this->state->Builder->GetInsertBlock()->getParent();
-      llvm::AllocaInst* LAI = this->createEntryBlockAlloca(type->LT, LF);
+      const auto LAI = this->state->Module->pushFunctionBlockAllocaInstruction(
+          function->blocks["entry"], type->LT);
       this->set_variable(define_node->id, {type, LAI});
     }
     return {nullptr};

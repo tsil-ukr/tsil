@@ -83,9 +83,6 @@ public:
   virtual void enterNot(TsilParser::NotContext *ctx) = 0;
   virtual void exitNot(TsilParser::NotContext *ctx) = 0;
 
-  virtual void enterAtom_number(TsilParser::Atom_numberContext *ctx) = 0;
-  virtual void exitAtom_number(TsilParser::Atom_numberContext *ctx) = 0;
-
   virtual void enterBitwise_not(TsilParser::Bitwise_notContext *ctx) = 0;
   virtual void exitBitwise_not(TsilParser::Bitwise_notContext *ctx) = 0;
 
@@ -100,6 +97,12 @@ public:
 
   virtual void enterNested(TsilParser::NestedContext *ctx) = 0;
   virtual void exitNested(TsilParser::NestedContext *ctx) = 0;
+
+  virtual void enterValue_atom(TsilParser::Value_atomContext *ctx) = 0;
+  virtual void exitValue_atom(TsilParser::Value_atomContext *ctx) = 0;
+
+  virtual void enterAtom_number(TsilParser::Atom_numberContext *ctx) = 0;
+  virtual void exitAtom_number(TsilParser::Atom_numberContext *ctx) = 0;
 
   virtual void enterAtom_string(TsilParser::Atom_stringContext *ctx) = 0;
   virtual void exitAtom_string(TsilParser::Atom_stringContext *ctx) = 0;
@@ -122,8 +125,8 @@ public:
   virtual void enterBitwise(TsilParser::BitwiseContext *ctx) = 0;
   virtual void exitBitwise(TsilParser::BitwiseContext *ctx) = 0;
 
-  virtual void enterValue_atom(TsilParser::Value_atomContext *ctx) = 0;
-  virtual void exitValue_atom(TsilParser::Value_atomContext *ctx) = 0;
+  virtual void enterExpr_molecule(TsilParser::Expr_moleculeContext *ctx) = 0;
+  virtual void exitExpr_molecule(TsilParser::Expr_moleculeContext *ctx) = 0;
 
   virtual void enterLogical(TsilParser::LogicalContext *ctx) = 0;
   virtual void exitLogical(TsilParser::LogicalContext *ctx) = 0;

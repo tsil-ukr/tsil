@@ -2,9 +2,11 @@
 
 namespace tsil::compiler {
   CompilerResult CompilationScope::compile_set_node(
+      x::Function* function,
       tsil::ast::ASTValue* ast_value) {
     const auto set_node = ast_value->data.SetNode;
-    CompilerValueResult left_result = this->compile_ast_value(set_node->left);
+    CompilerValueResult left_result =
+        this->compile_ast_value(function, set_node->left);
     if (left_result.error) {
       return {left_result.error};
     }
@@ -17,7 +19,8 @@ namespace tsil::compiler {
     }
     const auto field =
         left_result.type->structure_instance_fields[set_node->id];
-    const auto value_result = this->compile_ast_value(set_node->value);
+    const auto value_result =
+        this->compile_ast_value(function, set_node->value);
     if (value_result.error) {
       return {value_result.error};
     }
@@ -27,13 +30,12 @@ namespace tsil::compiler {
                                 field.type->getFullName() + "\", отримано \"" +
                                 value_result.type->getFullName() + "\"")};
     }
-    const auto LV = this->state->Builder->CreateGEP(
-        left_result.type->LT, left_result.LV,
-        {llvm::ConstantInt::get(*this->state->Context, llvm::APInt(32, 0)),
-         llvm::ConstantInt::get(*this->state->Context,
-                                llvm::APInt(32, field.index))},
-        "set");
-    this->state->Builder->CreateStore(value_result.LV, LV);
+    const auto LV =
+        this->state->Module->pushFunctionBlockGetElementPtrInstruction(
+            function->blocks["entry"], left_result.type->LT, left_result.LV,
+            {0, static_cast<unsigned long>(field.index)});
+    this->state->Module->pushFunctionBlockStoreInstruction(
+        function->blocks["entry"], value_result.LV, LV);
     return {nullptr};
   }
 } // namespace tsil::compiler
