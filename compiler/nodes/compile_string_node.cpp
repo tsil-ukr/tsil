@@ -16,6 +16,7 @@ namespace tsil::compiler {
 
   CompilerValueResult CompilationScope::compile_string_node(
       x::Function* function,
+      tsil::x::FunctionBlock* block,
       tsil::ast::ASTValue* ast_value) {
     const auto string_node = ast_value->data.StringNode;
     auto string_value = string_node->value;
@@ -41,23 +42,23 @@ namespace tsil::compiler {
       return {this->state->uint8Type->getPointerType(this), LV, nullptr};
     }
     const auto LAI = this->state->Module->pushFunctionBlockAllocaInstruction(
-        function->blocks["entry"], this->state->textType->LT);
+        block, this->state->textType->LT);
     const auto lengthLGEP =
         this->state->Module->pushFunctionBlockGetElementPtrInstruction(
-            function->blocks["entry"], this->state->textType->LT, LAI, {0, 0});
+            block, this->state->textType->LT, LAI, {0, 0});
     this->state->Module->pushFunctionBlockStoreInstruction(
-        function->blocks["entry"],
+        block,
         new x::Value{.number =
                          new x::Number(this->state->Module->int64Type,
                                        std::to_string(string_value.size()))},
         lengthLGEP);
     const auto dataLGEP =
         this->state->Module->pushFunctionBlockGetElementPtrInstruction(
-            function->blocks["entry"], this->state->textType->LT, LAI, {0, 1});
+            block, this->state->textType->LT, LAI, {0, 1});
     this->state->Module->pushFunctionBlockStoreInstruction(
-        function->blocks["entry"], LV, dataLGEP);
+        block, LV, dataLGEP);
     const auto LLOAD = this->state->Module->pushFunctionBlockLoadInstruction(
-        function->blocks["entry"], LAI->instruction->alloca->type, LAI);
+        block, LAI->instruction->alloca->type, LAI);
     return {this->state->textType, LLOAD, nullptr};
   }
 } // namespace tsil::compiler

@@ -3,6 +3,7 @@
 namespace tsil::compiler {
   CompilerResult CompilationScope::compile_assign_node(
       x::Function* function,
+      tsil::x::FunctionBlock* block,
       tsil::ast::ASTValue* ast_value) {
     const auto assign_node = ast_value->data.AssignNode;
     if (this->state->structures.contains(assign_node->id)) {
@@ -19,12 +20,12 @@ namespace tsil::compiler {
                                 assign_node->id + "\"")};
     }
     const auto value_result =
-        this->compile_ast_value(function, assign_node->value);
+        this->compile_ast_value(function, block, assign_node->value);
     if (value_result.error) {
       return {value_result.error};
     }
     this->state->Module->pushFunctionBlockStoreInstruction(
-        function->blocks["entry"], value_result.LV, variable.second);
+        block, value_result.LV, variable.second);
     return {nullptr};
   }
 } // namespace tsil::compiler

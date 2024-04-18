@@ -3,12 +3,13 @@
 namespace tsil::compiler {
   CompilerValueResult CompilationScope::compile_identifier_node(
       x::Function* function,
+      tsil::x::FunctionBlock* block,
       tsil::ast::ASTValue* ast_value) {
     const auto identifier_node = ast_value->data.IdentifierNode;
     if (this->has_variable(identifier_node->name)) {
       const auto variable = this->get_variable(identifier_node->name);
       const auto LV = this->state->Module->pushFunctionBlockLoadInstruction(
-          function->blocks["entry"], variable.first->LT, variable.second);
+          block, variable.first->LT, variable.second);
       return {variable.first, LV, nullptr};
     }
     if (this->state->structures.contains(identifier_node->name)) {

@@ -68,8 +68,19 @@ namespace tsil::x {
                                              const std::string& name) {
     auto block = new FunctionBlock();
     block->name = name;
-    function->blocks[name] = block;
+    function->blocks.push_back(block);
     return block;
+  }
+
+  FunctionBlock* Module::getFunctionBlock(Function* function,
+                                          const std::string& name) {
+    for (const auto& b : function->blocks) {
+      if (b->name == name) {
+        return b;
+        break;
+      }
+    }
+    return nullptr;
   }
 
   Value* Module::pushFunctionBlockAllocaInstruction(FunctionBlock* block,
@@ -149,6 +160,32 @@ namespace tsil::x {
     instruction->call = call;
     block->instructions.push_back(instruction);
     return new Value{.instruction = instruction};
+  }
+
+  FunctionInstruction* Module::pushFunctionBlockBrInstruction(
+      FunctionBlock* block,
+      FunctionBlock* target) {
+    const auto instruction = new FunctionInstruction();
+    const auto br = new FunctionInstructionBr();
+    br->target = target;
+    instruction->br = br;
+    block->instructions.push_back(instruction);
+    return instruction;
+  }
+
+  FunctionInstruction* Module::pushFunctionBlockBrIfInstruction(
+      FunctionBlock* block,
+      Value* condition,
+      FunctionBlock* target_true,
+      FunctionBlock* target_false) {
+    const auto instruction = new FunctionInstruction();
+    const auto brif = new FunctionInstructionBrIf();
+    brif->condition = condition;
+    brif->target_true = target_true;
+    brif->target_false = target_false;
+    instruction->brif = brif;
+    block->instructions.push_back(instruction);
+    return instruction;
   }
 
   std::string Module::dumpLL() {
@@ -272,7 +309,7 @@ namespace tsil::x {
       implode(parameters, ", ", result);
       result += ") {\n";
       std::vector<std::string> blocks;
-      for (const auto& [name, block] : this->blocks) {
+      for (const auto& block : this->blocks) {
         blocks.push_back(block->dumpLL(module));
       }
       implode(blocks, "\n", result);
@@ -334,6 +371,14 @@ namespace tsil::x {
       implode(arguments, ", ", result);
       result += ")";
       return result;
+    }
+    if (this->br) {
+      return "br label %" + this->br->target->name;
+    }
+    if (this->brif) {
+      return "br i1 " + this->brif->condition->dumpRightLL(module) +
+             ", label %" + this->brif->target_true->name + ", label %" +
+             this->brif->target_false->name;
     }
     return "";
   }

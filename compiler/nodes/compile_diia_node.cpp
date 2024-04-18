@@ -46,6 +46,93 @@ namespace tsil::compiler {
     return {diia_type, LF, nullptr};
   }
 
+  CompilerResult CompilationScope::compile_diia_block(
+      Type* diia_type,
+      tsil::x::Function* function,
+      tsil::x::FunctionBlock* block,
+      const std::vector<ast::ASTValue*>& body,
+      bool handle_return) {
+    bool returned = false;
+    for (const auto& body_ast_value : body) {
+      if (body_ast_value == nullptr) {
+        continue;
+      }
+      if (body_ast_value->kind == tsil::ast::KindNone) {
+        continue;
+      }
+      if (body_ast_value->kind == ast::KindDefineNode) {
+        const auto result =
+            this->compile_define_node(function, block, body_ast_value);
+        if (result.error) {
+          return {result.error};
+        }
+      } else if (body_ast_value->kind == ast::KindAssignNode) {
+        const auto result =
+            this->compile_assign_node(function, block, body_ast_value);
+        if (result.error) {
+          return {result.error};
+        }
+      } else if (body_ast_value->kind == ast::KindSetNode) {
+        const auto result =
+            this->compile_set_node(function, block, body_ast_value);
+        if (result.error) {
+          return {result.error};
+        }
+      } else if (body_ast_value->kind == ast::KindWhileNode) {
+        const auto while_block =
+            this->state->Module->defineFunctionBlock(function, "while");
+        const auto while_body_block =
+            this->state->Module->defineFunctionBlock(function, "while_body");
+        const auto while_exit_block =
+            this->state->Module->defineFunctionBlock(function, "while_exit");
+
+        const auto result = this->compile_ast_value(
+            function, while_block, body_ast_value->data.WhileNode->condition);
+        if (result.error) {
+          return {result.error};
+        }
+        this->state->Module->pushFunctionBlockBrIfInstruction(
+            while_block, result.LV, while_body_block, while_exit_block);
+
+        const auto while_body_result = this->compile_diia_block(
+            diia_type, function, while_body_block,
+            body_ast_value->data.WhileNode->body, false);
+        if (while_body_result.error) {
+          return {while_body_result.error};
+        }
+        this->state->Module->pushFunctionBlockBrInstruction(while_body_block,
+                                                            while_block);
+
+        this->state->Module->pushFunctionBlockBrInstruction(block, while_block);
+
+        block = while_exit_block;
+      } else if (body_ast_value->kind == tsil::ast::KindReturnNode) {
+        const auto return_result = this->compile_ast_value(
+            function, block, body_ast_value->data.ReturnNode->value);
+        if (return_result.error) {
+          return {return_result.error};
+        }
+        if (return_result.type != diia_type->diia_result_type) {
+          return {new CompilerError("Невірний тип результату дії \"" +
+                                    diia_type->getFullName() + "\"")};
+        }
+        this->state->Module->pushFunctionBlockRetInstruction(block,
+                                                             return_result.LV);
+        returned = true;
+        break;
+      } else {
+        auto result = this->compile_ast_value(function, block, body_ast_value);
+        if (result.error) {
+          return {result.error};
+        }
+      }
+    }
+    if (!returned && handle_return) {
+      this->state->Module->pushFunctionBlockRetInstruction(block, nullptr);
+    }
+    return {nullptr};
+  }
+
   CompilerDiiaResult CompilationScope::compile_diia_node(
       tsil::ast::ASTValue* ast_value) {
     const auto diia_node = ast_value->data.DiiaNode;
@@ -57,7 +144,8 @@ namespace tsil::compiler {
     const auto LF = diia_head_result.LF->function;
     const auto diia_scope = new CompilationScope(this, this->state);
 
-    const auto BB = this->state->Module->defineFunctionBlock(LF, "entry");
+    const auto entryBlock =
+        this->state->Module->defineFunctionBlock(LF, "entry");
 
     //    for (const auto& parameter : diia_type->diia_parameters) {
     //      const auto LAI =
@@ -69,55 +157,12 @@ namespace tsil::compiler {
     //      diia_scope->set_variable(parameter.name, {parameter.type, LAI});
     //    }
 
-    bool returned = false;
-    for (const auto& body_ast_value : diia_node->body) {
-      if (body_ast_value == nullptr) {
-        continue;
-      }
-      if (body_ast_value->kind == tsil::ast::KindNone) {
-        continue;
-      }
-      if (body_ast_value->kind == ast::KindDefineNode) {
-        const auto result = this->compile_define_node(LF, body_ast_value);
-        if (result.error) {
-          return {nullptr, nullptr, result.error};
-        }
-      } else if (body_ast_value->kind == ast::KindAssignNode) {
-        const auto result = this->compile_assign_node(LF, body_ast_value);
-        if (result.error) {
-          return {nullptr, nullptr, result.error};
-        }
-      } else if (body_ast_value->kind == ast::KindSetNode) {
-        const auto result = this->compile_set_node(LF, body_ast_value);
-        if (result.error) {
-          return {nullptr, nullptr, result.error};
-        }
-      } else if (body_ast_value->kind == tsil::ast::KindReturnNode) {
-        const auto return_result = diia_scope->compile_ast_value(
-            LF, body_ast_value->data.ReturnNode->value);
-        if (return_result.error) {
-          return {nullptr, nullptr, return_result.error};
-        }
-        if (return_result.type != diia_type->diia_result_type) {
-          return {nullptr, nullptr,
-                  new CompilerError("Невірний тип результату дії \"" +
-                                    diia_type->getFullName() + "\"")};
-        }
-        diia_scope->state->Module->pushFunctionBlockRetInstruction(
-            LF->blocks["entry"], return_result.LV);
-        returned = true;
-        break;
-      } else {
-        auto result = diia_scope->compile_ast_value(LF, body_ast_value);
-        if (result.error) {
-          return {nullptr, nullptr, result.error};
-        }
-      }
+    const auto body_compile_result = this->compile_diia_block(
+        diia_type, LF, entryBlock, diia_node->body, true);
+    if (body_compile_result.error) {
+      return {nullptr, nullptr, body_compile_result.error};
     }
-    if (!returned) {
-      diia_scope->state->Module->pushFunctionBlockRetInstruction(
-          LF->blocks["entry"], nullptr);
-    }
+
     return diia_head_result;
   }
 

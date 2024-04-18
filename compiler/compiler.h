@@ -134,32 +134,43 @@ namespace tsil::compiler {
 
     CompilerValueResult compile_number_node(tsil::ast::ASTValue* ast_value);
     CompilerValueResult compile_string_node(x::Function* function,
+                                            tsil::x::FunctionBlock* block,
                                             tsil::ast::ASTValue* ast_value);
 
     CompilerValueResult compile_ast_value(x::Function* function,
+                                          tsil::x::FunctionBlock* block,
                                           tsil::ast::ASTValue* ast_value);
     CompilerValueResult compile_call_node(x::Function* function,
+                                          tsil::x::FunctionBlock* block,
                                           tsil::ast::ASTValue* ast_value);
     CompilerValueResult compile_identifier_node(x::Function* function,
+                                                tsil::x::FunctionBlock* block,
                                                 tsil::ast::ASTValue* ast_value);
 
     CompilerResult compile_define_node(x::Function* function,
+                                       tsil::x::FunctionBlock* block,
                                        tsil::ast::ASTValue* ast_value);
     CompilerResult compile_assign_node(x::Function* function,
+                                       tsil::x::FunctionBlock* block,
                                        tsil::ast::ASTValue* ast_value);
     CompilerResult compile_set_node(x::Function* function,
+                                    tsil::x::FunctionBlock* block,
                                     tsil::ast::ASTValue* ast_value);
     CompilerValueResult compile_get_node(x::Function* function,
+                                         tsil::x::FunctionBlock* block,
                                          tsil::ast::ASTValue* ast_value);
     CompilerValueResult compile_get_pointer_node(
         x::Function* function,
+        tsil::x::FunctionBlock* block,
         tsil::ast::ASTValue* ast_value);
 
     CompilerValueResult compile_constructor_node(
         x::Function* function,
+        tsil::x::FunctionBlock* block,
         tsil::ast::ASTValue* ast_value);
 
     CompilerValueResult compile_as_node(x::Function* function,
+                                        tsil::x::FunctionBlock* block,
                                         tsil::ast::ASTValue* ast_value);
 
     CompilerDiiaResult compile_diia_head_node(
@@ -167,6 +178,11 @@ namespace tsil::compiler {
     CompilerDiiaResult compile_diia_node(tsil::ast::ASTValue* ast_value);
     CompilerDiiaResult compile_diia_declaration_node(
         tsil::ast::ASTValue* ast_value);
+    CompilerResult compile_diia_block(Type* diia_type,
+                                      tsil::x::Function* function,
+                                      tsil::x::FunctionBlock* block,
+                                      const std::vector<ast::ASTValue*>& body,
+                                      bool handle_return);
 
     CompilerStructureResult compile_structure_node(
         tsil::ast::ASTValue* ast_value);

@@ -16,6 +16,8 @@ namespace tsil::x {
   struct FunctionInstructionLoad;
   struct FunctionInstructionRet;
   struct FunctionInstructionCall;
+  struct FunctionInstructionBr;
+  struct FunctionInstructionBrIf;
 
   struct Module {
     std::string name;
@@ -48,6 +50,8 @@ namespace tsil::x {
                           std::vector<Type*> parameters);
     FunctionBlock* defineFunctionBlock(Function* function,
                                        const std::string& name);
+    FunctionBlock* getFunctionBlock(Function* function,
+                                    const std::string& name);
     Value* pushFunctionBlockAllocaInstruction(FunctionBlock* block, Type* type);
     Value* pushFunctionBlockGetElementPtrInstruction(
         FunctionBlock* block,
@@ -65,6 +69,13 @@ namespace tsil::x {
     Value* pushFunctionBlockCallInstruction(FunctionBlock* block,
                                             Value* value,
                                             std::vector<Value*> arguments);
+    FunctionInstruction* pushFunctionBlockBrInstruction(FunctionBlock* block,
+                                                        FunctionBlock* target);
+    FunctionInstruction* pushFunctionBlockBrIfInstruction(
+        FunctionBlock* block,
+        Value* condition,
+        FunctionBlock* target_true,
+        FunctionBlock* target_false);
 
     std::string dumpLL();
   };
@@ -110,7 +121,7 @@ namespace tsil::x {
     std::string name;
     Type* result_type;
     std::vector<Type*> parameters;
-    std::unordered_map<std::string, FunctionBlock*> blocks;
+    std::vector<FunctionBlock*> blocks;
 
     std::string dumpLL(Module* module);
   };
@@ -130,6 +141,8 @@ namespace tsil::x {
     FunctionInstructionLoad* load;
     FunctionInstructionRet* ret;
     FunctionInstructionCall* call;
+    FunctionInstructionBr* br;
+    FunctionInstructionBrIf* brif;
 
     std::string dumpLL(Module* module);
   };
@@ -161,5 +174,15 @@ namespace tsil::x {
   struct FunctionInstructionCall {
     Value* value;
     std::vector<Value*> arguments;
+  };
+
+  struct FunctionInstructionBr {
+    FunctionBlock* target;
+  };
+
+  struct FunctionInstructionBrIf {
+    Value* condition;
+    FunctionBlock* target_true;
+    FunctionBlock* target_false;
   };
 } // namespace tsil::x

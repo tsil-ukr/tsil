@@ -3,6 +3,7 @@
 namespace tsil::compiler {
   CompilerResult CompilationScope::compile_define_node(
       x::Function* function,
+      tsil::x::FunctionBlock* block,
       tsil::ast::ASTValue* ast_value) {
     const auto define_node = ast_value->data.DefineNode;
     if (this->has_variable(define_node->id)) {
@@ -23,7 +24,8 @@ namespace tsil::compiler {
       type = type_result.type;
     }
     if (define_node->value) {
-      auto value_result = this->compile_ast_value(function, define_node->value);
+      auto value_result =
+          this->compile_ast_value(function, block, define_node->value);
       if (value_result.error) {
         return {value_result.error};
       }
@@ -37,13 +39,13 @@ namespace tsil::compiler {
         type = value_result.type;
       }
       const auto LAI = this->state->Module->pushFunctionBlockAllocaInstruction(
-          function->blocks["entry"], type->LT);
+          block, type->LT);
       this->state->Module->pushFunctionBlockStoreInstruction(
-          function->blocks["entry"], value_result.LV, LAI);
+          block, value_result.LV, LAI);
       this->set_variable(define_node->id, {type, LAI});
     } else {
       const auto LAI = this->state->Module->pushFunctionBlockAllocaInstruction(
-          function->blocks["entry"], type->LT);
+          block, type->LT);
       this->set_variable(define_node->id, {type, LAI});
     }
     return {nullptr};

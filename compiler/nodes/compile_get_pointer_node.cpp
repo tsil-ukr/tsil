@@ -3,6 +3,7 @@
 namespace tsil::compiler {
   CompilerValueResult CompilationScope::compile_get_pointer_node(
       x::Function* function,
+      tsil::x::FunctionBlock* block,
       tsil::ast::ASTValue* ast_value) {
     const auto get_pointer_node = ast_value->data.GetPointerNode;
     if (get_pointer_node->value->kind == ast::KindIdentifierNode) {
@@ -22,7 +23,7 @@ namespace tsil::compiler {
     } else if (get_pointer_node->value->kind == ast::KindGetNode) {
       const auto get_node = get_pointer_node->value->data.GetNode;
       CompilerValueResult left =
-          this->compile_ast_value(function, get_node->left);
+          this->compile_ast_value(function, block, get_node->left);
       if (left.error) {
         return left;
       }
@@ -37,12 +38,12 @@ namespace tsil::compiler {
       const auto field = left.type->structure_instance_fields[get_node->id];
       const auto LV =
           this->state->Module->pushFunctionBlockGetElementPtrInstruction(
-              function->blocks["entry"], left.type->LT, left.LV,
+              block, left.type->LT, left.LV,
               {0, static_cast<unsigned long>(field.index)});
       return {field.type, LV, nullptr};
 
     } else {
-      return this->compile_ast_value(function, get_pointer_node->value);
+      return this->compile_ast_value(function, block, get_pointer_node->value);
     }
   }
 } // namespace tsil::compiler
