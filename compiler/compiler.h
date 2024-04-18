@@ -63,7 +63,12 @@ namespace tsil::compiler {
   };
 
   struct CompilerError {
+    size_t line;
+    size_t column;
     std::string message;
+
+    static CompilerError* fromASTValue(tsil::ast::ASTValue* ast_value,
+                                       const std::string& message);
   };
 
   struct CompilerResult {
@@ -78,7 +83,8 @@ namespace tsil::compiler {
 
   struct CompilerDiiaResult {
     Type* type;
-    x::Value* LF;
+    x::Function* LF;
+    x::Value* LV;
     CompilerError* error;
   };
 
@@ -94,6 +100,7 @@ namespace tsil::compiler {
     std::map<std::string, Structure*> structures;
     std::map<std::pair<Structure*, std::vector<Type*>>, Type*> types_cache;
 
+    Type* voidType = nullptr;
     Type* voidPointerType = nullptr;
     Type* int8Type = nullptr;
     Type* int16Type = nullptr;
@@ -132,7 +139,9 @@ namespace tsil::compiler {
         const std::vector<std::string>& generic_definitions,
         const std::map<std::string, StructureField>& fields);
 
-    CompilerValueResult compile_number_node(tsil::ast::ASTValue* ast_value);
+    CompilerValueResult compile_number_node(x::Function* function,
+                                            tsil::x::FunctionBlock* block,
+                                            tsil::ast::ASTValue* ast_value);
     CompilerValueResult compile_string_node(x::Function* function,
                                             tsil::x::FunctionBlock* block,
                                             tsil::ast::ASTValue* ast_value);
@@ -174,6 +183,7 @@ namespace tsil::compiler {
                                         tsil::ast::ASTValue* ast_value);
 
     CompilerDiiaResult compile_diia_head_node(
+        tsil::ast::ASTValue* ast_value,
         tsil::ast::DiiaHeadNode* diia_head_node);
     CompilerDiiaResult compile_diia_node(tsil::ast::ASTValue* ast_value);
     CompilerDiiaResult compile_diia_declaration_node(
@@ -181,11 +191,14 @@ namespace tsil::compiler {
     CompilerResult compile_diia_block(Type* diia_type,
                                       tsil::x::Function* function,
                                       tsil::x::FunctionBlock* block,
-                                      const std::vector<ast::ASTValue*>& body,
-                                      bool handle_return);
+                                      tsil::x::FunctionBlock* exit_block,
+                                      const std::vector<ast::ASTValue*>& body);
 
     CompilerStructureResult compile_structure_node(
         tsil::ast::ASTValue* ast_value);
+    CompilerValueResult compile_binary_node(x::Function* function,
+                                            tsil::x::FunctionBlock* block,
+                                            tsil::ast::ASTValue* ast_value);
 
     CompilerValueResult compile_sizeof_node(tsil::ast::ASTValue* ast_value);
   };

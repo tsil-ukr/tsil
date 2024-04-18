@@ -18,6 +18,12 @@ namespace tsil::x {
   struct FunctionInstructionCall;
   struct FunctionInstructionBr;
   struct FunctionInstructionBrIf;
+  struct FunctionInstructionICmp;
+  struct FunctionInstructionAdd;
+  struct FunctionInstructionSub;
+  struct FunctionInstructionMul;
+  struct FunctionInstructionDiv;
+  struct FunctionInstructionMod;
 
   struct Module {
     std::string name;
@@ -28,6 +34,7 @@ namespace tsil::x {
     std::unordered_map<std::string, Type*> types;
     std::unordered_map<std::string, Function*> functions;
 
+    Type* int1Type;
     Type* int8Type;
     Type* int32Type;
     Type* int64Type;
@@ -37,13 +44,14 @@ namespace tsil::x {
     Type* voidType;
 
     Value* putStringConstant(const std::string& value);
+    Value* putI64Constant(long value);
 
     Type* defineNativeType(const std::string& name);
     Type* defineStructType(const std::string& name, std::vector<Type*> fields);
 
-    Value* declareFunction(const std::string& name,
-                           Type* result_type,
-                           std::vector<Type*> parameters);
+    std::pair<Function*, Value*> declareFunction(const std::string& name,
+                                                 Type* result_type,
+                                                 std::vector<Type*> parameters);
 
     Value* defineFunction(const std::string& name,
                           Type* result_type,
@@ -52,6 +60,7 @@ namespace tsil::x {
                                        const std::string& name);
     FunctionBlock* getFunctionBlock(Function* function,
                                     const std::string& name);
+
     Value* pushFunctionBlockAllocaInstruction(FunctionBlock* block, Type* type);
     Value* pushFunctionBlockGetElementPtrInstruction(
         FunctionBlock* block,
@@ -59,14 +68,17 @@ namespace tsil::x {
         Value* pointer,
         std::vector<size_t> indexes);
     FunctionInstruction* pushFunctionBlockStoreInstruction(FunctionBlock* block,
+                                                           Type* type,
                                                            Value* value,
                                                            Value* pointer);
     Value* pushFunctionBlockLoadInstruction(FunctionBlock* block,
                                             Type* type,
                                             Value* pointer);
     FunctionInstruction* pushFunctionBlockRetInstruction(FunctionBlock* block,
+                                                         Type* type,
                                                          Value* value);
     Value* pushFunctionBlockCallInstruction(FunctionBlock* block,
+                                            Type* type,
                                             Value* value,
                                             std::vector<Value*> arguments);
     FunctionInstruction* pushFunctionBlockBrInstruction(FunctionBlock* block,
@@ -76,6 +88,31 @@ namespace tsil::x {
         Value* condition,
         FunctionBlock* target_true,
         FunctionBlock* target_false);
+    Value* pushFunctionBlockICmpInstruction(FunctionBlock* block,
+                                            const std::string& op,
+                                            Type* type,
+                                            Value* left,
+                                            Value* right);
+    Value* pushFunctionBlockAddInstruction(FunctionBlock* block,
+                                           Type* type,
+                                           Value* left,
+                                           Value* right);
+    Value* pushFunctionBlockSubInstruction(FunctionBlock* block,
+                                           Type* type,
+                                           Value* left,
+                                           Value* right);
+    Value* pushFunctionBlockMulInstruction(FunctionBlock* block,
+                                           Type* type,
+                                           Value* left,
+                                           Value* right);
+    Value* pushFunctionBlockDivInstruction(FunctionBlock* block,
+                                           Type* type,
+                                           Value* left,
+                                           Value* right);
+    Value* pushFunctionBlockModInstruction(FunctionBlock* block,
+                                           Type* type,
+                                           Value* left,
+                                           Value* right);
 
     std::string dumpLL();
   };
@@ -86,18 +123,16 @@ namespace tsil::x {
   };
 
   struct Value {
-    Constant* constant = nullptr;
-    FunctionInstruction* instruction = nullptr;
-    Function* function = nullptr;
-    Number* number;
+    Type* type;
+    std::string name;
 
     std::string dumpLL(Module* module);
-    std::string dumpRightLL(Module* module);
   };
 
   struct Constant {
     size_t variable_index;
     std::string name;
+    Type* type;
     std::string value;
 
     std::string dumpLL(Module* module);
@@ -119,9 +154,12 @@ namespace tsil::x {
 
   struct Function {
     std::string name;
-    Type* result_type;
+    Type* result_type = nullptr;
     std::vector<Type*> parameters;
     std::vector<FunctionBlock*> blocks;
+    Value* return_alloca = nullptr;
+    FunctionBlock* entry_block = nullptr;
+    FunctionBlock* exit_block = nullptr;
 
     std::string dumpLL(Module* module);
   };
@@ -143,6 +181,12 @@ namespace tsil::x {
     FunctionInstructionCall* call;
     FunctionInstructionBr* br;
     FunctionInstructionBrIf* brif;
+    FunctionInstructionICmp* icmp;
+    FunctionInstructionAdd* add;
+    FunctionInstructionSub* sub;
+    FunctionInstructionMul* mul;
+    FunctionInstructionDiv* div;
+    FunctionInstructionMod* mod;
 
     std::string dumpLL(Module* module);
   };
@@ -158,6 +202,7 @@ namespace tsil::x {
   };
 
   struct FunctionInstructionStore {
+    Type* type;
     Value* value;
     Value* pointer;
   };
@@ -168,10 +213,12 @@ namespace tsil::x {
   };
 
   struct FunctionInstructionRet {
+    Type* type;
     Value* value;
   };
 
   struct FunctionInstructionCall {
+    Type* type;
     Value* value;
     std::vector<Value*> arguments;
   };
@@ -184,5 +231,42 @@ namespace tsil::x {
     Value* condition;
     FunctionBlock* target_true;
     FunctionBlock* target_false;
+  };
+
+  struct FunctionInstructionICmp {
+    std::string op;
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionAdd {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionSub {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionMul {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionDiv {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionMod {
+    Type* type;
+    Value* left;
+    Value* right;
   };
 } // namespace tsil::x

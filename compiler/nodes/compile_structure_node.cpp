@@ -5,8 +5,9 @@ namespace tsil::compiler {
       tsil::ast::ASTValue* ast_value) {
     const auto structure_node = ast_value->data.StructureNode;
     if (this->state->structures.contains(structure_node->name)) {
-      return {nullptr, new CompilerError("Субʼєкт \"" + structure_node->name +
-                                         "\" вже визначено")};
+      return {nullptr, CompilerError::fromASTValue(
+                           ast_value, "Субʼєкт \"" + structure_node->name +
+                                          "\" вже визначено")};
     }
     int param_index = 0;
     const auto structure = this->createStructure(
@@ -22,9 +23,10 @@ namespace tsil::compiler {
            structure_node->generic_definitions) {
         if (generic_definition_name == param_type_name) {
           if (!param_type_node->generics.empty()) {
-            return {nullptr,
-                    new CompilerError("Не можна використовувати назву "
-                                      "параметра шаблону як тип з шаблонами")};
+            return {nullptr, CompilerError::fromASTValue(
+                                 param_node->type,
+                                 "Не можна використовувати назву "
+                                 "параметра шаблону як тип з шаблонами")};
           }
           structure->fields.insert_or_assign(
               param_node->id,
@@ -43,14 +45,16 @@ namespace tsil::compiler {
           const auto generic_type_result = this->makeType(
               generic_type_node->id, {}); // todo: handle inner generics
           if (!generic_type_result.type) {
-            return {nullptr, new CompilerError(generic_type_result.error)};
+            return {nullptr, CompilerError::fromASTValue(
+                                 generic_ast_value, generic_type_result.error)};
           }
           generic_values.push_back(generic_type_result.type);
         }
         const auto type_result =
             this->makeType(param_type_node->id, generic_values);
         if (!type_result.type) {
-          return {nullptr, new CompilerError(type_result.error)};
+          return {nullptr, CompilerError::fromASTValue(param_node->type,
+                                                       type_result.error)};
         }
         structure->fields.insert_or_assign(
             param_node->id, StructureField{.index = param_index,

@@ -12,12 +12,14 @@ namespace tsil::compiler {
       return left;
     }
     if (left.type->type != TypeTypeStructureInstance) {
-      return {nullptr, nullptr, new CompilerError("Тип не є структурою")};
+      return {nullptr, nullptr,
+              CompilerError::fromASTValue(ast_value, "Тип не є структурою")};
     }
     if (!left.type->structure_instance_fields.contains(get_node->id)) {
-      return {nullptr, nullptr,
-              new CompilerError("Властивість \"" + get_node->id +
-                                "\" не знайдено")};
+      return {
+          nullptr, nullptr,
+          CompilerError::fromASTValue(
+              ast_value, "Властивість \"" + get_node->id + "\" не знайдено")};
     }
     const auto field = left.type->structure_instance_fields[get_node->id];
     const auto LV =

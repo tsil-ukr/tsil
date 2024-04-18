@@ -8,8 +8,9 @@ add_subdirectory(parser)
 
 set(TSIL_SRC
         compiler/nodes/compile_as_node.cpp
-        compiler/nodes/compile_ast_value.cpp
         compiler/nodes/compile_assign_node.cpp
+        compiler/nodes/compile_ast_value.cpp
+        compiler/nodes/compile_binary_node.cpp
         compiler/nodes/compile_call_node.cpp
         compiler/nodes/compile_constructor_node.cpp
         compiler/nodes/compile_define_node.cpp
@@ -31,5 +32,6 @@ set(TSIL_SRC
 
 add_executable(tsil ${TSIL_SRC})
 target_link_libraries(tsil PRIVATE tsil_parser)
+target_link_options(tsil PRIVATE -static-libgcc -static-libstdc++)
 target_compile_options(tsil PRIVATE -fexceptions)
 set_target_properties(tsil PROPERTIES OUTPUT_NAME "ціль")

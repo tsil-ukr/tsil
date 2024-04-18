@@ -1,47 +1,78 @@
-#include <sys/stat.h>
-#include <algorithm>
-#include <cctype>
-#include <cstdio>
-#include <cstdlib>
-#include <filesystem>
 #include <iostream>
 #include <map>
-#include <memory>
 #include <string>
 #include <vector>
 #include "compiler/compiler.h"
 
-void path_to_splav_name(const std::string& path,
-                        std::string& exec_name,
-                        std::string& object_name,
-                        std::string& danis_name) {
-  const auto canonical_path = std::filesystem::canonical(path).string();
-
-  const auto fs_path = std::filesystem::path(canonical_path);
-  if (!fs_path.has_filename()) {
-    return;
+std::pair<size_t, std::string> strtrim(const std::string& str) {
+  size_t start = 0;
+  size_t end = str.size();
+  for (size_t i = 0; i < str.size(); i++) {
+    if (str[i] != ' ' && str[i] != '\t' && str[i] != '\n' && str[i] != '\r') {
+      start = i;
+      break;
+    }
   }
-
-  const auto name = fs_path.stem().string();
-
-  exec_name = name;
-  object_name = name + ".o";
-  danis_name = name + ".даніс";
+  for (size_t i = str.size(); i > 0; i--) {
+    if (str[i - 1] != ' ' && str[i - 1] != '\t' && str[i - 1] != '\n' &&
+        str[i - 1] != '\r') {
+      end = i;
+      break;
+    }
+  }
+  const auto res = str.substr(start, end - start);
+  return {start, res};
 }
 
-void parse_buda(const std::string& data,
-                std::unordered_map<std::string, std::string>& buda) {
-  std::istringstream iss(data);
-  std::string line;
-  while (std::getline(iss, line)) {
-    const auto pos = line.find('=');
-    if (pos == std::string::npos) {
-      continue;
+std::string strgetline(const std::string& code, size_t line) {
+  size_t current_line = 1;
+  size_t start = 0;
+  size_t end = 0;
+  for (size_t i = 0; i < code.size(); i++) {
+    if (code[i] == '\n') {
+      if (current_line == line) {
+        end = i;
+        break;
+      }
+      start = i + 1;
+      current_line++;
     }
-    const auto key = line.substr(0, pos);
-    const auto value = line.substr(pos + 1);
-    buda[key] = value;
   }
+  return code.substr(start, end - start);
+}
+
+void printCompilerError(const std::string& path,
+                        const std::string& code,
+                        const tsil::compiler::CompilerError* error) {
+  const auto line = std::to_string(error->line);
+  const auto column = std::to_string(error->column);
+  const auto message = error->message;
+  std::cerr << path << ":" << line + ":" + column + ": " << message
+            << std::endl;
+  const auto [new_start, code_line] = strtrim(strgetline(code, error->line));
+  std::string prefix = line + "| ";
+  std::cerr << prefix << code_line << std::endl;
+  for (size_t i = 0; i < (error->column - new_start) + prefix.size(); i++) {
+    std::cerr << " ";
+  }
+  std::cerr << "^" << std::endl;
+}
+
+void printParserError(const std::string& path,
+                      const std::string& code,
+                      const tsil::parser::TsilParserError* error) {
+  const auto line = std::to_string(error->line);
+  const auto column = std::to_string(error->column);
+  const auto message = error->message;
+  std::cerr << path << ":" << line + ":" + column + ": " << message
+            << std::endl;
+  const auto [new_start, code_line] = strtrim(strgetline(code, error->line));
+  std::string prefix = line + "| ";
+  std::cerr << prefix << code_line << std::endl;
+  for (size_t i = 0; i < (error->column - new_start) + prefix.size(); i++) {
+    std::cerr << " ";
+  }
+  std::cerr << "^" << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -50,29 +81,40 @@ int main(int argc, char** argv) {
 
   if (command == "сплавити") {
     if (args.size() < 3) {
-      std::cerr << "Не вказано модуль!" << std::endl;
+      std::cerr << "ціль: не вказано вхідний файл" << std::endl;
+      return 1;
+    }
+    if (args.size() < 4) {
+      std::cerr << "ціль: не вказано вихідний файл" << std::endl;
       return 1;
     }
 
-    const auto& path = args[2];
+    const auto& input_path = args[2];
+    const auto& output_path = args[3];
 
-    std::ifstream file(path);
-    if (!file.is_open()) {
-      std::cerr << path << std::endl;
+    if (!output_path.ends_with(".ll") && !output_path.ends_with(".bc")) {
+      std::cerr << "ціль: вихідний файл повинен мати розширення .ll або .bc"
+                << std::endl;
+      return 1;
+    }
+    if (output_path.ends_with(".bc")) {
+      std::cerr
+          << "ціль: вихідний файл з розширенням .bc тимчасово не підтримується"
+          << std::endl;
       return 1;
     }
 
-    std::string exec_name;
-    std::string splav_name;
-    std::string danis_name;
-    path_to_splav_name(path, exec_name, splav_name, danis_name);
-
+    std::ifstream input_file(input_path);
+    if (!input_file.is_open()) {
+      std::cerr << "ціль: не вдалося відкрити вхідний файл" << std::endl;
+      return 1;
+    }
     std::string code;
-
     std::string line;
-    while (std::getline(file, line)) {
+    while (std::getline(input_file, line)) {
       code += line + "\n";
     }
+    input_file.close();
 
     const auto parser_result = tsil::parser::parse(code);
     if (parser_result.program_node) {
@@ -80,6 +122,7 @@ int main(int argc, char** argv) {
 
       state->Module = new tsil::x::Module();
 
+      state->Module->int1Type = state->Module->defineNativeType("i1");
       state->Module->int8Type = state->Module->defineNativeType("i8");
       state->Module->int32Type = state->Module->defineNativeType("i32");
       state->Module->int64Type = state->Module->defineNativeType("i64");
@@ -90,6 +133,13 @@ int main(int argc, char** argv) {
 
       state->globalScope = new tsil::compiler::CompilationScope();
       state->globalScope->state = state;
+
+      const auto voidType = new tsil::compiler::Type();
+      voidType->type = tsil::compiler::TypeTypeNative;
+      voidType->name = "void";
+      voidType->LT = state->Module->voidType;
+      state->types["void"] = voidType;
+      state->voidType = voidType;
 
       const auto voidPointerType = new tsil::compiler::Type();
       voidPointerType->type = tsil::compiler::TypeTypeNative;
@@ -175,8 +225,7 @@ int main(int argc, char** argv) {
 
       const auto textTypeResult = state->globalScope->makeType("текст", {});
       if (!textTypeResult.type) {
-        std::cerr << "Не вдалось створити тип: " << textTypeResult.error
-                  << std::endl;
+        std::cerr << "INTERNAL BUG: " << textTypeResult.error << std::endl;
         return 1;
       }
       state->types["текст"] = textTypeResult.type;
@@ -192,24 +241,21 @@ int main(int argc, char** argv) {
         if (ast_value->kind == tsil::ast::KindDiiaNode) {
           const auto result = state->globalScope->compile_diia_node(ast_value);
           if (result.error) {
-            std::cerr << "Не вдалось скомпілювати: " << result.error->message
-                      << std::endl;
+            printCompilerError(input_path, code, result.error);
             return 1;
           }
         } else if (ast_value->kind == tsil::ast::KindDiiaDeclarationNode) {
           const auto result =
               state->globalScope->compile_diia_declaration_node(ast_value);
           if (result.error) {
-            std::cerr << "Не вдалось скомпілювати: " << result.error->message
-                      << std::endl;
+            printCompilerError(input_path, code, result.error);
             return 1;
           }
         } else if (ast_value->kind == tsil::ast::KindStructureNode) {
           const auto result =
               state->globalScope->compile_structure_node(ast_value);
           if (result.error) {
-            std::cerr << "Не вдалось скомпілювати: " << result.error->message
-                      << std::endl;
+            printCompilerError(input_path, code, result.error);
             return 1;
           }
         } else {
@@ -219,10 +265,15 @@ int main(int argc, char** argv) {
         }
       }
 
-      std::cout << state->Module->dumpLL() << std::endl;
+      std::ofstream out_file(output_path);
+      if (!out_file.is_open()) {
+        std::cerr << "ціль: не вдалося відкрити вихідний файл" << std::endl;
+        return 1;
+      }
+      out_file << state->Module->dumpLL();
+      out_file.close();
     } else {
-      std::cerr << "Failed to parse: " << parser_result.errors[0].message
-                << std::endl;
+      printParserError(input_path, code, &parser_result.errors[0]);
       return 1;
     }
   }

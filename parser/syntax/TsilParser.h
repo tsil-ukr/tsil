@@ -19,7 +19,8 @@ public:
     OR = 24, PAREN_OPEN = 25, PAREN_CLOSE = 26, BRACKET_OPEN = 27, BRACKET_CLOSE = 28, 
     QUESTION = 29, COLON = 30, TILDA = 31, QUOTE = 32, DOUBLE_QUOTE = 33, 
     EXCLAMATION = 34, COMA = 35, SEMICOLON = 36, QUOTE_OPEN = 37, QUOTE_CLOSE = 38, 
-    NUMBER = 39, ID = 40, STRING = 41, NL = 42, WS = 43
+    INTEGER = 39, FLOAT = 40, HEX = 41, BIN = 42, ID = 43, STRING = 44, 
+    NL = 45, WS = 46
   };
 
   enum {
@@ -1049,7 +1050,10 @@ public:
   public:
     NumberContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *NUMBER();
+    antlr4::tree::TerminalNode *INTEGER();
+    antlr4::tree::TerminalNode *FLOAT();
+    antlr4::tree::TerminalNode *HEX();
+    antlr4::tree::TerminalNode *BIN();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

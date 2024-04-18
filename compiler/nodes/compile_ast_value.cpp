@@ -12,7 +12,7 @@ namespace tsil::compiler {
       return this->compile_identifier_node(function, block, ast_value);
     }
     if (ast_value->kind == tsil::ast::KindNumberNode) {
-      return this->compile_number_node(ast_value);
+      return this->compile_number_node(function, block, ast_value);
     }
     if (ast_value->kind == tsil::ast::KindStringNode) {
       return this->compile_string_node(function, block, ast_value);
@@ -32,9 +32,13 @@ namespace tsil::compiler {
     if (ast_value->kind == tsil::ast::KindAsNode) {
       return this->compile_as_node(function, block, ast_value);
     }
+    if (ast_value->kind == tsil::ast::KindBinaryNode) {
+      return this->compile_binary_node(function, block, ast_value);
+    }
     return {nullptr, nullptr,
-            new CompilerError(
+            CompilerError::fromASTValue(
+                ast_value,
                 "Unknown ASTValue kind: " +
-                tsil::ast::ast_value_kind_to_string(ast_value->kind))};
+                    tsil::ast::ast_value_kind_to_string(ast_value->kind))};
   }
 } // namespace tsil::compiler

@@ -16,9 +16,20 @@ namespace tsil::x {
     auto constant = new Constant();
     constant->variable_index = this->variable_counter++;
     constant->name = "@const." + std::to_string(constant->variable_index);
+    constant->type = this->pointerType;
     constant->value = value;
     this->constants[constant->name] = constant;
-    return new Value{.constant = constant};
+    return new Value(this->pointerType, constant->name);
+  }
+
+  Value* Module::putI64Constant(long value) {
+    auto constant = new Constant();
+    constant->variable_index = this->variable_counter++;
+    constant->name = "@const." + std::to_string(constant->variable_index);
+    constant->type = this->int64Type;
+    constant->value = std::to_string(value);
+    this->constants[constant->name] = constant;
+    return new Value(this->pointerType, constant->name);
   }
 
   Type* Module::defineNativeType(const std::string& name) {
@@ -41,15 +52,16 @@ namespace tsil::x {
     return type;
   }
 
-  Value* Module::declareFunction(const std::string& name,
-                                 Type* result_type,
-                                 std::vector<Type*> parameters) {
+  std::pair<Function*, Value*> Module::declareFunction(
+      const std::string& name,
+      Type* result_type,
+      std::vector<Type*> parameters) {
     auto function = new Function();
     function->name = "@\"" + name + "\"";
     function->result_type = result_type;
     function->parameters = parameters;
     this->functions[name] = function;
-    return new Value{.function = function};
+    return {function, new Value(this->pointerType, function->name)};
   }
 
   Value* Module::defineFunction(const std::string& name,
@@ -59,15 +71,26 @@ namespace tsil::x {
     function->name = "@" + name;
     function->result_type = result_type;
     function->parameters = parameters;
-    this->defineFunctionBlock(function, "entry");
+    const auto entryBlock = this->defineFunctionBlock(function, "entry");
+    if (result_type) {
+      if (result_type != this->voidType) {
+        function->return_alloca =
+            this->pushFunctionBlockAllocaInstruction(entryBlock, result_type);
+        const auto exitBlock = this->defineFunctionBlock(function, "exit");
+        const auto loadedReturnValue = this->pushFunctionBlockLoadInstruction(
+            exitBlock, result_type, function->return_alloca);
+        this->pushFunctionBlockRetInstruction(exitBlock, result_type,
+                                              loadedReturnValue);
+      }
+    }
     this->functions[name] = function;
-    return new Value{.function = function};
+    return new Value(this->pointerType, function->name);
   }
 
   FunctionBlock* Module::defineFunctionBlock(Function* function,
                                              const std::string& name) {
     auto block = new FunctionBlock();
-    block->name = name;
+    block->name = name + "." + std::to_string(function->blocks.size());
     function->blocks.push_back(block);
     return block;
   }
@@ -91,7 +114,7 @@ namespace tsil::x {
     instruction->name = "%alloca." + std::to_string(this->variable_counter++);
     instruction->alloca = alloca;
     block->instructions.push_back(instruction);
-    return new Value{.instruction = instruction};
+    return new Value(this->pointerType, instruction->name);
   }
 
   Value* Module::pushFunctionBlockGetElementPtrInstruction(
@@ -108,15 +131,17 @@ namespace tsil::x {
         "%getelementptr." + std::to_string(this->variable_counter++);
     instruction->getelementptr = getelementptr;
     block->instructions.push_back(instruction);
-    return new Value{.instruction = instruction};
+    return new Value(this->pointerType, instruction->name);
   }
 
   FunctionInstruction* Module::pushFunctionBlockStoreInstruction(
       FunctionBlock* block,
+      Type* type,
       Value* value,
       Value* pointer) {
     const auto instruction = new FunctionInstruction();
     const auto store = new FunctionInstructionStore();
+    store->type = type;
     store->value = value;
     store->pointer = pointer;
     instruction->store = store;
@@ -134,14 +159,16 @@ namespace tsil::x {
     instruction->name = "%load." + std::to_string(this->variable_counter++);
     instruction->load = load;
     block->instructions.push_back(instruction);
-    return new Value{.instruction = instruction};
+    return new Value(type, instruction->name);
   }
 
   FunctionInstruction* Module::pushFunctionBlockRetInstruction(
       FunctionBlock* block,
+      Type* type,
       Value* value) {
     const auto instruction = new FunctionInstruction();
     const auto ret = new FunctionInstructionRet();
+    ret->type = type;
     ret->value = value;
     instruction->ret = ret;
     block->instructions.push_back(instruction);
@@ -150,16 +177,18 @@ namespace tsil::x {
 
   Value* Module::pushFunctionBlockCallInstruction(
       FunctionBlock* block,
+      Type* type,
       Value* value,
       std::vector<Value*> arguments) {
     const auto instruction = new FunctionInstruction();
     const auto call = new FunctionInstructionCall();
+    call->type = type;
     call->value = value;
     call->arguments = arguments;
     instruction->name = "%call." + std::to_string(this->variable_counter++);
     instruction->call = call;
     block->instructions.push_back(instruction);
-    return new Value{.instruction = instruction};
+    return new Value(type, instruction->name);
   }
 
   FunctionInstruction* Module::pushFunctionBlockBrInstruction(
@@ -188,6 +217,98 @@ namespace tsil::x {
     return instruction;
   }
 
+  Value* Module::pushFunctionBlockICmpInstruction(FunctionBlock* block,
+                                                  const std::string& op,
+                                                  Type* type,
+                                                  Value* left,
+                                                  Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto icmp = new FunctionInstructionICmp();
+    icmp->op = op;
+    icmp->type = type;
+    icmp->left = left;
+    icmp->right = right;
+    instruction->name = "%icmp." + std::to_string(this->variable_counter++);
+    instruction->icmp = icmp;
+    block->instructions.push_back(instruction);
+    return new Value(this->int1Type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockAddInstruction(FunctionBlock* block,
+                                                 Type* type,
+                                                 Value* left,
+                                                 Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto add = new FunctionInstructionAdd();
+    add->type = type;
+    add->left = left;
+    add->right = right;
+    instruction->name = "%add." + std::to_string(this->variable_counter++);
+    instruction->add = add;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockSubInstruction(FunctionBlock* block,
+                                                 Type* type,
+                                                 Value* left,
+                                                 Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto sub = new FunctionInstructionSub();
+    sub->type = type;
+    sub->left = left;
+    sub->right = right;
+    instruction->name = "%sub." + std::to_string(this->variable_counter++);
+    instruction->sub = sub;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockMulInstruction(FunctionBlock* block,
+                                                 Type* type,
+                                                 Value* left,
+                                                 Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto mul = new FunctionInstructionMul();
+    mul->type = type;
+    mul->left = left;
+    mul->right = right;
+    instruction->name = "%mul." + std::to_string(this->variable_counter++);
+    instruction->mul = mul;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockDivInstruction(FunctionBlock* block,
+                                                 Type* type,
+                                                 Value* left,
+                                                 Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto div = new FunctionInstructionDiv();
+    div->type = type;
+    div->left = left;
+    div->right = right;
+    instruction->name = "%div." + std::to_string(this->variable_counter++);
+    instruction->div = div;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockModInstruction(FunctionBlock* block,
+                                                 Type* type,
+                                                 Value* left,
+                                                 Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto mod = new FunctionInstructionMod();
+    mod->type = type;
+    mod->left = left;
+    mod->right = right;
+    instruction->name = "%mod." + std::to_string(this->variable_counter++);
+    instruction->mod = mod;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
   std::string Module::dumpLL() {
     std::vector<std::string> lines;
 
@@ -210,7 +331,14 @@ namespace tsil::x {
     return result;
   }
 
+  std::string Value::dumpLL(tsil::x::Module* module) {
+    return this->type->name + " " + this->name;
+  }
+
   std::string Constant::dumpLL(Module* module) {
+    if (this->type == module->int64Type) {
+      return this->name + " = constant " + this->type->name + " " + this->value;
+    }
     return this->name + " = constant [" +
            std::to_string(this->value.size() + 1) + " x i8] c\"" + this->value +
            "\\00\"";
@@ -229,61 +357,6 @@ namespace tsil::x {
       result += " }";
       return result;
     }
-  }
-
-  std::string Value::dumpLL(Module* module) {
-    if (this->constant) {
-      return "ptr " + this->constant->name;
-    }
-    if (this->instruction) {
-      if (this->instruction->alloca) {
-        return "ptr " + this->instruction->name;
-      }
-      if (this->instruction->getelementptr) {
-        return "ptr " + this->instruction->name;
-      }
-      if (this->instruction->store) {
-        return "void";
-      }
-      if (this->instruction->load) {
-        return this->instruction->load->type->name + " " +
-               this->instruction->name;
-      }
-    }
-    if (this->function) {
-      return "ptr " + this->function->name;
-    }
-    if (this->number) {
-      return this->number->type->name + " " + this->number->value;
-    }
-    return "void";
-  }
-
-  std::string Value::dumpRightLL(Module* module) {
-    if (this->constant) {
-      return this->constant->name;
-    }
-    if (this->instruction) {
-      if (this->instruction->alloca) {
-        return this->instruction->name;
-      }
-      if (this->instruction->getelementptr) {
-        return this->instruction->name;
-      }
-      if (this->instruction->store) {
-        return "void";
-      }
-      if (this->instruction->load) {
-        return this->instruction->name;
-      }
-    }
-    if (this->function) {
-      return this->function->name;
-    }
-    if (this->number) {
-      return this->number->value;
-    }
-    return "void";
   }
 
   std::string Function::dumpLL(Module* module) {
@@ -347,7 +420,8 @@ namespace tsil::x {
       return result;
     }
     if (this->store) {
-      return "store " + this->store->value->dumpLL(module) + ", " +
+      return "store " + this->store->type->name + " " +
+             this->store->value->name + ", " +
              this->store->pointer->dumpLL(module);
     }
     if (this->load) {
@@ -365,8 +439,15 @@ namespace tsil::x {
       for (const auto& argument : this->call->arguments) {
         arguments.push_back(argument->dumpLL(module));
       }
-      std::string result = this->name + " = call ";
-      result += this->call->value->dumpLL(module);
+      std::string result;
+      if (this->call->type == module->voidType) {
+        result = "call ";
+      } else {
+        result = this->name + " = call ";
+      }
+      result += this->call->type->name;
+      result += " ";
+      result += this->call->value->name;
       result += "(";
       implode(arguments, ", ", result);
       result += ")";
@@ -376,9 +457,18 @@ namespace tsil::x {
       return "br label %" + this->br->target->name;
     }
     if (this->brif) {
-      return "br i1 " + this->brif->condition->dumpRightLL(module) +
-             ", label %" + this->brif->target_true->name + ", label %" +
+      return "br i1 " + this->brif->condition->name + ", label %" +
+             this->brif->target_true->name + ", label %" +
              this->brif->target_false->name;
+    }
+    if (this->icmp) {
+      return this->name + " = icmp " + this->icmp->op + " " +
+             this->icmp->type->name + " " + this->icmp->left->name + ", " +
+             this->icmp->right->name;
+    }
+    if (this->add) {
+      return this->name + " = add " + this->add->type->name + " " +
+             this->add->left->name + ", " + this->add->right->name;
     }
     return "";
   }

@@ -1,6 +1,12 @@
 #include "compiler.h"
 
 namespace tsil::compiler {
+  CompilerError* CompilerError::fromASTValue(tsil::ast::ASTValue* ast_value,
+                                             const std::string& message) {
+    return new CompilerError(ast_value->start_line, ast_value->start_column,
+                             message);
+  }
+
   bool CompilationScope::has_variable(const std::string& name) const {
     if (this->variables.contains(name)) {
       return true;
@@ -117,10 +123,6 @@ namespace tsil::compiler {
                            x::Value* LV) {
     if (this == target_type) {
       return LV;
-    }
-    if (LV->number) {
-      return new x::Value{.number = new x::Number{.type = target_type->LT,
-                                                  .value = LV->number->value}};
     }
     return LV;
     //    if (this->type == TypeTypePointer && target_type->type ==

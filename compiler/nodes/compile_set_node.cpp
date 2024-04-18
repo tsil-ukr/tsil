@@ -12,11 +12,12 @@ namespace tsil::compiler {
       return {left_result.error};
     }
     if (left_result.type->type != TypeTypeStructureInstance) {
-      return {new CompilerError("Тип не є структурою")};
+      return {
+          CompilerError::fromASTValue(set_node->left, "Тип не є структурою")};
     }
     if (!left_result.type->structure_instance_fields.contains(set_node->id)) {
-      return {new CompilerError("Властивість \"" + set_node->id +
-                                "\" не знайдено")};
+      return {CompilerError::fromASTValue(
+          ast_value, "Властивість \"" + set_node->id + "\" не знайдено")};
     }
     const auto field =
         left_result.type->structure_instance_fields[set_node->id];
@@ -26,17 +27,18 @@ namespace tsil::compiler {
       return {value_result.error};
     }
     if (value_result.type != field.type) {
-      return {new CompilerError("Невірний тип властивості \"" + set_node->id +
-                                "\": очікується \"" +
-                                field.type->getFullName() + "\", отримано \"" +
-                                value_result.type->getFullName() + "\"")};
+      return {CompilerError::fromASTValue(
+          set_node->value, "Невірний тип властивості \"" + set_node->id +
+                               "\": очікується \"" + field.type->getFullName() +
+                               "\", отримано \"" +
+                               value_result.type->getFullName() + "\"")};
     }
     const auto LV =
         this->state->Module->pushFunctionBlockGetElementPtrInstruction(
             block, left_result.type->LT, left_result.LV,
             {0, static_cast<unsigned long>(field.index)});
     this->state->Module->pushFunctionBlockStoreInstruction(
-        block, value_result.LV, LV);
+        block, value_result.type->LT, value_result.LV, LV);
     return {nullptr};
   }
 } // namespace tsil::compiler

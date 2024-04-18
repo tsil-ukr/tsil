@@ -13,12 +13,15 @@ namespace tsil::compiler {
     }
     const auto type_result = this->makeTypeFromTypeNodeASTValue(as_node->type);
     if (!type_result.type) {
-      return {nullptr, nullptr, new CompilerError(type_result.error)};
+      return {nullptr, nullptr,
+              CompilerError::fromASTValue(as_node->type, type_result.error)};
     }
     const auto castedLV =
         left_result.type->castToLV(this, type_result.type, left_result.LV);
     if (!castedLV) {
-      return {nullptr, nullptr, new CompilerError("Неможливо привести тип")};
+      return {
+          nullptr, nullptr,
+          CompilerError::fromASTValue(as_node->type, "Неможливо привести тип")};
     }
     return {type_result.type, castedLV, nullptr};
   }

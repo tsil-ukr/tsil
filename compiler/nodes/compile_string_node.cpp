@@ -46,19 +46,17 @@ namespace tsil::compiler {
     const auto lengthLGEP =
         this->state->Module->pushFunctionBlockGetElementPtrInstruction(
             block, this->state->textType->LT, LAI, {0, 0});
+    const auto sizeXValue =
+        this->state->Module->putI64Constant(string_value.size());
     this->state->Module->pushFunctionBlockStoreInstruction(
-        block,
-        new x::Value{.number =
-                         new x::Number(this->state->Module->int64Type,
-                                       std::to_string(string_value.size()))},
-        lengthLGEP);
+        block, this->state->Module->int64Type, sizeXValue, lengthLGEP);
     const auto dataLGEP =
         this->state->Module->pushFunctionBlockGetElementPtrInstruction(
             block, this->state->textType->LT, LAI, {0, 1});
     this->state->Module->pushFunctionBlockStoreInstruction(
-        block, LV, dataLGEP);
+        block, this->state->textType->LT, LV, dataLGEP);
     const auto LLOAD = this->state->Module->pushFunctionBlockLoadInstruction(
-        block, LAI->instruction->alloca->type, LAI);
+        block, this->state->textType->LT, LAI);
     return {this->state->textType, LLOAD, nullptr};
   }
 } // namespace tsil::compiler

@@ -7,13 +7,12 @@ namespace tsil::compiler {
     const auto type_result =
         this->makeTypeFromTypeNodeASTValue(sizeof_node->value);
     if (!type_result.type) {
-      return {nullptr, nullptr, new CompilerError(type_result.error)};
+      return {
+          nullptr, nullptr,
+          CompilerError::fromASTValue(sizeof_node->value, type_result.error)};
     }
     const auto size = type_result.type->getSizeOf(this);
-    return {this->state->int64Type,
-            new x::Value{
-                .number = new x::Number{.type = this->state->Module->int64Type,
-                                        .value = std::to_string(size)}},
-            nullptr};
+    const auto xValue = this->state->Module->putI64Constant(size);
+    return {this->state->int64Type, xValue, nullptr};
   }
 } // namespace tsil::compiler

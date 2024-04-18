@@ -16,6 +16,6 @@ cmake-build-debug/
 x.ll
 привіт.o
 привіт
-m.cpp
+m.c
 m.ll
 a.out

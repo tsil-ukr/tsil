@@ -14,12 +14,15 @@ namespace tsil::compiler {
       }
       if (this->state->structures.contains(identifier_node->name)) {
         return {nullptr, nullptr,
-                new CompilerError("Субʼєкт \"" + identifier_node->name +
-                                  "\" не можна використовувати як значення")};
+                CompilerError::fromASTValue(
+                    get_pointer_node->value,
+                    "Субʼєкт \"" + identifier_node->name +
+                        "\" не можна використовувати як значення")};
       }
       return {nullptr, nullptr,
-              new CompilerError("Субʼєкт \"" + identifier_node->name +
-                                "\" не визначено")};
+              CompilerError::fromASTValue(
+                  get_pointer_node->value,
+                  "Субʼєкт \"" + identifier_node->name + "\" не визначено")};
     } else if (get_pointer_node->value->kind == ast::KindGetNode) {
       const auto get_node = get_pointer_node->value->data.GetNode;
       CompilerValueResult left =
@@ -28,12 +31,15 @@ namespace tsil::compiler {
         return left;
       }
       if (left.type->type != TypeTypeStructureInstance) {
-        return {nullptr, nullptr, new CompilerError("Тип не є структурою")};
+        return {
+            nullptr, nullptr,
+            CompilerError::fromASTValue(get_node->left, "Тип не є структурою")};
       }
       if (!left.type->structure_instance_fields.contains(get_node->id)) {
         return {nullptr, nullptr,
-                new CompilerError("Властивість \"" + get_node->id +
-                                  "\" не знайдено")};
+                CompilerError::fromASTValue(
+                    get_pointer_node->value,
+                    "Властивість \"" + get_node->id + "\" не знайдено")};
       }
       const auto field = left.type->structure_instance_fields[get_node->id];
       const auto LV =

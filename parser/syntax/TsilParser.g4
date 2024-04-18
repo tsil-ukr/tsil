@@ -79,6 +79,6 @@ bitwise_op: '^' | '|' | '&' | '<' '<' | '>' '>';
 comparison_op: '=' '=' | '!' '=' | '>' | '<' | '>' '=' | '<' '=';
 logical_op: '|' '|' | '&' '&';
 
-number: NUMBER;
+number: INTEGER | FLOAT | HEX | BIN;
 string: (s_prefix=ID)?  STRING;
 identifier: ID;

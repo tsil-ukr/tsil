@@ -29,10 +29,6 @@ namespace tsil::parser {
       binary_node->op = ast::ARITHMETIC_DIV;
     } else if (op == "%") {
       binary_node->op = ast::ARITHMETIC_MOD;
-    } else if (op == "//") {
-      binary_node->op = ast::ARITHMETIC_DIVDIV;
-    } else if (op == "**") {
-      binary_node->op = ast::ARITHMETIC_POW;
     } else {
       throw std::runtime_error("Unknown operation: " + op);
     }

@@ -9,10 +9,14 @@ namespace tsil::compiler {
     const auto type_result =
         this->makeTypeFromTypeNodeASTValue(constructor_node->type);
     if (!type_result.type) {
-      return {nullptr, nullptr, new CompilerError(type_result.error)};
+      return {nullptr, nullptr,
+              CompilerError::fromASTValue(constructor_node->type,
+                                          type_result.error)};
     }
     if (type_result.type->type != TypeTypeStructureInstance) {
-      return {nullptr, nullptr, new CompilerError("Тип не є структурою")};
+      return {nullptr, nullptr,
+              CompilerError::fromASTValue(constructor_node->type,
+                                          "Тип не є структурою")};
     }
     const auto LAI = this->state->Module->pushFunctionBlockAllocaInstruction(
         block, type_result.type->LT);
@@ -21,8 +25,9 @@ namespace tsil::compiler {
       if (!type_result.type->structure_instance_fields.contains(
               constructor_arg_node->id)) {
         return {nullptr, nullptr,
-                new CompilerError("Властивість \"" + constructor_arg_node->id +
-                                  "\" не знайдено")};
+                CompilerError::fromASTValue(arg, "Властивість \"" +
+                                                     constructor_arg_node->id +
+                                                     "\" не знайдено")};
       }
       const auto field =
           type_result.type->structure_instance_fields[constructor_arg_node->id];
@@ -32,19 +37,20 @@ namespace tsil::compiler {
         return {nullptr, nullptr, value_result.error};
       }
       if (value_result.type != field.type) {
-        return {
-            nullptr, nullptr,
-            new CompilerError("Невірний тип властивості \"" +
-                              constructor_arg_node->id + "\": очікується \"" +
-                              field.type->getFullName() + "\", отримано \"" +
-                              value_result.type->getFullName() + "\"")};
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(
+                    constructor_arg_node->value,
+                    "Невірний тип властивості \"" + constructor_arg_node->id +
+                        "\": очікується \"" + field.type->getFullName() +
+                        "\", отримано \"" + value_result.type->getFullName() +
+                        "\"")};
       }
       const auto LV =
           this->state->Module->pushFunctionBlockGetElementPtrInstruction(
               block, type_result.type->LT, LAI,
               {0, static_cast<unsigned long>(field.index)});
       this->state->Module->pushFunctionBlockStoreInstruction(
-          block, value_result.LV, LV);
+          block, value_result.type->LT, value_result.LV, LV);
     }
     x::Value* loaded_member =
         this->state->Module->pushFunctionBlockLoadInstruction(

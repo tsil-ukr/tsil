@@ -8,17 +8,19 @@ namespace tsil::compiler {
     const auto identifier_node = ast_value->data.IdentifierNode;
     if (this->has_variable(identifier_node->name)) {
       const auto variable = this->get_variable(identifier_node->name);
-      const auto LV = this->state->Module->pushFunctionBlockLoadInstruction(
+      const auto xValue = this->state->Module->pushFunctionBlockLoadInstruction(
           block, variable.first->LT, variable.second);
-      return {variable.first, LV, nullptr};
+      return {variable.first, xValue, nullptr};
     }
     if (this->state->structures.contains(identifier_node->name)) {
       return {nullptr, nullptr,
-              new CompilerError("Субʼєкт \"" + identifier_node->name +
-                                "\" не можна використовувати як значення")};
+              CompilerError::fromASTValue(
+                  ast_value, "Субʼєкт \"" + identifier_node->name +
+                                 "\" не можна використовувати як значення")};
     }
     return {nullptr, nullptr,
-            new CompilerError("Субʼєкт \"" + identifier_node->name +
-                              "\" не визначено")};
+            CompilerError::fromASTValue(
+                ast_value,
+                "Субʼєкт \"" + identifier_node->name + "\" не визначено")};
   }
 } // namespace tsil::compiler

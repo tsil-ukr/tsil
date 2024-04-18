@@ -40,7 +40,10 @@ SEMICOLON: ';';
 QUOTE_OPEN: '{';
 QUOTE_CLOSE: '}';
 
-NUMBER: DIGIT+;
+INTEGER: DIGIT+;
+FLOAT: DIGIT+ '.' DIGIT+;
+HEX: '0ш' ('А' | 'а' | 'Б' | 'б' | 'В' | 'в' | 'Г' | 'г' | 'Ґ' | 'ґ' | 'Д' | 'д' | DIGIT)+;
+BIN: '0д' ('0' | '1')+;
 
 ID: ID_START ID_CONTINUE*;
 

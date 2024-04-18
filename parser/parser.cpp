@@ -340,6 +340,31 @@ namespace tsil::parser {
     this->errors.push_back(error);
   }
 
+  void TsilParserErrorListener::reportAmbiguity(
+      antlr4::Parser* recognizer,
+      const antlr4::dfa::DFA& dfa,
+      size_t startIndex,
+      size_t stopIndex,
+      bool exact,
+      const antlrcpp::BitSet& ambigAlts,
+      antlr4::atn::ATNConfigSet* configs) {}
+
+  void TsilParserErrorListener::reportAttemptingFullContext(
+      antlr4::Parser* recognizer,
+      const antlr4::dfa::DFA& dfa,
+      size_t startIndex,
+      size_t stopIndex,
+      const antlrcpp::BitSet& conflictingAlts,
+      antlr4::atn::ATNConfigSet* configs) {}
+
+  void TsilParserErrorListener::reportContextSensitivity(
+      antlr4::Parser* recognizer,
+      const antlr4::dfa::DFA& dfa,
+      size_t startIndex,
+      size_t stopIndex,
+      size_t prediction,
+      antlr4::atn::ATNConfigSet* configs) {}
+
   TsilParserResult parse(const std::string& code) {
     antlr4::ANTLRInputStream input(code);
 
