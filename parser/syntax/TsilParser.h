@@ -379,13 +379,18 @@ public:
   public:
     TsilParser::ExprContext *i_value = nullptr;
     TsilParser::BodyContext *i_body = nullptr;
+    TsilParser::BodyContext *i_else_body = nullptr;
     IfContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *KW_IF();
-    antlr4::tree::TerminalNode *QUOTE_OPEN();
-    antlr4::tree::TerminalNode *QUOTE_CLOSE();
+    std::vector<antlr4::tree::TerminalNode *> QUOTE_OPEN();
+    antlr4::tree::TerminalNode* QUOTE_OPEN(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> QUOTE_CLOSE();
+    antlr4::tree::TerminalNode* QUOTE_CLOSE(size_t i);
     ExprContext *expr();
-    BodyContext *body();
+    antlr4::tree::TerminalNode *KW_ELSE();
+    std::vector<BodyContext *> body();
+    BodyContext* body(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

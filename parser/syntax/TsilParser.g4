@@ -23,7 +23,7 @@ diia_head: 'дія' d_name=identifier '(' (d_params=params)? (d_variadic=',' '.'
 diia: (d_extern='екстерн')? d_head=diia_head '{' (d_body=body)? '}';
 diia_declaration: (d_extern='екстерн')? d_head=diia_head  ('як' d_as=identifier)? ';';
 
-if: 'якщо' i_value=expr '{' (i_body=body)? '}';
+if: 'якщо' i_value=expr '{' (i_body=body)? '}' ('інакше' '{' (i_else_body=body)? '}')?;
 
 while: 'поки' w_value=expr '{' (w_body=body)? '}';
 

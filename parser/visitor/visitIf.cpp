@@ -7,6 +7,9 @@ namespace tsil::parser {
     if (context->i_body) {
       if_node->body = AAVec(visitBody(context->i_body));
     }
+    if (context->i_else_body) {
+      if_node->else_body = AAVec(visitBody(context->i_else_body));
+    }
     return AV(context, ast::KindIfNode, if_node);
   }
 } // namespace tsil::parser
