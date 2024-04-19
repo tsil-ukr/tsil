@@ -2,7 +2,7 @@ lexer grammar TsilLexer;
 
 KW_TSIL: 'ціль';
 KW_DIIA: 'дія';
-KW_SAVE: 'покласти';
+KW_SAVE: 'зберегти';
 KW_DELETE: 'видалити';
 KW_IF: 'якщо';
 KW_ELSE: 'інакше';
@@ -11,7 +11,7 @@ KW_RETURN: 'вернути';
 KW_STRUCT: 'структура';
 KW_EXTERN: 'екстерн';
 KW_AS: 'як';
-KW_SIZEOF: 'розмір типу';
+KW_SIZEOF: 'розмір!';
 
 EQUAL: '=';
 GREATER: '>';

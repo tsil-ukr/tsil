@@ -55,7 +55,7 @@ namespace tsil::x {
   std::pair<Function*, Value*> Module::declareFunction(
       const std::string& name,
       Type* result_type,
-      std::vector<Type*> parameters) {
+      std::vector<Value*> parameters) {
     auto function = new Function();
     function->name = "@\"" + name + "\"";
     function->result_type = result_type;
@@ -66,7 +66,7 @@ namespace tsil::x {
 
   Value* Module::defineFunction(const std::string& name,
                                 Type* result_type,
-                                std::vector<Type*> parameters) {
+                                std::vector<Value*> parameters) {
     auto function = new Function();
     function->name = "@" + name;
     function->result_type = result_type;
@@ -362,7 +362,7 @@ namespace tsil::x {
   std::string Function::dumpLL(Module* module) {
     std::vector<std::string> parameters;
     for (const auto& parameter : this->parameters) {
-      parameters.push_back(parameter->name);
+      parameters.push_back(parameter->dumpLL(module));
     }
     if (this->blocks.empty()) {
       std::string result = "declare ";

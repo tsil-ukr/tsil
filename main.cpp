@@ -141,12 +141,12 @@ int main(int argc, char** argv) {
       state->types["void"] = voidType;
       state->voidType = voidType;
 
-      const auto voidPointerType = new tsil::compiler::Type();
-      voidPointerType->type = tsil::compiler::TypeTypeNative;
-      voidPointerType->name = "невідома_комірка";
-      voidPointerType->LT = state->Module->pointerType;
-      state->types["невідома_комірка"] = voidPointerType;
-      state->voidPointerType = voidPointerType;
+      const auto pointerType = new tsil::compiler::Type();
+      pointerType->type = tsil::compiler::TypeTypeNative;
+      pointerType->name = "невідома_комірка";
+      pointerType->LT = state->Module->pointerType;
+      state->types["невідома_комірка"] = pointerType;
+      state->pointerType = pointerType;
 
       const auto int8Type = new tsil::compiler::Type();
       int8Type->type = tsil::compiler::TypeTypeNative;
@@ -238,29 +238,31 @@ int main(int argc, char** argv) {
         if (ast_value->kind == tsil::ast::KindNone) {
           continue;
         }
-        if (ast_value->kind == tsil::ast::KindDiiaNode) {
-          const auto result = state->globalScope->compile_diia_node(ast_value);
+        if (ast_value->kind == tsil::ast::KindStructureNode) {
+          const auto result = state->globalScope->compileStructure(ast_value);
           if (result.error) {
             printCompilerError(input_path, code, result.error);
             return 1;
           }
         } else if (ast_value->kind == tsil::ast::KindDiiaDeclarationNode) {
           const auto result =
-              state->globalScope->compile_diia_declaration_node(ast_value);
+              state->globalScope->compileDiiaDeclaration(ast_value);
           if (result.error) {
             printCompilerError(input_path, code, result.error);
             return 1;
           }
-        } else if (ast_value->kind == tsil::ast::KindStructureNode) {
-          const auto result =
-              state->globalScope->compile_structure_node(ast_value);
+        } else if (ast_value->kind == tsil::ast::KindDiiaNode) {
+          const auto result = state->globalScope->compileDiia(ast_value);
           if (result.error) {
             printCompilerError(input_path, code, result.error);
             return 1;
           }
         } else {
-          std::cerr << "Невідомий тип вказівки: " << ast_value->kind
-                    << std::endl;
+          printCompilerError(
+              input_path, code,
+              tsil::compiler::CompilerError::fromASTValue(
+                  ast_value,
+                  "В секції можна визначати лише секції, структури та дії"));
           return 1;
         }
       }

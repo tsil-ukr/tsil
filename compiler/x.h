@@ -49,13 +49,14 @@ namespace tsil::x {
     Type* defineNativeType(const std::string& name);
     Type* defineStructType(const std::string& name, std::vector<Type*> fields);
 
-    std::pair<Function*, Value*> declareFunction(const std::string& name,
-                                                 Type* result_type,
-                                                 std::vector<Type*> parameters);
+    std::pair<Function*, Value*> declareFunction(
+        const std::string& name,
+        Type* result_type,
+        std::vector<Value*> parameters);
 
     Value* defineFunction(const std::string& name,
                           Type* result_type,
-                          std::vector<Type*> parameters);
+                          std::vector<Value*> parameters);
     FunctionBlock* defineFunctionBlock(Function* function,
                                        const std::string& name);
     FunctionBlock* getFunctionBlock(Function* function,
@@ -155,7 +156,7 @@ namespace tsil::x {
   struct Function {
     std::string name;
     Type* result_type = nullptr;
-    std::vector<Type*> parameters;
+    std::vector<Value*> parameters;
     std::vector<FunctionBlock*> blocks;
     Value* return_alloca = nullptr;
     FunctionBlock* entry_block = nullptr;

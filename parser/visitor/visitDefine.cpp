@@ -10,6 +10,6 @@ namespace tsil::parser {
     if (context->d_value) {
       define_node->value = AAV(visitContext(context->d_value));
     }
-    return AV(ast::KindDefineNode, define_node);
+    return AV(context, ast::KindDefineNode, define_node);
   }
 } // namespace tsil::parser

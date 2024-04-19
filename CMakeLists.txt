@@ -7,22 +7,22 @@ set(CMAKE_BUILD_TYPE "Release")
 add_subdirectory(parser)
 
 set(TSIL_SRC
-        compiler/nodes/compile_as_node.cpp
-        compiler/nodes/compile_assign_node.cpp
-        compiler/nodes/compile_ast_value.cpp
-        compiler/nodes/compile_binary_node.cpp
-        compiler/nodes/compile_call_node.cpp
-        compiler/nodes/compile_constructor_node.cpp
-        compiler/nodes/compile_define_node.cpp
-        compiler/nodes/compile_diia_node.cpp
-        compiler/nodes/compile_get_node.cpp
-        compiler/nodes/compile_get_pointer_node.cpp
-        compiler/nodes/compile_identifier_node.cpp
-        compiler/nodes/compile_number_node.cpp
-        compiler/nodes/compile_set_node.cpp
-        compiler/nodes/compile_sizeof_node.cpp
-        compiler/nodes/compile_string_node.cpp
-        compiler/nodes/compile_structure_node.cpp
+        compiler/nodes/compileAs.cpp
+        compiler/nodes/compileAssign.cpp
+        compiler/nodes/compileValue.cpp
+        compiler/nodes/compileBinary.cpp
+        compiler/nodes/compileCall.cpp
+        compiler/nodes/compileConstruct.cpp
+        compiler/nodes/compileDefine.cpp
+        compiler/nodes/compileDiia.cpp
+        compiler/nodes/compileGet.cpp
+        compiler/nodes/compileGep.cpp
+        compiler/nodes/compileLoad.cpp
+        compiler/nodes/compileNumber.cpp
+        compiler/nodes/compileSet.cpp
+        compiler/nodes/compileSizeof.cpp
+        compiler/nodes/compileString.cpp
+        compiler/nodes/compileStructure.cpp
         compiler/compiler.cpp
         compiler/compiler.h
         compiler/x.cpp

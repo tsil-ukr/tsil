@@ -58,11 +58,6 @@ namespace tsil::ast {
     COMPARISON_GT,
     COMPARISON_LE,
     COMPARISON_GE,
-    COMPARISON_CONTAINS,
-    COMPARISON_NOT_CONTAINS,
-    COMPARISON_IS,
-    COMPARISON_NOT_IS,
-    UTIL_AS,
   };
 
   enum LogicalOp {

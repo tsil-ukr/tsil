@@ -132,12 +132,6 @@ public:
     StructureContext *structure();
     Diia_declarationContext *diia_declaration();
     DiiaContext *diia();
-    IfContext *if_();
-    WhileContext *while_();
-    DefineContext *define();
-    AssignContext *assign();
-    SetContext *set();
-    ExprContext *expr();
     antlr4::tree::TerminalNode *SEMICOLON();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -318,7 +312,8 @@ public:
     IdentifierContext *identifier();
     std::vector<antlr4::tree::TerminalNode *> DOT();
     antlr4::tree::TerminalNode* DOT(size_t i);
-    antlr4::tree::TerminalNode *COLON();
+    antlr4::tree::TerminalNode *MINUS();
+    antlr4::tree::TerminalNode *GREATER();
     ParamsContext *params();
     antlr4::tree::TerminalNode *COMA();
     TypeContext *type();
@@ -335,6 +330,7 @@ public:
   class  DiiaContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *d_extern = nullptr;
+    TsilParser::StringContext *d_extern_type = nullptr;
     TsilParser::Diia_headContext *d_head = nullptr;
     TsilParser::BodyContext *d_body = nullptr;
     DiiaContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -344,6 +340,7 @@ public:
     Diia_headContext *diia_head();
     antlr4::tree::TerminalNode *KW_EXTERN();
     BodyContext *body();
+    StringContext *string();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -357,6 +354,7 @@ public:
   class  Diia_declarationContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *d_extern = nullptr;
+    TsilParser::StringContext *d_extern_type = nullptr;
     TsilParser::Diia_headContext *d_head = nullptr;
     TsilParser::IdentifierContext *d_as = nullptr;
     Diia_declarationContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -366,6 +364,7 @@ public:
     antlr4::tree::TerminalNode *KW_AS();
     antlr4::tree::TerminalNode *KW_EXTERN();
     IdentifierContext *identifier();
+    StringContext *string();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -490,10 +489,14 @@ public:
   class  SizeofContext : public antlr4::ParserRuleContext {
   public:
     TsilParser::TypeContext *s_type = nullptr;
+    TsilParser::ExprContext *s_value = nullptr;
     SizeofContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *KW_SIZEOF();
+    antlr4::tree::TerminalNode *PAREN_OPEN();
+    antlr4::tree::TerminalNode *PAREN_CLOSE();
     TypeContext *type();
+    ExprContext *expr();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -940,6 +943,7 @@ public:
     virtual size_t getRuleIndex() const override;
     Body_elementContext *body_element();
     Return_body_elementContext *return_body_element();
+    antlr4::tree::TerminalNode *SEMICOLON();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -957,10 +961,10 @@ public:
     IfContext *if_();
     WhileContext *while_();
     DefineContext *define();
+    antlr4::tree::TerminalNode *SEMICOLON();
     AssignContext *assign();
     SetContext *set();
     ExprContext *expr();
-    antlr4::tree::TerminalNode *SEMICOLON();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

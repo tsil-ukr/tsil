@@ -37,7 +37,7 @@ namespace tsil::compiler {
                                             std::vector<Type*> generic_values) {
     if (name == "комірка") {
       if (generic_values.empty()) {
-        return {this->state->voidPointerType};
+        return {this->state->pointerType};
       }
       const auto type = generic_values[0]->getPointerType(this);
       return {type, ""};
@@ -124,19 +124,19 @@ namespace tsil::compiler {
     if (this == target_type) {
       return LV;
     }
-    return LV;
+    //    return LV;
     //    if (this->type == TypeTypePointer && target_type->type ==
     //    TypeTypePointer) {
     //      return scope->state->Builder->CreatePointerCast(LV,
     //      target_type->LT);
     //    }
-    //    if (this == scope->state->voidPointerType &&
+    //    if (this == scope->state->pointerType &&
     //        target_type->type == TypeTypePointer) {
     //      return scope->state->Builder->CreatePointerCast(LV,
     //      target_type->LT);
     //    }
     //    if (this->type == TypeTypePointer &&
-    //        target_type == scope->state->voidPointerType) {
+    //        target_type == scope->state->pointerType) {
     //      return scope->state->Builder->CreatePointerCast(LV,
     //      target_type->LT);
     //    }

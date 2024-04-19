@@ -7,7 +7,7 @@ options {
 file: f_program=program EOF;
 
 program: program_element*;
-program_element: structure | diia_declaration |  diia | if | while | define | assign | set | (expr ';') | ';';
+program_element: structure | diia_declaration |  diia | ';';
 
 structure: 'структура' s_name=identifier ('<' s_generics=structure_generics '>')? '{' (s_params=structure_params)? '}';
 structure_generics: structure_generic (',' structure_generic)*;
@@ -15,13 +15,13 @@ structure_generic: sg_name=identifier;
 structure_params: structure_param (',' structure_param)* ','?;
 structure_param: sp_name=identifier ':' sp_type=type;
 
-constructor: (c_new='покласти')? c_type=type '{' (c_args=constructor_args)? '}';
+constructor: (c_new='зберегти')? c_type=type '{' (c_args=constructor_args)? '}';
 constructor_args: constructor_arg (',' constructor_arg)* ','?;
 constructor_arg: ca_name=identifier '=' ca_value=expr;
 
-diia_head: 'дія' d_name=identifier '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' (':' d_type=type)?;
-diia: (d_extern='екстерн')? d_head=diia_head '{' (d_body=body)? '}';
-diia_declaration: (d_extern='екстерн')? d_head=diia_head  ('як' d_as=identifier)? ';';
+diia_head: 'дія' d_name=identifier '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' ('-' '>' d_type=type)?;
+diia: (d_extern='екстерн' (d_extern_type=string)?)? d_head=diia_head '{' (d_body=body)? '}';
+diia_declaration: (d_extern='екстерн' (d_extern_type=string)?)? d_head=diia_head ('як' d_as=identifier)? ';';
 
 if: 'якщо' i_value=expr '{' (i_body=body)? '}' ('інакше' '{' (i_else_body=body)? '}')?;
 
@@ -34,7 +34,7 @@ assign: a_id=identifier '=' a_value=expr;
 
 set: s_left=identifiers_chain '.' s_id=identifier '=' s_value=expr;
 
-sizeof: 'розмір типу' s_type=type;
+sizeof: 'розмір!' '(' (s_type=type | s_value=expr) ')';
 
 atom: identifier #atom_identifier
     | g_left=atom '.' g_id=identifier #get
@@ -71,8 +71,8 @@ params: param (',' param)* (',')?;
 param: p_name=identifier ':' p_type=type;
 
 body: body_element_or_return+;
-body_element_or_return: body_element | return_body_element;
-body_element: if | while | define | assign | set | (expr ';') | ';';
+body_element_or_return: body_element | (return_body_element ';');
+body_element: if | while | (define ';') | (assign ';') | (set ';') | (expr ';') | ';';
 return_body_element: 'вернути' rbl_value=expr;
 
 bitwise_op: '^' | '|' | '&' | '<' '<' | '>' '>';
