@@ -71,6 +71,22 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitDiia_generics(TsilParser::Diia_genericsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitDiia_generic(TsilParser::Diia_genericContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSection(TsilParser::SectionContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSection_element(TsilParser::Section_elementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitIf(TsilParser::IfContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -143,6 +159,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitNot_text(TsilParser::Not_textContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitAs(TsilParser::AsContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -179,7 +199,19 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitSimple_function_type(TsilParser::Simple_function_typeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitComplex_function_type(TsilParser::Complex_function_typeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitType(TsilParser::TypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSimple_function_type_args(TsilParser::Simple_function_type_argsContext *ctx) override {
     return visitChildren(ctx);
   }
 

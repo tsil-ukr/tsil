@@ -32,9 +32,7 @@ namespace tsil::parser {
       TsilParser::Structure_paramContext* ctx) {
     const auto param_node = new ast::ParamNode();
     param_node->id = ctx->sp_name->getText();
-    if (ctx->sp_type) {
-      param_node->type = AAV(visitType(ctx->sp_type));
-    }
+    param_node->type = AAV(visitFullType(ctx->sp_type));
     return AV(ctx, ast::KindParamNode, param_node);
   }
 

@@ -1,8 +1,9 @@
+#include <functional>
 #include <iostream>
 #include <map>
 #include <string>
 #include <vector>
-#include "compiler/compiler.h"
+#include "compiler/tk/tk.h"
 
 std::pair<size_t, std::string> strtrim(const std::string& str) {
   size_t start = 0;
@@ -43,7 +44,7 @@ std::string strgetline(const std::string& code, size_t line) {
 
 void printCompilerError(const std::string& path,
                         const std::string& code,
-                        const tsil::compiler::CompilerError* error) {
+                        const tsil::tk::CompilerError* error) {
   const auto line = std::to_string(error->line);
   const auto column = std::to_string(error->column);
   const auto message = error->message;
@@ -56,6 +57,21 @@ void printCompilerError(const std::string& path,
     std::cerr << " ";
   }
   std::cerr << "^" << std::endl;
+  if (error->secondError) {
+    const auto secondLine = std::to_string(error->secondError->line);
+    const auto secondColumn = std::to_string(error->secondError->column);
+    std::cerr << path << ":" << secondLine + ":" + secondColumn + ": "
+              << std::endl;
+    const auto [new_start, code_line] =
+        strtrim(strgetline(code, error->secondError->line));
+    std::string prefix = secondLine + "| ";
+    std::cerr << prefix << code_line << std::endl;
+    for (size_t i = 0;
+         i < (error->secondError->column - new_start) + prefix.size(); i++) {
+      std::cerr << " ";
+    }
+    std::cerr << "^" << std::endl;
+  }
 }
 
 void printParserError(const std::string& path,
@@ -81,201 +97,234 @@ int main(int argc, char** argv) {
 
   if (command == "сплавити") {
     if (args.size() < 3) {
-      std::cerr << "ціль: не вказано вхідний файл" << std::endl;
+      std::cerr << "помилка: Не вказано вхідний файл" << std::endl;
       return 1;
     }
     if (args.size() < 4) {
-      std::cerr << "ціль: не вказано вихідний файл" << std::endl;
+      std::cerr << "помилка: Не вказано вихідний файл" << std::endl;
       return 1;
     }
 
-    const auto& input_path = args[2];
-    const auto& output_path = args[3];
+    const auto& inputPath = args[2];
+    const auto& outputPath = args[3];
 
-    if (!output_path.ends_with(".ll") && !output_path.ends_with(".bc")) {
-      std::cerr << "ціль: вихідний файл повинен мати розширення .ll або .bc"
+    if (!outputPath.ends_with(".ll") && !outputPath.ends_with(".bc")) {
+      std::cerr << "помилка: Вихідний файл повинен мати розширення .ll або .bc"
                 << std::endl;
       return 1;
     }
-    if (output_path.ends_with(".bc")) {
-      std::cerr
-          << "ціль: вихідний файл з розширенням .bc тимчасово не підтримується"
-          << std::endl;
+    if (outputPath.ends_with(".bc")) {
+      std::cerr << "помилка: Вихідний файл з розширенням .bc тимчасово не "
+                   "підтримується"
+                << std::endl;
       return 1;
     }
 
-    std::ifstream input_file(input_path);
-    if (!input_file.is_open()) {
-      std::cerr << "ціль: не вдалося відкрити вхідний файл" << std::endl;
+    std::ifstream inputFile(inputPath);
+    if (!inputFile.is_open()) {
+      std::cerr << "помилка: Не вдалося відкрити вхідний файл" << std::endl;
       return 1;
     }
     std::string code;
     std::string line;
-    while (std::getline(input_file, line)) {
+    while (std::getline(inputFile, line)) {
       code += line + "\n";
     }
-    input_file.close();
+    inputFile.close();
 
-    const auto parser_result = tsil::parser::parse(code);
-    if (parser_result.program_node) {
-      const auto state = new tsil::compiler::CompilationState();
+    const auto parserResult = tsil::parser::parse(code);
+    if (parserResult.program_node) {
+      const auto compiler = new tsil::tk::Compiler();
 
-      state->Module = new tsil::x::Module();
+      compiler->xModule = new tsil::x::Module();
 
-      state->Module->int1Type = state->Module->defineNativeType("i1");
-      state->Module->int8Type = state->Module->defineNativeType("i8");
-      state->Module->int32Type = state->Module->defineNativeType("i32");
-      state->Module->int64Type = state->Module->defineNativeType("i64");
-      state->Module->floatType = state->Module->defineNativeType("float");
-      state->Module->doubleType = state->Module->defineNativeType("double");
-      state->Module->pointerType = state->Module->defineNativeType("ptr");
-      state->Module->voidType = state->Module->defineNativeType("void");
+      compiler->xModule->int1Type = compiler->xModule->defineNativeType("i1");
+      compiler->xModule->int8Type = compiler->xModule->defineNativeType("i8");
+      compiler->xModule->int32Type = compiler->xModule->defineNativeType("i32");
+      compiler->xModule->int64Type = compiler->xModule->defineNativeType("i64");
+      compiler->xModule->floatType =
+          compiler->xModule->defineNativeType("float");
+      compiler->xModule->doubleType =
+          compiler->xModule->defineNativeType("double");
+      compiler->xModule->pointerType =
+          compiler->xModule->defineNativeType("ptr");
+      compiler->xModule->voidType = compiler->xModule->defineNativeType("void");
 
-      state->globalScope = new tsil::compiler::CompilationScope();
-      state->globalScope->state = state;
+      compiler->globalScope = new tsil::tk::Scope();
+      compiler->globalScope->compiler = compiler;
 
-      const auto voidType = new tsil::compiler::Type();
-      voidType->type = tsil::compiler::TypeTypeNative;
-      voidType->name = "void";
-      voidType->LT = state->Module->voidType;
-      state->types["void"] = voidType;
-      state->voidType = voidType;
+      const auto voidType = new tsil::tk::Type();
+      voidType->type = tsil::tk::TypeTypeNative;
+      voidType->name = "ніщо";
+      voidType->xType = compiler->xModule->voidType;
+      compiler->globalScope->bakedTypes.insert_or_assign({"ніщо", {}},
+                                                         voidType);
+      compiler->voidType = voidType;
 
-      const auto pointerType = new tsil::compiler::Type();
-      pointerType->type = tsil::compiler::TypeTypeNative;
+      const auto pointerType = new tsil::tk::Type();
+      pointerType->type = tsil::tk::TypeTypeNative;
       pointerType->name = "невідома_комірка";
-      pointerType->LT = state->Module->pointerType;
-      state->types["невідома_комірка"] = pointerType;
-      state->pointerType = pointerType;
+      pointerType->xType = compiler->xModule->pointerType;
+      compiler->globalScope->bakedTypes.insert_or_assign(
+          {"невідома_комірка", {}}, pointerType);
+      compiler->pointerType = pointerType;
 
-      const auto int8Type = new tsil::compiler::Type();
-      int8Type->type = tsil::compiler::TypeTypeNative;
+      const auto int8Type = new tsil::tk::Type();
+      int8Type->type = tsil::tk::TypeTypeNative;
       int8Type->name = "ц8";
-      int8Type->LT = state->Module->int8Type;
-      state->types["ц8"] = int8Type;
-      state->int8Type = int8Type;
+      int8Type->xType = compiler->xModule->int8Type;
+      compiler->globalScope->bakedTypes.insert_or_assign({"ц8", {}}, int8Type);
+      compiler->int8Type = int8Type;
 
-      const auto int32Type = new tsil::compiler::Type();
-      int32Type->type = tsil::compiler::TypeTypeNative;
+      const auto int32Type = new tsil::tk::Type();
+      int32Type->type = tsil::tk::TypeTypeNative;
       int32Type->name = "ц32";
-      int32Type->LT = state->Module->int32Type;
-      state->types["ц32"] = int32Type;
-      state->int32Type = int32Type;
+      int32Type->xType = compiler->xModule->int32Type;
+      compiler->globalScope->bakedTypes.insert_or_assign({"ц32", {}},
+                                                         int32Type);
+      compiler->int32Type = int32Type;
 
-      const auto int64Type = new tsil::compiler::Type();
-      int64Type->type = tsil::compiler::TypeTypeNative;
+      const auto int64Type = new tsil::tk::Type();
+      int64Type->type = tsil::tk::TypeTypeNative;
       int64Type->name = "ціле";
-      int64Type->LT = state->Module->int64Type;
-      state->types["ціле"] = int64Type;
-      state->int64Type = int64Type;
+      int64Type->xType = compiler->xModule->int64Type;
+      compiler->globalScope->bakedTypes.insert_or_assign({"ціле", {}},
+                                                         int64Type);
+      compiler->int64Type = int64Type;
 
-      const auto floatType = new tsil::compiler::Type();
-      floatType->type = tsil::compiler::TypeTypeNative;
+      const auto floatType = new tsil::tk::Type();
+      floatType->type = tsil::tk::TypeTypeNative;
       floatType->name = "д32";
-      floatType->LT = state->Module->floatType;
-      state->types["д32"] = floatType;
-      state->floatType = floatType;
+      floatType->xType = compiler->xModule->floatType;
+      compiler->globalScope->bakedTypes.insert_or_assign({"д32", {}},
+                                                         floatType);
+      compiler->floatType = floatType;
 
-      const auto doubleType = new tsil::compiler::Type();
-      doubleType->type = tsil::compiler::TypeTypeNative;
+      const auto doubleType = new tsil::tk::Type();
+      doubleType->type = tsil::tk::TypeTypeNative;
       doubleType->name = "дійсне";
-      doubleType->LT = state->Module->doubleType;
-      state->types["дійсне"] = doubleType;
-      state->doubleType = doubleType;
+      doubleType->xType = compiler->xModule->doubleType;
+      compiler->globalScope->bakedTypes.insert_or_assign({"дійсне", {}},
+                                                         doubleType);
+      compiler->doubleType = doubleType;
 
-      const auto uint8Type = new tsil::compiler::Type();
-      uint8Type->type = tsil::compiler::TypeTypeNative;
+      const auto uint8Type = new tsil::tk::Type();
+      uint8Type->type = tsil::tk::TypeTypeNative;
       uint8Type->name = "п8";
-      uint8Type->LT = state->Module->int8Type;
-      state->types["п8"] = uint8Type;
-      state->uint8Type = uint8Type;
+      uint8Type->xType = compiler->xModule->int8Type;
+      compiler->globalScope->bakedTypes.insert_or_assign({"п8", {}}, uint8Type);
+      compiler->uint8Type = uint8Type;
 
-      const auto uint32Type = new tsil::compiler::Type();
-      uint32Type->type = tsil::compiler::TypeTypeNative;
+      const auto uint32Type = new tsil::tk::Type();
+      uint32Type->type = tsil::tk::TypeTypeNative;
       uint32Type->name = "п32";
-      uint32Type->LT = state->Module->int32Type;
-      state->types["п32"] = uint32Type;
-      state->uint32Type = uint32Type;
+      uint32Type->xType = compiler->xModule->int32Type;
+      compiler->globalScope->bakedTypes.insert_or_assign({"п32", {}},
+                                                         uint32Type);
+      compiler->uint32Type = uint32Type;
 
-      const auto uint64Type = new tsil::compiler::Type();
-      uint64Type->type = tsil::compiler::TypeTypeNative;
+      const auto uint64Type = new tsil::tk::Type();
+      uint64Type->type = tsil::tk::TypeTypeNative;
       uint64Type->name = "позитивне";
-      uint64Type->LT = state->Module->int64Type;
-      state->types["позитивне"] = uint64Type;
-      state->uint64Type = uint64Type;
+      uint64Type->xType = compiler->xModule->int64Type;
+      compiler->globalScope->bakedTypes.insert_or_assign({"позитивне", {}},
+                                                         uint64Type);
+      compiler->uint64Type = uint64Type;
 
-      /*
-       * структура текст {
-       *   розмір: ціле; // розмір даних мінус 1
-       *   дані: комірка<ц8>; // останній байт завжди 0
-       * }
-       */
-      const auto stringStructure = new tsil::compiler::Structure();
-      stringStructure->name = "текст";
-      stringStructure->fields.insert_or_assign(
-          "розмір",
-          tsil::compiler::StructureField{
-              .index = 0, .type = int64Type, .generic_type_index = 0});
-      stringStructure->fields.insert_or_assign(
-          "дані", tsil::compiler::StructureField{
-                      .index = 1,
-                      .type = uint8Type->getPointerType(state->globalScope),
-                      .generic_type_index = 0});
-      state->structures.insert_or_assign("текст", stringStructure);
+      compiler->globalScope->variables["так"] = {
+          compiler->int8Type, compiler->xModule->putI8Constant(1)};
+      compiler->globalScope->variables["ні"] = {
+          compiler->int8Type, compiler->xModule->putI8Constant(0)};
 
-      const auto textTypeResult = state->globalScope->makeType("текст", {});
-      if (!textTypeResult.type) {
-        std::cerr << "INTERNAL BUG: " << textTypeResult.error << std::endl;
-        return 1;
-      }
-      state->types["текст"] = textTypeResult.type;
-      state->textType = textTypeResult.type;
-
-      for (const auto& ast_value : parser_result.program_node->body) {
-        if (ast_value == nullptr) {
+      for (const auto& astValue : parserResult.program_node->body) {
+        if (astValue == nullptr) {
           continue;
         }
-        if (ast_value->kind == tsil::ast::KindNone) {
+        if (astValue->kind == tsil::ast::KindNone) {
           continue;
         }
-        if (ast_value->kind == tsil::ast::KindStructureNode) {
-          const auto result = state->globalScope->compileStructure(ast_value);
-          if (result.error) {
-            printCompilerError(input_path, code, result.error);
+        if (astValue->kind == tsil::ast::KindStructureNode) {
+          const auto structureNode = astValue->data.StructureNode;
+          if (compiler->globalScope->hasSubject(structureNode->name)) {
+            printCompilerError(
+                inputPath, code,
+                tsil::tk::CompilerError::subjectAlreadyDefined(astValue));
             return 1;
           }
-        } else if (ast_value->kind == tsil::ast::KindDiiaDeclarationNode) {
-          const auto result =
-              state->globalScope->compileDiiaDeclaration(ast_value);
-          if (result.error) {
-            printCompilerError(input_path, code, result.error);
+          compiler->globalScope->rawTypes.insert_or_assign(structureNode->name,
+                                                           astValue);
+        } else if (astValue->kind == tsil::ast::KindDiiaDeclarationNode) {
+          const auto diiaDeclarationNode = astValue->data.DiiaDeclarationNode;
+          if (compiler->globalScope->hasSubject(
+                  diiaDeclarationNode->head->id)) {
+            printCompilerError(
+                inputPath, code,
+                tsil::tk::CompilerError::subjectAlreadyDefined(astValue));
             return 1;
           }
-        } else if (ast_value->kind == tsil::ast::KindDiiaNode) {
-          const auto result = state->globalScope->compileDiia(ast_value);
-          if (result.error) {
-            printCompilerError(input_path, code, result.error);
+          if (diiaDeclarationNode->head->generic_definitions.empty()) {
+            const auto bakedDiiaResult =
+                compiler->globalScope->bakeDiia(astValue, astValue, {});
+            if (bakedDiiaResult.error) {
+              printCompilerError(inputPath, code, bakedDiiaResult.error);
+              return 1;
+            }
+            if (diiaDeclarationNode->as.empty()) {
+              compiler->globalScope
+                  ->bakedDiias[{diiaDeclarationNode->head->id, {}}] = {
+                  bakedDiiaResult.type, bakedDiiaResult.xValue};
+            } else {
+              compiler->globalScope->bakedDiias[{diiaDeclarationNode->as, {}}] =
+                  {bakedDiiaResult.type, bakedDiiaResult.xValue};
+            }
+          } else {
+            if (diiaDeclarationNode->as.empty()) {
+              compiler->globalScope->rawDiias.insert_or_assign(
+                  diiaDeclarationNode->head->id, astValue);
+            } else {
+              compiler->globalScope->rawDiias.insert_or_assign(
+                  diiaDeclarationNode->as, astValue);
+            }
+          }
+        } else if (astValue->kind == tsil::ast::KindDiiaNode) {
+          const auto diiaNode = astValue->data.DiiaNode;
+          if (compiler->globalScope->hasSubject(diiaNode->head->id)) {
+            printCompilerError(
+                inputPath, code,
+                tsil::tk::CompilerError::subjectAlreadyDefined(astValue));
             return 1;
+          }
+          if (diiaNode->head->generic_definitions.empty()) {
+            const auto bakedDiiaResult =
+                compiler->globalScope->bakeDiia(astValue, astValue, {});
+            if (bakedDiiaResult.error) {
+              printCompilerError(inputPath, code, bakedDiiaResult.error);
+              return 1;
+            }
+            compiler->globalScope->bakedDiias[{diiaNode->head->id, {}}] = {
+                bakedDiiaResult.type, bakedDiiaResult.xValue};
+          } else {
+            compiler->globalScope->rawDiias.insert_or_assign(diiaNode->head->id,
+                                                             astValue);
           }
         } else {
           printCompilerError(
-              input_path, code,
-              tsil::compiler::CompilerError::fromASTValue(
-                  ast_value,
-                  "В секції можна визначати лише секції, структури та дії"));
+              inputPath, code,
+              tsil::tk::CompilerError::fromASTValue(
+                  astValue, "Неможливо скомпілювати це речення"));
           return 1;
         }
       }
 
-      std::ofstream out_file(output_path);
-      if (!out_file.is_open()) {
-        std::cerr << "ціль: не вдалося відкрити вихідний файл" << std::endl;
+      std::ofstream outFile(outputPath);
+      if (!outFile.is_open()) {
+        std::cerr << "помилка: Не вдалося відкрити вихідний файл" << std::endl;
         return 1;
       }
-      out_file << state->Module->dumpLL();
-      out_file.close();
+      outFile << compiler->xModule->dumpLL();
+      outFile.close();
     } else {
-      printParserError(input_path, code, &parser_result.errors[0]);
+      printParserError(inputPath, code, &parserResult.errors[0]);
       return 1;
     }
   }

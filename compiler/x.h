@@ -45,6 +45,7 @@ namespace tsil::x {
 
     Value* putStringConstant(const std::string& value);
     Value* putI64Constant(long value);
+    Value* putI8Constant(char value);
 
     Type* defineNativeType(const std::string& name);
     Type* defineStructType(const std::string& name, std::vector<Type*> fields);

@@ -56,6 +56,18 @@ public:
   virtual void enterDiia_declaration(TsilParser::Diia_declarationContext *ctx) = 0;
   virtual void exitDiia_declaration(TsilParser::Diia_declarationContext *ctx) = 0;
 
+  virtual void enterDiia_generics(TsilParser::Diia_genericsContext *ctx) = 0;
+  virtual void exitDiia_generics(TsilParser::Diia_genericsContext *ctx) = 0;
+
+  virtual void enterDiia_generic(TsilParser::Diia_genericContext *ctx) = 0;
+  virtual void exitDiia_generic(TsilParser::Diia_genericContext *ctx) = 0;
+
+  virtual void enterSection(TsilParser::SectionContext *ctx) = 0;
+  virtual void exitSection(TsilParser::SectionContext *ctx) = 0;
+
+  virtual void enterSection_element(TsilParser::Section_elementContext *ctx) = 0;
+  virtual void exitSection_element(TsilParser::Section_elementContext *ctx) = 0;
+
   virtual void enterIf(TsilParser::IfContext *ctx) = 0;
   virtual void exitIf(TsilParser::IfContext *ctx) = 0;
 
@@ -110,6 +122,9 @@ public:
   virtual void enterArithmetic_mul(TsilParser::Arithmetic_mulContext *ctx) = 0;
   virtual void exitArithmetic_mul(TsilParser::Arithmetic_mulContext *ctx) = 0;
 
+  virtual void enterNot_text(TsilParser::Not_textContext *ctx) = 0;
+  virtual void exitNot_text(TsilParser::Not_textContext *ctx) = 0;
+
   virtual void enterAs(TsilParser::AsContext *ctx) = 0;
   virtual void exitAs(TsilParser::AsContext *ctx) = 0;
 
@@ -137,8 +152,17 @@ public:
   virtual void enterIdentifiers_chain(TsilParser::Identifiers_chainContext *ctx) = 0;
   virtual void exitIdentifiers_chain(TsilParser::Identifiers_chainContext *ctx) = 0;
 
+  virtual void enterSimple_function_type(TsilParser::Simple_function_typeContext *ctx) = 0;
+  virtual void exitSimple_function_type(TsilParser::Simple_function_typeContext *ctx) = 0;
+
+  virtual void enterComplex_function_type(TsilParser::Complex_function_typeContext *ctx) = 0;
+  virtual void exitComplex_function_type(TsilParser::Complex_function_typeContext *ctx) = 0;
+
   virtual void enterType(TsilParser::TypeContext *ctx) = 0;
   virtual void exitType(TsilParser::TypeContext *ctx) = 0;
+
+  virtual void enterSimple_function_type_args(TsilParser::Simple_function_type_argsContext *ctx) = 0;
+  virtual void exitSimple_function_type_args(TsilParser::Simple_function_type_argsContext *ctx) = 0;
 
   virtual void enterArgs(TsilParser::ArgsContext *ctx) = 0;
   virtual void exitArgs(TsilParser::ArgsContext *ctx) = 0;

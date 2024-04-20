@@ -32,6 +32,16 @@ namespace tsil::x {
     return new Value(this->pointerType, constant->name);
   }
 
+  Value* Module::putI8Constant(char value) {
+    auto constant = new Constant();
+    constant->variable_index = this->variable_counter++;
+    constant->name = "@const." + std::to_string(constant->variable_index);
+    constant->type = this->int8Type;
+    constant->value = std::to_string(value);
+    this->constants[constant->name] = constant;
+    return new Value(this->pointerType, constant->name);
+  }
+
   Type* Module::defineNativeType(const std::string& name) {
     auto type = new Type();
     type->variable_index = this->variable_counter++;
@@ -336,6 +346,9 @@ namespace tsil::x {
   }
 
   std::string Constant::dumpLL(Module* module) {
+    if (this->type == module->int8Type) {
+      return this->name + " = constant " + this->type->name + " " + this->value;
+    }
     if (this->type == module->int64Type) {
       return this->name + " = constant " + this->type->name + " " + this->value;
     }

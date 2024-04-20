@@ -12,6 +12,16 @@ KW_STRUCT: 'структура';
 KW_EXTERN: 'екстерн';
 KW_AS: 'як';
 KW_SIZEOF: 'розмір!';
+KW_SECTION: 'секція';
+KW_IMPORT: 'взяти';
+KW_EXPORT: 'дати';
+KW_COMPOSITION: 'композиція';
+KW_PROPERTY: 'властивість';
+KW_PUBLIC: 'зовнішня';
+KW_PRIVATE: 'внутрішня';
+KW_NOT: 'не';
+KW_OR: 'або';
+KW_AND: 'і';
 
 EQUAL: '=';
 GREATER: '>';
@@ -48,6 +58,9 @@ BIN: '0д' ('0' | '1')+;
 ID: ID_START ID_CONTINUE*;
 
 STRING: '"' ( ~["\n\r] )* '"';
+
+COMMENT: '/' '*' (COMMENT | .)*? '*' '/' -> channel(HIDDEN);
+LINE_COMMENT: '/' '/' (LINE_COMMENT | ~[\r\n])* -> channel(HIDDEN);
 
 NL: ( '\r'? '\n' ) -> channel(HIDDEN);
 WS: (' ' | '\t') -> channel(HIDDEN);

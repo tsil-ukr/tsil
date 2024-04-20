@@ -66,6 +66,8 @@ namespace tsil::ast {
           return "SizeofNode";
         case ast::KindAsNode:
           return "AsNode";
+        case ast::KindFunctionTypeNode:
+          return "FunctionTypeNode";
       }
       return "Unknown";
     }
@@ -264,6 +266,10 @@ namespace tsil::parser {
     if (const auto type_context =
             dynamic_cast<TsilParser::TypeContext*>(context)) {
       return visitType(type_context);
+    }
+    if (const auto full_type_context =
+            dynamic_cast<TsilParser::Full_typeContext*>(context)) {
+      return visitFullType(full_type_context);
     }
     if (const auto args_context =
             dynamic_cast<TsilParser::ArgsContext*>(context)) {

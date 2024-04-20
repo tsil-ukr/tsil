@@ -33,6 +33,7 @@ namespace tsil::ast {
   struct StructureNode;
   struct LogicalNode;
   struct TypeNode;
+  struct FunctionTypeNode;
   struct UnaryNode;
   struct WhileNode;
   struct BlockNode;
@@ -97,6 +98,7 @@ namespace tsil::ast {
     KindStructureNode,
     KindLogicalNode,
     KindTypeNode,
+    KindFunctionTypeNode,
     KindUnaryNode,
     KindWhileNode,
     KindBlockNode,
@@ -134,6 +136,7 @@ namespace tsil::ast {
     tsil::ast::StructureNode* StructureNode;
     tsil::ast::LogicalNode* LogicalNode;
     tsil::ast::TypeNode* TypeNode;
+    tsil::ast::FunctionTypeNode* FunctionTypeNode;
     tsil::ast::UnaryNode* UnaryNode;
     tsil::ast::WhileNode* WhileNode;
     tsil::ast::BlockNode* BlockNode;
@@ -167,6 +170,7 @@ namespace tsil::ast {
 
   struct CallNode {
     ASTValue* value;
+    std::vector<ASTValue*> generic_values;
     std::vector<ASTValue*> args;
   };
 
@@ -201,9 +205,10 @@ namespace tsil::ast {
 
   struct DiiaHeadNode {
     bool is_extern;
-    ASTValue* type;
     std::string id;
+    std::vector<std::string> generic_definitions;
     std::vector<ASTValue*> params;
+    ASTValue* type;
     bool is_variadic;
   };
 
@@ -264,6 +269,11 @@ namespace tsil::ast {
   struct TypeNode {
     std::string id;
     std::vector<ASTValue*> generics;
+  };
+
+  struct FunctionTypeNode {
+    std::vector<ASTValue*> args;
+    ASTValue* return_type;
   };
 
   struct UnaryNode {

@@ -7,29 +7,108 @@ namespace tsil::compiler {
                              message);
   }
 
-  bool CompilationScope::has_variable(const std::string& name) const {
+  CompilerError* CompilerError::subjectAlreadyDefined(
+      tsil::ast::ASTValue* ast_value) {
+    std::string name;
+    if (ast_value->data.StructureNode) {
+      name = ast_value->data.StructureNode->name;
+    } else if (ast_value->data.DiiaNode) {
+      name = ast_value->data.DiiaNode->head->id;
+    } else if (ast_value->data.DiiaDeclarationNode) {
+      name = ast_value->data.DiiaDeclarationNode->head->id;
+    } else if (ast_value->data.DefineNode) {
+      name = ast_value->data.DefineNode->id;
+    } else if (ast_value->data.IdentifierNode) {
+      name = ast_value->data.IdentifierNode->name;
+    } else {
+      name = "BUG";
+    }
+    return new CompilerError(ast_value->start_line, ast_value->start_column,
+                             "Субʼєкт \"" + name + "\" вже визначено");
+  }
+
+  CompilerError* CompilerError::subjectNotDefined(
+      tsil::ast::ASTValue* ast_value) {
+    std::string name;
+    if (ast_value->data.StructureNode) {
+      name = ast_value->data.StructureNode->name;
+    } else if (ast_value->data.DiiaNode) {
+      name = ast_value->data.DiiaNode->head->id;
+    } else if (ast_value->data.DiiaDeclarationNode) {
+      name = ast_value->data.DiiaDeclarationNode->head->id;
+    } else if (ast_value->data.DefineNode) {
+      name = ast_value->data.DefineNode->id;
+    } else if (ast_value->data.IdentifierNode) {
+      name = ast_value->data.IdentifierNode->name;
+    } else {
+      name = "BUG";
+    }
+    return new CompilerError(ast_value->start_line, ast_value->start_column,
+                             "Субʼєкт \"" + name + "\" не визначено");
+  }
+
+  CompilerError* CompilerError::subjectIsNotCallable(
+      tsil::ast::ASTValue* ast_value) {
+    return new CompilerError(
+        ast_value->start_line, ast_value->start_column,
+        "Неможливо цей субʼєкт, так як його тип не є дією");
+  }
+
+  CompilerError* CompilerError::typesAreNotCompatible(
+      tsil::ast::ASTValue* ast_value,
+      Type* left,
+      Type* right) {
+    return new CompilerError(ast_value->start_line, ast_value->start_column,
+                             "Типи \"" + left->getFullName() + "\" та \"" +
+                                 right->getFullName() + "\" не сумісні");
+  }
+
+  bool CompilationScope::hasSubject(const std::string& name) const {
     if (this->variables.contains(name)) {
       return true;
     }
-    if (this->parent) {
-      return this->parent->has_variable(name);
+    if (this->state->structures.contains(name)) {
+      return true;
+    }
+    if (this->state->predefined_types.contains(name)) {
+      return true;
     }
     return false;
   }
 
-  std::pair<Type*, x::Value*> CompilationScope::get_variable(
+  bool CompilationScope::hasNonVariableSubject(const std::string& name) const {
+    if (this->state->structures.contains(name)) {
+      return true;
+    }
+    if (this->state->predefined_types.contains(name)) {
+      return true;
+    }
+    return false;
+  }
+
+  bool CompilationScope::hasVariable(const std::string& name) const {
+    if (this->variables.contains(name)) {
+      return true;
+    }
+    if (this->parent) {
+      return this->parent->hasVariable(name);
+    }
+    return false;
+  }
+
+  std::pair<Type*, x::Value*> CompilationScope::getVariable(
       const std::string& name) {
     if (this->variables.contains(name)) {
       return this->variables[name];
     }
     if (this->parent) {
-      return this->parent->get_variable(name);
+      return this->parent->getVariable(name);
     }
     return {nullptr, nullptr};
   }
 
-  void CompilationScope::set_variable(const std::string& name,
-                                      std::pair<Type*, x::Value*> value) {
+  void CompilationScope::setVariable(const std::string& name,
+                                     std::pair<Type*, x::Value*> value) {
     this->variables.insert_or_assign(name, value);
   }
 
@@ -42,11 +121,11 @@ namespace tsil::compiler {
       const auto type = generic_values[0]->getPointerType(this);
       return {type, ""};
     }
-    if (this->state->types.contains(name)) {
+    if (this->state->predefined_types.contains(name)) {
       if (!generic_values.empty()) {
         return {nullptr, "Тип \"" + name + "\" не є шаблонним"};
       }
-      return {this->state->types[name], ""};
+      return {this->state->predefined_types[name], ""};
     }
     if (this->state->structures.contains(name)) {
       const auto structure = this->state->structures[name];
@@ -83,7 +162,7 @@ namespace tsil::compiler {
       type->LT = this->state->Module->defineStructType(name, LSElements);
       return {type, ""};
     }
-    return {nullptr, "Структуру \"" + name + "\" не знайдено"};
+    return {nullptr, "Субʼєкт \"" + name + "\" не знайдено"};
   }
 
   MakeTypeResult CompilationScope::makeTypeFromTypeNodeASTValue(
@@ -124,7 +203,7 @@ namespace tsil::compiler {
     if (this == target_type) {
       return LV;
     }
-    //    return LV;
+    return LV;
     //    if (this->type == TypeTypePointer && target_type->type ==
     //    TypeTypePointer) {
     //      return scope->state->Builder->CreatePointerCast(LV,

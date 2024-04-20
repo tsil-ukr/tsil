@@ -58,6 +58,18 @@ public:
   virtual void enterDiia_declaration(TsilParser::Diia_declarationContext * /*ctx*/) override { }
   virtual void exitDiia_declaration(TsilParser::Diia_declarationContext * /*ctx*/) override { }
 
+  virtual void enterDiia_generics(TsilParser::Diia_genericsContext * /*ctx*/) override { }
+  virtual void exitDiia_generics(TsilParser::Diia_genericsContext * /*ctx*/) override { }
+
+  virtual void enterDiia_generic(TsilParser::Diia_genericContext * /*ctx*/) override { }
+  virtual void exitDiia_generic(TsilParser::Diia_genericContext * /*ctx*/) override { }
+
+  virtual void enterSection(TsilParser::SectionContext * /*ctx*/) override { }
+  virtual void exitSection(TsilParser::SectionContext * /*ctx*/) override { }
+
+  virtual void enterSection_element(TsilParser::Section_elementContext * /*ctx*/) override { }
+  virtual void exitSection_element(TsilParser::Section_elementContext * /*ctx*/) override { }
+
   virtual void enterIf(TsilParser::IfContext * /*ctx*/) override { }
   virtual void exitIf(TsilParser::IfContext * /*ctx*/) override { }
 
@@ -112,6 +124,9 @@ public:
   virtual void enterArithmetic_mul(TsilParser::Arithmetic_mulContext * /*ctx*/) override { }
   virtual void exitArithmetic_mul(TsilParser::Arithmetic_mulContext * /*ctx*/) override { }
 
+  virtual void enterNot_text(TsilParser::Not_textContext * /*ctx*/) override { }
+  virtual void exitNot_text(TsilParser::Not_textContext * /*ctx*/) override { }
+
   virtual void enterAs(TsilParser::AsContext * /*ctx*/) override { }
   virtual void exitAs(TsilParser::AsContext * /*ctx*/) override { }
 
@@ -139,8 +154,17 @@ public:
   virtual void enterIdentifiers_chain(TsilParser::Identifiers_chainContext * /*ctx*/) override { }
   virtual void exitIdentifiers_chain(TsilParser::Identifiers_chainContext * /*ctx*/) override { }
 
+  virtual void enterSimple_function_type(TsilParser::Simple_function_typeContext * /*ctx*/) override { }
+  virtual void exitSimple_function_type(TsilParser::Simple_function_typeContext * /*ctx*/) override { }
+
+  virtual void enterComplex_function_type(TsilParser::Complex_function_typeContext * /*ctx*/) override { }
+  virtual void exitComplex_function_type(TsilParser::Complex_function_typeContext * /*ctx*/) override { }
+
   virtual void enterType(TsilParser::TypeContext * /*ctx*/) override { }
   virtual void exitType(TsilParser::TypeContext * /*ctx*/) override { }
+
+  virtual void enterSimple_function_type_args(TsilParser::Simple_function_type_argsContext * /*ctx*/) override { }
+  virtual void exitSimple_function_type_args(TsilParser::Simple_function_type_argsContext * /*ctx*/) override { }
 
   virtual void enterArgs(TsilParser::ArgsContext * /*ctx*/) override { }
   virtual void exitArgs(TsilParser::ArgsContext * /*ctx*/) override { }

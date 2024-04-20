@@ -6,15 +6,7 @@ namespace tsil::compiler {
       tsil::x::FunctionBlock* block,
       tsil::ast::ASTValue* astValue) {
     const auto defineNode = astValue->data.DefineNode;
-    if (this->state->types.contains(defineNode->id)) {
-      return {CompilerError::fromASTValue(
-          astValue, "Субʼєкт \"" + defineNode->id + "\" вже визначено")};
-    }
-    if (this->state->structures.contains(defineNode->id)) {
-      return {CompilerError::fromASTValue(
-          astValue, "Субʼєкт \"" + defineNode->id + "\" вже визначено")};
-    }
-    if (this->has_variable(defineNode->id)) {
+    if (this->hasSubject(defineNode->id)) {
       return {CompilerError::fromASTValue(
           astValue, "Субʼєкт \"" + defineNode->id + "\" вже визначено")};
     }
@@ -49,12 +41,12 @@ namespace tsil::compiler {
                                                                   type->LT);
       this->state->Module->pushFunctionBlockStoreInstruction(
           block, valueResult.type->LT, valueResult.LV, allocaXValue);
-      this->set_variable(defineNode->id, {type, allocaXValue});
+      this->setVariable(defineNode->id, {type, allocaXValue});
     } else {
       const auto allocaXValue =
           this->state->Module->pushFunctionBlockAllocaInstruction(block,
                                                                   type->LT);
-      this->set_variable(defineNode->id, {type, allocaXValue});
+      this->setVariable(defineNode->id, {type, allocaXValue});
     }
     return {nullptr};
   }

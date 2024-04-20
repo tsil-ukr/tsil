@@ -121,6 +121,8 @@ namespace tsil::parser {
 
     std::any visitType(TsilParser::TypeContext* ctx) override;
 
+    std::any visitFullType(TsilParser::Full_typeContext* context);
+
     std::any visitArgs(TsilParser::ArgsContext* ctx) override;
 
     std::any visitParams(TsilParser::ParamsContext* ctx) override;
@@ -155,6 +157,12 @@ namespace tsil::parser {
     std::any visitAs(TsilParser::AsContext* ctx) override;
 
     std::any visitExpr_molecule(TsilParser::Expr_moleculeContext* ctx) override;
+
+    std::any visitComplex_function_type(
+        TsilParser::Complex_function_typeContext* ctx) override;
+
+    std::any visitSimple_function_type(
+        TsilParser::Simple_function_typeContext* ctx) override;
   };
 
   struct TsilParserError {

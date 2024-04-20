@@ -48,7 +48,7 @@ namespace tsil::compiler {
     const auto& [xFunction, functionXValue] =
         this->state->Module->declareFunction(diiaType->name, xResultType,
                                              xParamTypes);
-    this->set_variable(diiaType->name, {diiaType, functionXValue});
+    this->setVariable(diiaType->name, {diiaType, functionXValue});
     return {diiaType, xFunction, functionXValue, nullptr};
   }
 
@@ -149,7 +149,7 @@ namespace tsil::compiler {
   CompilerDiiaResult CompilationScope::compileDiia(
       tsil::ast::ASTValue* astValue) {
     const auto diiaNode = astValue->data.DiiaNode;
-    if (this->state->types.contains(diiaNode->head->id)) {
+    if (this->state->predefined_types.contains(diiaNode->head->id)) {
       return {nullptr, nullptr, nullptr,
               CompilerError::fromASTValue(
                   astValue,
@@ -161,7 +161,7 @@ namespace tsil::compiler {
                   astValue,
                   "Субʼєкт \"" + diiaNode->head->id + "\" вже визначено")};
     }
-    if (this->has_variable(diiaNode->head->id)) {
+    if (this->hasVariable(diiaNode->head->id)) {
       return {nullptr, nullptr, nullptr,
               CompilerError::fromASTValue(
                   astValue,
@@ -205,8 +205,8 @@ namespace tsil::compiler {
       diiaScope->state->Module->pushFunctionBlockStoreInstruction(
           xFunction->entry_block, diiaParameter.type->LT, diiaParameter.xValue,
           allocXValue);
-      diiaScope->set_variable(diiaParameter.name,
-                              {diiaParameter.type, allocXValue});
+      diiaScope->setVariable(diiaParameter.name,
+                             {diiaParameter.type, allocXValue});
     }
 
     const auto bodyResult =
@@ -222,7 +222,7 @@ namespace tsil::compiler {
   CompilerDiiaResult CompilationScope::compileDiiaDeclaration(
       tsil::ast::ASTValue* astValue) {
     const auto diiaDeclarationNode = astValue->data.DiiaDeclarationNode;
-    if (this->state->types.contains(diiaDeclarationNode->head->id)) {
+    if (this->state->predefined_types.contains(diiaDeclarationNode->head->id)) {
       return {nullptr, nullptr, nullptr,
               CompilerError::fromASTValue(
                   astValue, "Субʼєкт \"" + diiaDeclarationNode->head->id +
@@ -234,7 +234,7 @@ namespace tsil::compiler {
                   astValue, "Субʼєкт \"" + diiaDeclarationNode->head->id +
                                 "\" вже визначено")};
     }
-    if (this->has_variable(diiaDeclarationNode->head->id)) {
+    if (this->hasVariable(diiaDeclarationNode->head->id)) {
       return {nullptr, nullptr, nullptr,
               CompilerError::fromASTValue(
                   astValue, "Субʼєкт \"" + diiaDeclarationNode->head->id +
@@ -243,8 +243,8 @@ namespace tsil::compiler {
     const auto diiaHeadResult =
         this->compileDiiaHead(astValue, diiaDeclarationNode->head);
     if (!diiaDeclarationNode->as.empty()) {
-      this->set_variable(diiaDeclarationNode->as,
-                         {diiaHeadResult.type, diiaHeadResult.LV});
+      this->setVariable(diiaDeclarationNode->as,
+                        {diiaHeadResult.type, diiaHeadResult.LV});
     }
     return diiaHeadResult;
   }

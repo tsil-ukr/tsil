@@ -63,6 +63,17 @@ namespace tsil::compiler {
     std::map<std::string, StructureField> fields;
   };
 
+  struct DiiaParameter {
+    int index;
+    Type* type;
+    int generic_type_index;
+  };
+
+  struct DiiaReturnType {
+    Type* type;
+    int generic_type_index;
+  };
+
   struct CompilerError {
     size_t line;
     size_t column;
@@ -70,6 +81,12 @@ namespace tsil::compiler {
 
     static CompilerError* fromASTValue(tsil::ast::ASTValue* ast_value,
                                        const std::string& message);
+    static CompilerError* subjectAlreadyDefined(tsil::ast::ASTValue* ast_value);
+    static CompilerError* subjectNotDefined(tsil::ast::ASTValue* ast_value);
+    static CompilerError* subjectIsNotCallable(tsil::ast::ASTValue* ast_value);
+    static CompilerError* typesAreNotCompatible(tsil::ast::ASTValue* ast_value,
+                                                Type* left,
+                                                Type* right);
   };
 
   struct CompilerResult {
@@ -97,7 +114,11 @@ namespace tsil::compiler {
   struct CompilationState {
     x::Module* Module;
     CompilationScope* globalScope;
-    std::map<std::string, Type*> types;
+    std::map<std::string, Type*> predefined_types;
+    std::map<std::string, ast::ASTValue*> diias;
+    std::map<std::pair<std::string, std::vector<Type*>>,
+             std::pair<Type*, x::Value*>>
+        cached_diias;
     std::map<std::string, Structure*> structures;
     std::map<std::pair<Structure*, std::vector<Type*>>, Type*> types_cache;
 
@@ -126,10 +147,13 @@ namespace tsil::compiler {
     CompilationState* state;
     std::map<std::string, std::pair<Type*, x::Value*>> variables;
 
-    bool has_variable(const std::string& name) const;
-    std::pair<Type*, x::Value*> get_variable(const std::string& name);
-    void set_variable(const std::string& name,
-                      std::pair<Type*, x::Value*> value);
+    bool hasSubject(const std::string& name) const;
+    bool hasNonVariableSubject(const std::string& name) const;
+
+    bool hasVariable(const std::string& name) const;
+    std::pair<Type*, x::Value*> getVariable(const std::string& name);
+    void setVariable(const std::string& name,
+                     std::pair<Type*, x::Value*> value);
 
     MakeTypeResult makeType(const std::string& name,
                             std::vector<Type*> generic_values);
@@ -176,9 +200,9 @@ namespace tsil::compiler {
     CompilerValueResult compileGet(x::Function* xFunction,
                                    tsil::x::FunctionBlock* xBlock,
                                    tsil::ast::ASTValue* astValue);
-    CompilerValueResult compileGep(x::Function* xFunction,
-                                   tsil::x::FunctionBlock* xBlock,
-                                   tsil::ast::ASTValue* astValue);
+    CompilerValueResult compileGetGep(x::Function* xFunction,
+                                      tsil::x::FunctionBlock* xBlock,
+                                      tsil::ast::ASTValue* astValue);
     CompilerValueResult compileLoad(x::Function* xFunction,
                                     tsil::x::FunctionBlock* xBlock,
                                     tsil::ast::ASTValue* astValue);

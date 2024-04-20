@@ -14,7 +14,7 @@ namespace tsil::parser {
     const auto param_node = new ast::ParamNode();
     param_node->id = context->p_name->getText();
     if (context->p_type) {
-      param_node->type = AAV(visitType(context->p_type));
+      param_node->type = AAV(visitFullType(context->p_type));
     }
     return AV(context, ast::KindParamNode, param_node);
   }

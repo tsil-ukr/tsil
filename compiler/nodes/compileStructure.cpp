@@ -4,7 +4,7 @@ namespace tsil::compiler {
   CompilerStructureResult CompilationScope::compileStructure(
       tsil::ast::ASTValue* astValue) {
     const auto structureNode = astValue->data.StructureNode;
-    if (this->state->types.contains(structureNode->name)) {
+    if (this->state->predefined_types.contains(structureNode->name)) {
       return {nullptr, CompilerError::fromASTValue(
                            astValue, "Субʼєкт \"" + structureNode->name +
                                          "\" вже визначено")};

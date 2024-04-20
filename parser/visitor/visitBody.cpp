@@ -71,7 +71,9 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitReturn_body_element(
       TsilParser::Return_body_elementContext* context) {
     const auto return_node = new ast::ReturnNode();
-    return_node->value = AAV(visitContext(context->rbl_value));
+    if (context->rbl_value) {
+      return_node->value = AAV(visitContext(context->rbl_value));
+    }
     return AV(context, ast::KindReturnNode, return_node);
   }
 } // namespace tsil::parser

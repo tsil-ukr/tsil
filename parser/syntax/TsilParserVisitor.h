@@ -47,6 +47,14 @@ public:
 
     virtual std::any visitDiia_declaration(TsilParser::Diia_declarationContext *context) = 0;
 
+    virtual std::any visitDiia_generics(TsilParser::Diia_genericsContext *context) = 0;
+
+    virtual std::any visitDiia_generic(TsilParser::Diia_genericContext *context) = 0;
+
+    virtual std::any visitSection(TsilParser::SectionContext *context) = 0;
+
+    virtual std::any visitSection_element(TsilParser::Section_elementContext *context) = 0;
+
     virtual std::any visitIf(TsilParser::IfContext *context) = 0;
 
     virtual std::any visitWhile(TsilParser::WhileContext *context) = 0;
@@ -83,6 +91,8 @@ public:
 
     virtual std::any visitArithmetic_mul(TsilParser::Arithmetic_mulContext *context) = 0;
 
+    virtual std::any visitNot_text(TsilParser::Not_textContext *context) = 0;
+
     virtual std::any visitAs(TsilParser::AsContext *context) = 0;
 
     virtual std::any visitArithmetic_add(TsilParser::Arithmetic_addContext *context) = 0;
@@ -101,7 +111,13 @@ public:
 
     virtual std::any visitIdentifiers_chain(TsilParser::Identifiers_chainContext *context) = 0;
 
+    virtual std::any visitSimple_function_type(TsilParser::Simple_function_typeContext *context) = 0;
+
+    virtual std::any visitComplex_function_type(TsilParser::Complex_function_typeContext *context) = 0;
+
     virtual std::any visitType(TsilParser::TypeContext *context) = 0;
+
+    virtual std::any visitSimple_function_type_args(TsilParser::Simple_function_type_argsContext *context) = 0;
 
     virtual std::any visitArgs(TsilParser::ArgsContext *context) = 0;
 

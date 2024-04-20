@@ -6,22 +6,17 @@ namespace tsil::compiler {
       tsil::x::FunctionBlock* block,
       tsil::ast::ASTValue* astValue) {
     const auto assignNode = astValue->data.AssignNode;
-    if (this->state->types.contains(assignNode->id)) {
+    if (this->hasNonVariableSubject(assignNode->id)) {
       return {CompilerError::fromASTValue(
           astValue,
           "Неможливо перевизначити субʼєкт \"" + assignNode->id + "\"")};
     }
-    if (this->state->structures.contains(assignNode->id)) {
-      return {CompilerError::fromASTValue(
-          astValue,
-          "Неможливо перевизначити субʼєкт \"" + assignNode->id + "\"")};
-    }
-    if (!this->has_variable(assignNode->id)) {
+    if (!this->hasVariable(assignNode->id)) {
       return {CompilerError::fromASTValue(
           astValue, "Субʼєкт \"" + assignNode->id + "\" не визначено")};
     }
     const auto& [variableType, variableXValue] =
-        this->get_variable(assignNode->id);
+        this->getVariable(assignNode->id);
     if (variableType->type == TypeTypeDiia) {
       return {CompilerError::fromASTValue(
           astValue,

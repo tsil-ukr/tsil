@@ -21,7 +21,7 @@ namespace tsil::compiler {
       return this->compileGet(function, block, astValue);
     }
     if (astValue->kind == tsil::ast::KindGetPointerNode) {
-      return this->compileGep(function, block, astValue);
+      return this->compileGetGep(function, block, astValue);
     }
     if (astValue->kind == tsil::ast::KindConstructorNode) {
       return this->compileConstruct(function, block, astValue);

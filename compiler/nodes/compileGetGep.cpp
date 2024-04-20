@@ -1,18 +1,18 @@
 #include "../compiler.h"
 
 namespace tsil::compiler {
-  CompilerValueResult CompilationScope::compileGep(
+  CompilerValueResult CompilationScope::compileGetGep(
       x::Function* xFunction,
       tsil::x::FunctionBlock* xBlock,
       tsil::ast::ASTValue* astValue) {
     const auto getPointerNode = astValue->data.GetPointerNode;
     if (getPointerNode->value->kind == ast::KindIdentifierNode) {
       const auto identifierNode = getPointerNode->value->data.IdentifierNode;
-      if (this->has_variable(identifierNode->name)) {
-        const auto variable = this->get_variable(identifierNode->name);
+      if (this->hasVariable(identifierNode->name)) {
+        const auto variable = this->getVariable(identifierNode->name);
         return {variable.first, variable.second, nullptr};
       }
-      if (this->state->structures.contains(identifierNode->name)) {
+      if (this->hasNonVariableSubject(identifierNode->name)) {
         return {nullptr, nullptr,
                 CompilerError::fromASTValue(
                     getPointerNode->value,

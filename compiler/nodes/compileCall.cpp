@@ -8,40 +8,100 @@ namespace tsil::compiler {
     const auto callNode = astValue->data.CallNode;
     CompilerValueResult valueResult{};
     if (callNode->value->kind == ast::KindIdentifierNode) {
-      if (this->state->types.contains(
-              callNode->value->data.IdentifierNode->name)) {
+      const auto name = callNode->value->data.IdentifierNode->name;
+      if (name == "комірка") {
+        if (callNode->args.size() != 1) {
+          return {
+              nullptr, nullptr,
+              CompilerError::fromASTValue(
+                  astValue, "Неправильна кількість аргументів для комірки")};
+        }
+        const auto firstArg = callNode->args[0];
+        if (firstArg->kind == ast::KindIdentifierNode) {
+          if (this->hasVariable(firstArg->data.IdentifierNode->name)) {
+            const auto variable =
+                this->getVariable(firstArg->data.IdentifierNode->name);
+            return {variable.first->getPointerType(this), variable.second,
+                    nullptr};
+          }
+          return {
+              nullptr, nullptr,
+              CompilerError::fromASTValue(
+                  astValue, "Субʼєкт \"" + firstArg->data.IdentifierNode->name +
+                                "\" не визначено")};
+        }
         return {nullptr, nullptr,
-                CompilerError::fromASTValue(
-                    astValue, "Неможливо викликати субʼєкт тип.")};
+                CompilerError::fromASTValue(astValue,
+                                            "Неможливо отримати комірку.")};
       }
-      if (this->state->structures.contains(
-              callNode->value->data.IdentifierNode->name)) {
+      if (name == "значення") {
+        if (callNode->args.size() != 1) {
+          return {
+              nullptr, nullptr,
+              CompilerError::fromASTValue(
+                  astValue, "Неправильна кількість аргументів для значення")};
+        }
+        const auto firstArg = callNode->args[0];
+        if (firstArg->kind == ast::KindIdentifierNode) {
+          if (this->hasVariable(firstArg->data.IdentifierNode->name)) {
+            const auto variable =
+                this->getVariable(firstArg->data.IdentifierNode->name);
+            if (variable.first->type != TypeTypePointer) {
+              return {
+                  nullptr, nullptr,
+                  CompilerError::fromASTValue(astValue, "Тип не є коміркою")};
+            }
+            const auto loadXValue =
+                this->state->Module->pushFunctionBlockLoadInstruction(
+                    block, variable.first->LT, variable.second);
+            const auto loadXValue2 =
+                this->state->Module->pushFunctionBlockLoadInstruction(
+                    block, variable.first->pointer_to->LT, loadXValue);
+            return {variable.first->pointer_to, loadXValue2, nullptr};
+          }
+          return {
+              nullptr, nullptr,
+              CompilerError::fromASTValue(
+                  astValue, "Субʼєкт \"" + firstArg->data.IdentifierNode->name +
+                                "\" не визначено")};
+        }
         return {nullptr, nullptr,
-                CompilerError::fromASTValue(
-                    astValue, "Неможливо викликати субʼєкт структуру.")};
+                CompilerError::fromASTValue(astValue,
+                                            "Неможливо отримати комірку.")};
       }
-      if (!this->has_variable(callNode->value->data.IdentifierNode->name)) {
+      if (this->hasNonVariableSubject(name)) {
         return {nullptr, nullptr,
-                CompilerError::fromASTValue(
-                    astValue, "Субʼєкт \"" +
-                                  callNode->value->data.IdentifierNode->name +
-                                  "\" не визначено")};
+                CompilerError::subjectIsNotCallable(astValue)};
+      }
+      if (this->state->diias.contains(name)) {
+        std::vector<Type*> genericValues;
+        for (const auto& genericASTValue : callNode->generic_values) {
+          const auto genericResult =
+              this->makeTypeFromTypeNodeASTValue(genericASTValue);
+          if (!genericResult.type) {
+            return {nullptr, nullptr,
+                    CompilerError::fromASTValue(genericASTValue,
+                                                genericResult.error)};
+          }
+          genericValues.push_back(genericResult.type);
+        }
+        const auto diia = this->state->diias[name];
+        valueResult = this->compileDiiaWithGenerics(diia, genericValues);
+      }
+      if (!this->hasVariable(name)) {
+        return {nullptr, nullptr, CompilerError::subjectNotDefined(astValue)};
       }
       const auto variable =
-          this->get_variable(callNode->value->data.IdentifierNode->name);
+          this->getVariable(callNode->value->data.IdentifierNode->name);
       valueResult = {variable.first, variable.second, nullptr};
     } else {
-      // todo: need to check more cases
-      valueResult = this->compileValue(function, block, callNode->value);
+      valueResult.error = CompilerError::subjectIsNotCallable(astValue);
     }
     if (valueResult.error) {
       return {nullptr, nullptr, valueResult.error};
     }
     if (valueResult.type->type != TypeTypeDiia) {
-      return {nullptr, nullptr,
-              CompilerError::fromASTValue(
-                  astValue, "Неможливо викликати \"" +
-                                valueResult.type->getFullName() + "\"")};
+      return {nullptr, nullptr, CompilerError::subjectIsNotCallable(astValue)};
     }
     const auto diiaParameters = valueResult.type->diia_parameters;
     const auto diiaResultType = valueResult.type->diia_result_type;

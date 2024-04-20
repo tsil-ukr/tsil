@@ -7,26 +7,10 @@ set(CMAKE_BUILD_TYPE "Release")
 add_subdirectory(parser)
 
 set(TSIL_SRC
-        compiler/nodes/compileAs.cpp
-        compiler/nodes/compileAssign.cpp
-        compiler/nodes/compileValue.cpp
-        compiler/nodes/compileBinary.cpp
-        compiler/nodes/compileCall.cpp
-        compiler/nodes/compileConstruct.cpp
-        compiler/nodes/compileDefine.cpp
-        compiler/nodes/compileDiia.cpp
-        compiler/nodes/compileGet.cpp
-        compiler/nodes/compileGep.cpp
-        compiler/nodes/compileLoad.cpp
-        compiler/nodes/compileNumber.cpp
-        compiler/nodes/compileSet.cpp
-        compiler/nodes/compileSizeof.cpp
-        compiler/nodes/compileString.cpp
-        compiler/nodes/compileStructure.cpp
-        compiler/compiler.cpp
-        compiler/compiler.h
         compiler/x.cpp
         compiler/x.h
+        compiler/tk/tk.cpp
+        compiler/tk/tk.h
         main.cpp
 )
 
