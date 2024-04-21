@@ -19,11 +19,23 @@ namespace tsil::x {
   struct FunctionInstructionBr;
   struct FunctionInstructionBrIf;
   struct FunctionInstructionICmp;
+  struct FunctionInstructionFCmp;
   struct FunctionInstructionAdd;
+  struct FunctionInstructionFAdd;
   struct FunctionInstructionSub;
+  struct FunctionInstructionFSub;
   struct FunctionInstructionMul;
+  struct FunctionInstructionFMul;
   struct FunctionInstructionDiv;
+  struct FunctionInstructionFDiv;
   struct FunctionInstructionMod;
+  struct FunctionInstructionFMod;
+  struct FunctionInstructionAnd;
+  struct FunctionInstructionOr;
+  struct FunctionInstructionXor;
+  struct FunctionInstructionShl;
+  struct FunctionInstructionLShr;
+  struct FunctionInstructionAShr;
 
   struct Module {
     std::string name;
@@ -95,26 +107,75 @@ namespace tsil::x {
                                             Type* type,
                                             Value* left,
                                             Value* right);
+    Value* pushFunctionBlockFCmpInstruction(FunctionBlock* block,
+                                            const std::string& op,
+                                            Type* type,
+                                            Value* left,
+                                            Value* right);
     Value* pushFunctionBlockAddInstruction(FunctionBlock* block,
                                            Type* type,
                                            Value* left,
                                            Value* right);
+    Value* pushFunctionBlockFAddInstruction(FunctionBlock* block,
+                                            Type* type,
+                                            Value* left,
+                                            Value* right);
     Value* pushFunctionBlockSubInstruction(FunctionBlock* block,
                                            Type* type,
                                            Value* left,
                                            Value* right);
+    Value* pushFunctionBlockFSubInstruction(FunctionBlock* block,
+                                            Type* type,
+                                            Value* left,
+                                            Value* right);
     Value* pushFunctionBlockMulInstruction(FunctionBlock* block,
                                            Type* type,
                                            Value* left,
                                            Value* right);
+    Value* pushFunctionBlockFMulInstruction(FunctionBlock* block,
+                                            Type* type,
+                                            Value* left,
+                                            Value* right);
     Value* pushFunctionBlockDivInstruction(FunctionBlock* block,
                                            Type* type,
                                            Value* left,
                                            Value* right);
+    Value* pushFunctionBlockFDivInstruction(FunctionBlock* block,
+                                            Type* type,
+                                            Value* left,
+                                            Value* right);
     Value* pushFunctionBlockModInstruction(FunctionBlock* block,
                                            Type* type,
                                            Value* left,
                                            Value* right);
+    Value* pushFunctionBlockFModInstruction(FunctionBlock* block,
+                                            Type* type,
+                                            Value* left,
+                                            Value* right);
+    Value* pushFunctionBlockAndInstruction(FunctionBlock* block,
+                                           Type* type,
+                                           Value* left,
+                                           Value* right);
+    Value* pushFunctionBlockOrInstruction(FunctionBlock* block,
+                                          Type* type,
+                                          Value* left,
+                                          Value* right);
+    Value* pushFunctionBlockXorInstruction(FunctionBlock* block,
+                                           Type* type,
+                                           Value* left,
+                                           Value* right);
+    Value* pushFunctionBlockShlInstruction(FunctionBlock* block,
+                                           Type* type,
+                                           Value* left,
+                                           Value* right);
+    Value* pushFunctionBlockLShrInstruction(FunctionBlock* block,
+                                            Type* type,
+                                            Value* left,
+                                            Value* right);
+    Value* pushFunctionBlockAShrInstruction(FunctionBlock* block,
+                                            Type* type,
+                                            Value* left,
+                                            Value* right);
 
     std::string dumpLL();
   };
@@ -184,11 +245,23 @@ namespace tsil::x {
     FunctionInstructionBr* br;
     FunctionInstructionBrIf* brif;
     FunctionInstructionICmp* icmp;
+    FunctionInstructionFCmp* fcmp;
     FunctionInstructionAdd* add;
+    FunctionInstructionFAdd* fadd;
     FunctionInstructionSub* sub;
+    FunctionInstructionFSub* fsub;
     FunctionInstructionMul* mul;
+    FunctionInstructionFMul* fmul;
     FunctionInstructionDiv* div;
+    FunctionInstructionFDiv* fdiv;
     FunctionInstructionMod* mod;
+    FunctionInstructionFMod* fmod;
+    FunctionInstructionAnd* and_;
+    FunctionInstructionOr* or_;
+    FunctionInstructionXor* xor_;
+    FunctionInstructionShl* shl;
+    FunctionInstructionLShr* lshr;
+    FunctionInstructionAShr* ashr;
 
     std::string dumpLL(Module* module);
   };
@@ -242,7 +315,20 @@ namespace tsil::x {
     Value* right;
   };
 
+  struct FunctionInstructionFCmp {
+    std::string op;
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
   struct FunctionInstructionAdd {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionFAdd {
     Type* type;
     Value* left;
     Value* right;
@@ -254,7 +340,19 @@ namespace tsil::x {
     Value* right;
   };
 
+  struct FunctionInstructionFSub {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
   struct FunctionInstructionMul {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionFMul {
     Type* type;
     Value* left;
     Value* right;
@@ -266,7 +364,55 @@ namespace tsil::x {
     Value* right;
   };
 
+  struct FunctionInstructionFDiv {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
   struct FunctionInstructionMod {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionFMod {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionAnd {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionOr {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionXor {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionShl {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionLShr {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionAShr {
     Type* type;
     Value* left;
     Value* right;

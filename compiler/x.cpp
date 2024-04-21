@@ -244,6 +244,23 @@ namespace tsil::x {
     return new Value(this->int1Type, instruction->name);
   }
 
+  Value* Module::pushFunctionBlockFCmpInstruction(FunctionBlock* block,
+                                                  const std::string& op,
+                                                  Type* type,
+                                                  Value* left,
+                                                  Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto fcmp = new FunctionInstructionFCmp();
+    fcmp->op = op;
+    fcmp->type = type;
+    fcmp->left = left;
+    fcmp->right = right;
+    instruction->name = "%fcmp." + std::to_string(this->variable_counter++);
+    instruction->fcmp = fcmp;
+    block->instructions.push_back(instruction);
+    return new Value(this->int1Type, instruction->name);
+  }
+
   Value* Module::pushFunctionBlockAddInstruction(FunctionBlock* block,
                                                  Type* type,
                                                  Value* left,
@@ -255,6 +272,21 @@ namespace tsil::x {
     add->right = right;
     instruction->name = "%add." + std::to_string(this->variable_counter++);
     instruction->add = add;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockFAddInstruction(FunctionBlock* block,
+                                                  Type* type,
+                                                  Value* left,
+                                                  Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto fadd = new FunctionInstructionFAdd();
+    fadd->type = type;
+    fadd->left = left;
+    fadd->right = right;
+    instruction->name = "%fadd." + std::to_string(this->variable_counter++);
+    instruction->fadd = fadd;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
   }
@@ -274,6 +306,21 @@ namespace tsil::x {
     return new Value(type, instruction->name);
   }
 
+  Value* Module::pushFunctionBlockFSubInstruction(FunctionBlock* block,
+                                                  Type* type,
+                                                  Value* left,
+                                                  Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto fsub = new FunctionInstructionFSub();
+    fsub->type = type;
+    fsub->left = left;
+    fsub->right = right;
+    instruction->name = "%fsub." + std::to_string(this->variable_counter++);
+    instruction->fsub = fsub;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
   Value* Module::pushFunctionBlockMulInstruction(FunctionBlock* block,
                                                  Type* type,
                                                  Value* left,
@@ -285,6 +332,21 @@ namespace tsil::x {
     mul->right = right;
     instruction->name = "%mul." + std::to_string(this->variable_counter++);
     instruction->mul = mul;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockFMulInstruction(FunctionBlock* block,
+                                                  Type* type,
+                                                  Value* left,
+                                                  Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto fmul = new FunctionInstructionFMul();
+    fmul->type = type;
+    fmul->left = left;
+    fmul->right = right;
+    instruction->name = "%fmul." + std::to_string(this->variable_counter++);
+    instruction->fmul = fmul;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
   }
@@ -304,6 +366,21 @@ namespace tsil::x {
     return new Value(type, instruction->name);
   }
 
+  Value* Module::pushFunctionBlockFDivInstruction(FunctionBlock* block,
+                                                  Type* type,
+                                                  Value* left,
+                                                  Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto fdiv = new FunctionInstructionFDiv();
+    fdiv->type = type;
+    fdiv->left = left;
+    fdiv->right = right;
+    instruction->name = "%fdiv." + std::to_string(this->variable_counter++);
+    instruction->fdiv = fdiv;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
   Value* Module::pushFunctionBlockModInstruction(FunctionBlock* block,
                                                  Type* type,
                                                  Value* left,
@@ -315,6 +392,111 @@ namespace tsil::x {
     mod->right = right;
     instruction->name = "%mod." + std::to_string(this->variable_counter++);
     instruction->mod = mod;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockFModInstruction(FunctionBlock* block,
+                                                  Type* type,
+                                                  Value* left,
+                                                  Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto fmod = new FunctionInstructionFMod();
+    fmod->type = type;
+    fmod->left = left;
+    fmod->right = right;
+    instruction->name = "%fmod." + std::to_string(this->variable_counter++);
+    instruction->fmod = fmod;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockAndInstruction(FunctionBlock* block,
+                                                 Type* type,
+                                                 Value* left,
+                                                 Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto and_ = new FunctionInstructionAnd();
+    and_->type = type;
+    and_->left = left;
+    and_->right = right;
+    instruction->name = "%and." + std::to_string(this->variable_counter++);
+    instruction->and_ = and_;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockOrInstruction(FunctionBlock* block,
+                                                Type* type,
+                                                Value* left,
+                                                Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto or_ = new FunctionInstructionOr();
+    or_->type = type;
+    or_->left = left;
+    or_->right = right;
+    instruction->name = "%or." + std::to_string(this->variable_counter++);
+    instruction->or_ = or_;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockXorInstruction(FunctionBlock* block,
+                                                 Type* type,
+                                                 Value* left,
+                                                 Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto xor_ = new FunctionInstructionXor();
+    xor_->type = type;
+    xor_->left = left;
+    xor_->right = right;
+    instruction->name = "%xor." + std::to_string(this->variable_counter++);
+    instruction->xor_ = xor_;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockShlInstruction(FunctionBlock* block,
+                                                 Type* type,
+                                                 Value* left,
+                                                 Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto shl = new FunctionInstructionShl();
+    shl->type = type;
+    shl->left = left;
+    shl->right = right;
+    instruction->name = "%shl." + std::to_string(this->variable_counter++);
+    instruction->shl = shl;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockLShrInstruction(FunctionBlock* block,
+                                                  Type* type,
+                                                  Value* left,
+                                                  Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto lshr = new FunctionInstructionLShr();
+    lshr->type = type;
+    lshr->left = left;
+    lshr->right = right;
+    instruction->name = "%lshr." + std::to_string(this->variable_counter++);
+    instruction->lshr = lshr;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockAShrInstruction(FunctionBlock* block,
+                                                  Type* type,
+                                                  Value* left,
+                                                  Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto ashr = new FunctionInstructionAShr();
+    ashr->type = type;
+    ashr->left = left;
+    ashr->right = right;
+    instruction->name = "%ashr." + std::to_string(this->variable_counter++);
+    instruction->ashr = ashr;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
   }
@@ -479,9 +661,74 @@ namespace tsil::x {
              this->icmp->type->name + " " + this->icmp->left->name + ", " +
              this->icmp->right->name;
     }
+    if (this->fcmp) {
+      return this->name + " = fcmp " + this->fcmp->op + " " +
+             this->fcmp->type->name + " " + this->fcmp->left->name + ", " +
+             this->fcmp->right->name;
+    }
     if (this->add) {
       return this->name + " = add " + this->add->type->name + " " +
              this->add->left->name + ", " + this->add->right->name;
+    }
+    if (this->fadd) {
+      return this->name + " = fadd " + this->fadd->type->name + " " +
+             this->fadd->left->name + ", " + this->fadd->right->name;
+    }
+    if (this->sub) {
+      return this->name + " = sub " + this->sub->type->name + " " +
+             this->sub->left->name + ", " + this->sub->right->name;
+    }
+    if (this->fsub) {
+      return this->name + " = fsub " + this->fsub->type->name + " " +
+             this->fsub->left->name + ", " + this->fsub->right->name;
+    }
+    if (this->mul) {
+      return this->name + " = mul " + this->mul->type->name + " " +
+             this->mul->left->name + ", " + this->mul->right->name;
+    }
+    if (this->fmul) {
+      return this->name + " = fmul " + this->fmul->type->name + " " +
+             this->fmul->left->name + ", " + this->fmul->right->name;
+    }
+    if (this->div) {
+      return this->name + " = div " + this->div->type->name + " " +
+             this->div->left->name + ", " + this->div->right->name;
+    }
+    if (this->fdiv) {
+      return this->name + " = fdiv " + this->fdiv->type->name + " " +
+             this->fdiv->left->name + ", " + this->fdiv->right->name;
+    }
+    if (this->mod) {
+      return this->name + " = srem " + this->mod->type->name + " " +
+             this->mod->left->name + ", " + this->mod->right->name;
+    }
+    if (this->fmod) {
+      return this->name + " = frem " + this->fmod->type->name + " " +
+             this->fmod->left->name + ", " + this->fmod->right->name;
+    }
+    if (this->and_) {
+      return this->name + " = and " + this->and_->type->name + " " +
+             this->and_->left->name + ", " + this->and_->right->name;
+    }
+    if (this->or_) {
+      return this->name + " = or " + this->or_->type->name + " " +
+             this->or_->left->name + ", " + this->or_->right->name;
+    }
+    if (this->xor_) {
+      return this->name + " = xor " + this->xor_->type->name + " " +
+             this->xor_->left->name + ", " + this->xor_->right->name;
+    }
+    if (this->shl) {
+      return this->name + " = shl " + this->shl->type->name + " " +
+             this->shl->left->name + ", " + this->shl->right->name;
+    }
+    if (this->lshr) {
+      return this->name + " = lshr " + this->lshr->type->name + " " +
+             this->lshr->left->name + ", " + this->lshr->right->name;
+    }
+    if (this->ashr) {
+      return this->name + " = ashr " + this->ashr->type->name + " " +
+             this->ashr->left->name + ", " + this->ashr->right->name;
     }
     return "";
   }

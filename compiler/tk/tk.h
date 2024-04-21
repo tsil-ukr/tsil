@@ -9,12 +9,24 @@ namespace tsil::tk {
   struct Scope;
   struct Type;
 
+  void str_replace_all(std::string& str,
+                       const std::string& from,
+                       const std::string& to);
+  bool str_contains(const std::string& str, const std::string& substr);
+
+  std::string getTsilAstBinaryOpSymbol(tsil::ast::BinaryOp op);
+
+  std::string tsilNumberToLLVMNumber(const std::string& value);
+
+  std::string tsilStringToLLVMString(const std::string& value);
+
   struct Compiler {
     x::Module* xModule = nullptr;
     Scope* globalScope = nullptr;
 
     Type* voidType = nullptr;
     Type* pointerType = nullptr;
+    Type* int1Type = nullptr;
     Type* int8Type = nullptr;
     Type* int32Type = nullptr;
     Type* int64Type = nullptr;
@@ -52,6 +64,18 @@ namespace tsil::tk {
     static CompilerError* typeHasNoProperty(tsil::ast::ASTValue* ast_value,
                                             Type* type,
                                             const std::string& name);
+    static CompilerError* subjectIsNotRuntimeValue(
+        tsil::ast::ASTValue* ast_value);
+    static CompilerError* typesOfInstructionDifferent(
+        tsil::ast::ASTValue* astValue,
+        Type* leftType,
+        Type* rightType);
+    static CompilerError* typeIsNotComparable(tsil::ast::ASTValue* astValue,
+                                              Type* type);
+    static CompilerError* typeIsNotArithmetical(tsil::ast::ASTValue* astValue,
+                                                Type* type);
+    static CompilerError* typeIsNotBitwisible(tsil::ast::ASTValue* astValue,
+                                              Type* type);
   };
 
   struct CompilerResult {
@@ -92,6 +116,7 @@ namespace tsil::tk {
         variables; // name => (type, xValue)
 
     bool hasSubject(const std::string& name) const;
+    bool hasNonVariableAndNonDiiaSubject(const std::string& name) const;
 
     bool hasRawDiia(const std::string& name) const;
     ast::ASTValue* getRawDiia(const std::string& name);
@@ -166,5 +191,10 @@ namespace tsil::tk {
 
     std::string getFullName();
     Type* getPointerType(Scope* scope);
+    bool isComparable(Scope* scope);
+    bool isUnsigned(Scope* scope);
+    bool isFloating(Scope* scope);
+    bool isArithmetical(Scope* scope);
+    bool isBitwisible(Scope* scope);
   };
 } // namespace tsil::tk

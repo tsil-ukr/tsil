@@ -169,6 +169,14 @@ int main(int argc, char** argv) {
           {"невідома_комірка", {}}, pointerType);
       compiler->pointerType = pointerType;
 
+      const auto int1Type = new tsil::tk::Type();
+      int1Type->type = tsil::tk::TypeTypeNative;
+      int1Type->name = "логічне";
+      int1Type->xType = compiler->xModule->int1Type;
+      compiler->globalScope->bakedTypes.insert_or_assign({"логічне", {}},
+                                                         int1Type);
+      compiler->int1Type = int1Type;
+
       const auto int8Type = new tsil::tk::Type();
       int8Type->type = tsil::tk::TypeTypeNative;
       int8Type->name = "ц8";

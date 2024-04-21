@@ -8,9 +8,10 @@ add_subdirectory(parser)
 
 set(TSIL_SRC
         compiler/x.cpp
-        compiler/x.h
+        compiler/tk/CompilerError.cpp
+        compiler/tk/Scope.cpp
         compiler/tk/tk.cpp
-        compiler/tk/tk.h
+        compiler/tk/Type.cpp
         main.cpp
 )
 
