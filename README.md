@@ -18,7 +18,7 @@
 
 Створіть файл `extension.cpp`:
 
-```shell
+```c++
 #include <iostream>
 
 extern "C" void друк_сі(char* val) {
