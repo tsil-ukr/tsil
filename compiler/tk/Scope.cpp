@@ -186,22 +186,21 @@ namespace tsil::tk {
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
               xBlock, leftType->xType, leftXValue,
               {0, static_cast<unsigned long>(field.index)});
-      if (load) {
-        const auto loadXValue =
-            this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, field.type->xType, gepXValue);
-        return {field.type, loadXValue, nullptr};
-      } else {
-        return {field.type, gepXValue, nullptr};
-      }
+      const auto loadXValue =
+          this->compiler->xModule->pushFunctionBlockLoadInstruction(
+              xBlock, field.type->xType, gepXValue);
+      return {field.type, loadXValue, nullptr};
     }
     return {nullptr, nullptr,
             CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};
   }
 
-  CompilerValueResult Scope::compileValue(tsil::x::Function* xFunction,
-                                          tsil::x::FunctionBlock* xBlock,
-                                          ast::ASTValue* astValue) {
+  CompilerValueResult Scope::compileValue(
+      tsil::x::Function* xFunction,
+      tsil::x::FunctionBlock* xBlock,
+      ast::ASTValue* astValue,
+      const std::vector<Type*> genericValues,
+      bool load) {
     if (astValue->kind == ast::KindNumberNode) {
       const auto numberNode = astValue->data.NumberNode;
       const auto type = str_contains(numberNode->value, ".")
@@ -209,6 +208,9 @@ namespace tsil::tk {
                             : this->compiler->int64Type;
       const auto xValue =
           new x::Value(type->xType, tsilNumberToLLVMNumber(numberNode->value));
+      if (!load) {
+        std::cout << "BUG: cannot get reference to a number!" << std::endl;
+      }
       return {type, xValue, nullptr};
     }
     if (astValue->kind == ast::KindStringNode) {
@@ -216,6 +218,9 @@ namespace tsil::tk {
       const auto stringValue = tsilStringToLLVMString(stringNode->value);
       const auto xStringConstant =
           this->compiler->xModule->putStringConstant(stringValue);
+      if (!load) {
+        std::cout << "BUG: cannot get reference to a string!" << std::endl;
+      }
       if (stringNode->prefix == "сі") {
         return {this->compiler->int8Type->getPointerType(this), xStringConstant,
                 nullptr};
@@ -226,29 +231,48 @@ namespace tsil::tk {
       if (this->hasVariable(identifierNode->name)) {
         const auto& [variableType, variableXValue] =
             this->getVariable(identifierNode->name);
-        const auto loadXValue =
-            this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, variableType->xType, variableXValue);
-        return {variableType, loadXValue, nullptr};
+        if (load) {
+          const auto loadXValue =
+              this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                  xBlock, variableType->xType, variableXValue);
+          return {variableType, loadXValue, nullptr};
+        } else {
+          return {variableType->getPointerType(this), variableXValue, nullptr};
+        }
       }
-      if (this->hasBakedDiia(identifierNode->name, {})) {
-        const auto bakedDiia = this->getBakedDiia(identifierNode->name, {});
+      if (this->hasBakedDiia(identifierNode->name, genericValues)) {
+        const auto bakedDiia =
+            this->getBakedDiia(identifierNode->name, genericValues);
+        if (!load) {
+          std::cout << "BUG: cannot get reference to a diia!" << std::endl;
+        }
         return {bakedDiia.first, bakedDiia.second, nullptr};
+      }
+      if (this->hasRawDiia(identifierNode->name)) {
+        const auto rawDiia = this->getRawDiia(identifierNode->name);
+        const auto bakeDiiaResult =
+            this->bakeDiia(astValue, rawDiia, genericValues);
+        if (bakeDiiaResult.error) {
+          return {nullptr, nullptr, bakeDiiaResult.error};
+        }
+        if (!load) {
+          std::cout << "BUG: cannot get reference to a diia!" << std::endl;
+        }
+        return {bakeDiiaResult.type, bakeDiiaResult.xValue, nullptr};
       }
       if (this->hasNonVariableAndNonDiiaSubject(identifierNode->name)) {
         return {nullptr, nullptr,
                 CompilerError::subjectIsNotRuntimeValue(astValue)};
       }
-      return {nullptr, nullptr,
-              CompilerError::fromASTValue(astValue, "Субʼєкт не визначено")};
+      return {nullptr, nullptr, CompilerError::subjectNotDefined(astValue)};
     }
     if (astValue->kind == ast::KindGetNode) {
-      return this->compileValueGet(xFunction, xBlock, astValue, true);
+      return this->compileValueGet(xFunction, xBlock, astValue, load);
     }
     if (astValue->kind == ast::KindAsNode) {
       const auto asNode = astValue->data.AsNode;
       const auto valueResult =
-          this->compileValue(xFunction, xBlock, asNode->value);
+          this->compileValue(xFunction, xBlock, asNode->value, {}, true);
       if (valueResult.error) {
         return valueResult;
       }
@@ -258,24 +282,30 @@ namespace tsil::tk {
                 CompilerError::fromASTValue(asNode->type, typeResult.error)};
       }
       // todo: cast
+      if (!load) {
+        std::cout << "BUG: cannot get reference to a as!" << std::endl;
+      }
       return {typeResult.type, valueResult.xValue, nullptr};
     }
     if (astValue->kind == ast::KindBinaryNode) {
       const auto binaryNode = astValue->data.BinaryNode;
       CompilerValueResult leftResult =
-          this->compileValue(xFunction, xBlock, binaryNode->left);
+          this->compileValue(xFunction, xBlock, binaryNode->left, {}, true);
       if (leftResult.error) {
         return leftResult;
       }
       CompilerValueResult rightResult =
-          this->compileValue(xFunction, xBlock, binaryNode->right);
+          this->compileValue(xFunction, xBlock, binaryNode->right, {}, true);
       if (rightResult.error) {
         return rightResult;
       }
-      if (leftResult.type != rightResult.type) {
+      if (!leftResult.type->equals(rightResult.type)) {
         return {nullptr, nullptr,
                 CompilerError::typesOfInstructionDifferent(
                     astValue, leftResult.type, rightResult.type)};
+      }
+      if (!load) {
+        std::cout << "BUG: cannot get reference to a binary!" << std::endl;
       }
       x::Value* xValue = nullptr;
       switch (binaryNode->op) {
@@ -542,85 +572,144 @@ namespace tsil::tk {
     }
     if (astValue->kind == ast::KindCallNode) {
       const auto callNode = astValue->data.CallNode;
+      std::vector<Type*> diiaGenericValues;
+      for (const auto& diiaGenericAstValue : callNode->generic_values) {
+        const auto genericTypeResult = this->bakeType(diiaGenericAstValue);
+        if (!genericTypeResult.type) {
+          return {nullptr, nullptr,
+                  CompilerError::fromASTValue(diiaGenericAstValue,
+                                              genericTypeResult.error)};
+        }
+        diiaGenericValues.push_back(genericTypeResult.type);
+      }
+      if (!load) {
+        std::cout << "BUG: cannot get reference to a call!" << std::endl;
+      }
       if (callNode->value->kind == ast::KindIdentifierNode) {
         const auto identifierNode = callNode->value->data.IdentifierNode;
-
-        std::vector<Type*> genericValues;
-        for (const auto& genericValue : callNode->generic_values) {
-          const auto genericTypeResult = this->bakeType(genericValue);
-          if (!genericTypeResult.type) {
+        if (identifierNode->name == "комірка") {
+          if (callNode->args.size() < 1) {
             return {nullptr, nullptr,
-                    CompilerError::fromASTValue(genericValue,
-                                                genericTypeResult.error)};
+                    CompilerError::notEnoughCallArguments(astValue)};
           }
-          genericValues.push_back(genericTypeResult.type);
-        }
-        Type* diiaType;
-        x::Value* diiaXValue;
-        if (this->hasBakedDiia(identifierNode->name, genericValues)) {
-          const auto bakedDiia =
-              this->getBakedDiia(identifierNode->name, genericValues);
-          diiaType = bakedDiia.first;
-          diiaXValue = bakedDiia.second;
-        } else {
-          if (this->hasRawDiia(identifierNode->name)) {
-            const auto rawDiia = this->getRawDiia(identifierNode->name);
-            const auto bakeDiiaResult =
-                this->bakeDiia(astValue, rawDiia, genericValues);
-            if (bakeDiiaResult.error) {
-              return {nullptr, nullptr, bakeDiiaResult.error};
-            }
-            diiaType = bakeDiiaResult.type;
-            diiaXValue = bakeDiiaResult.xValue;
-          } else {
-            return {
-                nullptr, nullptr,
-                CompilerError::fromASTValue(astValue, "Неможливо викликати")};
+          if (callNode->args.size() > 1) {
+            return {nullptr, nullptr,
+                    CompilerError::tooManyCallArguments(astValue)};
           }
-        }
-        if (callNode->args.size() < diiaType->diiaParameters.size()) {
-          return {nullptr, nullptr,
-                  CompilerError::fromASTValue(
-                      astValue, "Недостатньо аргументів для виконання дії")};
-        }
-        if (callNode->args.size() > diiaType->diiaParameters.size()) {
-          return {nullptr, nullptr,
-                  CompilerError::fromASTValue(
-                      astValue, "Забагато аргументів для виконання дії")};
-        }
-        std::vector<x::Value*> xArgs;
-        int argIndex = 0;
-        for (const auto& argAstValue : callNode->args) {
-          const auto argResult =
-              this->compileValue(xFunction, xBlock, argAstValue);
-          if (argResult.error) {
-            return argResult;
+          if (genericValues.size() > 1) {
+            return {nullptr, nullptr,
+                    CompilerError::tooManyCallTemplateArguments(astValue)};
           }
-          const auto& diiaParameter = diiaType->diiaParameters[argIndex];
-          if (argResult.type != diiaParameter.type) {
-            return {
-                nullptr, nullptr,
-                CompilerError::fromASTValue(
-                    argAstValue, "Невірний тип параметра \"" +
-                                     diiaParameter.name + "\": очікується \"" +
-                                     diiaParameter.type->getFullName() +
-                                     "\", отримано \"" +
-                                     argResult.type->getFullName() + "\"")};
+          const auto firstArgAstValue = callNode->args[0];
+          const auto firstArgResult = this->compileValue(
+              xFunction, xBlock, firstArgAstValue, {}, false);
+          if (firstArgResult.error) {
+            return firstArgResult;
           }
-          xArgs.push_back(argResult.xValue);
-          argIndex++;
+          if (genericValues.empty()) {
+            return {firstArgResult.type, firstArgResult.xValue, nullptr};
+          }
+          const auto genericValue = genericValues[0];
+          if (!firstArgResult.type->equals(genericValue)) {
+            return {nullptr, nullptr,
+                    CompilerError::invalidArgumentType(firstArgAstValue,
+                                                       "значення", genericValue,
+                                                       firstArgResult.type)};
+          }
+          return {firstArgResult.type, firstArgResult.xValue, nullptr};
         }
-        const auto xValue =
-            this->compiler->xModule->pushFunctionBlockCallInstruction(
-                xBlock, diiaType->diiaReturnType->xType, diiaXValue, xArgs);
-        return {diiaType->diiaReturnType, xValue, nullptr};
+        if (identifierNode->name == "значення") {
+          if (callNode->args.size() < 1) {
+            return {nullptr, nullptr,
+                    CompilerError::notEnoughCallArguments(astValue)};
+          }
+          if (callNode->args.size() > 1) {
+            return {nullptr, nullptr,
+                    CompilerError::tooManyCallArguments(astValue)};
+          }
+          if (genericValues.size() > 1) {
+            return {nullptr, nullptr,
+                    CompilerError::tooManyCallTemplateArguments(astValue)};
+          }
+          const auto firstArgAstValue = callNode->args[0];
+          const auto firstArgResult =
+              this->compileValue(xFunction, xBlock, firstArgAstValue, {}, true);
+          if (firstArgResult.error) {
+            return firstArgResult;
+          }
+          if (firstArgResult.type->type != TypeTypePointer) {
+            return {nullptr, nullptr,
+                    CompilerError::invalidArgumentType(
+                        firstArgAstValue, "значення",
+                        this->compiler->pointerType, firstArgResult.type)};
+          }
+          if (genericValues.empty()) {
+            const auto loadXValue =
+                this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                    xBlock, firstArgResult.type->pointerTo->xType,
+                    firstArgResult.xValue);
+            return {firstArgResult.type->pointerTo, loadXValue, nullptr};
+          }
+          const auto genericValue = genericValues[0];
+          if (!firstArgResult.type->pointerTo->equals(genericValue)) {
+            return {nullptr, nullptr,
+                    CompilerError::invalidArgumentType(firstArgAstValue,
+                                                       "значення", genericValue,
+                                                       firstArgResult.type)};
+          }
+          const auto loadXValue =
+              this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                  xBlock, firstArgResult.type->pointerTo->xType,
+                  firstArgResult.xValue);
+          return {firstArgResult.type->pointerTo, loadXValue, nullptr};
+        }
       }
-      return {nullptr, nullptr,
-              CompilerError::fromASTValue(astValue, "Неможливо викликати")};
+      Type* diiaType;
+      x::Value* diiaXValue;
+      const auto valueResult = this->compileValue(
+          xFunction, xBlock, callNode->value, diiaGenericValues, true);
+      if (valueResult.error) {
+        return {nullptr, nullptr, valueResult.error};
+      }
+      diiaType = valueResult.type;
+      diiaXValue = valueResult.xValue;
+      if (callNode->args.size() < diiaType->diiaParameters.size()) {
+        return {nullptr, nullptr,
+                CompilerError::notEnoughCallArguments(astValue)};
+      }
+      if (callNode->args.size() > diiaType->diiaParameters.size()) {
+        return {nullptr, nullptr,
+                CompilerError::tooManyCallArguments(astValue)};
+      }
+      std::vector<x::Value*> xArgs;
+      int argIndex = 0;
+      for (const auto& argAstValue : callNode->args) {
+        const auto argResult = this->compileValue(
+            xFunction, xBlock, argAstValue, diiaGenericValues, true);
+        if (argResult.error) {
+          return argResult;
+        }
+        const auto& diiaParameter = diiaType->diiaParameters[argIndex];
+        if (!argResult.type->equals(diiaParameter.type)) {
+          return {nullptr, nullptr,
+                  CompilerError::invalidArgumentType(
+                      argAstValue, diiaParameter.name, diiaParameter.type,
+                      argResult.type)};
+        }
+        xArgs.push_back(argResult.xValue);
+        argIndex++;
+      }
+      const auto xValue =
+          this->compiler->xModule->pushFunctionBlockCallInstruction(
+              xBlock, diiaType->diiaReturnType->xType, diiaXValue, xArgs);
+      return {diiaType->diiaReturnType, xValue, nullptr};
     }
     if (astValue->kind == ast::KindConstructorNode) {
       const auto constructorNode = astValue->data.ConstructorNode;
       const auto typeResult = this->bakeType(constructorNode->type);
+      if (!load) {
+        std::cout << "BUG: cannot get reference to a constructor!" << std::endl;
+      }
       if (!typeResult.type) {
         return {nullptr, nullptr,
                 CompilerError::fromASTValue(constructorNode->type,
@@ -639,26 +728,21 @@ namespace tsil::tk {
         if (!typeResult.type->structureInstanceFields.contains(
                 constructorArgNode->id)) {
           return {nullptr, nullptr,
-                  CompilerError::fromASTValue(
-                      argAstValue, "Властивість \"" + constructorArgNode->id +
-                                       "\" не знайдено в типі \"" +
-                                       typeResult.type->getFullName() + "\"")};
+                  CompilerError::typeHasNoProperty(argAstValue, typeResult.type,
+                                                   constructorArgNode->id)};
         }
         const auto field =
             typeResult.type->structureInstanceFields[constructorArgNode->id];
-        const auto argValueResult =
-            this->compileValue(xFunction, xBlock, constructorArgNode->value);
+        const auto argValueResult = this->compileValue(
+            xFunction, xBlock, constructorArgNode->value, {}, true);
         if (argValueResult.error) {
           return {nullptr, nullptr, argValueResult.error};
         }
-        if (argValueResult.type != field.type) {
+        if (!argValueResult.type->equals(field.type)) {
           return {nullptr, nullptr,
-                  CompilerError::fromASTValue(
-                      constructorArgNode->value,
-                      "Невірний тип властивості \"" + constructorArgNode->id +
-                          "\": очікується \"" + field.type->getFullName() +
-                          "\", отримано \"" +
-                          argValueResult.type->getFullName() + "\"")};
+                  CompilerError::invalidArgumentType(
+                      constructorArgNode->value, constructorArgNode->id,
+                      field.type, argValueResult.type)};
         }
         const auto xGepValue =
             this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
@@ -668,10 +752,14 @@ namespace tsil::tk {
             xBlock, argValueResult.type->xType, argValueResult.xValue,
             xGepValue);
       }
-      x::Value* xLoadValue =
-          this->compiler->xModule->pushFunctionBlockLoadInstruction(
-              xBlock, typeResult.type->xType, xAllocValue);
-      return {typeResult.type, xLoadValue, nullptr};
+      if (load) {
+        x::Value* xLoadValue =
+            this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                xBlock, typeResult.type->xType, xAllocValue);
+        return {typeResult.type, xLoadValue, nullptr};
+      } else {
+        return {typeResult.type, xAllocValue, nullptr};
+      }
     }
     return {nullptr, nullptr,
             CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED VALUE")};
@@ -712,13 +800,13 @@ namespace tsil::tk {
           type = typeResult.type;
         }
         if (defineNode->value) {
-          const auto valueResult =
-              this->compileValue(xFunction, xBlock, defineNode->value);
+          const auto valueResult = this->compileValue(
+              xFunction, xBlock, defineNode->value, {}, true);
           if (valueResult.error) {
             return {valueResult.error};
           }
           if (type) {
-            if (valueResult.type != type) {
+            if (!valueResult.type->equals(type)) {
               return {CompilerError::typesAreNotCompatible(
                   defineNode->value, valueResult.type, type)};
             }
@@ -747,7 +835,7 @@ namespace tsil::tk {
         const auto& [variableType, variableXValue] =
             this->getVariable(assignNode->id);
         const auto valueResult =
-            this->compileValue(xFunction, xBlock, assignNode->value);
+            this->compileValue(xFunction, xBlock, assignNode->value, {}, true);
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -763,7 +851,7 @@ namespace tsil::tk {
             CompilerError::fromASTValue(childAstValue, "NOT IMPLEMENTED SET")};
       } else if (childAstValue->kind == ast::KindCallNode) {
         const auto valueResult =
-            this->compileValue(xFunction, xBlock, childAstValue);
+            this->compileValue(xFunction, xBlock, childAstValue, {}, true);
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -779,7 +867,8 @@ namespace tsil::tk {
                 : this->compiler->xModule->defineFunctionBlock(xFunction,
                                                                "while_exit");
         const auto valueResult = this->compileValue(
-            xFunction, xWhileBlock, childAstValue->data.WhileNode->condition);
+            xFunction, xWhileBlock, childAstValue->data.WhileNode->condition,
+            {}, true);
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -797,14 +886,51 @@ namespace tsil::tk {
                                                                 xWhileBlock);
         xBlock = xWhileExitBlock;
       } else if (childAstValue->kind == ast::KindIfNode) {
-        return {
-            CompilerError::fromASTValue(childAstValue, "NOT IMPLEMENTED IF")};
+        const auto xIfBlock =
+            this->compiler->xModule->defineFunctionBlock(xFunction, "if");
+        const auto xIfThenBlock =
+            this->compiler->xModule->defineFunctionBlock(xFunction, "if_then");
+        const auto xIfElseBlock =
+            this->compiler->xModule->defineFunctionBlock(xFunction, "if_else");
+        const auto xIfExitBlock =
+            childIndex == body.size() - 1
+                ? xExitBlock
+                : this->compiler->xModule->defineFunctionBlock(xFunction,
+                                                               "if_exit");
+        const auto valueResult =
+            this->compileValue(xFunction, xIfBlock,
+                               childAstValue->data.IfNode->condition, {}, true);
+        if (valueResult.error) {
+          return {valueResult.error};
+        }
+        this->compiler->xModule->pushFunctionBlockBrIfInstruction(
+            xIfBlock, valueResult.xValue, xIfThenBlock, xIfElseBlock);
+        const auto thenBodyResult = this->compileDiiaBody(
+            diiaType, xFunction, xIfThenBlock, xIfExitBlock,
+            childAstValue->data.IfNode->body);
+        if (thenBodyResult.error) {
+          return {thenBodyResult.error};
+        }
+        const auto elseBodyResult = this->compileDiiaBody(
+            diiaType, xFunction, xIfElseBlock, xIfExitBlock,
+            childAstValue->data.IfNode->else_body);
+        if (elseBodyResult.error) {
+          return {elseBodyResult.error};
+        }
+        this->compiler->xModule->pushFunctionBlockBrInstruction(xIfThenBlock,
+                                                                xIfExitBlock);
+        this->compiler->xModule->pushFunctionBlockBrInstruction(xIfElseBlock,
+                                                                xIfExitBlock);
+        this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock,
+                                                                xIfBlock);
+        xBlock = xIfExitBlock;
       } else if (childAstValue->kind == tsil::ast::KindReturnNode) {
         Type* type = nullptr;
         x::Value* xValue = nullptr;
         if (childAstValue->data.ReturnNode->value) {
           const auto valueResult = this->compileValue(
-              xFunction, xBlock, childAstValue->data.ReturnNode->value);
+              xFunction, xBlock, childAstValue->data.ReturnNode->value, {},
+              true);
           if (valueResult.error) {
             return {valueResult.error};
           }
@@ -813,12 +939,12 @@ namespace tsil::tk {
         } else {
           type = this->compiler->voidType;
         }
-        if (type != diiaType->diiaReturnType) {
+        if (!type->equals(diiaType->diiaReturnType)) {
           return {CompilerError::typesAreNotCompatible(
               childAstValue->data.ReturnNode->value, type,
               diiaType->diiaReturnType)};
         }
-        if (type != this->compiler->voidType && xValue) {
+        if (!type->equals(this->compiler->voidType) && xValue) {
           this->compiler->xModule->pushFunctionBlockStoreInstruction(
               xBlock, type->xType, xValue, xFunction->return_alloca);
         }
@@ -863,6 +989,7 @@ namespace tsil::tk {
       const auto diiaType = new Type();
       diiaType->type = TypeTypeDiia;
       diiaType->name = diiaHeadNode->id;
+      diiaType->xType = diiaScope->compiler->xModule->pointerType;
       diiaType->diiaIsExtern = diiaHeadNode->is_extern;
       diiaType->diiaIsVariadic = diiaHeadNode->is_variadic;
       diiaType->diiaReturnType = diiaScope->compiler->voidType;
@@ -880,8 +1007,7 @@ namespace tsil::tk {
         }
         const auto paramXValue = new x::Value(
             paramTypeResult.type->xType,
-            "%arg." + std::to_string(
-                          diiaScope->compiler->xModule->variable_counter++));
+            diiaScope->compiler->xModule->computeNextVarName("arg"));
         diiaType->diiaParameters.push_back(
             TypeDiiaParameter{.name = paramNode->id,
                               .type = paramTypeResult.type,
@@ -908,6 +1034,12 @@ namespace tsil::tk {
     Type* diiaType;
     if (diiaAstValue->kind == ast::KindDiiaDeclarationNode) {
       const auto diiaHeadNode = diiaAstValue->data.DiiaDeclarationNode->head;
+      if (diiaHeadNode->id == "main") {
+        return {
+            nullptr, nullptr,
+            CompilerError::fromASTValue(
+                diiaAstValue, "Неможливо визначити субʼєкт з назвою \"main\"")};
+      }
       const auto diiaHeadResult = compileDiiaHeadNode(diiaHeadNode);
       if (diiaHeadResult.second) {
         if (fromAstValue != diiaAstValue) {
@@ -920,6 +1052,12 @@ namespace tsil::tk {
     }
     if (diiaAstValue->kind == ast::KindDiiaNode) {
       const auto diiaHeadNode = diiaAstValue->data.DiiaDeclarationNode->head;
+      if (diiaHeadNode->id == "main") {
+        return {
+            nullptr, nullptr,
+            CompilerError::fromASTValue(
+                diiaAstValue, "Неможливо визначити субʼєкт з назвою \"main\"")};
+      }
       const auto diiaHeadResult = compileDiiaHeadNode(diiaHeadNode);
       if (diiaHeadResult.second) {
         if (fromAstValue != diiaAstValue) {
@@ -938,9 +1076,10 @@ namespace tsil::tk {
     if (diiaType->diiaReturnType) {
       xReturnType = diiaType->diiaReturnType->xType;
     }
+    const auto diiaName = diiaType->name == "старт" ? "main" : diiaType->name;
     const auto& [xFunction, functionXValue] =
-        diiaScope->compiler->xModule->declareFunction(diiaType->name,
-                                                      xReturnType, xParamTypes);
+        diiaScope->compiler->xModule->declareFunction(diiaName, xReturnType,
+                                                      xParamTypes);
     if (diiaAstValue->kind == ast::KindDiiaDeclarationNode) {
       if (diiaAstValue->data.DiiaDeclarationNode->as.empty()) {
         diiaScope->compiler->globalScope
@@ -1074,6 +1213,39 @@ namespace tsil::tk {
           return {type, ""};
         }
       }
+    }
+    if (astValue->kind == ast::KindFunctionTypeNode) {
+      const auto functionTypeNode = astValue->data.FunctionTypeNode;
+      const auto type = new Type();
+      type->type = TypeTypeDiia;
+      type->name = "";
+      type->xType = this->compiler->xModule->pointerType;
+      int argIndex = 0;
+      for (const auto& paramAstValue : functionTypeNode->args) {
+        const auto typeResult = this->bakeType(paramAstValue);
+        if (!typeResult.type) {
+          return {nullptr, typeResult.error};
+        }
+        const auto paramXValue =
+            new x::Value(typeResult.type->xType,
+                         this->compiler->xModule->computeNextVarName("arg"));
+        type->diiaParameters.push_back(
+            TypeDiiaParameter{.name = std::to_string(argIndex),
+                              .type = typeResult.type,
+                              .xValue = paramXValue});
+        argIndex++;
+      }
+      if (functionTypeNode->return_type) {
+        const auto returnTypeResult =
+            this->bakeType(functionTypeNode->return_type);
+        if (!returnTypeResult.type) {
+          return {nullptr, returnTypeResult.error};
+        }
+        type->diiaReturnType = returnTypeResult.type;
+      } else {
+        type->diiaReturnType = this->compiler->voidType;
+      }
+      return {type, ""};
     }
     return {nullptr, "NOT IMPLEMENTED BAKED TYPE"};
   }

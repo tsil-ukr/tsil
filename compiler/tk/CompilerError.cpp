@@ -129,4 +129,51 @@ namespace tsil::tk {
                              "Тип \"" + type->getFullName() +
                                  "\" недоступний для побітових операцій");
   }
+
+  CompilerError* CompilerError::notEnoughCallArguments(
+      tsil::ast::ASTValue* astValue) {
+    return new CompilerError(astValue->start_line, astValue->start_column,
+                             "Недостатньо аргументів для виконання дії");
+  }
+
+  CompilerError* CompilerError::tooManyCallArguments(
+      tsil::ast::ASTValue* astValue) {
+    return new CompilerError(astValue->start_line, astValue->start_column,
+                             "Забагато аргументів для виконання дії");
+  }
+
+  CompilerError* CompilerError::notEnoughCallTemplateArguments(
+      tsil::ast::ASTValue* astValue) {
+    return new CompilerError(
+        astValue->start_line, astValue->start_column,
+        "Недостатньо аргументів шаблону для виконання дії");
+  }
+
+  CompilerError* CompilerError::tooManyCallTemplateArguments(
+      tsil::ast::ASTValue* astValue) {
+    return new CompilerError(astValue->start_line, astValue->start_column,
+                             "Забагато аргументів шаблону для виконання дії");
+  }
+
+  CompilerError* CompilerError::invalidArgumentType(
+      tsil::ast::ASTValue* astValue,
+      const std::string& name,
+      Type* expected,
+      Type* got) {
+    return new CompilerError(astValue->start_line, astValue->start_column,
+                             "Недопустимий тип аргументу \"" + name +
+                                 "\": очікується \"" + expected->getFullName() +
+                                 "\", отримано \"" + got->getFullName() + "\"");
+  }
+
+  CompilerError* CompilerError::invalidPropertyType(
+      tsil::ast::ASTValue* astValue,
+      const std::string& name,
+      Type* expected,
+      Type* got) {
+    return new CompilerError(astValue->start_line, astValue->start_column,
+                             "Недопустимий тип властивості \"" + name +
+                                 "\": очікується \"" + expected->getFullName() +
+                                 "\", отримано \"" + got->getFullName() + "\"");
+  }
 } // namespace tsil::tk

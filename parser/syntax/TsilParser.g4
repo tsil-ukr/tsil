@@ -69,7 +69,7 @@ expr: molecule #expr_molecule
 
 identifiers_chain: ic_id=ID |  ic_left=identifiers_chain '.' ic_right=ID;
 
-full_type: identifier ('<' t_first_generic_type=full_type (',' full_type)* '>')? #type
+full_type: identifier ('<' t_first_generic_type=full_type (',' full_type)* '>')? ('[' ft_arr_size=expr ']')? #type
          | sft_arg=full_type '-' '>' sft_ret=full_type #simple_function_type
          | '(' (cft_args=simple_function_type_args)? ')' '-' '>' cft_ret=full_type #complex_function_type;
 simple_function_type_args: full_type (',' full_type)*;

@@ -12,6 +12,13 @@ namespace tsil::x {
     }
   }
 
+  std::string Module::computeNextVarName(const std::string& prefix) {
+    if (TSIL_X_EXPANDED_NAMES) {
+      return "%" + prefix + "." + std::to_string(this->variable_counter++);
+    }
+    return "%v." + std::to_string(this->variable_counter++);
+  }
+
   Value* Module::putStringConstant(const std::string& value) {
     auto constant = new Constant();
     constant->variable_index = this->variable_counter++;
@@ -56,7 +63,7 @@ namespace tsil::x {
     auto type = new Type();
     type->variable_index = this->variable_counter++;
     type->type = TypeTypeType;
-    type->name = "%struct." + std::to_string(type->variable_index);
+    type->name = this->computeNextVarName("struct");
     type->fields = fields;
     this->types[name] = type;
     return type;
@@ -100,7 +107,11 @@ namespace tsil::x {
   FunctionBlock* Module::defineFunctionBlock(Function* function,
                                              const std::string& name) {
     auto block = new FunctionBlock();
-    block->name = name + "." + std::to_string(function->blocks.size());
+    if (TSIL_X_EXPANDED_NAMES) {
+      block->name = name + "." + std::to_string(function->blocks.size());
+    } else {
+      block->name = "b." + std::to_string(this->variable_counter++);
+    }
     function->blocks.push_back(block);
     return block;
   }
@@ -121,7 +132,7 @@ namespace tsil::x {
     const auto instruction = new FunctionInstruction();
     const auto alloca = new FunctionInstructionAlloca();
     alloca->type = type;
-    instruction->name = "%alloca." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("alloca");
     instruction->alloca = alloca;
     block->instructions.push_back(instruction);
     return new Value(this->pointerType, instruction->name);
@@ -137,8 +148,7 @@ namespace tsil::x {
     getelementptr->type = type;
     getelementptr->pointer = pointer;
     getelementptr->indexes = indexes;
-    instruction->name =
-        "%getelementptr." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("getelementptr");
     instruction->getelementptr = getelementptr;
     block->instructions.push_back(instruction);
     return new Value(this->pointerType, instruction->name);
@@ -166,7 +176,7 @@ namespace tsil::x {
     const auto load = new FunctionInstructionLoad();
     load->type = type;
     load->pointer = pointer;
-    instruction->name = "%load." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("load");
     instruction->load = load;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -195,7 +205,7 @@ namespace tsil::x {
     call->type = type;
     call->value = value;
     call->arguments = arguments;
-    instruction->name = "%call." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("call");
     instruction->call = call;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -238,7 +248,7 @@ namespace tsil::x {
     icmp->type = type;
     icmp->left = left;
     icmp->right = right;
-    instruction->name = "%icmp." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("icmp");
     instruction->icmp = icmp;
     block->instructions.push_back(instruction);
     return new Value(this->int1Type, instruction->name);
@@ -255,7 +265,7 @@ namespace tsil::x {
     fcmp->type = type;
     fcmp->left = left;
     fcmp->right = right;
-    instruction->name = "%fcmp." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("fcmp");
     instruction->fcmp = fcmp;
     block->instructions.push_back(instruction);
     return new Value(this->int1Type, instruction->name);
@@ -270,7 +280,7 @@ namespace tsil::x {
     add->type = type;
     add->left = left;
     add->right = right;
-    instruction->name = "%add." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("add");
     instruction->add = add;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -285,7 +295,7 @@ namespace tsil::x {
     fadd->type = type;
     fadd->left = left;
     fadd->right = right;
-    instruction->name = "%fadd." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("fadd");
     instruction->fadd = fadd;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -300,7 +310,7 @@ namespace tsil::x {
     sub->type = type;
     sub->left = left;
     sub->right = right;
-    instruction->name = "%sub." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("sub");
     instruction->sub = sub;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -315,7 +325,7 @@ namespace tsil::x {
     fsub->type = type;
     fsub->left = left;
     fsub->right = right;
-    instruction->name = "%fsub." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("fsub");
     instruction->fsub = fsub;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -330,7 +340,7 @@ namespace tsil::x {
     mul->type = type;
     mul->left = left;
     mul->right = right;
-    instruction->name = "%mul." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("mul");
     instruction->mul = mul;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -345,7 +355,7 @@ namespace tsil::x {
     fmul->type = type;
     fmul->left = left;
     fmul->right = right;
-    instruction->name = "%fmul." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("fmul");
     instruction->fmul = fmul;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -360,7 +370,7 @@ namespace tsil::x {
     div->type = type;
     div->left = left;
     div->right = right;
-    instruction->name = "%div." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("div");
     instruction->div = div;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -375,7 +385,7 @@ namespace tsil::x {
     fdiv->type = type;
     fdiv->left = left;
     fdiv->right = right;
-    instruction->name = "%fdiv." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("fdiv");
     instruction->fdiv = fdiv;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -390,7 +400,7 @@ namespace tsil::x {
     mod->type = type;
     mod->left = left;
     mod->right = right;
-    instruction->name = "%mod." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("mod");
     instruction->mod = mod;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -405,7 +415,7 @@ namespace tsil::x {
     fmod->type = type;
     fmod->left = left;
     fmod->right = right;
-    instruction->name = "%fmod." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("fmod");
     instruction->fmod = fmod;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -420,7 +430,7 @@ namespace tsil::x {
     and_->type = type;
     and_->left = left;
     and_->right = right;
-    instruction->name = "%and." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("and");
     instruction->and_ = and_;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -435,7 +445,7 @@ namespace tsil::x {
     or_->type = type;
     or_->left = left;
     or_->right = right;
-    instruction->name = "%or." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("or");
     instruction->or_ = or_;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -450,7 +460,7 @@ namespace tsil::x {
     xor_->type = type;
     xor_->left = left;
     xor_->right = right;
-    instruction->name = "%xor." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("xor");
     instruction->xor_ = xor_;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -465,7 +475,7 @@ namespace tsil::x {
     shl->type = type;
     shl->left = left;
     shl->right = right;
-    instruction->name = "%shl." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("shl");
     instruction->shl = shl;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -480,7 +490,7 @@ namespace tsil::x {
     lshr->type = type;
     lshr->left = left;
     lshr->right = right;
-    instruction->name = "%lshr." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("lshr");
     instruction->lshr = lshr;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -495,7 +505,7 @@ namespace tsil::x {
     ashr->type = type;
     ashr->left = left;
     ashr->right = right;
-    instruction->name = "%ashr." + std::to_string(this->variable_counter++);
+    instruction->name = this->computeNextVarName("ashr");
     instruction->ashr = ashr;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
@@ -590,7 +600,8 @@ namespace tsil::x {
     std::string result = this->name + ":\n";
     std::vector<std::string> instructions;
     for (const auto& instruction : this->instructions) {
-      instructions.push_back("  " + instruction->dumpLL(module));
+      instructions.push_back((TSIL_X_EXPANDED_NAMES ? "  " : "") +
+                             instruction->dumpLL(module));
     }
     implode(instructions, "\n", result);
     return result;

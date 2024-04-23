@@ -1004,11 +1004,15 @@ public:
     TypeContext(Full_typeContext *ctx);
 
     TsilParser::Full_typeContext *t_first_generic_type = nullptr;
+    TsilParser::ExprContext *ft_arr_size = nullptr;
     IdentifierContext *identifier();
     antlr4::tree::TerminalNode *LESSER();
     antlr4::tree::TerminalNode *GREATER();
+    antlr4::tree::TerminalNode *BRACKET_OPEN();
+    antlr4::tree::TerminalNode *BRACKET_CLOSE();
     std::vector<Full_typeContext *> full_type();
     Full_typeContext* full_type(size_t i);
+    ExprContext *expr();
     std::vector<antlr4::tree::TerminalNode *> COMA();
     antlr4::tree::TerminalNode* COMA(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;

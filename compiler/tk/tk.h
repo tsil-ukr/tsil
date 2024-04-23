@@ -76,6 +76,20 @@ namespace tsil::tk {
                                                 Type* type);
     static CompilerError* typeIsNotBitwisible(tsil::ast::ASTValue* astValue,
                                               Type* type);
+    static CompilerError* notEnoughCallArguments(tsil::ast::ASTValue* astValue);
+    static CompilerError* tooManyCallArguments(tsil::ast::ASTValue* astValue);
+    static CompilerError* notEnoughCallTemplateArguments(
+        tsil::ast::ASTValue* astValue);
+    static CompilerError* tooManyCallTemplateArguments(
+        tsil::ast::ASTValue* astValue);
+    static CompilerError* invalidArgumentType(tsil::ast::ASTValue* astValue,
+                                              const std::string& name,
+                                              Type* expected,
+                                              Type* got);
+    static CompilerError* invalidPropertyType(tsil::ast::ASTValue* astValue,
+                                              const std::string& name,
+                                              Type* expected,
+                                              Type* got);
   };
 
   struct CompilerResult {
@@ -142,7 +156,9 @@ namespace tsil::tk {
                                         bool load);
     CompilerValueResult compileValue(x::Function* xFunction,
                                      tsil::x::FunctionBlock* xBlock,
-                                     ast::ASTValue* astValue);
+                                     ast::ASTValue* astValue,
+                                     const std::vector<Type*> genericValues,
+                                     bool load);
     CompilerResult compileDiiaBody(Type* diiaType,
                                    tsil::x::Function* xFunction,
                                    tsil::x::FunctionBlock* xBlock,
@@ -189,6 +205,7 @@ namespace tsil::tk {
     // x
     x::Type* xType = nullptr;
 
+    bool equals(Type* other);
     std::string getFullName();
     Type* getPointerType(Scope* scope);
     bool isComparable(Scope* scope);

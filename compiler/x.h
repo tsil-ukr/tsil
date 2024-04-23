@@ -2,6 +2,8 @@
 #include "unordered_map"
 #include "vector"
 
+#define TSIL_X_EXPANDED_NAMES 1
+
 namespace tsil::x {
   struct Module;
   struct Value;
@@ -54,6 +56,8 @@ namespace tsil::x {
     Type* doubleType;
     Type* pointerType;
     Type* voidType;
+
+    std::string computeNextVarName(const std::string& prefix);
 
     Value* putStringConstant(const std::string& value);
     Value* putI64Constant(long value);

@@ -268,6 +268,7 @@ namespace tsil::ast {
 
   struct TypeNode {
     std::string id;
+    ASTValue* size;
     std::vector<ASTValue*> generics;
   };
 

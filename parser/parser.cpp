@@ -389,6 +389,8 @@ namespace tsil::parser {
 
     const auto parser_error_listener = new TsilParserErrorListener();
     TsilParser parser(&tokens);
+    parser.getInterpreter<antlr4::atn::ParserATNSimulator>()->setPredictionMode(
+        antlr4::atn::PredictionMode::SLL);
     parser.removeParseListeners();
     parser.removeErrorListeners();
     parser.addErrorListener(parser_error_listener);
