@@ -156,14 +156,8 @@ namespace tsil::tk {
       if (identifierNode->name == "виділити") {
         return this->compileCall_Allocate(xFunction, xBlock, astValue);
       }
-      if (identifierNode->name == "виділити_байти") {
-        return this->compileCall_AllocateBytes(xFunction, xBlock, astValue);
-      }
       if (identifierNode->name == "перевиділити") {
         return this->compileCall_Reallocate(xFunction, xBlock, astValue);
-      }
-      if (identifierNode->name == "перевиділити_байти") {
-        return this->compileCall_ReallocateBytes(xFunction, xBlock, astValue);
       }
       if (identifierNode->name == "звільнити") {
         return this->compileCall_Free(xFunction, xBlock, astValue);
@@ -181,8 +175,8 @@ namespace tsil::tk {
     }
     Type* diiaType;
     x::Value* diiaXValue;
-    const auto valueResult = this->compileValue(
-        xFunction, xBlock, callNode->value, genericValues, true);
+    const auto valueResult =
+        this->compileValue(xFunction, xBlock, callNode->value, genericValues);
     if (valueResult.error) {
       return {nullptr, nullptr, valueResult.error};
     }
@@ -198,8 +192,8 @@ namespace tsil::tk {
     std::vector<x::Value*> xArgs;
     int argIndex = 0;
     for (const auto& argAstValue : callNode->args) {
-      const auto argResult = this->compileValue(xFunction, xBlock, argAstValue,
-                                                genericValues, true);
+      const auto argResult =
+          this->compileValue(xFunction, xBlock, argAstValue, genericValues);
       if (argResult.error) {
         return argResult;
       }
@@ -245,13 +239,25 @@ namespace tsil::tk {
               CompilerError::tooManyCallTemplateArguments(astValue)};
     }
     const auto firstArgAstValue = callNode->args[0];
-    const auto firstArgResult =
-        this->compileValue(xFunction, xBlock, firstArgAstValue, {}, false);
+    CompilerValueResult firstArgResult;
+    if (firstArgAstValue->kind == ast::KindIdentifierNode) {
+      firstArgResult = this->compileIdentifier(
+          xFunction, xBlock, firstArgAstValue, genericValues, false);
+    } else if (firstArgAstValue->kind == ast::KindGetNode) {
+      firstArgResult =
+          this->compileGet(xFunction, xBlock, firstArgAstValue, false);
+    } else {
+      return {
+          nullptr, nullptr,
+          CompilerError::fromASTValue(
+              firstArgAstValue, "Неможливо отримати комірку на це значення.")};
+    }
     if (firstArgResult.error) {
       return firstArgResult;
     }
     if (genericValues.empty()) {
-      return {firstArgResult.type, firstArgResult.xValue, nullptr};
+      return {firstArgResult.type->getPointerType(this), firstArgResult.xValue,
+              nullptr};
     }
     const auto genericValue = genericValues[0];
     if (!firstArgResult.type->equals(genericValue)) {
@@ -260,7 +266,8 @@ namespace tsil::tk {
           CompilerError::invalidArgumentType(
               firstArgAstValue, "значення", genericValue, firstArgResult.type)};
     }
-    return {firstArgResult.type, firstArgResult.xValue, nullptr};
+    return {firstArgResult.type->getPointerType(this), firstArgResult.xValue,
+            nullptr};
   }
 
   CompilerValueResult Scope::compileCall_Value(tsil::x::Function* xFunction,
@@ -290,7 +297,7 @@ namespace tsil::tk {
     }
     const auto firstArgAstValue = callNode->args[0];
     const auto firstArgResult =
-        this->compileValue(xFunction, xBlock, firstArgAstValue, {}, true);
+        this->compileValue(xFunction, xBlock, firstArgAstValue, {});
     if (firstArgResult.error) {
       return firstArgResult;
     }
@@ -353,11 +360,11 @@ namespace tsil::tk {
     }
     const auto firstArgAstValue = callNode->args[0];
     const auto firstArgResult =
-        this->compileValue(xFunction, xBlock, firstArgAstValue, {}, true);
+        this->compileValue(xFunction, xBlock, firstArgAstValue, {});
     if (firstArgResult.error) {
       return firstArgResult;
     }
-    if (firstArgResult.type->equals(this->compiler->uint64Type)) {
+    if (!firstArgResult.type->equals(this->compiler->uint64Type)) {
       return {nullptr, nullptr,
               CompilerError::invalidArgumentType(firstArgAstValue, "розмір",
                                                  this->compiler->uint64Type,
@@ -375,7 +382,7 @@ namespace tsil::tk {
     return {firstGenericValue->getPointerType(this), xValue, nullptr};
   }
 
-  CompilerValueResult Scope::compileCall_AllocateBytes(
+  CompilerValueResult Scope::compileCall_Reallocate(
       tsil::x::Function* xFunction,
       tsil::x::FunctionBlock* xBlock,
       ast::ASTValue* astValue) {
@@ -390,12 +397,16 @@ namespace tsil::tk {
       }
       genericValues.push_back(bakedTypeResult.type);
     }
-    if (callNode->args.size() < 1) {
+    if (callNode->args.size() < 2) {
       return {nullptr, nullptr,
               CompilerError::notEnoughCallArguments(astValue)};
     }
-    if (callNode->args.size() > 1) {
+    if (callNode->args.size() > 2) {
       return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
+    }
+    if (genericValues.size() < 1) {
+      return {nullptr, nullptr,
+              CompilerError::notEnoughCallTemplateArguments(astValue)};
     }
     if (genericValues.size() > 1) {
       return {nullptr, nullptr,
@@ -403,65 +414,516 @@ namespace tsil::tk {
     }
     const auto firstArgAstValue = callNode->args[0];
     const auto firstArgResult =
-        this->compileValue(xFunction, xBlock, firstArgAstValue, {}, true);
+        this->compileValue(xFunction, xBlock, firstArgAstValue, {});
     if (firstArgResult.error) {
       return firstArgResult;
     }
-    if (firstArgResult.type->equals(this->compiler->uint64Type)) {
-      return {nullptr, nullptr,
-              CompilerError::invalidArgumentType(firstArgAstValue, "розмір",
-                                                 this->compiler->uint64Type,
-                                                 firstArgResult.type)};
+    const auto firstGenericValue = genericValues[0];
+    if (!firstArgResult.type->equals(firstGenericValue->getPointerType(this))) {
+      return {
+          nullptr, nullptr,
+          CompilerError::invalidArgumentType(
+              firstArgAstValue, "значення",
+              firstGenericValue->getPointerType(this), firstArgResult.type)};
     }
+    const auto secondArgAstValue = callNode->args[1];
+    const auto secondArgResult =
+        this->compileValue(xFunction, xBlock, secondArgAstValue, {});
+    if (secondArgResult.error) {
+      return secondArgResult;
+    }
+    if (!secondArgResult.type->equals(this->compiler->uint64Type)) {
+      return {nullptr, nullptr,
+              CompilerError::invalidArgumentType(secondArgAstValue, "кількість",
+                                                 this->compiler->uint64Type,
+                                                 secondArgResult.type)};
+    }
+    const auto typeSizeXValue =
+        new x::Value(this->compiler->uint64Type->xType,
+                     std::to_string(firstGenericValue->getBytesSize(this)));
+    const auto addXValue =
+        this->compiler->xModule->pushFunctionBlockMulInstruction(
+            xBlock, this->compiler->uint64Type->xType, secondArgResult.xValue,
+            typeSizeXValue);
     const auto xValue =
         this->compiler->xModule->pushFunctionBlockCallInstruction(
             xBlock, this->compiler->pointerType->xType,
-            this->compiler->ensureMallocConnected(), {firstArgResult.xValue});
-    return {this->compiler->pointerType, xValue, nullptr};
-  }
-
-  CompilerValueResult Scope::compileCall_Reallocate(
-      tsil::x::Function* xFunction,
-      tsil::x::FunctionBlock* xBlock,
-      ast::ASTValue* astValue) {
-    //
-  }
-
-  CompilerValueResult Scope::compileCall_ReallocateBytes(
-      tsil::x::Function* xFunction,
-      tsil::x::FunctionBlock* xBlock,
-      ast::ASTValue* astValue) {
-    //
+            this->compiler->ensureReallocConnected(),
+            {firstArgResult.xValue, addXValue});
+    return {firstGenericValue->getPointerType(this), xValue, nullptr};
   }
 
   CompilerValueResult Scope::compileCall_Free(tsil::x::Function* xFunction,
                                               tsil::x::FunctionBlock* xBlock,
                                               ast::ASTValue* astValue) {
-    //
+    const auto callNode = astValue->data.CallNode;
+    if (callNode->args.size() < 1) {
+      return {nullptr, nullptr,
+              CompilerError::notEnoughCallArguments(astValue)};
+    }
+    if (callNode->args.size() > 1) {
+      return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
+    }
+    const auto firstArgAstValue = callNode->args[0];
+    const auto firstArgResult =
+        this->compileValue(xFunction, xBlock, firstArgAstValue, {});
+    if (firstArgResult.error) {
+      return firstArgResult;
+    }
+    if (!firstArgResult.type->equals(this->compiler->pointerType)) {
+      return {nullptr, nullptr,
+              CompilerError::invalidArgumentType(firstArgAstValue, "значення",
+                                                 this->compiler->pointerType,
+                                                 firstArgResult.type)};
+    }
+    this->compiler->xModule->pushFunctionBlockCallInstruction(
+        xBlock, this->compiler->voidType->xType,
+        this->compiler->ensureFreeConnected(), {firstArgResult.xValue});
+    return {this->compiler->voidType, nullptr, nullptr};
   }
 
-  CompilerValueResult Scope::compileValueGet(tsil::x::Function* xFunction,
-                                             tsil::x::FunctionBlock* xBlock,
-                                             ast::ASTValue* astValue,
-                                             bool load) {
+  CompilerValueResult Scope::compileNumber(tsil::x::Function* xFunction,
+                                           tsil::x::FunctionBlock* xBlock,
+                                           ast::ASTValue* astValue) {
+    const auto numberNode = astValue->data.NumberNode;
+    const auto type = str_contains(numberNode->value, ".")
+                          ? this->compiler->doubleType
+                          : this->compiler->int64Type;
+    const auto xValue =
+        new x::Value(type->xType, tsilNumberToLLVMNumber(numberNode->value));
+    return {type, xValue, nullptr};
+  }
+
+  CompilerValueResult Scope::compileString(tsil::x::Function* xFunction,
+                                           tsil::x::FunctionBlock* xBlock,
+                                           ast::ASTValue* astValue) {
+    const auto stringNode = astValue->data.StringNode;
+    const auto stringValue = tsilStringToLLVMString(stringNode->value);
+    const auto xStringConstant =
+        this->compiler->xModule->putStringConstant(stringValue);
+    if (stringNode->prefix == "сі") {
+      return {this->compiler->int8Type->getPointerType(this), xStringConstant,
+              nullptr};
+    }
+    return {nullptr, nullptr,
+            CompilerError::fromASTValue(astValue,
+                                        "Текст тимчасово не підтримується.")};
+  }
+
+  CompilerValueResult Scope::compileIdentifier(
+      tsil::x::Function* xFunction,
+      tsil::x::FunctionBlock* xBlock,
+      ast::ASTValue* astValue,
+      const std::vector<Type*>& genericValues,
+      bool load) {
+    const auto identifierNode = astValue->data.IdentifierNode;
+    if (this->hasVariable(identifierNode->name)) {
+      const auto& [variableType, variableXValue] =
+          this->getVariable(identifierNode->name);
+      if (load) {
+        const auto loadXValue =
+            this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                xBlock, variableType->xType, variableXValue);
+        return {variableType, loadXValue, nullptr};
+      } else {
+        return {variableType, variableXValue, nullptr};
+      }
+    }
+    if (this->hasBakedDiia(identifierNode->name, genericValues)) {
+      const auto bakedDiia =
+          this->getBakedDiia(identifierNode->name, genericValues);
+      return {bakedDiia.first, bakedDiia.second, nullptr};
+    }
+    if (this->hasRawDiia(identifierNode->name)) {
+      const auto rawDiia = this->getRawDiia(identifierNode->name);
+      const auto bakeDiiaResult =
+          this->bakeDiia(astValue, rawDiia, genericValues);
+      if (bakeDiiaResult.error) {
+        return {nullptr, nullptr, bakeDiiaResult.error};
+      }
+      return {bakeDiiaResult.type, bakeDiiaResult.xValue, nullptr};
+    }
+    if (this->hasNonVariableAndNonDiiaSubject(identifierNode->name)) {
+      return {nullptr, nullptr,
+              CompilerError::subjectIsNotRuntimeValue(astValue)};
+    }
+    return {nullptr, nullptr, CompilerError::subjectNotDefined(astValue)};
+  }
+
+  CompilerValueResult Scope::compileAs(tsil::x::Function* xFunction,
+                                       tsil::x::FunctionBlock* xBlock,
+                                       ast::ASTValue* astValue) {
+    const auto asNode = astValue->data.AsNode;
+    const auto valueResult =
+        this->compileValue(xFunction, xBlock, asNode->value, {});
+    if (valueResult.error) {
+      return valueResult;
+    }
+    const auto typeResult = this->bakeType(asNode->type);
+    if (!typeResult.type) {
+      return {nullptr, nullptr,
+              CompilerError::fromASTValue(asNode->type, typeResult.error)};
+    }
+    const auto newXValue =
+        new x::Value(typeResult.type->xType, valueResult.xValue->name);
+    return {typeResult.type, newXValue, nullptr};
+  }
+
+  CompilerValueResult Scope::compileBinary(tsil::x::Function* xFunction,
+                                           tsil::x::FunctionBlock* xBlock,
+                                           ast::ASTValue* astValue) {
+    const auto binaryNode = astValue->data.BinaryNode;
+    CompilerValueResult leftResult =
+        this->compileValue(xFunction, xBlock, binaryNode->left, {});
+    if (leftResult.error) {
+      return leftResult;
+    }
+    CompilerValueResult rightResult =
+        this->compileValue(xFunction, xBlock, binaryNode->right, {});
+    if (rightResult.error) {
+      return rightResult;
+    }
+    if (!leftResult.type->equals(rightResult.type)) {
+      return {nullptr, nullptr,
+              CompilerError::typesOfInstructionDifferent(
+                  astValue, leftResult.type, rightResult.type)};
+    }
+    x::Value* xValue = nullptr;
+    switch (binaryNode->op) {
+      case tsil::ast::ARITHMETIC_ADD: {
+        if (!leftResult.type->isArithmetical(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotArithmetical(astValue, leftResult.type)};
+        }
+        if (leftResult.type->isFloating(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockFAddInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else {
+          xValue = this->compiler->xModule->pushFunctionBlockAddInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        }
+        return {leftResult.type, xValue, nullptr};
+      }
+      case tsil::ast::ARITHMETIC_SUB: {
+        if (!leftResult.type->isArithmetical(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotArithmetical(astValue, leftResult.type)};
+        }
+        if (leftResult.type->isFloating(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockFSubInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else {
+          xValue = this->compiler->xModule->pushFunctionBlockSubInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        }
+        return {leftResult.type, xValue, nullptr};
+      }
+      case tsil::ast::ARITHMETIC_MUL: {
+        if (!leftResult.type->isArithmetical(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotArithmetical(astValue, leftResult.type)};
+        }
+        if (leftResult.type->isFloating(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockFMulInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else {
+          xValue = this->compiler->xModule->pushFunctionBlockMulInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        }
+        return {leftResult.type, xValue, nullptr};
+      }
+      case tsil::ast::ARITHMETIC_DIV: {
+        if (!leftResult.type->isArithmetical(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotArithmetical(astValue, leftResult.type)};
+        }
+        if (leftResult.type->isFloating(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockFDivInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else {
+          xValue = this->compiler->xModule->pushFunctionBlockDivInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        }
+        return {leftResult.type, xValue, nullptr};
+      }
+      case tsil::ast::ARITHMETIC_MOD: {
+        if (!leftResult.type->isArithmetical(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotArithmetical(astValue, leftResult.type)};
+        }
+        if (leftResult.type->isFloating(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockFModInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else {
+          xValue = this->compiler->xModule->pushFunctionBlockModInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        }
+        return {leftResult.type, xValue, nullptr};
+      }
+      case tsil::ast::BITWISE_AND: {
+        if (!leftResult.type->isBitwisible(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
+        }
+        xValue = this->compiler->xModule->pushFunctionBlockAndInstruction(
+            xBlock, leftResult.type->xType, leftResult.xValue,
+            rightResult.xValue);
+        return {leftResult.type, xValue, nullptr};
+      }
+      case tsil::ast::BITWISE_OR: {
+        if (!leftResult.type->isBitwisible(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
+        }
+        xValue = this->compiler->xModule->pushFunctionBlockOrInstruction(
+            xBlock, leftResult.type->xType, leftResult.xValue,
+            rightResult.xValue);
+        return {leftResult.type, xValue, nullptr};
+      }
+      case tsil::ast::BITWISE_XOR: {
+        if (!leftResult.type->isBitwisible(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
+        }
+        xValue = this->compiler->xModule->pushFunctionBlockXorInstruction(
+            xBlock, leftResult.type->xType, leftResult.xValue,
+            rightResult.xValue);
+        return {leftResult.type, xValue, nullptr};
+      }
+      case tsil::ast::BITWISE_SHIFT_LEFT: {
+        if (!leftResult.type->isBitwisible(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
+        }
+        xValue = this->compiler->xModule->pushFunctionBlockShlInstruction(
+            xBlock, leftResult.type->xType, leftResult.xValue,
+            rightResult.xValue);
+        return {leftResult.type, xValue, nullptr};
+      }
+      case tsil::ast::BITWISE_SHIFT_RIGHT: {
+        if (!leftResult.type->isBitwisible(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
+        }
+        xValue = this->compiler->xModule->pushFunctionBlockLShrInstruction(
+            xBlock, leftResult.type->xType, leftResult.xValue,
+            rightResult.xValue);
+        return {leftResult.type, xValue, nullptr};
+      }
+      case tsil::ast::COMPARISON_EQ: {
+        if (!leftResult.type->isComparable(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotComparable(astValue, leftResult.type)};
+        }
+        if (leftResult.type->isFloating(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
+              xBlock, "ueq", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else {
+          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
+              xBlock, "eq", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        }
+        return {this->compiler->int1Type, xValue, nullptr};
+      }
+      case tsil::ast::COMPARISON_NE: {
+        if (!leftResult.type->isComparable(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotComparable(astValue, leftResult.type)};
+        }
+        if (leftResult.type->isFloating(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
+              xBlock, "une", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else {
+          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
+              xBlock, "ne", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        }
+        return {this->compiler->int1Type, xValue, nullptr};
+      }
+      case tsil::ast::COMPARISON_LT: {
+        if (!leftResult.type->isComparable(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotComparable(astValue, leftResult.type)};
+        }
+        if (leftResult.type->isUnsigned(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
+              xBlock, "ult", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else if (leftResult.type->isFloating(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
+              xBlock, "ult", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else {
+          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
+              xBlock, "slt", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        }
+        return {this->compiler->int1Type, xValue, nullptr};
+      }
+      case tsil::ast::COMPARISON_GT: {
+        if (!leftResult.type->isComparable(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotComparable(astValue, leftResult.type)};
+        }
+        if (leftResult.type->isUnsigned(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
+              xBlock, "ugt", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else if (leftResult.type->isFloating(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
+              xBlock, "ugt", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else {
+          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
+              xBlock, "sgt", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        }
+        return {this->compiler->int1Type, xValue, nullptr};
+      }
+      case tsil::ast::COMPARISON_LE: {
+        if (!leftResult.type->isComparable(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotComparable(astValue, leftResult.type)};
+        }
+        if (leftResult.type->isUnsigned(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
+              xBlock, "ule", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else if (leftResult.type->isFloating(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
+              xBlock, "ule", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else {
+          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
+              xBlock, "sle", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        }
+        return {this->compiler->int1Type, xValue, nullptr};
+      }
+      case tsil::ast::COMPARISON_GE: {
+        if (!leftResult.type->isComparable(this)) {
+          return {
+              nullptr, nullptr,
+              CompilerError::typeIsNotComparable(astValue, leftResult.type)};
+        }
+        if (leftResult.type->isUnsigned(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
+              xBlock, "uge", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else if (leftResult.type->isFloating(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
+              xBlock, "uge", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        } else {
+          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
+              xBlock, "sge", leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
+        }
+        return {this->compiler->int1Type, xValue, nullptr};
+      }
+    }
+    return {leftResult.type, xValue, nullptr};
+  }
+
+  CompilerValueResult Scope::compileConstructor(tsil::x::Function* xFunction,
+                                                tsil::x::FunctionBlock* xBlock,
+                                                ast::ASTValue* astValue) {
+    const auto constructorNode = astValue->data.ConstructorNode;
+    const auto typeResult = this->bakeType(constructorNode->type);
+    if (!typeResult.type) {
+      return {
+          nullptr, nullptr,
+          CompilerError::fromASTValue(constructorNode->type, typeResult.error)};
+    }
+    if (typeResult.type->type != TypeTypeStructureInstance) {
+      return {nullptr, nullptr,
+              CompilerError::typeIsNotConstructable(constructorNode->type,
+                                                    typeResult.type)};
+    }
+    const auto xAllocValue =
+        this->compiler->xModule->pushFunctionBlockAllocaInstruction(
+            xBlock, typeResult.type->xType);
+    for (const auto argAstValue : constructorNode->args) {
+      const auto constructorArgNode = argAstValue->data.ConstructorArgNode;
+      if (!typeResult.type->structureInstanceFields.contains(
+              constructorArgNode->id)) {
+        return {nullptr, nullptr,
+                CompilerError::typeHasNoProperty(argAstValue, typeResult.type,
+                                                 constructorArgNode->id)};
+      }
+      const auto field =
+          typeResult.type->structureInstanceFields[constructorArgNode->id];
+      const auto argValueResult =
+          this->compileValue(xFunction, xBlock, constructorArgNode->value, {});
+      if (argValueResult.error) {
+        return {nullptr, nullptr, argValueResult.error};
+      }
+      if (!argValueResult.type->equals(field.type)) {
+        return {nullptr, nullptr,
+                CompilerError::invalidArgumentType(
+                    constructorArgNode->value, constructorArgNode->id,
+                    field.type, argValueResult.type)};
+      }
+      const auto xGepValue =
+          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+              xBlock, typeResult.type->xType, xAllocValue,
+              {0, static_cast<unsigned long>(field.index)});
+      this->compiler->xModule->pushFunctionBlockStoreInstruction(
+          xBlock, argValueResult.type->xType, argValueResult.xValue, xGepValue);
+    }
+    x::Value* xLoadValue =
+        this->compiler->xModule->pushFunctionBlockLoadInstruction(
+            xBlock, typeResult.type->xType, xAllocValue);
+    return {typeResult.type, xLoadValue, nullptr};
+  }
+
+  CompilerValueResult Scope::compileGet(tsil::x::Function* xFunction,
+                                        tsil::x::FunctionBlock* xBlock,
+                                        ast::ASTValue* astValue,
+                                        bool load) {
     const auto getNode = astValue->data.GetNode;
     Type* leftType = nullptr;
     x::Value* leftXValue = nullptr;
     if (getNode->left->kind == ast::KindIdentifierNode) {
-      const auto identifierNode = getNode->left->data.IdentifierNode;
-      if (this->hasVariable(identifierNode->name)) {
-        const auto& [variableType, variableXValue] =
-            this->getVariable(identifierNode->name);
-        leftType = variableType;
-        leftXValue = variableXValue;
-        goto proceed;
+      const auto identifierResult =
+          this->compileIdentifier(xFunction, xBlock, getNode->left, {}, false);
+      if (identifierResult.error) {
+        return identifierResult;
       }
-      return {nullptr, nullptr,
-              CompilerError::fromASTValue(astValue, "Субʼєкт не визначено")};
+      leftType = identifierResult.type;
+      leftXValue = identifierResult.xValue;
+      goto proceed;
     }
     if (getNode->left->kind == ast::KindGetNode) {
       const auto getLeftResult =
-          this->compileValueGet(xFunction, xBlock, getNode->left, false);
+          this->compileGet(xFunction, xBlock, getNode->left, false);
       if (getLeftResult.error) {
         return getLeftResult;
       }
@@ -469,10 +931,11 @@ namespace tsil::tk {
       leftXValue = getLeftResult.xValue;
       goto proceed;
     }
-    if (getNode->left->kind == ast::KindCallNode) {
-    }
-    return {nullptr, nullptr,
-            CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED GET")};
+    return {
+        nullptr, nullptr,
+        CompilerError::fromASTValue(
+            astValue, "NOT IMPLEMENTED GET: " +
+                          ast::ast_value_kind_to_string(getNode->left->kind))};
   proceed:
     if (leftType->type == TypeTypeStructureInstance) {
       if (!leftType->structureInstanceFields.contains(getNode->id)) {
@@ -485,10 +948,14 @@ namespace tsil::tk {
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
               xBlock, leftType->xType, leftXValue,
               {0, static_cast<unsigned long>(field.index)});
-      const auto loadXValue =
-          this->compiler->xModule->pushFunctionBlockLoadInstruction(
-              xBlock, field.type->xType, gepXValue);
-      return {field.type, loadXValue, nullptr};
+      if (load) {
+        const auto loadXValue =
+            this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                xBlock, field.type->xType, gepXValue);
+        return {field.type, loadXValue, nullptr};
+      } else {
+        return {field.type, gepXValue, nullptr};
+      }
     }
     return {nullptr, nullptr,
             CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};
@@ -498,436 +965,31 @@ namespace tsil::tk {
       tsil::x::Function* xFunction,
       tsil::x::FunctionBlock* xBlock,
       ast::ASTValue* astValue,
-      const std::vector<Type*> genericValues,
-      bool load) {
+      const std::vector<Type*>& genericValues) {
     if (astValue->kind == ast::KindNumberNode) {
-      const auto numberNode = astValue->data.NumberNode;
-      const auto type = str_contains(numberNode->value, ".")
-                            ? this->compiler->doubleType
-                            : this->compiler->int64Type;
-      const auto xValue =
-          new x::Value(type->xType, tsilNumberToLLVMNumber(numberNode->value));
-      if (!load) {
-        std::cout << "BUG: cannot get reference to a number!" << std::endl;
-      }
-      return {type, xValue, nullptr};
+      return this->compileNumber(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindStringNode) {
-      const auto stringNode = astValue->data.StringNode;
-      const auto stringValue = tsilStringToLLVMString(stringNode->value);
-      const auto xStringConstant =
-          this->compiler->xModule->putStringConstant(stringValue);
-      if (!load) {
-        std::cout << "BUG: cannot get reference to a string!" << std::endl;
-      }
-      if (stringNode->prefix == "сі") {
-        return {this->compiler->int8Type->getPointerType(this), xStringConstant,
-                nullptr};
-      }
+      return this->compileString(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindIdentifierNode) {
-      const auto identifierNode = astValue->data.IdentifierNode;
-      if (this->hasVariable(identifierNode->name)) {
-        const auto& [variableType, variableXValue] =
-            this->getVariable(identifierNode->name);
-        if (load) {
-          const auto loadXValue =
-              this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                  xBlock, variableType->xType, variableXValue);
-          return {variableType, loadXValue, nullptr};
-        } else {
-          return {variableType->getPointerType(this), variableXValue, nullptr};
-        }
-      }
-      if (this->hasBakedDiia(identifierNode->name, genericValues)) {
-        const auto bakedDiia =
-            this->getBakedDiia(identifierNode->name, genericValues);
-        if (!load) {
-          std::cout << "BUG: cannot get reference to a diia!" << std::endl;
-        }
-        return {bakedDiia.first, bakedDiia.second, nullptr};
-      }
-      if (this->hasRawDiia(identifierNode->name)) {
-        const auto rawDiia = this->getRawDiia(identifierNode->name);
-        const auto bakeDiiaResult =
-            this->bakeDiia(astValue, rawDiia, genericValues);
-        if (bakeDiiaResult.error) {
-          return {nullptr, nullptr, bakeDiiaResult.error};
-        }
-        if (!load) {
-          std::cout << "BUG: cannot get reference to a diia!" << std::endl;
-        }
-        return {bakeDiiaResult.type, bakeDiiaResult.xValue, nullptr};
-      }
-      if (this->hasNonVariableAndNonDiiaSubject(identifierNode->name)) {
-        return {nullptr, nullptr,
-                CompilerError::subjectIsNotRuntimeValue(astValue)};
-      }
-      return {nullptr, nullptr, CompilerError::subjectNotDefined(astValue)};
+      return this->compileIdentifier(xFunction, xBlock, astValue, genericValues,
+                                     true);
     }
     if (astValue->kind == ast::KindGetNode) {
-      return this->compileValueGet(xFunction, xBlock, astValue, load);
+      return this->compileGet(xFunction, xBlock, astValue, true);
     }
     if (astValue->kind == ast::KindAsNode) {
-      const auto asNode = astValue->data.AsNode;
-      const auto valueResult =
-          this->compileValue(xFunction, xBlock, asNode->value, {}, true);
-      if (valueResult.error) {
-        return valueResult;
-      }
-      const auto typeResult = this->bakeType(asNode->type);
-      if (!typeResult.type) {
-        return {nullptr, nullptr,
-                CompilerError::fromASTValue(asNode->type, typeResult.error)};
-      }
-      // todo: cast
-      if (!load) {
-        std::cout << "BUG: cannot get reference to a as!" << std::endl;
-      }
-      return {typeResult.type, valueResult.xValue, nullptr};
+      return this->compileAs(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindBinaryNode) {
-      const auto binaryNode = astValue->data.BinaryNode;
-      CompilerValueResult leftResult =
-          this->compileValue(xFunction, xBlock, binaryNode->left, {}, true);
-      if (leftResult.error) {
-        return leftResult;
-      }
-      CompilerValueResult rightResult =
-          this->compileValue(xFunction, xBlock, binaryNode->right, {}, true);
-      if (rightResult.error) {
-        return rightResult;
-      }
-      if (!leftResult.type->equals(rightResult.type)) {
-        return {nullptr, nullptr,
-                CompilerError::typesOfInstructionDifferent(
-                    astValue, leftResult.type, rightResult.type)};
-      }
-      if (!load) {
-        std::cout << "BUG: cannot get reference to a binary!" << std::endl;
-      }
-      x::Value* xValue = nullptr;
-      switch (binaryNode->op) {
-        case tsil::ast::ARITHMETIC_ADD: {
-          if (!leftResult.type->isArithmetical(this)) {
-            return {nullptr, nullptr,
-                    CompilerError::typeIsNotArithmetical(astValue,
-                                                         leftResult.type)};
-          }
-          if (leftResult.type->isFloating(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockFAddInstruction(
-                xBlock, leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else {
-            xValue = this->compiler->xModule->pushFunctionBlockAddInstruction(
-                xBlock, leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          }
-          return {leftResult.type, xValue, nullptr};
-        }
-        case tsil::ast::ARITHMETIC_SUB: {
-          if (!leftResult.type->isArithmetical(this)) {
-            return {nullptr, nullptr,
-                    CompilerError::typeIsNotArithmetical(astValue,
-                                                         leftResult.type)};
-          }
-          if (leftResult.type->isFloating(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockFSubInstruction(
-                xBlock, leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else {
-            xValue = this->compiler->xModule->pushFunctionBlockSubInstruction(
-                xBlock, leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          }
-          return {leftResult.type, xValue, nullptr};
-        }
-        case tsil::ast::ARITHMETIC_MUL: {
-          if (!leftResult.type->isArithmetical(this)) {
-            return {nullptr, nullptr,
-                    CompilerError::typeIsNotArithmetical(astValue,
-                                                         leftResult.type)};
-          }
-          if (leftResult.type->isFloating(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockFMulInstruction(
-                xBlock, leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else {
-            xValue = this->compiler->xModule->pushFunctionBlockMulInstruction(
-                xBlock, leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          }
-          return {leftResult.type, xValue, nullptr};
-        }
-        case tsil::ast::ARITHMETIC_DIV: {
-          if (!leftResult.type->isArithmetical(this)) {
-            return {nullptr, nullptr,
-                    CompilerError::typeIsNotArithmetical(astValue,
-                                                         leftResult.type)};
-          }
-          if (leftResult.type->isFloating(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockFDivInstruction(
-                xBlock, leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else {
-            xValue = this->compiler->xModule->pushFunctionBlockDivInstruction(
-                xBlock, leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          }
-          return {leftResult.type, xValue, nullptr};
-        }
-        case tsil::ast::ARITHMETIC_MOD: {
-          if (!leftResult.type->isArithmetical(this)) {
-            return {nullptr, nullptr,
-                    CompilerError::typeIsNotArithmetical(astValue,
-                                                         leftResult.type)};
-          }
-          if (leftResult.type->isFloating(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockFModInstruction(
-                xBlock, leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else {
-            xValue = this->compiler->xModule->pushFunctionBlockModInstruction(
-                xBlock, leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          }
-          return {leftResult.type, xValue, nullptr};
-        }
-        case tsil::ast::BITWISE_AND: {
-          if (!leftResult.type->isBitwisible(this)) {
-            return {
-                nullptr, nullptr,
-                CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
-          }
-          xValue = this->compiler->xModule->pushFunctionBlockAndInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
-          return {leftResult.type, xValue, nullptr};
-        }
-        case tsil::ast::BITWISE_OR: {
-          if (!leftResult.type->isBitwisible(this)) {
-            return {
-                nullptr, nullptr,
-                CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
-          }
-          xValue = this->compiler->xModule->pushFunctionBlockOrInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
-          return {leftResult.type, xValue, nullptr};
-        }
-        case tsil::ast::BITWISE_XOR: {
-          if (!leftResult.type->isBitwisible(this)) {
-            return {
-                nullptr, nullptr,
-                CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
-          }
-          xValue = this->compiler->xModule->pushFunctionBlockXorInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
-          return {leftResult.type, xValue, nullptr};
-        }
-        case tsil::ast::BITWISE_SHIFT_LEFT: {
-          if (!leftResult.type->isBitwisible(this)) {
-            return {
-                nullptr, nullptr,
-                CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
-          }
-          xValue = this->compiler->xModule->pushFunctionBlockShlInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
-          return {leftResult.type, xValue, nullptr};
-        }
-        case tsil::ast::BITWISE_SHIFT_RIGHT: {
-          if (!leftResult.type->isBitwisible(this)) {
-            return {
-                nullptr, nullptr,
-                CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
-          }
-          xValue = this->compiler->xModule->pushFunctionBlockLShrInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
-          return {leftResult.type, xValue, nullptr};
-        }
-        case tsil::ast::COMPARISON_EQ: {
-          if (!leftResult.type->isComparable(this)) {
-            return {
-                nullptr, nullptr,
-                CompilerError::typeIsNotComparable(astValue, leftResult.type)};
-          }
-          if (leftResult.type->isFloating(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-                xBlock, "ueq", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else {
-            xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-                xBlock, "eq", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          }
-          return {this->compiler->int1Type, xValue, nullptr};
-        }
-        case tsil::ast::COMPARISON_NE: {
-          if (!leftResult.type->isComparable(this)) {
-            return {
-                nullptr, nullptr,
-                CompilerError::typeIsNotComparable(astValue, leftResult.type)};
-          }
-          if (leftResult.type->isFloating(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-                xBlock, "une", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else {
-            xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-                xBlock, "ne", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          }
-          return {this->compiler->int1Type, xValue, nullptr};
-        }
-        case tsil::ast::COMPARISON_LT: {
-          if (!leftResult.type->isComparable(this)) {
-            return {
-                nullptr, nullptr,
-                CompilerError::typeIsNotComparable(astValue, leftResult.type)};
-          }
-          if (leftResult.type->isUnsigned(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-                xBlock, "ult", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else if (leftResult.type->isFloating(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-                xBlock, "ult", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else {
-            xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-                xBlock, "slt", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          }
-          return {this->compiler->int1Type, xValue, nullptr};
-        }
-        case tsil::ast::COMPARISON_GT: {
-          if (!leftResult.type->isComparable(this)) {
-            return {
-                nullptr, nullptr,
-                CompilerError::typeIsNotComparable(astValue, leftResult.type)};
-          }
-          if (leftResult.type->isUnsigned(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-                xBlock, "ugt", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else if (leftResult.type->isFloating(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-                xBlock, "ugt", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else {
-            xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-                xBlock, "sgt", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          }
-          return {this->compiler->int1Type, xValue, nullptr};
-        }
-        case tsil::ast::COMPARISON_LE: {
-          if (!leftResult.type->isComparable(this)) {
-            return {
-                nullptr, nullptr,
-                CompilerError::typeIsNotComparable(astValue, leftResult.type)};
-          }
-          if (leftResult.type->isUnsigned(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-                xBlock, "ule", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else if (leftResult.type->isFloating(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-                xBlock, "ule", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else {
-            xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-                xBlock, "sle", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          }
-          return {this->compiler->int1Type, xValue, nullptr};
-        }
-        case tsil::ast::COMPARISON_GE: {
-          if (!leftResult.type->isComparable(this)) {
-            return {
-                nullptr, nullptr,
-                CompilerError::typeIsNotComparable(astValue, leftResult.type)};
-          }
-          if (leftResult.type->isUnsigned(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-                xBlock, "uge", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else if (leftResult.type->isFloating(this)) {
-            xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-                xBlock, "uge", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          } else {
-            xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-                xBlock, "sge", leftResult.type->xType, leftResult.xValue,
-                rightResult.xValue);
-          }
-          return {this->compiler->int1Type, xValue, nullptr};
-        }
-      }
-      return {leftResult.type, xValue, nullptr};
+      return this->compileBinary(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindCallNode) {
       return this->compileCall(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindConstructorNode) {
-      const auto constructorNode = astValue->data.ConstructorNode;
-      const auto typeResult = this->bakeType(constructorNode->type);
-      if (!load) {
-        std::cout << "BUG: cannot get reference to a constructor!" << std::endl;
-      }
-      if (!typeResult.type) {
-        return {nullptr, nullptr,
-                CompilerError::fromASTValue(constructorNode->type,
-                                            typeResult.error)};
-      }
-      if (typeResult.type->type != TypeTypeStructureInstance) {
-        return {nullptr, nullptr,
-                CompilerError::typeIsNotConstructable(constructorNode->type,
-                                                      typeResult.type)};
-      }
-      const auto xAllocValue =
-          this->compiler->xModule->pushFunctionBlockAllocaInstruction(
-              xBlock, typeResult.type->xType);
-      for (const auto argAstValue : constructorNode->args) {
-        const auto constructorArgNode = argAstValue->data.ConstructorArgNode;
-        if (!typeResult.type->structureInstanceFields.contains(
-                constructorArgNode->id)) {
-          return {nullptr, nullptr,
-                  CompilerError::typeHasNoProperty(argAstValue, typeResult.type,
-                                                   constructorArgNode->id)};
-        }
-        const auto field =
-            typeResult.type->structureInstanceFields[constructorArgNode->id];
-        const auto argValueResult = this->compileValue(
-            xFunction, xBlock, constructorArgNode->value, {}, true);
-        if (argValueResult.error) {
-          return {nullptr, nullptr, argValueResult.error};
-        }
-        if (!argValueResult.type->equals(field.type)) {
-          return {nullptr, nullptr,
-                  CompilerError::invalidArgumentType(
-                      constructorArgNode->value, constructorArgNode->id,
-                      field.type, argValueResult.type)};
-        }
-        const auto xGepValue =
-            this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-                xBlock, typeResult.type->xType, xAllocValue,
-                {0, static_cast<unsigned long>(field.index)});
-        this->compiler->xModule->pushFunctionBlockStoreInstruction(
-            xBlock, argValueResult.type->xType, argValueResult.xValue,
-            xGepValue);
-      }
-      if (load) {
-        x::Value* xLoadValue =
-            this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, typeResult.type->xType, xAllocValue);
-        return {typeResult.type, xLoadValue, nullptr};
-      } else {
-        return {typeResult.type, xAllocValue, nullptr};
-      }
+      return this->compileConstructor(xFunction, xBlock, astValue);
     }
     return {nullptr, nullptr,
             CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED VALUE")};
@@ -968,8 +1030,8 @@ namespace tsil::tk {
           type = typeResult.type;
         }
         if (defineNode->value) {
-          const auto valueResult = this->compileValue(
-              xFunction, xBlock, defineNode->value, {}, true);
+          const auto valueResult =
+              this->compileValue(xFunction, xBlock, defineNode->value, {});
           if (valueResult.error) {
             return {valueResult.error};
           }
@@ -1003,7 +1065,7 @@ namespace tsil::tk {
         const auto& [variableType, variableXValue] =
             this->getVariable(assignNode->id);
         const auto valueResult =
-            this->compileValue(xFunction, xBlock, assignNode->value, {}, true);
+            this->compileValue(xFunction, xBlock, assignNode->value, {});
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -1019,7 +1081,7 @@ namespace tsil::tk {
             CompilerError::fromASTValue(childAstValue, "NOT IMPLEMENTED SET")};
       } else if (childAstValue->kind == ast::KindCallNode) {
         const auto valueResult =
-            this->compileValue(xFunction, xBlock, childAstValue, {}, true);
+            this->compileValue(xFunction, xBlock, childAstValue, {});
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -1034,9 +1096,9 @@ namespace tsil::tk {
                 ? xExitBlock
                 : this->compiler->xModule->defineFunctionBlock(xFunction,
                                                                "while_exit");
-        const auto valueResult = this->compileValue(
-            xFunction, xWhileBlock, childAstValue->data.WhileNode->condition,
-            {}, true);
+        const auto valueResult =
+            this->compileValue(xFunction, xWhileBlock,
+                               childAstValue->data.WhileNode->condition, {});
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -1065,9 +1127,8 @@ namespace tsil::tk {
                 ? xExitBlock
                 : this->compiler->xModule->defineFunctionBlock(xFunction,
                                                                "if_exit");
-        const auto valueResult =
-            this->compileValue(xFunction, xIfBlock,
-                               childAstValue->data.IfNode->condition, {}, true);
+        const auto valueResult = this->compileValue(
+            xFunction, xIfBlock, childAstValue->data.IfNode->condition, {});
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -1097,8 +1158,7 @@ namespace tsil::tk {
         x::Value* xValue = nullptr;
         if (childAstValue->data.ReturnNode->value) {
           const auto valueResult = this->compileValue(
-              xFunction, xBlock, childAstValue->data.ReturnNode->value, {},
-              true);
+              xFunction, xBlock, childAstValue->data.ReturnNode->value, {});
           if (valueResult.error) {
             return {valueResult.error};
           }

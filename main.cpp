@@ -162,7 +162,7 @@ int main(int argc, char** argv) {
       compiler->voidType = voidType;
 
       const auto pointerType = new tsil::tk::Type();
-      pointerType->type = tsil::tk::TypeTypeNative;
+      pointerType->type = tsil::tk::TypeTypePointer;
       pointerType->name = "невідома_комірка";
       pointerType->xType = compiler->xModule->pointerType;
       compiler->globalScope->bakedTypes.insert_or_assign(

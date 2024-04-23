@@ -20,6 +20,16 @@ namespace tsil::tk {
       }
       return this->diiaReturnType->equals(other->diiaReturnType);
     }
+    if (this->type == TypeTypePointer) {
+      if (other->pointerTo) {
+        if (this->pointerTo) {
+          return this->pointerTo->equals(other->pointerTo);
+        }
+      } else {
+        return true;
+      }
+      return false;
+    }
     return false;
   }
 

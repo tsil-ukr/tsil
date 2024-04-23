@@ -172,31 +172,43 @@ namespace tsil::tk {
     CompilerValueResult compileCall_Allocate(tsil::x::Function* xFunction,
                                              tsil::x::FunctionBlock* xBlock,
                                              ast::ASTValue* astValue);
-    CompilerValueResult compileCall_AllocateBytes(
-        tsil::x::Function* xFunction,
-        tsil::x::FunctionBlock* xBlock,
-        ast::ASTValue* astValue);
     CompilerValueResult compileCall_Reallocate(tsil::x::Function* xFunction,
                                                tsil::x::FunctionBlock* xBlock,
                                                ast::ASTValue* astValue);
-    CompilerValueResult compileCall_ReallocateBytes(
-        tsil::x::Function* xFunction,
-        tsil::x::FunctionBlock* xBlock,
-        ast::ASTValue* astValue);
-    CompilerValueResult compileCall_Free(
-        tsil::x::Function* xFunction,
-        tsil::x::FunctionBlock* xBlock,
-        ast::ASTValue* astValue);
+    CompilerValueResult compileCall_Free(tsil::x::Function* xFunction,
+                                         tsil::x::FunctionBlock* xBlock,
+                                         ast::ASTValue* astValue);
 
-    CompilerValueResult compileValueGet(tsil::x::Function* xFunction,
-                                        tsil::x::FunctionBlock* xBlock,
-                                        ast::ASTValue* astValue,
-                                        bool load);
+    CompilerValueResult compileNumber(tsil::x::Function* xFunction,
+                                      tsil::x::FunctionBlock* xBlock,
+                                      ast::ASTValue* astValue);
+    CompilerValueResult compileString(tsil::x::Function* xFunction,
+                                      tsil::x::FunctionBlock* xBlock,
+                                      ast::ASTValue* astValue);
+    CompilerValueResult compileIdentifier(
+        tsil::x::Function* xFunction,
+        tsil::x::FunctionBlock* xBlock,
+        ast::ASTValue* astValue,
+        const std::vector<Type*>& genericValues,
+        bool load);
+    CompilerValueResult compileAs(tsil::x::Function* xFunction,
+                                  tsil::x::FunctionBlock* xBlock,
+                                  ast::ASTValue* astValue);
+    CompilerValueResult compileBinary(tsil::x::Function* xFunction,
+                                      tsil::x::FunctionBlock* xBlock,
+                                      ast::ASTValue* astValue);
+    CompilerValueResult compileConstructor(tsil::x::Function* xFunction,
+                                           tsil::x::FunctionBlock* xBlock,
+                                           ast::ASTValue* astValue);
+
+    CompilerValueResult compileGet(tsil::x::Function* xFunction,
+                                   tsil::x::FunctionBlock* xBlock,
+                                   ast::ASTValue* astValue,
+                                   bool load);
     CompilerValueResult compileValue(x::Function* xFunction,
                                      tsil::x::FunctionBlock* xBlock,
                                      ast::ASTValue* astValue,
-                                     const std::vector<Type*> genericValues,
-                                     bool load);
+                                     const std::vector<Type*>& genericValues);
     CompilerResult compileDiiaBody(Type* diiaType,
                                    tsil::x::Function* xFunction,
                                    tsil::x::FunctionBlock* xBlock,
