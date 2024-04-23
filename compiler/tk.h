@@ -1,6 +1,6 @@
 #include <map>
-#include "../../parser/parser.h"
-#include "../x.h"
+#include "parser.h"
+#include "x.h"
 
 namespace tsil::tk {
   struct Compiler;

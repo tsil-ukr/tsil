@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "compiler/tk/tk.h"
+#include "compiler/tk.h"
 
 std::pair<size_t, std::string> strtrim(const std::string& str) {
   size_t start = 0;
