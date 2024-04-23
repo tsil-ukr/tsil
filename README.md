@@ -30,6 +30,6 @@ extern "C" void друк_сі(char* val) {
 
 ```shell
 ціль сплавити привіт.ц привіт.ll
-clang++ -o привіт привіт.o extension.cpp
+clang++ -o привіт привіт.ll extension.cpp
 ./привіт
 ```
