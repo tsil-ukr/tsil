@@ -13,31 +13,32 @@ class  TsilParser : public antlr4::Parser {
 public:
   enum {
     KW_TSIL = 1, KW_DIIA = 2, KW_SAVE = 3, KW_DELETE = 4, KW_IF = 5, KW_ELSE = 6, 
-    KW_WHILE = 7, KW_RETURN = 8, KW_STRUCT = 9, KW_EXTERN = 10, KW_AS = 11, 
-    KW_SIZEOF = 12, KW_SECTION = 13, KW_IMPORT = 14, KW_EXPORT = 15, KW_COMPOSITION = 16, 
-    KW_PROPERTY = 17, KW_PUBLIC = 18, KW_PRIVATE = 19, KW_NOT = 20, KW_OR = 21, 
-    KW_AND = 22, EQUAL = 23, GREATER = 24, LESSER = 25, DOT = 26, PLUS = 27, 
-    MINUS = 28, MULTIPLY = 29, DIVIDE = 30, MOD = 31, POWER = 32, AND = 33, 
-    OR = 34, PAREN_OPEN = 35, PAREN_CLOSE = 36, BRACKET_OPEN = 37, BRACKET_CLOSE = 38, 
-    QUESTION = 39, COLON = 40, TILDA = 41, QUOTE = 42, DOUBLE_QUOTE = 43, 
-    EXCLAMATION = 44, COMA = 45, SEMICOLON = 46, QUOTE_OPEN = 47, QUOTE_CLOSE = 48, 
-    INTEGER = 49, FLOAT = 50, HEX = 51, BIN = 52, ID = 53, STRING = 54, 
-    COMMENT = 55, LINE_COMMENT = 56, NL = 57, WS = 58
+    KW_WHILE = 7, KW_RETURN = 8, KW_STRUCT = 9, KW_AS = 10, KW_SIZEOF = 11, 
+    KW_SECTION = 12, KW_IMPORT = 13, KW_EXPORT = 14, KW_COMPOSITION = 15, 
+    KW_PROPERTY = 16, KW_PUBLIC = 17, KW_PRIVATE = 18, KW_LOCAL = 19, KW_NOT = 20, 
+    KW_OR = 21, KW_AND = 22, KW_INCLUDE = 23, EQUAL = 24, GREATER = 25, 
+    LESSER = 26, DOT = 27, PLUS = 28, MINUS = 29, MULTIPLY = 30, DIVIDE = 31, 
+    MOD = 32, POWER = 33, AND = 34, OR = 35, PAREN_OPEN = 36, PAREN_CLOSE = 37, 
+    BRACKET_OPEN = 38, BRACKET_CLOSE = 39, QUESTION = 40, COLON = 41, TILDA = 42, 
+    QUOTE = 43, DOUBLE_QUOTE = 44, EXCLAMATION = 45, COMA = 46, SEMICOLON = 47, 
+    QUOTE_OPEN = 48, QUOTE_CLOSE = 49, INTEGER = 50, FLOAT = 51, HEX = 52, 
+    BIN = 53, ID = 54, STRING = 55, COMMENT = 56, LINE_COMMENT = 57, NL = 58, 
+    WS = 59
   };
 
   enum {
-    RuleFile = 0, RuleProgram = 1, RuleProgram_element = 2, RuleStructure = 3, 
-    RuleStructure_generics = 4, RuleStructure_generic = 5, RuleStructure_params = 6, 
-    RuleStructure_param = 7, RuleConstructor = 8, RuleConstructor_args = 9, 
-    RuleConstructor_arg = 10, RuleDiia_head = 11, RuleDiia = 12, RuleDiia_declaration = 13, 
-    RuleDiia_generics = 14, RuleDiia_generic = 15, RuleSection = 16, RuleSection_element = 17, 
-    RuleIf = 18, RuleWhile = 19, RuleDefine = 20, RuleAssign = 21, RuleSet = 22, 
-    RuleSizeof = 23, RuleAtom = 24, RuleMolecule = 25, RuleExpr = 26, RuleIdentifiers_chain = 27, 
-    RuleFull_type = 28, RuleSimple_function_type_args = 29, RuleArgs = 30, 
-    RuleParams = 31, RuleParam = 32, RuleBody = 33, RuleBody_element_or_return = 34, 
-    RuleBody_element = 35, RuleReturn_body_element = 36, RuleBitwise_op = 37, 
-    RuleComparison_op = 38, RuleLogical_op = 39, RuleNumber = 40, RuleString = 41, 
-    RuleIdentifier = 42
+    RuleFile = 0, RuleProgram = 1, RuleProgram_element = 2, RuleInclude = 3, 
+    RuleStructure = 4, RuleStructure_generics = 5, RuleStructure_generic = 6, 
+    RuleStructure_params = 7, RuleStructure_param = 8, RuleConstructor = 9, 
+    RuleConstructor_args = 10, RuleConstructor_arg = 11, RuleDiia_head = 12, 
+    RuleDiia = 13, RuleDiia_declaration = 14, RuleDiia_generics = 15, RuleDiia_generic = 16, 
+    RuleSection = 17, RuleSection_element = 18, RuleIf = 19, RuleWhile = 20, 
+    RuleDefine = 21, RuleAssign = 22, RuleSet = 23, RuleSizeof = 24, RuleAtom = 25, 
+    RuleMolecule = 26, RuleExpr = 27, RuleIdentifiers_chain = 28, RuleFull_type = 29, 
+    RuleSimple_function_type_args = 30, RuleArgs = 31, RuleParams = 32, 
+    RuleParam = 33, RuleBody = 34, RuleBody_element_or_return = 35, RuleBody_element = 36, 
+    RuleReturn_body_element = 37, RuleBitwise_op = 38, RuleComparison_op = 39, 
+    RuleLogical_op = 40, RuleNumber = 41, RuleString = 42, RuleIdentifier = 43
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -60,6 +61,7 @@ public:
   class FileContext;
   class ProgramContext;
   class Program_elementContext;
+  class IncludeContext;
   class StructureContext;
   class Structure_genericsContext;
   class Structure_genericContext;
@@ -138,6 +140,7 @@ public:
   public:
     Program_elementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    IncludeContext *include();
     StructureContext *structure();
     Diia_declarationContext *diia_declaration();
     DiiaContext *diia();
@@ -152,6 +155,24 @@ public:
   };
 
   Program_elementContext* program_element();
+
+  class  IncludeContext : public antlr4::ParserRuleContext {
+  public:
+    TsilParser::StringContext *i_path = nullptr;
+    IncludeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_INCLUDE();
+    antlr4::tree::TerminalNode *SEMICOLON();
+    StringContext *string();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  IncludeContext* include();
 
   class  StructureContext : public antlr4::ParserRuleContext {
   public:
@@ -344,7 +365,8 @@ public:
   class  DiiaContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *d_extern = nullptr;
-    TsilParser::StringContext *d_extern_type = nullptr;
+    antlr4::Token *d_local = nullptr;
+    antlr4::Token *d_internal = nullptr;
     TsilParser::Diia_headContext *d_head = nullptr;
     TsilParser::BodyContext *d_body = nullptr;
     DiiaContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -352,9 +374,10 @@ public:
     antlr4::tree::TerminalNode *QUOTE_OPEN();
     antlr4::tree::TerminalNode *QUOTE_CLOSE();
     Diia_headContext *diia_head();
-    antlr4::tree::TerminalNode *KW_EXTERN();
+    antlr4::tree::TerminalNode *KW_PUBLIC();
+    antlr4::tree::TerminalNode *KW_LOCAL();
+    antlr4::tree::TerminalNode *KW_PRIVATE();
     BodyContext *body();
-    StringContext *string();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -368,7 +391,8 @@ public:
   class  Diia_declarationContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *d_extern = nullptr;
-    TsilParser::StringContext *d_extern_type = nullptr;
+    antlr4::Token *d_local = nullptr;
+    antlr4::Token *d_internal = nullptr;
     TsilParser::Diia_headContext *d_head = nullptr;
     TsilParser::IdentifierContext *d_as = nullptr;
     Diia_declarationContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -376,9 +400,10 @@ public:
     antlr4::tree::TerminalNode *SEMICOLON();
     Diia_headContext *diia_head();
     antlr4::tree::TerminalNode *KW_AS();
-    antlr4::tree::TerminalNode *KW_EXTERN();
+    antlr4::tree::TerminalNode *KW_PUBLIC();
+    antlr4::tree::TerminalNode *KW_LOCAL();
+    antlr4::tree::TerminalNode *KW_PRIVATE();
     IdentifierContext *identifier();
-    StringContext *string();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

@@ -141,6 +141,305 @@ namespace tsil::tk {
     return {nullptr, nullptr};
   }
 
+  CompilerValueResult Scope::compileCall(tsil::x::Function* xFunction,
+                                         tsil::x::FunctionBlock* xBlock,
+                                         ast::ASTValue* astValue) {
+    const auto callNode = astValue->data.CallNode;
+    if (callNode->value->kind == ast::KindIdentifierNode) {
+      const auto identifierNode = callNode->value->data.IdentifierNode;
+      if (identifierNode->name == "комірка") {
+        return this->compileCall_Pointer(xFunction, xBlock, astValue);
+      }
+      if (identifierNode->name == "вміст") {
+        return this->compileCall_Value(xFunction, xBlock, astValue);
+      }
+      if (identifierNode->name == "виділити") {
+        return this->compileCall_Allocate(xFunction, xBlock, astValue);
+      }
+      if (identifierNode->name == "виділити_байти") {
+        return this->compileCall_AllocateBytes(xFunction, xBlock, astValue);
+      }
+      if (identifierNode->name == "перевиділити") {
+        return this->compileCall_Reallocate(xFunction, xBlock, astValue);
+      }
+      if (identifierNode->name == "перевиділити_байти") {
+        return this->compileCall_ReallocateBytes(xFunction, xBlock, astValue);
+      }
+      if (identifierNode->name == "звільнити") {
+        return this->compileCall_Free(xFunction, xBlock, astValue);
+      }
+    }
+    std::vector<Type*> genericValues;
+    for (const auto& diiaGenericAstValue : callNode->generic_values) {
+      const auto genericTypeResult = this->bakeType(diiaGenericAstValue);
+      if (!genericTypeResult.type) {
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(diiaGenericAstValue,
+                                            genericTypeResult.error)};
+      }
+      genericValues.push_back(genericTypeResult.type);
+    }
+    Type* diiaType;
+    x::Value* diiaXValue;
+    const auto valueResult = this->compileValue(
+        xFunction, xBlock, callNode->value, genericValues, true);
+    if (valueResult.error) {
+      return {nullptr, nullptr, valueResult.error};
+    }
+    diiaType = valueResult.type;
+    diiaXValue = valueResult.xValue;
+    if (callNode->args.size() < diiaType->diiaParameters.size()) {
+      return {nullptr, nullptr,
+              CompilerError::notEnoughCallArguments(astValue)};
+    }
+    if (callNode->args.size() > diiaType->diiaParameters.size()) {
+      return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
+    }
+    std::vector<x::Value*> xArgs;
+    int argIndex = 0;
+    for (const auto& argAstValue : callNode->args) {
+      const auto argResult = this->compileValue(xFunction, xBlock, argAstValue,
+                                                genericValues, true);
+      if (argResult.error) {
+        return argResult;
+      }
+      const auto& diiaParameter = diiaType->diiaParameters[argIndex];
+      if (!argResult.type->equals(diiaParameter.type)) {
+        return {nullptr, nullptr,
+                CompilerError::invalidArgumentType(
+                    argAstValue, diiaParameter.name, diiaParameter.type,
+                    argResult.type)};
+      }
+      xArgs.push_back(argResult.xValue);
+      argIndex++;
+    }
+    const auto xValue =
+        this->compiler->xModule->pushFunctionBlockCallInstruction(
+            xBlock, diiaType->diiaReturnType->xType, diiaXValue, xArgs);
+    return {diiaType->diiaReturnType, xValue, nullptr};
+  }
+
+  CompilerValueResult Scope::compileCall_Pointer(tsil::x::Function* xFunction,
+                                                 tsil::x::FunctionBlock* xBlock,
+                                                 ast::ASTValue* astValue) {
+    const auto callNode = astValue->data.CallNode;
+    std::vector<Type*> genericValues;
+    for (const auto& genericAstValue : callNode->generic_values) {
+      const auto bakedTypeResult = this->bakeType(genericAstValue);
+      if (!bakedTypeResult.type) {
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(genericAstValue,
+                                            bakedTypeResult.error)};
+      }
+      genericValues.push_back(bakedTypeResult.type);
+    }
+    if (callNode->args.size() < 1) {
+      return {nullptr, nullptr,
+              CompilerError::notEnoughCallArguments(astValue)};
+    }
+    if (callNode->args.size() > 1) {
+      return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
+    }
+    if (genericValues.size() > 1) {
+      return {nullptr, nullptr,
+              CompilerError::tooManyCallTemplateArguments(astValue)};
+    }
+    const auto firstArgAstValue = callNode->args[0];
+    const auto firstArgResult =
+        this->compileValue(xFunction, xBlock, firstArgAstValue, {}, false);
+    if (firstArgResult.error) {
+      return firstArgResult;
+    }
+    if (genericValues.empty()) {
+      return {firstArgResult.type, firstArgResult.xValue, nullptr};
+    }
+    const auto genericValue = genericValues[0];
+    if (!firstArgResult.type->equals(genericValue)) {
+      return {
+          nullptr, nullptr,
+          CompilerError::invalidArgumentType(
+              firstArgAstValue, "значення", genericValue, firstArgResult.type)};
+    }
+    return {firstArgResult.type, firstArgResult.xValue, nullptr};
+  }
+
+  CompilerValueResult Scope::compileCall_Value(tsil::x::Function* xFunction,
+                                               tsil::x::FunctionBlock* xBlock,
+                                               ast::ASTValue* astValue) {
+    const auto callNode = astValue->data.CallNode;
+    std::vector<Type*> genericValues;
+    for (const auto& genericAstValue : callNode->generic_values) {
+      const auto bakedTypeResult = this->bakeType(genericAstValue);
+      if (!bakedTypeResult.type) {
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(genericAstValue,
+                                            bakedTypeResult.error)};
+      }
+      genericValues.push_back(bakedTypeResult.type);
+    }
+    if (callNode->args.size() < 1) {
+      return {nullptr, nullptr,
+              CompilerError::notEnoughCallArguments(astValue)};
+    }
+    if (callNode->args.size() > 1) {
+      return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
+    }
+    if (genericValues.size() > 1) {
+      return {nullptr, nullptr,
+              CompilerError::tooManyCallTemplateArguments(astValue)};
+    }
+    const auto firstArgAstValue = callNode->args[0];
+    const auto firstArgResult =
+        this->compileValue(xFunction, xBlock, firstArgAstValue, {}, true);
+    if (firstArgResult.error) {
+      return firstArgResult;
+    }
+    if (firstArgResult.type->type != TypeTypePointer) {
+      return {nullptr, nullptr,
+              CompilerError::invalidArgumentType(firstArgAstValue, "значення",
+                                                 this->compiler->pointerType,
+                                                 firstArgResult.type)};
+    }
+    if (genericValues.empty()) {
+      const auto loadXValue =
+          this->compiler->xModule->pushFunctionBlockLoadInstruction(
+              xBlock, firstArgResult.type->pointerTo->xType,
+              firstArgResult.xValue);
+      return {firstArgResult.type->pointerTo, loadXValue, nullptr};
+    }
+    const auto genericValue = genericValues[0];
+    if (!firstArgResult.type->pointerTo->equals(genericValue)) {
+      return {
+          nullptr, nullptr,
+          CompilerError::invalidArgumentType(
+              firstArgAstValue, "значення", genericValue, firstArgResult.type)};
+    }
+    const auto loadXValue =
+        this->compiler->xModule->pushFunctionBlockLoadInstruction(
+            xBlock, firstArgResult.type->pointerTo->xType,
+            firstArgResult.xValue);
+    return {firstArgResult.type->pointerTo, loadXValue, nullptr};
+  }
+
+  CompilerValueResult Scope::compileCall_Allocate(
+      tsil::x::Function* xFunction,
+      tsil::x::FunctionBlock* xBlock,
+      ast::ASTValue* astValue) {
+    const auto callNode = astValue->data.CallNode;
+    std::vector<Type*> genericValues;
+    for (const auto& genericAstValue : callNode->generic_values) {
+      const auto bakedTypeResult = this->bakeType(genericAstValue);
+      if (!bakedTypeResult.type) {
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(genericAstValue,
+                                            bakedTypeResult.error)};
+      }
+      genericValues.push_back(bakedTypeResult.type);
+    }
+    if (callNode->args.size() < 1) {
+      return {nullptr, nullptr,
+              CompilerError::notEnoughCallArguments(astValue)};
+    }
+    if (callNode->args.size() > 1) {
+      return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
+    }
+    if (genericValues.size() < 1) {
+      return {nullptr, nullptr,
+              CompilerError::notEnoughCallTemplateArguments(astValue)};
+    }
+    if (genericValues.size() > 1) {
+      return {nullptr, nullptr,
+              CompilerError::tooManyCallTemplateArguments(astValue)};
+    }
+    const auto firstArgAstValue = callNode->args[0];
+    const auto firstArgResult =
+        this->compileValue(xFunction, xBlock, firstArgAstValue, {}, true);
+    if (firstArgResult.error) {
+      return firstArgResult;
+    }
+    if (firstArgResult.type->equals(this->compiler->uint64Type)) {
+      return {nullptr, nullptr,
+              CompilerError::invalidArgumentType(firstArgAstValue, "розмір",
+                                                 this->compiler->uint64Type,
+                                                 firstArgResult.type)};
+    }
+    const auto firstGenericValue = genericValues[0];
+    const auto typeSizeXValue =
+        new x::Value(this->compiler->uint64Type->xType,
+                     std::to_string(firstGenericValue->getBytesSize(this)));
+    const auto xValue =
+        this->compiler->xModule->pushFunctionBlockCallInstruction(
+            xBlock, this->compiler->pointerType->xType,
+            this->compiler->ensureCallocConnected(),
+            {firstArgResult.xValue, typeSizeXValue});
+    return {firstGenericValue->getPointerType(this), xValue, nullptr};
+  }
+
+  CompilerValueResult Scope::compileCall_AllocateBytes(
+      tsil::x::Function* xFunction,
+      tsil::x::FunctionBlock* xBlock,
+      ast::ASTValue* astValue) {
+    const auto callNode = astValue->data.CallNode;
+    std::vector<Type*> genericValues;
+    for (const auto& genericAstValue : callNode->generic_values) {
+      const auto bakedTypeResult = this->bakeType(genericAstValue);
+      if (!bakedTypeResult.type) {
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(genericAstValue,
+                                            bakedTypeResult.error)};
+      }
+      genericValues.push_back(bakedTypeResult.type);
+    }
+    if (callNode->args.size() < 1) {
+      return {nullptr, nullptr,
+              CompilerError::notEnoughCallArguments(astValue)};
+    }
+    if (callNode->args.size() > 1) {
+      return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
+    }
+    if (genericValues.size() > 1) {
+      return {nullptr, nullptr,
+              CompilerError::tooManyCallTemplateArguments(astValue)};
+    }
+    const auto firstArgAstValue = callNode->args[0];
+    const auto firstArgResult =
+        this->compileValue(xFunction, xBlock, firstArgAstValue, {}, true);
+    if (firstArgResult.error) {
+      return firstArgResult;
+    }
+    if (firstArgResult.type->equals(this->compiler->uint64Type)) {
+      return {nullptr, nullptr,
+              CompilerError::invalidArgumentType(firstArgAstValue, "розмір",
+                                                 this->compiler->uint64Type,
+                                                 firstArgResult.type)};
+    }
+    const auto xValue =
+        this->compiler->xModule->pushFunctionBlockCallInstruction(
+            xBlock, this->compiler->pointerType->xType,
+            this->compiler->ensureMallocConnected(), {firstArgResult.xValue});
+    return {this->compiler->pointerType, xValue, nullptr};
+  }
+
+  CompilerValueResult Scope::compileCall_Reallocate(
+      tsil::x::Function* xFunction,
+      tsil::x::FunctionBlock* xBlock,
+      ast::ASTValue* astValue) {
+    //
+  }
+
+  CompilerValueResult Scope::compileCall_ReallocateBytes(
+      tsil::x::Function* xFunction,
+      tsil::x::FunctionBlock* xBlock,
+      ast::ASTValue* astValue) {
+    //
+  }
+
+  CompilerValueResult Scope::compileCall_Free(tsil::x::Function* xFunction,
+                                              tsil::x::FunctionBlock* xBlock,
+                                              ast::ASTValue* astValue) {
+    //
+  }
+
   CompilerValueResult Scope::compileValueGet(tsil::x::Function* xFunction,
                                              tsil::x::FunctionBlock* xBlock,
                                              ast::ASTValue* astValue,
@@ -571,138 +870,7 @@ namespace tsil::tk {
       return {leftResult.type, xValue, nullptr};
     }
     if (astValue->kind == ast::KindCallNode) {
-      const auto callNode = astValue->data.CallNode;
-      std::vector<Type*> diiaGenericValues;
-      for (const auto& diiaGenericAstValue : callNode->generic_values) {
-        const auto genericTypeResult = this->bakeType(diiaGenericAstValue);
-        if (!genericTypeResult.type) {
-          return {nullptr, nullptr,
-                  CompilerError::fromASTValue(diiaGenericAstValue,
-                                              genericTypeResult.error)};
-        }
-        diiaGenericValues.push_back(genericTypeResult.type);
-      }
-      if (!load) {
-        std::cout << "BUG: cannot get reference to a call!" << std::endl;
-      }
-      if (callNode->value->kind == ast::KindIdentifierNode) {
-        const auto identifierNode = callNode->value->data.IdentifierNode;
-        if (identifierNode->name == "комірка") {
-          if (callNode->args.size() < 1) {
-            return {nullptr, nullptr,
-                    CompilerError::notEnoughCallArguments(astValue)};
-          }
-          if (callNode->args.size() > 1) {
-            return {nullptr, nullptr,
-                    CompilerError::tooManyCallArguments(astValue)};
-          }
-          if (genericValues.size() > 1) {
-            return {nullptr, nullptr,
-                    CompilerError::tooManyCallTemplateArguments(astValue)};
-          }
-          const auto firstArgAstValue = callNode->args[0];
-          const auto firstArgResult = this->compileValue(
-              xFunction, xBlock, firstArgAstValue, {}, false);
-          if (firstArgResult.error) {
-            return firstArgResult;
-          }
-          if (genericValues.empty()) {
-            return {firstArgResult.type, firstArgResult.xValue, nullptr};
-          }
-          const auto genericValue = genericValues[0];
-          if (!firstArgResult.type->equals(genericValue)) {
-            return {nullptr, nullptr,
-                    CompilerError::invalidArgumentType(firstArgAstValue,
-                                                       "значення", genericValue,
-                                                       firstArgResult.type)};
-          }
-          return {firstArgResult.type, firstArgResult.xValue, nullptr};
-        }
-        if (identifierNode->name == "значення") {
-          if (callNode->args.size() < 1) {
-            return {nullptr, nullptr,
-                    CompilerError::notEnoughCallArguments(astValue)};
-          }
-          if (callNode->args.size() > 1) {
-            return {nullptr, nullptr,
-                    CompilerError::tooManyCallArguments(astValue)};
-          }
-          if (genericValues.size() > 1) {
-            return {nullptr, nullptr,
-                    CompilerError::tooManyCallTemplateArguments(astValue)};
-          }
-          const auto firstArgAstValue = callNode->args[0];
-          const auto firstArgResult =
-              this->compileValue(xFunction, xBlock, firstArgAstValue, {}, true);
-          if (firstArgResult.error) {
-            return firstArgResult;
-          }
-          if (firstArgResult.type->type != TypeTypePointer) {
-            return {nullptr, nullptr,
-                    CompilerError::invalidArgumentType(
-                        firstArgAstValue, "значення",
-                        this->compiler->pointerType, firstArgResult.type)};
-          }
-          if (genericValues.empty()) {
-            const auto loadXValue =
-                this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                    xBlock, firstArgResult.type->pointerTo->xType,
-                    firstArgResult.xValue);
-            return {firstArgResult.type->pointerTo, loadXValue, nullptr};
-          }
-          const auto genericValue = genericValues[0];
-          if (!firstArgResult.type->pointerTo->equals(genericValue)) {
-            return {nullptr, nullptr,
-                    CompilerError::invalidArgumentType(firstArgAstValue,
-                                                       "значення", genericValue,
-                                                       firstArgResult.type)};
-          }
-          const auto loadXValue =
-              this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                  xBlock, firstArgResult.type->pointerTo->xType,
-                  firstArgResult.xValue);
-          return {firstArgResult.type->pointerTo, loadXValue, nullptr};
-        }
-      }
-      Type* diiaType;
-      x::Value* diiaXValue;
-      const auto valueResult = this->compileValue(
-          xFunction, xBlock, callNode->value, diiaGenericValues, true);
-      if (valueResult.error) {
-        return {nullptr, nullptr, valueResult.error};
-      }
-      diiaType = valueResult.type;
-      diiaXValue = valueResult.xValue;
-      if (callNode->args.size() < diiaType->diiaParameters.size()) {
-        return {nullptr, nullptr,
-                CompilerError::notEnoughCallArguments(astValue)};
-      }
-      if (callNode->args.size() > diiaType->diiaParameters.size()) {
-        return {nullptr, nullptr,
-                CompilerError::tooManyCallArguments(astValue)};
-      }
-      std::vector<x::Value*> xArgs;
-      int argIndex = 0;
-      for (const auto& argAstValue : callNode->args) {
-        const auto argResult = this->compileValue(
-            xFunction, xBlock, argAstValue, diiaGenericValues, true);
-        if (argResult.error) {
-          return argResult;
-        }
-        const auto& diiaParameter = diiaType->diiaParameters[argIndex];
-        if (!argResult.type->equals(diiaParameter.type)) {
-          return {nullptr, nullptr,
-                  CompilerError::invalidArgumentType(
-                      argAstValue, diiaParameter.name, diiaParameter.type,
-                      argResult.type)};
-        }
-        xArgs.push_back(argResult.xValue);
-        argIndex++;
-      }
-      const auto xValue =
-          this->compiler->xModule->pushFunctionBlockCallInstruction(
-              xBlock, diiaType->diiaReturnType->xType, diiaXValue, xArgs);
-      return {diiaType->diiaReturnType, xValue, nullptr};
+      return this->compileCall(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindConstructorNode) {
       const auto constructorNode = astValue->data.ConstructorNode;
@@ -990,7 +1158,7 @@ namespace tsil::tk {
       diiaType->type = TypeTypeDiia;
       diiaType->name = diiaHeadNode->id;
       diiaType->xType = diiaScope->compiler->xModule->pointerType;
-      diiaType->diiaIsExtern = diiaHeadNode->is_extern;
+      diiaType->linkage = diiaHeadNode->linkage;
       diiaType->diiaIsVariadic = diiaHeadNode->is_variadic;
       diiaType->diiaReturnType = diiaScope->compiler->voidType;
       for (const auto& paramAstValue : diiaHeadNode->params) {
@@ -1076,10 +1244,25 @@ namespace tsil::tk {
     if (diiaType->diiaReturnType) {
       xReturnType = diiaType->diiaReturnType->xType;
     }
-    const auto diiaName = diiaType->name == "старт" ? "main" : diiaType->name;
+    const auto xFunctionName =
+        diiaType->name == "старт" ? "main" : diiaType->name;
+    auto xFunctionAttributes = "";
+    if (diiaType->linkage == ast::DiiaLinkageExtern ||
+        xFunctionName == "main") {
+      xFunctionAttributes = "";
+    } else if (diiaType->linkage == ast::DiiaLinkageStatic) {
+      if (diiaAstValue->kind == ast::KindDiiaDeclarationNode) {
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(
+                    diiaAstValue, "Внутрішня дія повинна мати тіло.")};
+      }
+      xFunctionAttributes = "internal";
+    } else {
+      xFunctionAttributes = "dso_local";
+    }
     const auto& [xFunction, functionXValue] =
-        diiaScope->compiler->xModule->declareFunction(diiaName, xReturnType,
-                                                      xParamTypes);
+        diiaScope->compiler->xModule->declareFunction(
+            xFunctionAttributes, xFunctionName, xReturnType, xParamTypes);
     if (diiaAstValue->kind == ast::KindDiiaDeclarationNode) {
       if (diiaAstValue->data.DiiaDeclarationNode->as.empty()) {
         diiaScope->compiler->globalScope

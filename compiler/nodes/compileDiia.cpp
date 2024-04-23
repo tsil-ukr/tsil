@@ -7,7 +7,6 @@ namespace tsil::compiler {
     const auto diiaType = new Type();
     diiaType->type = TypeTypeDiia;
     diiaType->name = diiaHeadNode->id;
-    diiaType->diia_is_extern = diiaHeadNode->is_extern;
     diiaType->diia_is_variadic = diiaHeadNode->is_variadic;
     diiaType->diia_result_type = this->state->voidType;
     for (const auto& paramAstValue : diiaHeadNode->params) {

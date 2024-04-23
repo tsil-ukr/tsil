@@ -68,6 +68,8 @@ namespace tsil::ast {
           return "AsNode";
         case ast::KindFunctionTypeNode:
           return "FunctionTypeNode";
+        case ast::KindIncludeNode:
+          return "IncludeNode";
       }
       return "Unknown";
     }

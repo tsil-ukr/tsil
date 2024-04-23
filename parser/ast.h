@@ -41,6 +41,7 @@ namespace tsil::ast {
   struct ConstructorArgNode;
   struct SizeofNode;
   struct AsNode;
+  struct IncludeNode;
 
   enum BinaryOp {
     ARITHMETIC_ADD,
@@ -106,6 +107,7 @@ namespace tsil::ast {
     KindConstructorArgNode,
     KindSizeofNode,
     KindAsNode,
+    KindIncludeNode,
   };
 
   std::string ast_value_kind_to_string(ASTValueKind kind);
@@ -144,6 +146,7 @@ namespace tsil::ast {
     tsil::ast::ConstructorArgNode* ConstructorArgNode;
     tsil::ast::SizeofNode* SizeofNode;
     tsil::ast::AsNode* AsNode;
+    tsil::ast::IncludeNode* IncludeNode;
   };
 
   struct ASTValue {
@@ -203,8 +206,14 @@ namespace tsil::ast {
 
   struct ContinueNode {};
 
+  enum DiiaLinkage {
+    DiiaLinkageExtern,
+    DiiaLinkageLocal,
+    DiiaLinkageStatic,
+  };
+
   struct DiiaHeadNode {
-    bool is_extern;
+    DiiaLinkage linkage;
     std::string id;
     std::vector<std::string> generic_definitions;
     std::vector<ASTValue*> params;
@@ -308,6 +317,10 @@ namespace tsil::ast {
   struct AsNode {
     ASTValue* value;
     ASTValue* type;
+  };
+
+  struct IncludeNode {
+    std::string path;
   };
 } // namespace tsil::ast
 #endif // TSIL_AST_H

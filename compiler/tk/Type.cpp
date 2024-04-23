@@ -78,6 +78,50 @@ namespace tsil::tk {
     return type;
   }
 
+  size_t Type::getBytesSize(tsil::tk::Scope* scope) {
+    if (this->type == TypeTypePointer) {
+      return 4;
+    }
+    if (this->type == TypeTypeDiia) {
+      return 4;
+    }
+    if (this == scope->compiler->int1Type) {
+      return 1;
+    }
+    if (this == scope->compiler->int8Type) {
+      return 1;
+    }
+    if (this == scope->compiler->int32Type) {
+      return 4;
+    }
+    if (this == scope->compiler->int64Type) {
+      return 8;
+    }
+    if (this == scope->compiler->uint8Type) {
+      return 1;
+    }
+    if (this == scope->compiler->uint32Type) {
+      return 4;
+    }
+    if (this == scope->compiler->uint64Type) {
+      return 8;
+    }
+    if (this == scope->compiler->floatType) {
+      return 4;
+    }
+    if (this == scope->compiler->doubleType) {
+      return 8;
+    }
+    if (this->type == TypeTypeStructureInstance) {
+      size_t result = 0;
+      for (const auto& field : this->structureInstanceFields) {
+        result += field.second.type->getBytesSize(scope);
+      }
+      return result;
+    }
+    return 0;
+  }
+
   bool Type::isComparable(Scope* scope) {
     return this == scope->compiler->int1Type ||
            this == scope->compiler->int8Type ||

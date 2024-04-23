@@ -36,6 +36,16 @@ namespace tsil::tk {
     Type* uint32Type = nullptr;
     Type* uint64Type = nullptr;
     Type* textType = nullptr;
+
+    x::Value* callocXValue = nullptr;
+    x::Value* mallocXValue = nullptr;
+    x::Value* reallocXValue = nullptr;
+    x::Value* freeXValue = nullptr;
+
+    x::Value* ensureCallocConnected();
+    x::Value* ensureMallocConnected();
+    x::Value* ensureReallocConnected();
+    x::Value* ensureFreeConnected();
   };
 
   struct SecondCompilerError {
@@ -150,6 +160,34 @@ namespace tsil::tk {
     bool hasVariable(const std::string& name) const;
     std::pair<Type*, x::Value*> getVariable(const std::string& name);
 
+    CompilerValueResult compileCall(tsil::x::Function* xFunction,
+                                    tsil::x::FunctionBlock* xBlock,
+                                    ast::ASTValue* astValue);
+    CompilerValueResult compileCall_Pointer(tsil::x::Function* xFunction,
+                                            tsil::x::FunctionBlock* xBlock,
+                                            ast::ASTValue* astValue);
+    CompilerValueResult compileCall_Value(tsil::x::Function* xFunction,
+                                          tsil::x::FunctionBlock* xBlock,
+                                          ast::ASTValue* astValue);
+    CompilerValueResult compileCall_Allocate(tsil::x::Function* xFunction,
+                                             tsil::x::FunctionBlock* xBlock,
+                                             ast::ASTValue* astValue);
+    CompilerValueResult compileCall_AllocateBytes(
+        tsil::x::Function* xFunction,
+        tsil::x::FunctionBlock* xBlock,
+        ast::ASTValue* astValue);
+    CompilerValueResult compileCall_Reallocate(tsil::x::Function* xFunction,
+                                               tsil::x::FunctionBlock* xBlock,
+                                               ast::ASTValue* astValue);
+    CompilerValueResult compileCall_ReallocateBytes(
+        tsil::x::Function* xFunction,
+        tsil::x::FunctionBlock* xBlock,
+        ast::ASTValue* astValue);
+    CompilerValueResult compileCall_Free(
+        tsil::x::Function* xFunction,
+        tsil::x::FunctionBlock* xBlock,
+        ast::ASTValue* astValue);
+
     CompilerValueResult compileValueGet(tsil::x::Function* xFunction,
                                         tsil::x::FunctionBlock* xBlock,
                                         ast::ASTValue* astValue,
@@ -198,7 +236,7 @@ namespace tsil::tk {
     // structure
     std::unordered_map<std::string, TypeStructureField> structureInstanceFields;
     // diia
-    bool diiaIsExtern;
+    ast::DiiaLinkage linkage;
     std::vector<TypeDiiaParameter> diiaParameters;
     bool diiaIsVariadic;
     Type* diiaReturnType = nullptr;
@@ -208,6 +246,7 @@ namespace tsil::tk {
     bool equals(Type* other);
     std::string getFullName();
     Type* getPointerType(Scope* scope);
+    size_t getBytesSize(Scope* scope);
     bool isComparable(Scope* scope);
     bool isUnsigned(Scope* scope);
     bool isFloating(Scope* scope);

@@ -70,10 +70,12 @@ namespace tsil::x {
   }
 
   std::pair<Function*, Value*> Module::declareFunction(
+      const std::string& attributes,
       const std::string& name,
       Type* result_type,
       std::vector<Value*> parameters) {
     auto function = new Function();
+    function->attributes = attributes;
     function->name = "@\"" + name + "\"";
     function->result_type = result_type;
     function->parameters = parameters;
@@ -81,10 +83,12 @@ namespace tsil::x {
     return {function, new Value(this->pointerType, function->name)};
   }
 
-  Value* Module::defineFunction(const std::string& name,
+  Value* Module::defineFunction(const std::string& attributes,
+                                const std::string& name,
                                 Type* result_type,
                                 std::vector<Value*> parameters) {
     auto function = new Function();
+    function->attributes = attributes;
     function->name = "@" + name;
     function->result_type = result_type;
     function->parameters = parameters;
@@ -511,6 +515,171 @@ namespace tsil::x {
     return new Value(type, instruction->name);
   }
 
+  Value* Module::pushFunctionBlockTruncInstruction(FunctionBlock* block,
+                                                   Type* type,
+                                                   Value* value,
+                                                   Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto trunc = new FunctionInstructionTrunc();
+    trunc->type = type;
+    trunc->value = value;
+    trunc->toType = toType;
+    instruction->name = this->computeNextVarName("trunc");
+    instruction->trunc = trunc;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockZextInstruction(FunctionBlock* block,
+                                                  Type* type,
+                                                  Value* value,
+                                                  Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto zext = new FunctionInstructionZext();
+    zext->type = type;
+    zext->value = value;
+    zext->toType = toType;
+    instruction->name = this->computeNextVarName("zext");
+    instruction->zext = zext;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockSextInstruction(FunctionBlock* block,
+                                                  Type* type,
+                                                  Value* value,
+                                                  Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto sext = new FunctionInstructionSext();
+    sext->type = type;
+    sext->value = value;
+    sext->toType = toType;
+    instruction->name = this->computeNextVarName("sext");
+    instruction->sext = sext;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockFptruncInstruction(FunctionBlock* block,
+                                                     Type* type,
+                                                     Value* value,
+                                                     Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto fptrunc = new FunctionInstructionFptrunc();
+    fptrunc->type = type;
+    fptrunc->value = value;
+    fptrunc->toType = toType;
+    instruction->name = this->computeNextVarName("fptrunc");
+    instruction->fptrunc = fptrunc;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockFpextInstruction(FunctionBlock* block,
+                                                   Type* type,
+                                                   Value* value,
+                                                   Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto fpext = new FunctionInstructionFpext();
+    fpext->type = type;
+    fpext->value = value;
+    fpext->toType = toType;
+    instruction->name = this->computeNextVarName("fpext");
+    instruction->fpext = fpext;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockFptouiInstruction(FunctionBlock* block,
+                                                    Type* type,
+                                                    Value* value,
+                                                    Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto fptoui = new FunctionInstructionFptoui();
+    fptoui->type = type;
+    fptoui->value = value;
+    fptoui->toType = toType;
+    instruction->name = this->computeNextVarName("fptoui");
+    instruction->fptoui = fptoui;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockFptosiInstruction(FunctionBlock* block,
+                                                    Type* type,
+                                                    Value* value,
+                                                    Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto fptosi = new FunctionInstructionFptosi();
+    fptosi->type = type;
+    fptosi->value = value;
+    fptosi->toType = toType;
+    instruction->name = this->computeNextVarName("fptosi");
+    instruction->fptosi = fptosi;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockUitofpInstruction(FunctionBlock* block,
+                                                    Type* type,
+                                                    Value* value,
+                                                    Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto uitofp = new FunctionInstructionUitofp();
+    uitofp->type = type;
+    uitofp->value = value;
+    uitofp->toType = toType;
+    instruction->name = this->computeNextVarName("uitofp");
+    instruction->uitofp = uitofp;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockSitofpInstruction(FunctionBlock* block,
+                                                    Type* type,
+                                                    Value* value,
+                                                    Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto sitofp = new FunctionInstructionSitofp();
+    sitofp->type = type;
+    sitofp->value = value;
+    sitofp->toType = toType;
+    instruction->name = this->computeNextVarName("sitofp");
+    instruction->sitofp = sitofp;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockPtrtointInstruction(FunctionBlock* block,
+                                                      Type* type,
+                                                      Value* value,
+                                                      Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto ptrtoint = new FunctionInstructionPtrtoint();
+    ptrtoint->type = type;
+    ptrtoint->value = value;
+    ptrtoint->toType = toType;
+    instruction->name = this->computeNextVarName("ptrtoint");
+    instruction->ptrtoint = ptrtoint;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockInttoptrInstruction(FunctionBlock* block,
+                                                      Type* type,
+                                                      Value* value,
+                                                      Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto inttoptr = new FunctionInstructionInttoptr();
+    inttoptr->type = type;
+    inttoptr->value = value;
+    inttoptr->toType = toType;
+    instruction->name = this->computeNextVarName("inttoptr");
+    instruction->inttoptr = inttoptr;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
   std::string Module::dumpLL() {
     std::vector<std::string> lines;
 
@@ -571,6 +740,10 @@ namespace tsil::x {
     }
     if (this->blocks.empty()) {
       std::string result = "declare ";
+      if (!this->attributes.empty()) {
+        result += this->attributes;
+        result += " ";
+      }
       result += this->result_type->name;
       result += " ";
       result += this->name;
@@ -580,6 +753,10 @@ namespace tsil::x {
       return result;
     } else {
       std::string result = "define ";
+      if (!this->attributes.empty()) {
+        result += this->attributes;
+        result += " ";
+      }
       result += this->result_type->name;
       result += " ";
       result += this->name;

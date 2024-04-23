@@ -4,7 +4,13 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitDiia(TsilParser::DiiaContext* context) {
     const auto diia_node = new ast::DiiaNode();
     const auto diia_head_node = new ast::DiiaHeadNode();
-    diia_head_node->is_extern = context->d_extern != nullptr;
+    if (context->d_extern) {
+      diia_head_node->linkage = ast::DiiaLinkageExtern;
+    } else if (context->d_local) {
+      diia_head_node->linkage = ast::DiiaLinkageLocal;
+    } else {
+      diia_head_node->linkage = ast::DiiaLinkageStatic;
+    }
     diia_head_node->id = context->d_head->d_name->getText();
     if (context->d_head->d_generics) {
       for (const auto& diia_generic :
@@ -31,7 +37,13 @@ namespace tsil::parser {
       TsilParser::Diia_declarationContext* context) {
     const auto diia_declaration_node = new ast::DiiaDeclarationNode();
     const auto diia_head_node = new ast::DiiaHeadNode();
-    diia_head_node->is_extern = context->d_extern != nullptr;
+    if (context->d_extern) {
+      diia_head_node->linkage = ast::DiiaLinkageExtern;
+    } else if (context->d_local) {
+      diia_head_node->linkage = ast::DiiaLinkageLocal;
+    } else {
+      diia_head_node->linkage = ast::DiiaLinkageStatic;
+    }
     diia_head_node->id = context->d_head->d_name->getText();
     if (context->d_head->d_generics) {
       for (const auto& diia_generic :

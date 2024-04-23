@@ -7,7 +7,9 @@ options {
 file: f_program=program EOF;
 
 program: program_element*;
-program_element: structure | diia_declaration |  diia | section | ';';
+program_element: include | structure | diia_declaration |  diia | section | ';';
+
+include: 'підключити' i_path=string ';';
 
 structure: 'структура' s_name=identifier ('<' s_generics=structure_generics '>')? '{' (s_params=structure_params)? '}';
 structure_generics: structure_generic (',' structure_generic)*;
@@ -20,8 +22,8 @@ constructor_args: constructor_arg (',' constructor_arg)* ','?;
 constructor_arg: ca_name=identifier '=' ca_value=expr;
 
 diia_head: 'дія' d_name=identifier ('<' d_generics=diia_generics '>')? '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' ('-' '>' d_type=full_type)?;
-diia: (d_extern='екстерн' (d_extern_type=string)?)? d_head=diia_head '{' (d_body=body)? '}';
-diia_declaration: (d_extern='екстерн' (d_extern_type=string)?)? d_head=diia_head ('як' d_as=identifier)? ';';
+diia: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? d_head=diia_head '{' (d_body=body)? '}';
+diia_declaration: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? d_head=diia_head ('як' d_as=identifier)? ';';
 diia_generics: diia_generic (',' diia_generic)*;
 diia_generic: dg_name=identifier;
 

@@ -34,12 +34,12 @@ namespace tsil::compiler {
                 CompilerError::fromASTValue(astValue,
                                             "Неможливо отримати комірку.")};
       }
-      if (name == "значення") {
+      if (name == "вміст") {
         if (callNode->args.size() != 1) {
-          return {
-              nullptr, nullptr,
-              CompilerError::fromASTValue(
-                  astValue, "Неправильна кількість аргументів для значення")};
+          return {nullptr, nullptr,
+                  CompilerError::fromASTValue(
+                      astValue,
+                      "Неправильна кількість аргументів для дії \"вміст\"")};
         }
         const auto firstArg = callNode->args[0];
         if (firstArg->kind == ast::KindIdentifierNode) {

@@ -36,7 +36,6 @@ namespace tsil::compiler {
     std::unordered_map<std::string, TypeStructureField>
         structure_instance_fields;
     // diia
-    bool diia_is_extern;
     std::vector<TypeDiiaParameter> diia_parameters;
     bool diia_is_variadic;
     Type* diia_result_type = nullptr;

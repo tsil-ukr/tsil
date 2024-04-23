@@ -38,6 +38,17 @@ namespace tsil::x {
   struct FunctionInstructionShl;
   struct FunctionInstructionLShr;
   struct FunctionInstructionAShr;
+  struct FunctionInstructionTrunc;
+  struct FunctionInstructionZext;
+  struct FunctionInstructionSext;
+  struct FunctionInstructionFptrunc;
+  struct FunctionInstructionFpext;
+  struct FunctionInstructionFptoui;
+  struct FunctionInstructionFptosi;
+  struct FunctionInstructionUitofp;
+  struct FunctionInstructionSitofp;
+  struct FunctionInstructionPtrtoint;
+  struct FunctionInstructionInttoptr;
 
   struct Module {
     std::string name;
@@ -67,11 +78,12 @@ namespace tsil::x {
     Type* defineStructType(const std::string& name, std::vector<Type*> fields);
 
     std::pair<Function*, Value*> declareFunction(
+        const std::string& attributes,
         const std::string& name,
         Type* result_type,
         std::vector<Value*> parameters);
-
-    Value* defineFunction(const std::string& name,
+    Value* defineFunction(const std::string& attributes,
+                          const std::string& name,
                           Type* result_type,
                           std::vector<Value*> parameters);
     FunctionBlock* defineFunctionBlock(Function* function,
@@ -180,6 +192,50 @@ namespace tsil::x {
                                             Type* type,
                                             Value* left,
                                             Value* right);
+    Value* pushFunctionBlockTruncInstruction(FunctionBlock* block,
+                                             Type* type,
+                                             Value* value,
+                                             Type* toType);
+    Value* pushFunctionBlockZextInstruction(FunctionBlock* block,
+                                            Type* type,
+                                            Value* value,
+                                            Type* toType);
+    Value* pushFunctionBlockSextInstruction(FunctionBlock* block,
+                                            Type* type,
+                                            Value* value,
+                                            Type* toType);
+    Value* pushFunctionBlockFptruncInstruction(FunctionBlock* block,
+                                               Type* type,
+                                               Value* value,
+                                               Type* toType);
+    Value* pushFunctionBlockFpextInstruction(FunctionBlock* block,
+                                             Type* type,
+                                             Value* value,
+                                             Type* toType);
+    Value* pushFunctionBlockFptouiInstruction(FunctionBlock* block,
+                                              Type* type,
+                                              Value* value,
+                                              Type* toType);
+    Value* pushFunctionBlockFptosiInstruction(FunctionBlock* block,
+                                              Type* type,
+                                              Value* value,
+                                              Type* toType);
+    Value* pushFunctionBlockUitofpInstruction(FunctionBlock* block,
+                                              Type* type,
+                                              Value* value,
+                                              Type* toType);
+    Value* pushFunctionBlockSitofpInstruction(FunctionBlock* block,
+                                              Type* type,
+                                              Value* value,
+                                              Type* toType);
+    Value* pushFunctionBlockPtrtointInstruction(FunctionBlock* block,
+                                                Type* type,
+                                                Value* value,
+                                                Type* toType);
+    Value* pushFunctionBlockInttoptrInstruction(FunctionBlock* block,
+                                                Type* type,
+                                                Value* value,
+                                                Type* toType);
 
     std::string dumpLL();
   };
@@ -220,6 +276,7 @@ namespace tsil::x {
   };
 
   struct Function {
+    std::string attributes;
     std::string name;
     Type* result_type = nullptr;
     std::vector<Value*> parameters;
@@ -240,6 +297,7 @@ namespace tsil::x {
 
   struct FunctionInstruction {
     std::string name;
+    // todo: use unions maybe to keep memory usage lower
     FunctionInstructionAlloca* alloca;
     FunctionInstructionGetElementPtr* getelementptr;
     FunctionInstructionStore* store;
@@ -266,6 +324,17 @@ namespace tsil::x {
     FunctionInstructionShl* shl;
     FunctionInstructionLShr* lshr;
     FunctionInstructionAShr* ashr;
+    FunctionInstructionTrunc* trunc;
+    FunctionInstructionZext* zext;
+    FunctionInstructionSext* sext;
+    FunctionInstructionFptrunc* fptrunc;
+    FunctionInstructionFpext* fpext;
+    FunctionInstructionFptoui* fptoui;
+    FunctionInstructionFptosi* fptosi;
+    FunctionInstructionUitofp* uitofp;
+    FunctionInstructionSitofp* sitofp;
+    FunctionInstructionPtrtoint* ptrtoint;
+    FunctionInstructionInttoptr* inttoptr;
 
     std::string dumpLL(Module* module);
   };
@@ -420,5 +489,71 @@ namespace tsil::x {
     Type* type;
     Value* left;
     Value* right;
+  };
+
+  struct FunctionInstructionTrunc {
+    Type* type;
+    Value* value;
+    Type* toType;
+  };
+
+  struct FunctionInstructionZext {
+    Type* type;
+    Value* value;
+    Type* toType;
+  };
+
+  struct FunctionInstructionSext {
+    Type* type;
+    Value* value;
+    Type* toType;
+  };
+
+  struct FunctionInstructionFptrunc {
+    Type* type;
+    Value* value;
+    Type* toType;
+  };
+
+  struct FunctionInstructionFpext {
+    Type* type;
+    Value* value;
+    Type* toType;
+  };
+
+  struct FunctionInstructionFptoui {
+    Type* type;
+    Value* value;
+    Type* toType;
+  };
+
+  struct FunctionInstructionFptosi {
+    Type* type;
+    Value* value;
+    Type* toType;
+  };
+
+  struct FunctionInstructionUitofp {
+    Type* type;
+    Value* value;
+    Type* toType;
+  };
+
+  struct FunctionInstructionSitofp {
+    Type* type;
+    Value* value;
+    Type* toType;
+  };
+
+  struct FunctionInstructionPtrtoint {
+    Type* type;
+    Value* value;
+    Type* toType;
+  };
+
+  struct FunctionInstructionInttoptr {
+    Type* type;
+    Value* value;
+    Type* toType;
   };
 } // namespace tsil::x

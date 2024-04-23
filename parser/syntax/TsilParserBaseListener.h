@@ -25,6 +25,9 @@ public:
   virtual void enterProgram_element(TsilParser::Program_elementContext * /*ctx*/) override { }
   virtual void exitProgram_element(TsilParser::Program_elementContext * /*ctx*/) override { }
 
+  virtual void enterInclude(TsilParser::IncludeContext * /*ctx*/) override { }
+  virtual void exitInclude(TsilParser::IncludeContext * /*ctx*/) override { }
+
   virtual void enterStructure(TsilParser::StructureContext * /*ctx*/) override { }
   virtual void exitStructure(TsilParser::StructureContext * /*ctx*/) override { }
 
