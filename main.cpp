@@ -335,6 +335,15 @@ int main(int argc, char** argv) {
       printParserError(inputPath, code, &parserResult.errors[0]);
       return 1;
     }
+  } else if (command == "допомога") {
+    std::cout << "Використання:" << std::endl;
+    std::cout << "  ціль <команда> [<аргументи>]" << std::endl;
+    std::cout << "Команди:" << std::endl;
+    std::cout << "  сплавити <вхідний файл> <вихідний файл>" << std::endl;
+    std::cout << "  допомога" << std::endl;
+  } else {
+    std::cerr << "помилка: Невідома команда" << std::endl;
+    return 1;
   }
 
   return 0;
