@@ -1,4 +1,4 @@
-<img src="./assets/logo.png" width="100" height="100" />
+<img src="./assets/logo.png" width="70" height="70" />
 
 # Ціль
 
