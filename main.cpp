@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <map>
@@ -41,6 +42,16 @@ std::string strgetline(const std::string& code, size_t line) {
   }
   return code.substr(start, end - start);
 }
+
+struct CompileCommand {
+  std::string inputPath;
+  std::string outputPath;
+};
+
+struct FuseCommand {
+  std::vector<std::string> inputPaths;
+  std::string outputPath;
+};
 
 void printCompilerError(const std::string& path,
                         const std::string& code,
@@ -91,20 +102,21 @@ void printParserError(const std::string& path,
   std::cerr << "^" << std::endl;
 }
 
-int compile(const std::string& inputPath, const std::string& outputPath) {
-  if (!outputPath.ends_with(".ll") && !outputPath.ends_with(".bc")) {
+int compile(const CompileCommand& compileCommand) {
+  if (!compileCommand.outputPath.ends_with(".ll") &&
+      !compileCommand.outputPath.ends_with(".bc")) {
     std::cerr << "помилка: Вихідний файл повинен мати розширення .ll або .bc"
               << std::endl;
     return 1;
   }
-  if (outputPath.ends_with(".bc")) {
+  if (compileCommand.outputPath.ends_with(".bc")) {
     std::cerr << "помилка: Вихідний файл з розширенням .bc тимчасово не "
                  "підтримується"
               << std::endl;
     return 1;
   }
 
-  std::ifstream inputFile(inputPath);
+  std::ifstream inputFile(compileCommand.inputPath);
   if (!inputFile.is_open()) {
     std::cerr << "помилка: Не вдалося відкрити вхідний файл" << std::endl;
     return 1;
@@ -232,7 +244,7 @@ int compile(const std::string& inputPath, const std::string& outputPath) {
         const auto structureNode = astValue->data.StructureNode;
         if (compiler->globalScope->hasSubject(structureNode->name)) {
           printCompilerError(
-              inputPath, code,
+              compileCommand.inputPath, code,
               tsil::tk::CompilerError::subjectAlreadyDefined(astValue));
           return 1;
         }
@@ -242,7 +254,7 @@ int compile(const std::string& inputPath, const std::string& outputPath) {
         const auto diiaDeclarationNode = astValue->data.DiiaDeclarationNode;
         if (compiler->globalScope->hasSubject(diiaDeclarationNode->head->id)) {
           printCompilerError(
-              inputPath, code,
+              compileCommand.inputPath, code,
               tsil::tk::CompilerError::subjectAlreadyDefined(astValue));
           return 1;
         }
@@ -250,7 +262,8 @@ int compile(const std::string& inputPath, const std::string& outputPath) {
           const auto bakedDiiaResult =
               compiler->globalScope->bakeDiia(astValue, astValue, {});
           if (bakedDiiaResult.error) {
-            printCompilerError(inputPath, code, bakedDiiaResult.error);
+            printCompilerError(compileCommand.inputPath, code,
+                               bakedDiiaResult.error);
             return 1;
           }
           if (diiaDeclarationNode->as.empty()) {
@@ -274,7 +287,7 @@ int compile(const std::string& inputPath, const std::string& outputPath) {
         const auto diiaNode = astValue->data.DiiaNode;
         if (compiler->globalScope->hasSubject(diiaNode->head->id)) {
           printCompilerError(
-              inputPath, code,
+              compileCommand.inputPath, code,
               tsil::tk::CompilerError::subjectAlreadyDefined(astValue));
           return 1;
         }
@@ -282,7 +295,8 @@ int compile(const std::string& inputPath, const std::string& outputPath) {
           const auto bakedDiiaResult =
               compiler->globalScope->bakeDiia(astValue, astValue, {});
           if (bakedDiiaResult.error) {
-            printCompilerError(inputPath, code, bakedDiiaResult.error);
+            printCompilerError(compileCommand.inputPath, code,
+                               bakedDiiaResult.error);
             return 1;
           }
           compiler->globalScope->bakedDiias[{diiaNode->head->id, {}}] = {
@@ -292,14 +306,14 @@ int compile(const std::string& inputPath, const std::string& outputPath) {
                                                            astValue);
         }
       } else {
-        printCompilerError(inputPath, code,
+        printCompilerError(compileCommand.inputPath, code,
                            tsil::tk::CompilerError::fromASTValue(
                                astValue, "Неможливо скомпілювати це речення"));
         return 1;
       }
     }
 
-    std::ofstream outFile(outputPath);
+    std::ofstream outFile(compileCommand.outputPath);
     if (!outFile.is_open()) {
       std::cerr << "помилка: Не вдалося відкрити вихідний файл" << std::endl;
       return 1;
@@ -308,47 +322,58 @@ int compile(const std::string& inputPath, const std::string& outputPath) {
     outFile.close();
     return 0;
   } else {
-    printParserError(inputPath, code, &parserResult.errors[0]);
+    printParserError(compileCommand.inputPath, code, &parserResult.errors[0]);
     return 1;
   }
 }
 
+void printHelp() {
+  std::cout << "Використання:" << std::endl;
+  std::cout << "  ціль <ціль> <команда> [аргументи...]" << std::endl;
+  std::cout << "  ціль допомога" << std::endl;
+  std::cout << "Команди:" << std::endl;
+  std::cout << "  <вихід.[ll|bc]> скомпілювати <вхід.ц>" << std::endl;
+  std::cout << "  <вихід.[|o|a|so]> сплавити <вхід.[ц|c|cpp|ll|bc]...>"
+            << std::endl;
+}
+
 int main(int argc, char** argv) {
   auto args = std::vector<std::string>(argv, argv + argc);
-  const auto& command = args[1];
+  if (args.size() < 2) {
+    std::cerr << "помилка: недостатньо аргументів" << std::endl;
+    return 1;
+  }
+  if (args[1] == "допомога") {
+    printHelp();
+    return 0;
+  }
+  const auto& target = args[1];
+  const auto& command = args[2];
 
   if (command == "скомпілювати") {
-    if (args.size() < 3) {
-      std::cerr << "помилка: Не вказано вхідний файл" << std::endl;
-      return 1;
-    }
     if (args.size() < 4) {
-      std::cerr << "помилка: Не вказано вихідний файл" << std::endl;
+      std::cerr << "помилка: Не вказано вхід" << std::endl;
       return 1;
     }
-
-    const auto& inputPath = args[2];
-    const auto& outputPath = args[3];
-
-    return compile(inputPath, outputPath);
+    return compile({args[3], target});
   } else if (command == "сплавити") {
-    if (args.size() < 3) {
-      std::cerr << "помилка: Не вказано вхідний файл" << std::endl;
-      return 1;
-    }
     if (args.size() < 4) {
-      std::cerr << "помилка: Не вказано вихідний файл" << std::endl;
+      std::cerr << "помилка: Не вказано вхід" << std::endl;
       return 1;
     }
 
-    const auto& inputPaths =
-        std::vector<std::string>(args.begin() + 2, args.end() - 1);
-    const auto& outputPath = args.back();
+    FuseCommand fuseCommand;
+    fuseCommand.inputPaths =
+        std::vector<std::string>(args.begin() + 3, args.end());
+    fuseCommand.outputPath = target;
 
     // ensure output path has right extension or without
-    if (!outputPath.ends_with(".o") && !outputPath.ends_with(".a") &&
-        !outputPath.ends_with(".so") && !outputPath.ends_with(".out")) {
-      if (std::count(outputPath.begin(), outputPath.end(), '.') == 0) {
+    if (!fuseCommand.outputPath.ends_with(".o") &&
+        !fuseCommand.outputPath.ends_with(".a") &&
+        !fuseCommand.outputPath.ends_with(".so") &&
+        !fuseCommand.outputPath.ends_with(".out")) {
+      if (std::count(fuseCommand.outputPath.begin(),
+                     fuseCommand.outputPath.end(), '.') == 0) {
       } else {
         std::cerr << "помилка: Вихідний файл повинен мати розширення .o, .a, "
                      ".so або без розширення"
@@ -358,17 +383,29 @@ int main(int argc, char** argv) {
     }
 
     std::vector<std::string> cmd;
-    cmd.push_back("clang++");
-    cmd.push_back("-o");
-    cmd.push_back(outputPath);
-    for (const auto& inputPath : inputPaths) {
+    cmd.emplace_back("clang++");
+    cmd.emplace_back("-o");
+    cmd.push_back(fuseCommand.outputPath);
+    for (const auto& inputPath : fuseCommand.inputPaths) {
       if (inputPath.ends_with(".ц")) {
+        std::string fsSeparator;
+        fsSeparator.push_back(std::filesystem::path::preferred_separator);
+        const auto cacheDirPath = "плавлення" + fsSeparator + "корито";
         const auto inputPathOutput =
+            cacheDirPath + fsSeparator +
             inputPath.substr(0, inputPath.size() - std::string(".ц").size()) +
             ".ll";
-        std::cout << "> ціль скомпілювати " << inputPath << " "
-                  << inputPathOutput << std::endl;
-        int compilationStatus = compile(inputPath, inputPathOutput);
+        if (!std::filesystem::is_directory(cacheDirPath) ||
+            !std::filesystem::exists(cacheDirPath)) {
+          if (!std::filesystem::create_directories(cacheDirPath)) {
+            std::cerr << "помилка: Не вдалося створити директорію \"сплави\""
+                      << std::endl;
+            return 1;
+          }
+        }
+        std::cout << "> ціль " << inputPathOutput << " скомпілювати "
+                  << inputPath << std::endl;
+        int compilationStatus = compile({inputPath, inputPathOutput});
         if (compilationStatus != 0) {
           return compilationStatus;
         }
@@ -382,13 +419,7 @@ int main(int argc, char** argv) {
     std::cout << "> " << cmdStr << std::endl;
     return system(cmdStr.c_str());
   } else if (command == "допомога") {
-    std::cout << "Використання:" << std::endl;
-    std::cout << "  ціль <команда> [<аргументи>]" << std::endl;
-    std::cout << "Команди:" << std::endl;
-    std::cout << "  скомпілювати <вхід.ц> <вихід.[ll|bc]>" << std::endl;
-    std::cout << "  сплавити <вхід.[ц|c|cpp|ll|bc] ...> <вихід.[|o|a|so]>"
-              << std::endl;
-    std::cout << "  допомога" << std::endl;
+    printHelp();
   } else {
     std::cerr << "помилка: Невідома команда" << std::endl;
     return 1;
