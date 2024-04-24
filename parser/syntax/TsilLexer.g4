@@ -2,8 +2,6 @@ lexer grammar TsilLexer;
 
 KW_TSIL: 'ціль';
 KW_DIIA: 'дія';
-KW_SAVE: 'зберегти';
-KW_DELETE: 'видалити';
 KW_IF: 'якщо';
 KW_ELSE: 'інакше';
 KW_WHILE: 'поки';
@@ -22,7 +20,6 @@ KW_LOCAL: 'місцева';
 KW_NOT: 'не';
 KW_OR: 'або';
 KW_AND: 'і';
-KW_INCLUDE: 'підключити';
 
 EQUAL: '=';
 GREATER: '>';

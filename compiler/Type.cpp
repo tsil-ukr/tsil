@@ -58,6 +58,17 @@ namespace tsil::tk {
                               : resultFullName);
       return result;
     }
+    if (this->type == TypeTypePointer) {
+      if (this->pointerTo) {
+        return "комірка<" + this->pointerTo->getFullName() + ">";
+      } else {
+        return "невідома_комірка";
+      }
+    }
+    if (this->type == TypeTypeArray) {
+      return this->arrayOf->getFullName() + "[" +
+             std::to_string(this->arraySize) + "]";
+    }
     std::string result = this->name;
     if (!this->genericValues.empty()) {
       result += "<";
@@ -83,8 +94,18 @@ namespace tsil::tk {
     type->name = "комірка";
     type->pointerTo = this;
     type->genericValues.push_back(this);
-    type->xType = scope->compiler->xModule->pointerType;
+    type->xType = this->xType->getPointerType(scope->compiler->xModule);
     this->cachedPointerType = type;
+    return type;
+  }
+
+  Type* Type::getArrayType(tsil::tk::Scope* scope, size_t size) {
+    const auto type = new Type();
+    type->type = TypeTypeArray;
+    type->name = "";
+    type->arraySize = size;
+    type->arrayOf = this;
+    type->xType = this->xType->getArrayType(scope->compiler->xModule, size);
     return type;
   }
 

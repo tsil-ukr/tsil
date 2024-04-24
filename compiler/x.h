@@ -269,7 +269,9 @@ namespace tsil::x {
 
   enum TypeType {
     TypeTypeNative,
+    TypeTypePointer,
     TypeTypeType,
+    TypeTypeArray,
   };
 
   struct Type {
@@ -277,7 +279,13 @@ namespace tsil::x {
     TypeType type;
     std::string name;
     std::vector<Type*> fields;
+    Type* pointerTo;
+    size_t arraySize;
+    Type* arrayOf;
+    Type* cachedPointerType;
 
+    Type* getPointerType(Module* module);
+    Type* getArrayType(Module* module, size_t size);
     std::string dumpLL(Module* module);
   };
 

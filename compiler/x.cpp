@@ -14,7 +14,8 @@ namespace tsil::x {
 
   std::string Module::computeNextVarName(const std::string& prefix) {
     if (TSIL_X_EXPANDED_NAMES) {
-      return "%\"" + prefix + "." + std::to_string(this->variable_counter++) + "\"";
+      return "%\"" + prefix + "." + std::to_string(this->variable_counter++) +
+             "\"";
     }
     return "%v." + std::to_string(this->variable_counter++);
   }
@@ -719,8 +720,35 @@ namespace tsil::x {
            "\\00\"";
   }
 
+  Type* Type::getPointerType(tsil::x::Module* module) {
+    if (this->cachedPointerType) {
+      return this->cachedPointerType;
+    }
+    const auto type = new Type();
+    type->type = TypeTypePointer;
+    type->name = this->name + "*";
+    type->pointerTo = this;
+    this->cachedPointerType = type;
+    return type;
+  }
+
+  Type* Type::getArrayType(tsil::x::Module* module, size_t size) {
+    const auto type = new Type();
+    type->type = TypeTypeArray;
+    type->name = "[";
+    type->name += std::to_string(size);
+    type->name += " x ";
+    type->name += this->name;
+    type->name += "]";
+    type->arraySize = size;
+    type->arrayOf = this;
+    return type;
+  }
+
   std::string Type::dumpLL(Module* module) {
     if (this->type == TypeTypeNative) {
+      return this->name;
+    } else if (this->type == TypeTypeArray) {
       return this->name;
     } else {
       std::vector<std::string> fields;

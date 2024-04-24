@@ -61,6 +61,7 @@ struct FuseCommand {
   std::string outputPath;
   FuseCommandOutputType outputType;
   bool releaseMode = false;
+  bool useCCache = false;
 };
 
 void printCompilerError(const std::string& path,
@@ -342,9 +343,12 @@ void printHelp() {
   std::cout << "  ціль <ціль> <команда> [аргументи...]" << std::endl;
   std::cout << "  ціль допомога" << std::endl;
   std::cout << "Команди:" << std::endl;
-  std::cout << "  <вихід.[ll|bc]> скомпілювати <вхід.ц>" << std::endl;
-  std::cout << "  <вихід.[|o|a|so|wasm]> сплавити <вхід.[ц|c|cpp|ll|bc]p...>"
+  std::cout << "  <вихід[.ll|.bc]> скомпілювати <вхід.ц>" << std::endl;
+  std::cout << "  <вихід[|.o|.a|.so|.wasm]> сплавити [опції...] "
+               "<вхід[.ц|.c|.cpp|.ll|.bc]...>"
             << std::endl;
+  std::cout << "    --режим=[розробка|випуск]" << std::endl;
+  std::cout << "    --кеш=[ні|ccache]" << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -375,8 +379,10 @@ int main(int argc, char** argv) {
     FuseCommand fuseCommand;
     for (const auto& inputPath :
          std::vector<std::string>(args.begin() + 3, args.end())) {
-      if (inputPath == "-В" || inputPath == "--випуск=так") {
+      if (inputPath == "--режим=випуск") {
         fuseCommand.releaseMode = true;
+      } else if (inputPath == "--кеш=ccache") {
+        fuseCommand.useCCache = true;
       } else {
         fuseCommand.inputPaths.push_back(inputPath);
       }
@@ -402,6 +408,9 @@ int main(int argc, char** argv) {
     }
 
     std::vector<std::string> cmd;
+    if (fuseCommand.useCCache) {
+      cmd.emplace_back("ccache");
+    }
     cmd.emplace_back("clang++");
     if (fuseCommand.outputType == FuseCommandOutputTypeObject) {
       cmd.emplace_back("-c");

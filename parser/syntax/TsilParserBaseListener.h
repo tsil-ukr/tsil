@@ -25,9 +25,6 @@ public:
   virtual void enterProgram_element(TsilParser::Program_elementContext * /*ctx*/) override { }
   virtual void exitProgram_element(TsilParser::Program_elementContext * /*ctx*/) override { }
 
-  virtual void enterInclude(TsilParser::IncludeContext * /*ctx*/) override { }
-  virtual void exitInclude(TsilParser::IncludeContext * /*ctx*/) override { }
-
   virtual void enterStructure(TsilParser::StructureContext * /*ctx*/) override { }
   virtual void exitStructure(TsilParser::StructureContext * /*ctx*/) override { }
 
@@ -165,6 +162,9 @@ public:
 
   virtual void enterComplex_function_type(TsilParser::Complex_function_typeContext * /*ctx*/) override { }
   virtual void exitComplex_function_type(TsilParser::Complex_function_typeContext * /*ctx*/) override { }
+
+  virtual void enterArray_type(TsilParser::Array_typeContext * /*ctx*/) override { }
+  virtual void exitArray_type(TsilParser::Array_typeContext * /*ctx*/) override { }
 
   virtual void enterType(TsilParser::TypeContext * /*ctx*/) override { }
   virtual void exitType(TsilParser::TypeContext * /*ctx*/) override { }

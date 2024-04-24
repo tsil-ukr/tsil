@@ -34,6 +34,7 @@ namespace tsil::ast {
   struct LogicalNode;
   struct TypeNode;
   struct FunctionTypeNode;
+  struct ArrayTypeNode;
   struct UnaryNode;
   struct WhileNode;
   struct BlockNode;
@@ -101,6 +102,7 @@ namespace tsil::ast {
     KindLogicalNode,
     KindTypeNode,
     KindFunctionTypeNode,
+    KindArrayTypeNode,
     KindUnaryNode,
     KindWhileNode,
     KindBlockNode,
@@ -141,6 +143,7 @@ namespace tsil::ast {
     tsil::ast::LogicalNode* LogicalNode;
     tsil::ast::TypeNode* TypeNode;
     tsil::ast::FunctionTypeNode* FunctionTypeNode;
+    tsil::ast::ArrayTypeNode* ArrayTypeNode;
     tsil::ast::UnaryNode* UnaryNode;
     tsil::ast::WhileNode* WhileNode;
     tsil::ast::BlockNode* BlockNode;
@@ -280,13 +283,17 @@ namespace tsil::ast {
 
   struct TypeNode {
     std::string id;
-    ASTValue* size;
     std::vector<ASTValue*> generics;
   };
 
   struct FunctionTypeNode {
     std::vector<ASTValue*> args;
     ASTValue* return_type;
+  };
+
+  struct ArrayTypeNode {
+    ASTValue* type;
+    ASTValue* size;
   };
 
   struct UnaryNode {

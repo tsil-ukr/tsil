@@ -23,7 +23,9 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitConstructor_arg(
       TsilParser::Constructor_argContext* context) {
     const auto constructor_arg_node = new ast::ConstructorArgNode();
-    constructor_arg_node->id = context->ca_name->getText();
+    if (context->ca_name) {
+      constructor_arg_node->id = context->ca_name->getText();
+    }
     constructor_arg_node->value = AAV(visitContext(context->ca_value));
     return AV(context, ast::KindConstructorArgNode, constructor_arg_node);
   }

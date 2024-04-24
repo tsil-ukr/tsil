@@ -25,8 +25,6 @@ public:
 
     virtual std::any visitProgram_element(TsilParser::Program_elementContext *context) = 0;
 
-    virtual std::any visitInclude(TsilParser::IncludeContext *context) = 0;
-
     virtual std::any visitStructure(TsilParser::StructureContext *context) = 0;
 
     virtual std::any visitStructure_generics(TsilParser::Structure_genericsContext *context) = 0;
@@ -118,6 +116,8 @@ public:
     virtual std::any visitSimple_function_type(TsilParser::Simple_function_typeContext *context) = 0;
 
     virtual std::any visitComplex_function_type(TsilParser::Complex_function_typeContext *context) = 0;
+
+    virtual std::any visitArray_type(TsilParser::Array_typeContext *context) = 0;
 
     virtual std::any visitType(TsilParser::TypeContext *context) = 0;
 

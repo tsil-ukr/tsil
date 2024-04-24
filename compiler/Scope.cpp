@@ -502,7 +502,7 @@ namespace tsil::tk {
     const auto xStringConstant =
         this->compiler->xModule->putStringConstant(stringValue);
     if (stringNode->prefix == "сі") {
-      return {this->compiler->int8Type->getPointerType(this), xStringConstant,
+      return {this->compiler->uint8Type->getPointerType(this), xStringConstant,
               nullptr};
     }
     return {nullptr, nullptr,
@@ -870,16 +870,32 @@ namespace tsil::tk {
     const auto xAllocValue =
         this->compiler->xModule->pushFunctionBlockAllocaInstruction(
             xBlock, "construct", typeResult.type->xType);
+    int argIndex = 0;
     for (const auto argAstValue : constructorNode->args) {
       const auto constructorArgNode = argAstValue->data.ConstructorArgNode;
-      if (!typeResult.type->structureInstanceFields.contains(
-              constructorArgNode->id)) {
-        return {nullptr, nullptr,
-                CompilerError::typeHasNoProperty(argAstValue, typeResult.type,
-                                                 constructorArgNode->id)};
+      TypeStructureField field{};
+      if (constructorArgNode->id.empty()) {
+        if (argIndex >= typeResult.type->structureInstanceFields.size()) {
+          return {nullptr, nullptr,
+                  CompilerError::tooManyConstructorArguments(argAstValue)};
+        }
+        for (const auto& [id, field_] :
+             typeResult.type->structureInstanceFields) {
+          if (field_.index == argIndex) {
+            field = field_;
+            break;
+          }
+        }
+      } else {
+        if (!typeResult.type->structureInstanceFields.contains(
+                constructorArgNode->id)) {
+          return {nullptr, nullptr,
+                  CompilerError::typeHasNoProperty(argAstValue, typeResult.type,
+                                                   constructorArgNode->id)};
+        }
+        field =
+            typeResult.type->structureInstanceFields[constructorArgNode->id];
       }
-      const auto field =
-          typeResult.type->structureInstanceFields[constructorArgNode->id];
       const auto argValueResult =
           this->compileValue(xFunction, xBlock, constructorArgNode->value, {});
       if (argValueResult.error) {
@@ -887,9 +903,9 @@ namespace tsil::tk {
       }
       if (!argValueResult.type->equals(field.type)) {
         return {nullptr, nullptr,
-                CompilerError::invalidArgumentType(
-                    constructorArgNode->value, constructorArgNode->id,
-                    field.type, argValueResult.type)};
+                CompilerError::invalidArgumentType(constructorArgNode->value,
+                                                   field.name, field.type,
+                                                   argValueResult.type)};
       }
       const auto xGepValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
@@ -899,6 +915,7 @@ namespace tsil::tk {
                             std::to_string(field.index))});
       this->compiler->xModule->pushFunctionBlockStoreInstruction(
           xBlock, argValueResult.type->xType, argValueResult.xValue, xGepValue);
+      argIndex++;
     }
     x::Value* xLoadValue =
         this->compiler->xModule->pushFunctionBlockLoadInstruction(
@@ -945,34 +962,59 @@ namespace tsil::tk {
       leftResult.type = valueResult.type;
       leftResult.xValue = valueResult.xValue;
     }
-    if (leftResult.type->type != TypeTypePointer) {
-      return {nullptr, nullptr,
-              CompilerError::cannotAccessNonPointer(accessNode->value,
-                                                    leftResult.type)};
+    if (leftResult.type->type == TypeTypePointer) {
+      const auto indexResult =
+          this->compileValue(xFunction, xBlock, accessNode->index, {});
+      if (indexResult.error) {
+        return indexResult;
+      }
+      if (!indexResult.type->equals(this->compiler->uint64Type)) {
+        return {nullptr, nullptr,
+                CompilerError::invalidArgumentType(accessNode->index, "позиція",
+                                                   this->compiler->uint64Type,
+                                                   indexResult.type)};
+      }
+      const auto xGepValue =
+          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              {indexResult.xValue});
+      if (load) {
+        const auto xLoadValue =
+            this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                xBlock, leftResult.type->pointerTo->xType, xGepValue);
+        return {leftResult.type->pointerTo, xLoadValue, nullptr};
+      } else {
+        return {leftResult.type->pointerTo, xGepValue, nullptr};
+      }
     }
-    const auto indexResult =
-        this->compileValue(xFunction, xBlock, accessNode->index, {});
-    if (indexResult.error) {
-      return indexResult;
+    if (leftResult.type->type == TypeTypeArray) {
+      const auto indexResult =
+          this->compileValue(xFunction, xBlock, accessNode->index, {});
+      if (indexResult.error) {
+        return indexResult;
+      }
+      if (!indexResult.type->equals(this->compiler->uint64Type)) {
+        return {nullptr, nullptr,
+                CompilerError::invalidArgumentType(accessNode->index, "позиція",
+                                                   this->compiler->uint64Type,
+                                                   indexResult.type)};
+      }
+      const auto xGepValue =
+          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              {indexResult.xValue});
+      if (load) {
+        const auto xLoadValue =
+            this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                xBlock, leftResult.type->arrayOf->xType, xGepValue);
+        return {leftResult.type->arrayOf, xLoadValue, nullptr};
+      } else {
+        return {leftResult.type->arrayOf, xGepValue, nullptr};
+      }
     }
-    if (!indexResult.type->equals(this->compiler->uint64Type)) {
-      return {nullptr, nullptr,
-              CompilerError::invalidArgumentType(accessNode->index, "позиція",
-                                                 this->compiler->uint64Type,
-                                                 indexResult.type)};
-    }
-    const auto xGepValue =
-        this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-            xBlock, leftResult.type->xType, leftResult.xValue,
-            {indexResult.xValue});
-    if (load) {
-      const auto xLoadValue =
-          this->compiler->xModule->pushFunctionBlockLoadInstruction(
-              xBlock, leftResult.type->pointerTo->xType, xGepValue);
-      return {leftResult.type->pointerTo, xLoadValue, nullptr};
-    } else {
-      return {leftResult.type->pointerTo, xGepValue, nullptr};
-    }
+    return {nullptr, nullptr,
+            CompilerError::cannotAccessNonPointer(accessNode->value,
+                                                  leftResult.type)};
   }
 
   CompilerValueResult Scope::compileGet(tsil::x::Function* xFunction,
@@ -1534,6 +1576,7 @@ namespace tsil::tk {
             const auto field = TypeStructureField{
                 .index = paramIndex,
                 .type = paramTypeResult.type,
+                .name = paramNode->id,
             };
             type->structureInstanceFields[paramNode->id] = field;
             xFields[paramIndex] = field.type->xType;
@@ -1577,6 +1620,24 @@ namespace tsil::tk {
         type->diiaReturnType = this->compiler->voidType;
       }
       return {type, ""};
+    }
+    if (astValue->kind == ast::KindArrayTypeNode) {
+      const auto arrayTypeNode = astValue->data.ArrayTypeNode;
+      const auto arraySizeNumberNode = arrayTypeNode->size->data.NumberNode;
+      if (str_contains(arraySizeNumberNode->value, ".")) {
+        return {nullptr, "Розмір масиву повинен бути цілим числом"};
+      }
+      const auto arraySizeString =
+          tsilNumberToLLVMNumber(arraySizeNumberNode->value);
+      const auto arraySize = std::stoi(arraySizeString);
+      if (arraySize < 0) {
+        return {nullptr, "Розмір масиву повинен бути додатнім числом"};
+      }
+      const auto elementTypeResult = this->bakeType(arrayTypeNode->type);
+      if (!elementTypeResult.type) {
+        return {nullptr, elementTypeResult.error};
+      }
+      return {elementTypeResult.type->getArrayType(this, arraySize), ""};
     }
     return {nullptr, "NOT IMPLEMENTED BAKED TYPE"};
   }

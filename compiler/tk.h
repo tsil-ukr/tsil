@@ -102,6 +102,8 @@ namespace tsil::tk {
                                               Type* got);
     static CompilerError* cannotAccessNonPointer(tsil::ast::ASTValue* astValue,
                                                  Type* type);
+    static CompilerError* tooManyConstructorArguments(
+        tsil::ast::ASTValue* astValue);
   };
 
   struct CompilerResult {
@@ -229,6 +231,7 @@ namespace tsil::tk {
   enum TypeType {
     TypeTypeNative,
     TypeTypePointer,
+    TypeTypeArray,
     TypeTypeStructureInstance,
     TypeTypeDiia,
   };
@@ -236,6 +239,7 @@ namespace tsil::tk {
   struct TypeStructureField {
     int index;
     Type* type;
+    std::string name;
   };
 
   struct TypeDiiaParameter {
@@ -249,6 +253,9 @@ namespace tsil::tk {
     std::string name;
     Type* cachedPointerType = nullptr;
     std::vector<Type*> genericValues;
+    // array
+    Type* arrayOf = nullptr;
+    size_t arraySize;
     // pointer
     Type* pointerTo = nullptr;
     // structure
@@ -264,6 +271,7 @@ namespace tsil::tk {
     bool equals(Type* other);
     std::string getFullName();
     Type* getPointerType(Scope* scope);
+    Type* getArrayType(Scope* scope, size_t size);
     size_t getBytesSize(Scope* scope);
     bool isComparable(Scope* scope);
     bool isUnsigned(Scope* scope);

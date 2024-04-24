@@ -72,6 +72,8 @@ namespace tsil::ast {
           return "IncludeNode";
         case ast::KindAccessNode:
           return "AccessNode";
+        case ast::KindArrayTypeNode:
+          return "ArrayTypeNode";
       }
       return "Unknown";
     }

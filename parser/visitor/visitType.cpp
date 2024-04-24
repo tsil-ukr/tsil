@@ -14,6 +14,10 @@ namespace tsil::parser {
             dynamic_cast<TsilParser::Simple_function_typeContext*>(context)) {
       return visitSimple_function_type(type);
     }
+    if (const auto type =
+            dynamic_cast<TsilParser::Array_typeContext*>(context)) {
+      return visitArray_type(type);
+    }
     return nullptr;
   }
 
@@ -34,6 +38,13 @@ namespace tsil::parser {
     function_type_node->args.push_back(AAV(visitFullType(context->sft_arg)));
     function_type_node->return_type = AAV(visitFullType(context->sft_ret));
     return AV(context, ast::KindFunctionTypeNode, function_type_node);
+  }
+
+  std::any TsilASTVisitor::visitArray_type(TsilParser::Array_typeContext* ctx) {
+    const auto array_type_node = new ast::ArrayTypeNode();
+    array_type_node->type = AAV(visitFullType(ctx->at_type));
+    array_type_node->size = AAV(visitContext(ctx->at_size));
+    return AV(ctx, ast::KindArrayTypeNode, array_type_node);
   }
 
   std::any TsilASTVisitor::visitComplex_function_type(

@@ -7,9 +7,7 @@ options {
 file: f_program=program EOF;
 
 program: program_element*;
-program_element: include | structure | diia_declaration |  diia | section | ';';
-
-include: 'підключити' i_path=string ';';
+program_element: structure | diia_declaration |  diia | section | ';';
 
 structure: 'структура' s_name=identifier ('<' s_generics=structure_generics '>')? '{' (s_params=structure_params)? '}';
 structure_generics: structure_generic (',' structure_generic)*;
@@ -17,9 +15,9 @@ structure_generic: sg_name=identifier;
 structure_params: structure_param (',' structure_param)* ','?;
 structure_param: sp_name=identifier ':' sp_type=full_type;
 
-constructor: (c_new='зберегти')? c_type=full_type '{' (c_args=constructor_args)? '}';
+constructor: c_type=full_type '{' (c_args=constructor_args)? '}';
 constructor_args: constructor_arg (',' constructor_arg)* ','?;
-constructor_arg: ca_name=identifier '=' ca_value=expr;
+constructor_arg: (ca_name=identifier '=')? ca_value=expr;
 
 diia_head: 'дія' d_name=identifier ('<' d_generics=diia_generics '>')? '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' ('-' '>' d_type=full_type)?;
 diia: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? d_head=diia_head '{' (d_body=body)? '}';
@@ -72,9 +70,10 @@ expr: molecule #expr_molecule
 
 identifiers_chain: ic_id=ID |  ic_left=identifiers_chain '.' ic_right=ID;
 
-full_type: identifier ('<' t_first_generic_type=full_type (',' full_type)* '>')? ('[' ft_arr_size=expr ']')? #type
+full_type: identifier ('<' t_first_generic_type=full_type (',' full_type)* '>')? #type
          | sft_arg=full_type '-' '>' sft_ret=full_type #simple_function_type
-         | '(' (cft_args=simple_function_type_args)? ')' '-' '>' cft_ret=full_type #complex_function_type;
+         | '(' (cft_args=simple_function_type_args)? ')' '-' '>' cft_ret=full_type #complex_function_type
+         |  at_type=full_type '[' at_size=number ']' #array_type;
 simple_function_type_args: full_type (',' full_type)*;
 
 args: expr (',' expr)* (',')?;

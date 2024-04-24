@@ -27,10 +27,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitInclude(TsilParser::IncludeContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitStructure(TsilParser::StructureContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -212,6 +208,10 @@ public:
   }
 
   virtual std::any visitComplex_function_type(TsilParser::Complex_function_typeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitArray_type(TsilParser::Array_typeContext *ctx) override {
     return visitChildren(ctx);
   }
 

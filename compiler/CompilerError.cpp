@@ -184,4 +184,10 @@ namespace tsil::tk {
                              "Позиційний доступ недоступний для типу \"" +
                                  type->getFullName() + "\"");
   }
+
+  CompilerError* CompilerError::tooManyConstructorArguments(
+      tsil::ast::ASTValue* astValue) {
+    return new CompilerError(astValue->start_line, astValue->start_column,
+                             "Забагато аргументів для конструктора");
+  }
 } // namespace tsil::tk
