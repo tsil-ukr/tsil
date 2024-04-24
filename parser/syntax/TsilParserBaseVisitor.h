@@ -127,6 +127,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitAccess(TsilParser::AccessContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitBitwise_not(TsilParser::Bitwise_notContext *ctx) override {
     return visitChildren(ctx);
   }

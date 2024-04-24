@@ -869,7 +869,7 @@ namespace tsil::tk {
     }
     const auto xAllocValue =
         this->compiler->xModule->pushFunctionBlockAllocaInstruction(
-            xBlock, typeResult.type->xType);
+            xBlock, "construct", typeResult.type->xType);
     for (const auto argAstValue : constructorNode->args) {
       const auto constructorArgNode = argAstValue->data.ConstructorArgNode;
       if (!typeResult.type->structureInstanceFields.contains(
@@ -894,7 +894,9 @@ namespace tsil::tk {
       const auto xGepValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
               xBlock, typeResult.type->xType, xAllocValue,
-              {0, static_cast<unsigned long>(field.index)});
+              {new x::Value(this->compiler->int32Type->xType, "0"),
+               new x::Value(this->compiler->int32Type->xType,
+                            std::to_string(field.index))});
       this->compiler->xModule->pushFunctionBlockStoreInstruction(
           xBlock, argValueResult.type->xType, argValueResult.xValue, xGepValue);
     }
@@ -904,16 +906,85 @@ namespace tsil::tk {
     return {typeResult.type, xLoadValue, nullptr};
   }
 
+  CompilerValueResult Scope::compileAccess(tsil::x::Function* xFunction,
+                                           tsil::x::FunctionBlock* xBlock,
+                                           ast::ASTValue* astValue,
+                                           bool load) {
+    const auto accessNode = astValue->data.AccessNode;
+    CompilerValueResult leftResult;
+    if (accessNode->value->kind == ast::KindIdentifierNode) {
+      const auto identifierResult = this->compileIdentifier(
+          xFunction, xBlock, accessNode->value, {}, false);
+      if (identifierResult.error) {
+        return identifierResult;
+      }
+      leftResult.type = identifierResult.type;
+      leftResult.xValue = identifierResult.xValue;
+    } else if (accessNode->value->kind == ast::KindGetNode) {
+      const auto getResult =
+          this->compileGet(xFunction, xBlock, accessNode->value, false);
+      if (getResult.error) {
+        return getResult;
+      }
+      leftResult.type = getResult.type;
+      leftResult.xValue = getResult.xValue;
+    } else if (accessNode->value->kind == ast::KindAccessNode) {
+      const auto accessResult =
+          this->compileAccess(xFunction, xBlock, accessNode->value, false);
+      if (accessResult.error) {
+        return accessResult;
+      }
+      leftResult.type = accessResult.type;
+      leftResult.xValue = accessResult.xValue;
+    } else {
+      const auto valueResult =
+          this->compileValue(xFunction, xBlock, accessNode->value, {});
+      if (valueResult.error) {
+        return leftResult;
+      }
+      leftResult.type = valueResult.type;
+      leftResult.xValue = valueResult.xValue;
+    }
+    if (leftResult.type->type != TypeTypePointer) {
+      return {nullptr, nullptr,
+              CompilerError::cannotAccessNonPointer(accessNode->value,
+                                                    leftResult.type)};
+    }
+    const auto indexResult =
+        this->compileValue(xFunction, xBlock, accessNode->index, {});
+    if (indexResult.error) {
+      return indexResult;
+    }
+    if (!indexResult.type->equals(this->compiler->uint64Type)) {
+      return {nullptr, nullptr,
+              CompilerError::invalidArgumentType(accessNode->index, "позиція",
+                                                 this->compiler->uint64Type,
+                                                 indexResult.type)};
+    }
+    const auto xGepValue =
+        this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+            xBlock, leftResult.type->xType, leftResult.xValue,
+            {indexResult.xValue});
+    if (load) {
+      const auto xLoadValue =
+          this->compiler->xModule->pushFunctionBlockLoadInstruction(
+              xBlock, leftResult.type->pointerTo->xType, xGepValue);
+      return {leftResult.type->pointerTo, xLoadValue, nullptr};
+    } else {
+      return {leftResult.type->pointerTo, xGepValue, nullptr};
+    }
+  }
+
   CompilerValueResult Scope::compileGet(tsil::x::Function* xFunction,
                                         tsil::x::FunctionBlock* xBlock,
                                         ast::ASTValue* astValue,
                                         bool load) {
-    const auto getNode = astValue->data.GetNode;
+    const auto accessNode = astValue->data.GetNode;
     Type* leftType = nullptr;
     x::Value* leftXValue = nullptr;
-    if (getNode->left->kind == ast::KindIdentifierNode) {
-      const auto identifierResult =
-          this->compileIdentifier(xFunction, xBlock, getNode->left, {}, false);
+    if (accessNode->left->kind == ast::KindIdentifierNode) {
+      const auto identifierResult = this->compileIdentifier(
+          xFunction, xBlock, accessNode->left, {}, false);
       if (identifierResult.error) {
         return identifierResult;
       }
@@ -921,9 +992,9 @@ namespace tsil::tk {
       leftXValue = identifierResult.xValue;
       goto proceed;
     }
-    if (getNode->left->kind == ast::KindGetNode) {
+    if (accessNode->left->kind == ast::KindGetNode) {
       const auto getLeftResult =
-          this->compileGet(xFunction, xBlock, getNode->left, false);
+          this->compileGet(xFunction, xBlock, accessNode->left, false);
       if (getLeftResult.error) {
         return getLeftResult;
       }
@@ -931,23 +1002,35 @@ namespace tsil::tk {
       leftXValue = getLeftResult.xValue;
       goto proceed;
     }
-    return {
-        nullptr, nullptr,
-        CompilerError::fromASTValue(
-            astValue, "NOT IMPLEMENTED GET: " +
-                          ast::ast_value_kind_to_string(getNode->left->kind))};
+    if (accessNode->left->kind == ast::KindAccessNode) {
+      const auto accessLeftResult =
+          this->compileAccess(xFunction, xBlock, accessNode->left, false);
+      if (accessLeftResult.error) {
+        return accessLeftResult;
+      }
+      leftType = accessLeftResult.type;
+      leftXValue = accessLeftResult.xValue;
+      goto proceed;
+    }
+    return {nullptr, nullptr,
+            CompilerError::fromASTValue(
+                astValue,
+                "NOT IMPLEMENTED GET: " +
+                    ast::ast_value_kind_to_string(accessNode->left->kind))};
   proceed:
     if (leftType->type == TypeTypeStructureInstance) {
-      if (!leftType->structureInstanceFields.contains(getNode->id)) {
-        return {
-            nullptr, nullptr,
-            CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};
+      if (!leftType->structureInstanceFields.contains(accessNode->id)) {
+        return {nullptr, nullptr,
+                CompilerError::typeHasNoProperty(astValue, leftType,
+                                                 accessNode->id)};
       }
-      const auto field = leftType->structureInstanceFields[getNode->id];
+      const auto field = leftType->structureInstanceFields[accessNode->id];
       const auto gepXValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
               xBlock, leftType->xType, leftXValue,
-              {0, static_cast<unsigned long>(field.index)});
+              {new x::Value(this->compiler->int32Type->xType, "0"),
+               new x::Value(this->compiler->int32Type->xType,
+                            std::to_string(field.index))});
       if (load) {
         const auto loadXValue =
             this->compiler->xModule->pushFunctionBlockLoadInstruction(
@@ -957,8 +1040,9 @@ namespace tsil::tk {
         return {field.type, gepXValue, nullptr};
       }
     }
-    return {nullptr, nullptr,
-            CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};
+    return {
+        nullptr, nullptr,
+        CompilerError::typeHasNoProperty(astValue, leftType, accessNode->id)};
   }
 
   CompilerValueResult Scope::compileValue(
@@ -990,6 +1074,9 @@ namespace tsil::tk {
     }
     if (astValue->kind == ast::KindConstructorNode) {
       return this->compileConstructor(xFunction, xBlock, astValue);
+    }
+    if (astValue->kind == ast::KindAccessNode) {
+      return this->compileAccess(xFunction, xBlock, astValue, true);
     }
     return {nullptr, nullptr,
             CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED VALUE")};
@@ -1045,7 +1132,7 @@ namespace tsil::tk {
           }
           const auto allocaXValue =
               this->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                  xBlock, type->xType);
+                  xBlock, defineNode->id, type->xType);
           this->compiler->xModule->pushFunctionBlockStoreInstruction(
               xBlock, valueResult.type->xType, valueResult.xValue,
               allocaXValue);
@@ -1053,7 +1140,7 @@ namespace tsil::tk {
         } else {
           const auto allocaXValue =
               this->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                  xBlock, type->xType);
+                  xBlock, defineNode->id, type->xType);
           this->variables[defineNode->id] = {type, allocaXValue};
         }
       } else if (childAstValue->kind == ast::KindAssignNode) {
@@ -1344,7 +1431,7 @@ namespace tsil::tk {
         if (xFunction->result_type != diiaScope->compiler->xModule->voidType) {
           xFunction->return_alloca =
               diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                  xFunction->entry_block, xFunction->result_type);
+                  xFunction->entry_block, "return", xFunction->result_type);
         }
       }
       xFunction->exit_block =
@@ -1364,7 +1451,8 @@ namespace tsil::tk {
       for (const auto& diiaParameter : diiaType->diiaParameters) {
         const auto allocXValue =
             diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                xFunction->entry_block, diiaParameter.type->xType);
+                xFunction->entry_block, diiaParameter.name,
+                diiaParameter.type->xType);
         diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
             xFunction->entry_block, diiaParameter.type->xType,
             diiaParameter.xValue, allocXValue);

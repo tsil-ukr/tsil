@@ -163,6 +163,8 @@ namespace tsil::parser {
 
     std::any visitSimple_function_type(
         TsilParser::Simple_function_typeContext* ctx) override;
+
+    std::any visitAccess(TsilParser::AccessContext* ctx) override;
   };
 
   struct TsilParserError {

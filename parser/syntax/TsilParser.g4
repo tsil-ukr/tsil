@@ -46,6 +46,7 @@ sizeof: 'розмір!' '(' (s_type=full_type | s_value=expr) ')';
 atom: identifier #atom_identifier
     | g_left=atom '.' g_id=identifier #get
     | c_value=atom ('<' c_first_generic_type=full_type (',' full_type)* '>')? '(' (c_args=args)? ')' #call
+    | a_value=atom '[' (a_index=expr)? ']' #access
     | '+' p_value=atom  #positive
     | '-' n_value=atom  #negative
     | '!' n_value=atom  #not

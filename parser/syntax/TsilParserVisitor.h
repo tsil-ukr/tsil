@@ -75,6 +75,8 @@ public:
 
     virtual std::any visitNot(TsilParser::NotContext *context) = 0;
 
+    virtual std::any visitAccess(TsilParser::AccessContext *context) = 0;
+
     virtual std::any visitBitwise_not(TsilParser::Bitwise_notContext *context) = 0;
 
     virtual std::any visitGet(TsilParser::GetContext *context) = 0;

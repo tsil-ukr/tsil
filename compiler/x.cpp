@@ -14,7 +14,7 @@ namespace tsil::x {
 
   std::string Module::computeNextVarName(const std::string& prefix) {
     if (TSIL_X_EXPANDED_NAMES) {
-      return "%" + prefix + "." + std::to_string(this->variable_counter++);
+      return "%\"" + prefix + "." + std::to_string(this->variable_counter++) + "\"";
     }
     return "%v." + std::to_string(this->variable_counter++);
   }
@@ -95,8 +95,8 @@ namespace tsil::x {
     const auto entryBlock = this->defineFunctionBlock(function, "entry");
     if (result_type) {
       if (result_type != this->voidType) {
-        function->return_alloca =
-            this->pushFunctionBlockAllocaInstruction(entryBlock, result_type);
+        function->return_alloca = this->pushFunctionBlockAllocaInstruction(
+            entryBlock, "return", result_type);
         const auto exitBlock = this->defineFunctionBlock(function, "exit");
         const auto loadedReturnValue = this->pushFunctionBlockLoadInstruction(
             exitBlock, result_type, function->return_alloca);
@@ -132,11 +132,12 @@ namespace tsil::x {
   }
 
   Value* Module::pushFunctionBlockAllocaInstruction(FunctionBlock* block,
+                                                    const std::string& name,
                                                     tsil::x::Type* type) {
     const auto instruction = new FunctionInstruction();
     const auto alloca = new FunctionInstructionAlloca();
     alloca->type = type;
-    instruction->name = this->computeNextVarName("alloca");
+    instruction->name = this->computeNextVarName(name);
     instruction->alloca = alloca;
     block->instructions.push_back(instruction);
     return new Value(this->pointerType, instruction->name);
@@ -146,7 +147,7 @@ namespace tsil::x {
       FunctionBlock* block,
       Type* type,
       Value* pointer,
-      std::vector<size_t> indexes) {
+      const std::vector<Value*>& indexes) {
     const auto instruction = new FunctionInstruction();
     const auto getelementptr = new FunctionInstructionGetElementPtr();
     getelementptr->type = type;
@@ -791,8 +792,7 @@ namespace tsil::x {
     if (this->getelementptr) {
       std::vector<std::string> indexes;
       for (const auto& index : this->getelementptr->indexes) {
-        indexes.push_back(module->int32Type->name + " " +
-                          std::to_string(index));
+        indexes.push_back(index->dumpLL(module));
       }
       std::string result = this->name + " = getelementptr ";
       result += this->getelementptr->type->name;

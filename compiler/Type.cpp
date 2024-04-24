@@ -90,10 +90,10 @@ namespace tsil::tk {
 
   size_t Type::getBytesSize(tsil::tk::Scope* scope) {
     if (this->type == TypeTypePointer) {
-      return 4;
+      return 8;
     }
     if (this->type == TypeTypeDiia) {
-      return 4;
+      return 8;
     }
     if (this == scope->compiler->int1Type) {
       return 1;

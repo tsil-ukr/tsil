@@ -682,6 +682,22 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  AccessContext : public AtomContext {
+  public:
+    AccessContext(AtomContext *ctx);
+
+    TsilParser::AtomContext *a_value = nullptr;
+    TsilParser::ExprContext *a_index = nullptr;
+    antlr4::tree::TerminalNode *BRACKET_OPEN();
+    antlr4::tree::TerminalNode *BRACKET_CLOSE();
+    AtomContext *atom();
+    ExprContext *expr();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  Bitwise_notContext : public AtomContext {
   public:
     Bitwise_notContext(AtomContext *ctx);

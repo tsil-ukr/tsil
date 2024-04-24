@@ -70,6 +70,8 @@ namespace tsil::ast {
           return "FunctionTypeNode";
         case ast::KindIncludeNode:
           return "IncludeNode";
+        case ast::KindAccessNode:
+          return "AccessNode";
       }
       return "Unknown";
     }
@@ -331,6 +333,10 @@ namespace tsil::parser {
     if (const auto expr_molecule_context =
             dynamic_cast<TsilParser::Expr_moleculeContext*>(context)) {
       return visitExpr_molecule(expr_molecule_context);
+    }
+    if (const auto access_context =
+            dynamic_cast<TsilParser::AccessContext*>(context)) {
+      return visitAccess(access_context);
     }
     return nullptr;
   }

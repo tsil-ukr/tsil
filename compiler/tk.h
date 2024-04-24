@@ -100,6 +100,8 @@ namespace tsil::tk {
                                               const std::string& name,
                                               Type* expected,
                                               Type* got);
+    static CompilerError* cannotAccessNonPointer(tsil::ast::ASTValue* astValue,
+                                                 Type* type);
   };
 
   struct CompilerResult {
@@ -200,6 +202,10 @@ namespace tsil::tk {
     CompilerValueResult compileConstructor(tsil::x::Function* xFunction,
                                            tsil::x::FunctionBlock* xBlock,
                                            ast::ASTValue* astValue);
+    CompilerValueResult compileAccess(tsil::x::Function* xFunction,
+                                      tsil::x::FunctionBlock* xBlock,
+                                      ast::ASTValue* astValue,
+                                      bool load);
 
     CompilerValueResult compileGet(tsil::x::Function* xFunction,
                                    tsil::x::FunctionBlock* xBlock,

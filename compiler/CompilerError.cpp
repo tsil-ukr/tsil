@@ -176,4 +176,12 @@ namespace tsil::tk {
                                  "\": очікується \"" + expected->getFullName() +
                                  "\", отримано \"" + got->getFullName() + "\"");
   }
+
+  CompilerError* CompilerError::cannotAccessNonPointer(
+      tsil::ast::ASTValue* astValue,
+      Type* type) {
+    return new CompilerError(astValue->start_line, astValue->start_column,
+                             "Позиційний доступ недоступний для типу \"" +
+                                 type->getFullName() + "\"");
+  }
 } // namespace tsil::tk

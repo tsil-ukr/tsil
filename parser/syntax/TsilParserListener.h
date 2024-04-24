@@ -98,6 +98,9 @@ public:
   virtual void enterNot(TsilParser::NotContext *ctx) = 0;
   virtual void exitNot(TsilParser::NotContext *ctx) = 0;
 
+  virtual void enterAccess(TsilParser::AccessContext *ctx) = 0;
+  virtual void exitAccess(TsilParser::AccessContext *ctx) = 0;
+
   virtual void enterBitwise_not(TsilParser::Bitwise_notContext *ctx) = 0;
   virtual void exitBitwise_not(TsilParser::Bitwise_notContext *ctx) = 0;
 

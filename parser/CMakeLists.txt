@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 set(TSIL_PARSER tsil_parser CACHE INTERNAL "")
 set(TSIL_PARSER_SRC
+        visitor/visitAccess.cpp
         visitor/visitArgs.cpp
         visitor/visitArithmetic.cpp
         visitor/visitAs.cpp

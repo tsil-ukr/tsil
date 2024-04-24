@@ -50,6 +50,10 @@ namespace tsil::x {
   struct FunctionInstructionPtrtoint;
   struct FunctionInstructionInttoptr;
 
+  void implode(std::vector<std::string>& v,
+               const std::string& sep,
+               std::string& result);
+
   struct Module {
     std::string name;
 
@@ -91,12 +95,14 @@ namespace tsil::x {
     FunctionBlock* getFunctionBlock(Function* function,
                                     const std::string& name);
 
-    Value* pushFunctionBlockAllocaInstruction(FunctionBlock* block, Type* type);
+    Value* pushFunctionBlockAllocaInstruction(FunctionBlock* block,
+                                              const std::string& name,
+                                              Type* type);
     Value* pushFunctionBlockGetElementPtrInstruction(
         FunctionBlock* block,
         Type* type,
         Value* pointer,
-        std::vector<size_t> indexes);
+        const std::vector<Value*>& indexes);
     FunctionInstruction* pushFunctionBlockStoreInstruction(FunctionBlock* block,
                                                            Type* type,
                                                            Value* value,
@@ -346,7 +352,7 @@ namespace tsil::x {
   struct FunctionInstructionGetElementPtr {
     Type* type;
     Value* pointer;
-    std::vector<size_t> indexes;
+    std::vector<Value*> indexes;
   };
 
   struct FunctionInstructionStore {

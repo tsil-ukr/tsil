@@ -100,6 +100,9 @@ public:
   virtual void enterNot(TsilParser::NotContext * /*ctx*/) override { }
   virtual void exitNot(TsilParser::NotContext * /*ctx*/) override { }
 
+  virtual void enterAccess(TsilParser::AccessContext * /*ctx*/) override { }
+  virtual void exitAccess(TsilParser::AccessContext * /*ctx*/) override { }
+
   virtual void enterBitwise_not(TsilParser::Bitwise_notContext * /*ctx*/) override { }
   virtual void exitBitwise_not(TsilParser::Bitwise_notContext * /*ctx*/) override { }
 
