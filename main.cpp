@@ -48,9 +48,19 @@ struct CompileCommand {
   std::string outputPath;
 };
 
+enum FuseCommandOutputType {
+  FuseCommandOutputTypeObject,
+  FuseCommandOutputTypeStaticLibrary,
+  FuseCommandOutputTypeSharedLibrary,
+  FuseCommandOutputTypeExecutable,
+  FuseCommandOutputTypeWasm,
+};
+
 struct FuseCommand {
   std::vector<std::string> inputPaths;
   std::string outputPath;
+  FuseCommandOutputType outputType;
+  bool releaseMode = false;
 };
 
 void printCompilerError(const std::string& path,
@@ -333,7 +343,7 @@ void printHelp() {
   std::cout << "  ціль допомога" << std::endl;
   std::cout << "Команди:" << std::endl;
   std::cout << "  <вихід.[ll|bc]> скомпілювати <вхід.ц>" << std::endl;
-  std::cout << "  <вихід.[|o|a|so]> сплавити <вхід.[ц|c|cpp|ll|bc]...>"
+  std::cout << "  <вихід.[|o|a|so|wasm]> сплавити <вхід.[ц|c|cpp|ll|bc]p...>"
             << std::endl;
 }
 
@@ -363,27 +373,74 @@ int main(int argc, char** argv) {
     }
 
     FuseCommand fuseCommand;
-    fuseCommand.inputPaths =
-        std::vector<std::string>(args.begin() + 3, args.end());
-    fuseCommand.outputPath = target;
-
-    // ensure output path has right extension or without
-    if (!fuseCommand.outputPath.ends_with(".o") &&
-        !fuseCommand.outputPath.ends_with(".a") &&
-        !fuseCommand.outputPath.ends_with(".so") &&
-        !fuseCommand.outputPath.ends_with(".out")) {
-      if (std::count(fuseCommand.outputPath.begin(),
-                     fuseCommand.outputPath.end(), '.') == 0) {
+    for (const auto& inputPath :
+         std::vector<std::string>(args.begin() + 3, args.end())) {
+      if (inputPath == "-В" || inputPath == "--випуск=так") {
+        fuseCommand.releaseMode = true;
       } else {
-        std::cerr << "помилка: Вихідний файл повинен мати розширення .o, .a, "
-                     ".so або без розширення"
-                  << std::endl;
-        return 1;
+        fuseCommand.inputPaths.push_back(inputPath);
       }
+    }
+    fuseCommand.outputPath = target;
+    if (target.ends_with(".o")) {
+      fuseCommand.outputType = FuseCommandOutputTypeObject;
+    } else if (target.ends_with(".a")) {
+      fuseCommand.outputType = FuseCommandOutputTypeStaticLibrary;
+    } else if (target.ends_with(".so")) {
+      fuseCommand.outputType = FuseCommandOutputTypeSharedLibrary;
+    } else if (target.ends_with(".out")) {
+      fuseCommand.outputType = FuseCommandOutputTypeExecutable;
+    } else if (target.ends_with(".wasm")) {
+      fuseCommand.outputType = FuseCommandOutputTypeWasm;
+    } else if (std::count(target.begin(), target.end(), '.') == 0) {
+      fuseCommand.outputType = FuseCommandOutputTypeExecutable;
+    } else {
+      std::cerr << "помилка: Вихідний файл повинен мати розширення .o, .a, "
+                   ".so, .out або .wasm"
+                << std::endl;
+      return 1;
     }
 
     std::vector<std::string> cmd;
     cmd.emplace_back("clang++");
+    if (fuseCommand.outputType == FuseCommandOutputTypeObject) {
+      cmd.emplace_back("-c");
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-O3");
+        cmd.emplace_back("-flto");
+      }
+    } else if (fuseCommand.outputType == FuseCommandOutputTypeStaticLibrary) {
+      cmd.emplace_back("-c");
+      cmd.emplace_back("-static");
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-O3");
+        cmd.emplace_back("-flto");
+      }
+    } else if (fuseCommand.outputType == FuseCommandOutputTypeSharedLibrary) {
+      cmd.emplace_back("-shared");
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-O3");
+        cmd.emplace_back("-flto");
+      }
+    } else if (fuseCommand.outputType == FuseCommandOutputTypeExecutable) {
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-O3");
+        cmd.emplace_back("-flto");
+      }
+    } else if (fuseCommand.outputType == FuseCommandOutputTypeWasm) {
+      cmd.emplace_back("--target=wasm32");
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-O3");
+        cmd.emplace_back("-flto");
+      }
+      cmd.emplace_back("-nostdlib");
+      cmd.emplace_back("-Wl,--no-entry");
+      cmd.emplace_back("-Wl,--export-all");
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-Wl,--lto-O3");
+      }
+      cmd.emplace_back("-Wl,-z,stack-size=8388608"); // 8MB
+    }
     cmd.emplace_back("-o");
     cmd.push_back(fuseCommand.outputPath);
     for (const auto& inputPath : fuseCommand.inputPaths) {
