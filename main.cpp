@@ -538,7 +538,7 @@ int main(int argc, char** argv) {
     std::cout << "> " << cmdStr << std::endl;
     return system(cmdStr.c_str());
   } else if (command == "допомога") {
-    printHelp();
+    std::cout << "в розробці" << std::endl;
   } else {
     std::cerr << "помилка: Невідома команда" << std::endl;
     return 1;
