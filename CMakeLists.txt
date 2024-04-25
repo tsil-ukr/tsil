@@ -7,12 +7,24 @@ set(CMAKE_BUILD_TYPE "Release")
 add_subdirectory(parser)
 
 set(TSIL_SRC
-        compiler/x.cpp
+        compiler/Scope/access.cpp
+        compiler/Scope/as.cpp
+        compiler/Scope/binary.cpp
+        compiler/Scope/call.cpp
+        compiler/Scope/construct.cpp
+        compiler/Scope/diia.cpp
+        compiler/Scope/get.cpp
+        compiler/Scope/identifier.cpp
+        compiler/Scope/number.cpp
+        compiler/Scope/set.cpp
+        compiler/Scope/string.cpp
+        compiler/Scope/type.cpp
         compiler/Compiler.cpp
         compiler/CompilerError.cpp
         compiler/Scope.cpp
         compiler/tk.cpp
         compiler/Type.cpp
+        compiler/x.cpp
         main.cpp
 )
 
