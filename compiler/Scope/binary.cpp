@@ -15,7 +15,13 @@ namespace tsil::tk {
     if (rightResult.error) {
       return rightResult;
     }
-    if (!leftResult.type->equals(rightResult.type)) {
+    const auto castedXValue =
+        this->compileSoftCast(xFunction, xBlock, leftResult.type,
+                              leftResult.xValue, rightResult.type);
+    if (castedXValue) {
+      leftResult.type = rightResult.type;
+      leftResult.xValue = castedXValue;
+    } else {
       return {nullptr, nullptr,
               CompilerError::typesOfInstructionDifferent(
                   astValue, leftResult.type, rightResult.type)};

@@ -71,12 +71,18 @@ namespace tsil::tk {
           if (indexResult.error) {
             return {indexResult.error};
           }
-          const auto valueResult =
+          auto valueResult =
               this->compileValue(xFunction, xBlock, setNode->value, {});
           if (valueResult.error) {
             return {valueResult.error};
           }
-          if (!valueResult.type->equals(leftType->arrayOf)) {
+          const auto castedXValue =
+              this->compileSoftCast(xFunction, xBlock, valueResult.type,
+                                    valueResult.xValue, leftType->arrayOf);
+          if (castedXValue) {
+            valueResult.type = leftType->arrayOf;
+            valueResult.xValue = castedXValue;
+          } else {
             return {CompilerError::invalidArgumentType(
                 setNode->value, "значення", leftType->arrayOf,
                 valueResult.type)};

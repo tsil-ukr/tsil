@@ -48,12 +48,18 @@ namespace tsil::tk {
       leftXValue = valueResult.xValue;
     }
     if (leftType->type == TypeTypePointer) {
-      const auto indexResult =
+      auto indexResult =
           this->compileValue(xFunction, xBlock, accessNode->index, {});
       if (indexResult.error) {
         return indexResult;
       }
-      if (!indexResult.type->equals(this->compiler->uint64Type)) {
+      const auto castedXValue =
+          this->compileSoftCast(xFunction, xBlock, indexResult.type,
+                                indexResult.xValue, this->compiler->uint64Type);
+      if (castedXValue) {
+        indexResult.type = this->compiler->uint64Type;
+        indexResult.xValue = castedXValue;
+      } else {
         return {nullptr, nullptr,
                 CompilerError::invalidArgumentType(accessNode->index, "позиція",
                                                    this->compiler->uint64Type,
@@ -72,12 +78,18 @@ namespace tsil::tk {
       }
     }
     if (leftType->type == TypeTypeArray) {
-      const auto indexResult =
+      auto indexResult =
           this->compileValue(xFunction, xBlock, accessNode->index, {});
       if (indexResult.error) {
         return indexResult;
       }
-      if (!indexResult.type->equals(this->compiler->uint64Type)) {
+      const auto castedXValue =
+          this->compileSoftCast(xFunction, xBlock, indexResult.type,
+                                indexResult.xValue, this->compiler->uint64Type);
+      if (castedXValue) {
+        indexResult.type = this->compiler->uint64Type;
+        indexResult.xValue = castedXValue;
+      } else {
         return {nullptr, nullptr,
                 CompilerError::invalidArgumentType(accessNode->index, "позиція",
                                                    this->compiler->uint64Type,

@@ -529,7 +529,7 @@ namespace tsil::x {
     instruction->name = this->computeNextVarName("trunc");
     instruction->trunc = trunc;
     block->instructions.push_back(instruction);
-    return new Value(type, instruction->name);
+    return new Value(toType, instruction->name);
   }
 
   Value* Module::pushFunctionBlockZextInstruction(FunctionBlock* block,
@@ -544,7 +544,7 @@ namespace tsil::x {
     instruction->name = this->computeNextVarName("zext");
     instruction->zext = zext;
     block->instructions.push_back(instruction);
-    return new Value(type, instruction->name);
+    return new Value(toType, instruction->name);
   }
 
   Value* Module::pushFunctionBlockSextInstruction(FunctionBlock* block,
@@ -559,7 +559,7 @@ namespace tsil::x {
     instruction->name = this->computeNextVarName("sext");
     instruction->sext = sext;
     block->instructions.push_back(instruction);
-    return new Value(type, instruction->name);
+    return new Value(toType, instruction->name);
   }
 
   Value* Module::pushFunctionBlockFptruncInstruction(FunctionBlock* block,
@@ -574,7 +574,7 @@ namespace tsil::x {
     instruction->name = this->computeNextVarName("fptrunc");
     instruction->fptrunc = fptrunc;
     block->instructions.push_back(instruction);
-    return new Value(type, instruction->name);
+    return new Value(toType, instruction->name);
   }
 
   Value* Module::pushFunctionBlockFpextInstruction(FunctionBlock* block,
@@ -589,7 +589,7 @@ namespace tsil::x {
     instruction->name = this->computeNextVarName("fpext");
     instruction->fpext = fpext;
     block->instructions.push_back(instruction);
-    return new Value(type, instruction->name);
+    return new Value(toType, instruction->name);
   }
 
   Value* Module::pushFunctionBlockFptouiInstruction(FunctionBlock* block,
@@ -604,7 +604,7 @@ namespace tsil::x {
     instruction->name = this->computeNextVarName("fptoui");
     instruction->fptoui = fptoui;
     block->instructions.push_back(instruction);
-    return new Value(type, instruction->name);
+    return new Value(toType, instruction->name);
   }
 
   Value* Module::pushFunctionBlockFptosiInstruction(FunctionBlock* block,
@@ -619,7 +619,7 @@ namespace tsil::x {
     instruction->name = this->computeNextVarName("fptosi");
     instruction->fptosi = fptosi;
     block->instructions.push_back(instruction);
-    return new Value(type, instruction->name);
+    return new Value(toType, instruction->name);
   }
 
   Value* Module::pushFunctionBlockUitofpInstruction(FunctionBlock* block,
@@ -634,7 +634,7 @@ namespace tsil::x {
     instruction->name = this->computeNextVarName("uitofp");
     instruction->uitofp = uitofp;
     block->instructions.push_back(instruction);
-    return new Value(type, instruction->name);
+    return new Value(toType, instruction->name);
   }
 
   Value* Module::pushFunctionBlockSitofpInstruction(FunctionBlock* block,
@@ -649,7 +649,7 @@ namespace tsil::x {
     instruction->name = this->computeNextVarName("sitofp");
     instruction->sitofp = sitofp;
     block->instructions.push_back(instruction);
-    return new Value(type, instruction->name);
+    return new Value(toType, instruction->name);
   }
 
   Value* Module::pushFunctionBlockPtrtointInstruction(FunctionBlock* block,
@@ -664,7 +664,7 @@ namespace tsil::x {
     instruction->name = this->computeNextVarName("ptrtoint");
     instruction->ptrtoint = ptrtoint;
     block->instructions.push_back(instruction);
-    return new Value(type, instruction->name);
+    return new Value(toType, instruction->name);
   }
 
   Value* Module::pushFunctionBlockInttoptrInstruction(FunctionBlock* block,
@@ -679,7 +679,7 @@ namespace tsil::x {
     instruction->name = this->computeNextVarName("inttoptr");
     instruction->inttoptr = inttoptr;
     block->instructions.push_back(instruction);
-    return new Value(type, instruction->name);
+    return new Value(toType, instruction->name);
   }
 
   std::string Module::dumpLL() {
@@ -945,6 +945,52 @@ namespace tsil::x {
     if (this->ashr) {
       return this->name + " = ashr " + this->ashr->type->name + " " +
              this->ashr->left->name + ", " + this->ashr->right->name;
+    }
+    if (this->trunc) {
+      return this->name + " = trunc " + this->trunc->type->name + " " +
+             this->trunc->value->name + " to " + this->trunc->toType->name;
+    }
+    if (this->zext) {
+      return this->name + " = zext " + this->zext->type->name + " " +
+             this->zext->value->name + " to " + this->zext->toType->name;
+    }
+    if (this->sext) {
+      return this->name + " = sext " + this->sext->type->name + " " +
+             this->sext->value->name + " to " + this->sext->toType->name;
+    }
+    if (this->fptrunc) {
+      return this->name + " = fptrunc " + this->fptrunc->type->name + " " +
+             this->fptrunc->value->name + " to " + this->fptrunc->toType->name;
+    }
+    if (this->fpext) {
+      return this->name + " = fpext " + this->fpext->type->name + " " +
+             this->fpext->value->name + " to " + this->fpext->toType->name;
+    }
+    if (this->fptoui) {
+      return this->name + " = fptoui " + this->fptoui->type->name + " " +
+             this->fptoui->value->name + " to " + this->fptoui->toType->name;
+    }
+    if (this->fptosi) {
+      return this->name + " = fptosi " + this->fptosi->type->name + " " +
+             this->fptosi->value->name + " to " + this->fptosi->toType->name;
+    }
+    if (this->uitofp) {
+      return this->name + " = uitofp " + this->uitofp->type->name + " " +
+             this->uitofp->value->name + " to " + this->uitofp->toType->name;
+    }
+    if (this->sitofp) {
+      return this->name + " = sitofp " + this->sitofp->type->name + " " +
+             this->sitofp->value->name + " to " + this->sitofp->toType->name;
+    }
+    if (this->ptrtoint) {
+      return this->name + " = ptrtoint " + this->ptrtoint->type->name + " " +
+             this->ptrtoint->value->name + " to " +
+             this->ptrtoint->toType->name;
+    }
+    if (this->inttoptr) {
+      return this->name + " = inttoptr " + this->inttoptr->type->name + " " +
+             this->inttoptr->value->name + " to " +
+             this->inttoptr->toType->name;
     }
     return "";
   }

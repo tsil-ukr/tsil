@@ -236,6 +236,18 @@ namespace tsil::tk {
                                      tsil::x::FunctionBlock* xBlock,
                                      ast::ASTValue* astValue,
                                      const std::vector<Type*>& genericValues);
+
+    x::Value* compileSoftCast(tsil::x::Function* xFunction,
+                              tsil::x::FunctionBlock* xBlock,
+                              Type* type,
+                              x::Value* xValue,
+                              Type* targetType);
+    x::Value* compileHardCast(tsil::x::Function* xFunction,
+                              tsil::x::FunctionBlock* xBlock,
+                              Type* type,
+                              x::Value* xValue,
+                              Type* targetType);
+
     CompilerResult compileDiiaBody(Type* diiaType,
                                    tsil::x::Function* xFunction,
                                    tsil::x::FunctionBlock* xBlock,

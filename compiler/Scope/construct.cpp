@@ -45,12 +45,18 @@ namespace tsil::tk {
         field =
             typeResult.type->structureInstanceFields[constructorArgNode->id];
       }
-      const auto argValueResult =
+      auto argValueResult =
           this->compileValue(xFunction, xBlock, constructorArgNode->value, {});
       if (argValueResult.error) {
         return {nullptr, nullptr, argValueResult.error};
       }
-      if (!argValueResult.type->equals(field.type)) {
+      const auto castedXValue =
+          this->compileSoftCast(xFunction, xBlock, argValueResult.type,
+                                argValueResult.xValue, field.type);
+      if (castedXValue) {
+        argValueResult.type = field.type;
+        argValueResult.xValue = castedXValue;
+      } else {
         return {nullptr, nullptr,
                 CompilerError::invalidArgumentType(constructorArgNode->value,
                                                    field.name, field.type,

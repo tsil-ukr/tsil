@@ -206,4 +206,143 @@ namespace tsil::tk {
     return {nullptr, nullptr,
             CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED VALUE")};
   }
+
+  x::Value* Scope::compileSoftCast(tsil::x::Function* xFunction,
+                                   tsil::x::FunctionBlock* xBlock,
+                                   Type* type,
+                                   x::Value* xValue,
+                                   Type* targetType) {
+    if (type->equals(targetType)) {
+      return xValue;
+    }
+    if (type->type == TypeTypePointer && targetType->type == TypeTypePointer) {
+      // todo: cast pointer?
+      return xValue;
+    }
+    if ((type == this->compiler->int8Type &&
+         targetType == this->compiler->uint8Type) ||
+        (type == this->compiler->uint8Type &&
+         targetType == this->compiler->int8Type)) {
+      return xValue;
+    }
+    if ((type == this->compiler->int32Type &&
+         targetType == this->compiler->uint32Type) ||
+        (type == this->compiler->uint32Type &&
+         targetType == this->compiler->int32Type)) {
+      return xValue;
+    }
+    if ((type == this->compiler->int64Type &&
+         targetType == this->compiler->uint64Type) ||
+        (type == this->compiler->uint64Type &&
+         targetType == this->compiler->int64Type)) {
+      return xValue;
+    }
+    // (char -> int/long/uint/ulong) | (int -> long/ulong) = sext
+    if (((type == this->compiler->int8Type) &&
+         (targetType == this->compiler->int32Type ||
+          targetType == this->compiler->int64Type ||
+          targetType == this->compiler->uint32Type ||
+          targetType == this->compiler->uint64Type)) ||
+        ((type == this->compiler->int32Type) &&
+         (targetType == this->compiler->int64Type ||
+          targetType == this->compiler->uint64Type))) {
+      const auto newXValue =
+          this->compiler->xModule->pushFunctionBlockSextInstruction(
+              xBlock, type->xType, xValue, targetType->xType);
+      return newXValue;
+    }
+    // (uchar -> int/long/uint/ulong) | (uint -> long/ulong) = zext
+    if (((type == this->compiler->uint8Type) &&
+         (targetType == this->compiler->int32Type ||
+          targetType == this->compiler->int64Type ||
+          targetType == this->compiler->uint32Type ||
+          targetType == this->compiler->uint64Type)) ||
+        ((type == this->compiler->uint32Type) &&
+         (targetType == this->compiler->int64Type ||
+          targetType == this->compiler->uint64Type))) {
+      const auto newXValue =
+          this->compiler->xModule->pushFunctionBlockZextInstruction(
+              xBlock, type->xType, xValue, targetType->xType);
+      return newXValue;
+    }
+    // (int/long -> char/uchar) | (uint/ulong -> char/uchar) | (long|ulong -> int|uint) = trunc
+    if (((type == this->compiler->int32Type ||
+          type == this->compiler->int64Type) &&
+         (targetType == this->compiler->int8Type ||
+          targetType == this->compiler->uint8Type)) ||
+        ((type == this->compiler->uint32Type ||
+          type == this->compiler->uint64Type) &&
+         (targetType == this->compiler->int8Type ||
+          targetType == this->compiler->uint8Type)) ||
+        ((type == this->compiler->int64Type ||
+          type == this->compiler->uint64Type) &&
+         (targetType == this->compiler->int32Type ||
+          targetType == this->compiler->uint32Type))) {
+      const auto newXValue =
+          this->compiler->xModule->pushFunctionBlockTruncInstruction(
+              xBlock, type->xType, xValue, targetType->xType);
+      return newXValue;
+    }
+    // (float -> double) = fpext
+    if (type == this->compiler->floatType &&
+        targetType == this->compiler->doubleType) {
+      const auto newXValue =
+          this->compiler->xModule->pushFunctionBlockFpextInstruction(
+              xBlock, type->xType, xValue, targetType->xType);
+      return newXValue;
+    }
+    // (float/double -> char/int/long) = fptosi
+    if ((type == this->compiler->floatType ||
+         type == this->compiler->doubleType) &&
+        (targetType == this->compiler->int8Type ||
+         targetType == this->compiler->int32Type ||
+         targetType == this->compiler->int64Type)) {
+      const auto newXValue =
+          this->compiler->xModule->pushFunctionBlockFptosiInstruction(
+              xBlock, type->xType, xValue, targetType->xType);
+      return newXValue;
+    }
+    // (float/double -> uchar/uint/ulong) = fptoui
+    if ((type == this->compiler->floatType ||
+         type == this->compiler->doubleType) &&
+        (targetType == this->compiler->uint8Type ||
+         targetType == this->compiler->uint32Type ||
+         targetType == this->compiler->uint64Type)) {
+      const auto newXValue =
+          this->compiler->xModule->pushFunctionBlockFptouiInstruction(
+              xBlock, type->xType, xValue, targetType->xType);
+      return newXValue;
+    }
+    // (double -> float) = fptrunc
+    if (type == this->compiler->doubleType &&
+        targetType == this->compiler->floatType) {
+      const auto newXValue =
+          this->compiler->xModule->pushFunctionBlockFptruncInstruction(
+              xBlock, type->xType, xValue, targetType->xType);
+      return newXValue;
+    }
+    // (char/int/long -> float/double) = sitofp
+    if ((type == this->compiler->int8Type ||
+         type == this->compiler->int32Type ||
+         type == this->compiler->int64Type) &&
+        (targetType == this->compiler->floatType ||
+         targetType == this->compiler->doubleType)) {
+      const auto newXValue =
+          this->compiler->xModule->pushFunctionBlockSitofpInstruction(
+              xBlock, type->xType, xValue, targetType->xType);
+      return newXValue;
+    }
+    // (uchar/uint/ulong -> float/double) = uitofp
+    if ((type == this->compiler->uint8Type ||
+         type == this->compiler->uint32Type ||
+         type == this->compiler->uint64Type) &&
+        (targetType == this->compiler->floatType ||
+         targetType == this->compiler->doubleType)) {
+      const auto newXValue =
+          this->compiler->xModule->pushFunctionBlockUitofpInstruction(
+              xBlock, type->xType, xValue, targetType->xType);
+      return newXValue;
+    }
+    return nullptr;
+  }
 } // namespace tsil::tk

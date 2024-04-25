@@ -15,8 +15,12 @@ namespace tsil::tk {
       return {nullptr, nullptr,
               CompilerError::fromASTValue(asNode->type, typeResult.error)};
     }
-    const auto newXValue =
-        new x::Value(typeResult.type->xType, valueResult.xValue->name);
+    auto newXValue = this->compileSoftCast(xFunction, xBlock, valueResult.type,
+                                           valueResult.xValue, typeResult.type);
+    if (newXValue == nullptr) {
+      newXValue =
+          new x::Value(typeResult.type->xType, valueResult.xValue->name);
+    }
     return {typeResult.type, newXValue, nullptr};
   }
 } // namespace tsil::tk

@@ -36,13 +36,18 @@ namespace tsil::tk {
           type = typeResult.type;
         }
         if (defineNode->value) {
-          const auto valueResult =
+          auto valueResult =
               this->compileValue(xFunction, xBlock, defineNode->value, {});
           if (valueResult.error) {
             return {valueResult.error};
           }
           if (type) {
-            if (!valueResult.type->equals(type)) {
+            const auto castedXValue = this->compileSoftCast(
+                xFunction, xBlock, valueResult.type, valueResult.xValue, type);
+            if (castedXValue) {
+              valueResult.type = type;
+              valueResult.xValue = castedXValue;
+            } else {
               return {CompilerError::typesAreNotCompatible(
                   defineNode->value, valueResult.type, type)};
             }
@@ -176,7 +181,12 @@ namespace tsil::tk {
         } else {
           type = this->compiler->voidType;
         }
-        if (!type->equals(diiaType->diiaReturnType)) {
+        const auto castedXValue = this->compileSoftCast(
+            xFunction, xBlock, type, xValue, diiaType->diiaReturnType);
+        if (castedXValue) {
+          type = diiaType->diiaReturnType;
+          xValue = castedXValue;
+        } else {
           return {CompilerError::typesAreNotCompatible(
               childAstValue->data.ReturnNode->value, type,
               diiaType->diiaReturnType)};

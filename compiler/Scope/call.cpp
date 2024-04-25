@@ -52,13 +52,19 @@ namespace tsil::tk {
     std::vector<x::Value*> xArgs;
     int argIndex = 0;
     for (const auto& argAstValue : callNode->args) {
-      const auto argResult =
+      auto argResult =
           this->compileValue(xFunction, xBlock, argAstValue, genericValues);
       if (argResult.error) {
         return argResult;
       }
       const auto& diiaParameter = diiaType->diiaParameters[argIndex];
-      if (!argResult.type->equals(diiaParameter.type)) {
+      const auto castedXValue =
+          this->compileSoftCast(xFunction, xBlock, argResult.type,
+                                argResult.xValue, diiaParameter.type);
+      if (castedXValue) {
+        argResult.type = diiaParameter.type;
+        argResult.xValue = castedXValue;
+      } else {
         return {nullptr, nullptr,
                 CompilerError::invalidArgumentType(
                     argAstValue, diiaParameter.name, diiaParameter.type,
@@ -129,7 +135,13 @@ namespace tsil::tk {
               nullptr};
     }
     const auto genericValue = genericValues[0];
-    if (!firstArgResult.type->equals(genericValue)) {
+    const auto castedXValue =
+        this->compileSoftCast(xFunction, xBlock, firstArgResult.type,
+                              firstArgResult.xValue, genericValue);
+    if (castedXValue) {
+      firstArgResult.type = genericValue;
+      firstArgResult.xValue = castedXValue;
+    } else {
       return {
           nullptr, nullptr,
           CompilerError::invalidArgumentType(
@@ -165,7 +177,7 @@ namespace tsil::tk {
               CompilerError::tooManyCallTemplateArguments(astValue)};
     }
     const auto firstArgAstValue = callNode->args[0];
-    const auto firstArgResult =
+    auto firstArgResult =
         this->compileValue(xFunction, xBlock, firstArgAstValue, {});
     if (firstArgResult.error) {
       return firstArgResult;
@@ -184,7 +196,13 @@ namespace tsil::tk {
       return {firstArgResult.type->pointerTo, loadXValue, nullptr};
     }
     const auto genericValue = genericValues[0];
-    if (!firstArgResult.type->pointerTo->equals(genericValue)) {
+    const auto castedXValue =
+        this->compileSoftCast(xFunction, xBlock, firstArgResult.type->pointerTo,
+                              firstArgResult.xValue, genericValue);
+    if (castedXValue) {
+      firstArgResult.type = genericValue->getPointerType(this);
+      firstArgResult.xValue = castedXValue;
+    } else {
       return {
           nullptr, nullptr,
           CompilerError::invalidArgumentType(
@@ -228,12 +246,18 @@ namespace tsil::tk {
               CompilerError::tooManyCallTemplateArguments(astValue)};
     }
     const auto firstArgAstValue = callNode->args[0];
-    const auto firstArgResult =
+    auto firstArgResult =
         this->compileValue(xFunction, xBlock, firstArgAstValue, {});
     if (firstArgResult.error) {
       return firstArgResult;
     }
-    if (!firstArgResult.type->equals(this->compiler->uint64Type)) {
+    const auto castedXValue = this->compileSoftCast(
+        xFunction, xBlock, firstArgResult.type, firstArgResult.xValue,
+        this->compiler->uint64Type);
+    if (castedXValue) {
+      firstArgResult.type = this->compiler->uint64Type;
+      firstArgResult.xValue = castedXValue;
+    } else {
       return {nullptr, nullptr,
               CompilerError::invalidArgumentType(firstArgAstValue, "розмір",
                                                  this->compiler->uint64Type,
@@ -282,13 +306,19 @@ namespace tsil::tk {
               CompilerError::tooManyCallTemplateArguments(astValue)};
     }
     const auto firstArgAstValue = callNode->args[0];
-    const auto firstArgResult =
+    auto firstArgResult =
         this->compileValue(xFunction, xBlock, firstArgAstValue, {});
     if (firstArgResult.error) {
       return firstArgResult;
     }
     const auto firstGenericValue = genericValues[0];
-    if (!firstArgResult.type->equals(firstGenericValue->getPointerType(this))) {
+    const auto castedXValue = this->compileSoftCast(
+        xFunction, xBlock, firstArgResult.type, firstArgResult.xValue,
+        firstGenericValue->getPointerType(this));
+    if (castedXValue) {
+      firstArgResult.type = firstGenericValue->getPointerType(this);
+      firstArgResult.xValue = castedXValue;
+    } else {
       return {
           nullptr, nullptr,
           CompilerError::invalidArgumentType(
@@ -296,12 +326,18 @@ namespace tsil::tk {
               firstGenericValue->getPointerType(this), firstArgResult.type)};
     }
     const auto secondArgAstValue = callNode->args[1];
-    const auto secondArgResult =
+    auto secondArgResult =
         this->compileValue(xFunction, xBlock, secondArgAstValue, {});
     if (secondArgResult.error) {
       return secondArgResult;
     }
-    if (!secondArgResult.type->equals(this->compiler->uint64Type)) {
+    const auto secondCastedXValue = this->compileSoftCast(
+        xFunction, xBlock, secondArgResult.type, secondArgResult.xValue,
+        this->compiler->uint64Type);
+    if (secondCastedXValue) {
+      secondArgResult.type = this->compiler->uint64Type;
+      secondArgResult.xValue = secondCastedXValue;
+    } else {
       return {nullptr, nullptr,
               CompilerError::invalidArgumentType(secondArgAstValue, "кількість",
                                                  this->compiler->uint64Type,
@@ -333,13 +369,19 @@ namespace tsil::tk {
     if (callNode->args.size() > 1) {
       return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
     }
-    const auto firstArgAstValue = callNode->args[0];
-    const auto firstArgResult =
+    auto firstArgAstValue = callNode->args[0];
+    auto firstArgResult =
         this->compileValue(xFunction, xBlock, firstArgAstValue, {});
     if (firstArgResult.error) {
       return firstArgResult;
     }
-    if (!firstArgResult.type->equals(this->compiler->pointerType)) {
+    const auto castedXValue = this->compileSoftCast(
+        xFunction, xBlock, firstArgResult.type, firstArgResult.xValue,
+        this->compiler->pointerType);
+    if (castedXValue) {
+      firstArgResult.type = this->compiler->pointerType;
+      firstArgResult.xValue = castedXValue;
+    } else {
       return {nullptr, nullptr,
               CompilerError::invalidArgumentType(firstArgAstValue, "значення",
                                                  this->compiler->pointerType,
