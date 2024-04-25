@@ -6,41 +6,48 @@ namespace tsil::tk {
                                            ast::ASTValue* astValue,
                                            bool load) {
     const auto accessNode = astValue->data.AccessNode;
-    CompilerValueResult leftResult;
+    Type* leftType = nullptr;
+    x::Value* leftXValue = nullptr;
     if (accessNode->value->kind == ast::KindIdentifierNode) {
-      const auto identifierResult = this->compileIdentifier(
-          xFunction, xBlock, accessNode->value, {}, false);
-      if (identifierResult.error) {
-        return identifierResult;
+      const auto identifierNode = accessNode->value->data.IdentifierNode;
+      const auto subjectResult =
+          this->getSubjectByName(accessNode->value, identifierNode->name, {});
+      if (subjectResult.error) {
+        return {nullptr, nullptr, subjectResult.error};
       }
-      leftResult.type = identifierResult.type;
-      leftResult.xValue = identifierResult.xValue;
+      if (subjectResult.what != CompilerSubjectResultWhatVariable &&
+          subjectResult.what != CompilerSubjectResultWhatDiia) {
+        return {nullptr, nullptr,
+                CompilerError::subjectIsNotRuntimeValue(accessNode->value)};
+      }
+      leftType = subjectResult.type;
+      leftXValue = subjectResult.xValue;
     } else if (accessNode->value->kind == ast::KindGetNode) {
       const auto getResult =
           this->compileGet(xFunction, xBlock, accessNode->value, false);
       if (getResult.error) {
         return getResult;
       }
-      leftResult.type = getResult.type;
-      leftResult.xValue = getResult.xValue;
+      leftType = getResult.type;
+      leftXValue = getResult.xValue;
     } else if (accessNode->value->kind == ast::KindAccessNode) {
       const auto accessResult =
           this->compileAccess(xFunction, xBlock, accessNode->value, false);
       if (accessResult.error) {
         return accessResult;
       }
-      leftResult.type = accessResult.type;
-      leftResult.xValue = accessResult.xValue;
+      leftType = accessResult.type;
+      leftXValue = accessResult.xValue;
     } else {
       const auto valueResult =
           this->compileValue(xFunction, xBlock, accessNode->value, {});
       if (valueResult.error) {
-        return leftResult;
+        return valueResult;
       }
-      leftResult.type = valueResult.type;
-      leftResult.xValue = valueResult.xValue;
+      leftType = valueResult.type;
+      leftXValue = valueResult.xValue;
     }
-    if (leftResult.type->type == TypeTypePointer) {
+    if (leftType->type == TypeTypePointer) {
       const auto indexResult =
           this->compileValue(xFunction, xBlock, accessNode->index, {});
       if (indexResult.error) {
@@ -54,18 +61,17 @@ namespace tsil::tk {
       }
       const auto xGepValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              {indexResult.xValue});
+              xBlock, leftType->xType, leftXValue, {indexResult.xValue});
       if (load) {
         const auto xLoadValue =
             this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, leftResult.type->pointerTo->xType, xGepValue);
-        return {leftResult.type->pointerTo, xLoadValue, nullptr};
+                xBlock, leftType->pointerTo->xType, xGepValue);
+        return {leftType->pointerTo, xLoadValue, nullptr};
       } else {
-        return {leftResult.type->pointerTo, xGepValue, nullptr};
+        return {leftType->pointerTo, xGepValue, nullptr};
       }
     }
-    if (leftResult.type->type == TypeTypeArray) {
+    if (leftType->type == TypeTypeArray) {
       const auto indexResult =
           this->compileValue(xFunction, xBlock, accessNode->index, {});
       if (indexResult.error) {
@@ -79,19 +85,17 @@ namespace tsil::tk {
       }
       const auto xGepValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              {indexResult.xValue});
+              xBlock, leftType->xType, leftXValue, {indexResult.xValue});
       if (load) {
         const auto xLoadValue =
             this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, leftResult.type->arrayOf->xType, xGepValue);
-        return {leftResult.type->arrayOf, xLoadValue, nullptr};
+                xBlock, leftType->arrayOf->xType, xGepValue);
+        return {leftType->arrayOf, xLoadValue, nullptr};
       } else {
-        return {leftResult.type->arrayOf, xGepValue, nullptr};
+        return {leftType->arrayOf, xGepValue, nullptr};
       }
     }
     return {nullptr, nullptr,
-            CompilerError::cannotAccessNonPointer(accessNode->value,
-                                                  leftResult.type)};
+            CompilerError::cannotAccessNonPointer(accessNode->value, leftType)};
   }
 } // namespace tsil::tk

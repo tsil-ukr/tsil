@@ -9,16 +9,20 @@ namespace tsil::tk {
     Type* leftType = nullptr;
     x::Value* leftXValue = nullptr;
     if (getNode->left->kind == ast::KindIdentifierNode) {
-      const auto identifierResult =
-          this->compileIdentifier(xFunction, xBlock, getNode->left, {}, false);
-      if (identifierResult.error) {
-        return identifierResult;
+      const auto identifierNode = getNode->left->data.IdentifierNode;
+      const auto subjectResult =
+          this->getSubjectByName(getNode->left, identifierNode->name, {});
+      if (subjectResult.error) {
+        return {nullptr, nullptr, subjectResult.error};
       }
-      leftType = identifierResult.type;
-      leftXValue = identifierResult.xValue;
-      goto proceed;
-    }
-    if (getNode->left->kind == ast::KindGetNode) {
+      if (subjectResult.what != CompilerSubjectResultWhatVariable &&
+          subjectResult.what != CompilerSubjectResultWhatDiia) {
+        return {nullptr, nullptr,
+                CompilerError::subjectIsNotRuntimeValue(getNode->left)};
+      }
+      leftType = subjectResult.type;
+      leftXValue = subjectResult.xValue;
+    } else if (getNode->left->kind == ast::KindGetNode) {
       const auto getLeftResult =
           this->compileGet(xFunction, xBlock, getNode->left, false);
       if (getLeftResult.error) {
@@ -26,9 +30,7 @@ namespace tsil::tk {
       }
       leftType = getLeftResult.type;
       leftXValue = getLeftResult.xValue;
-      goto proceed;
-    }
-    if (getNode->left->kind == ast::KindAccessNode) {
+    } else if (getNode->left->kind == ast::KindAccessNode) {
       const auto accessLeftResult =
           this->compileAccess(xFunction, xBlock, getNode->left, false);
       if (accessLeftResult.error) {
@@ -36,14 +38,15 @@ namespace tsil::tk {
       }
       leftType = accessLeftResult.type;
       leftXValue = accessLeftResult.xValue;
-      goto proceed;
+    } else {
+      const auto valueResult =
+          this->compileValue(xFunction, xBlock, getNode->left, {});
+      if (valueResult.error) {
+        return valueResult;
+      }
+      leftType = valueResult.type;
+      leftXValue = valueResult.xValue;
     }
-    return {
-        nullptr, nullptr,
-        CompilerError::fromASTValue(
-            astValue, "NOT IMPLEMENTED GET: " +
-                          ast::ast_value_kind_to_string(getNode->left->kind))};
-  proceed:
     if (leftType->type == TypeTypeStructureInstance) {
       if (!leftType->structureInstanceFields.contains(getNode->id)) {
         return {

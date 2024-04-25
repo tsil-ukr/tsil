@@ -8,16 +8,19 @@ namespace tsil::tk {
     Type* leftType = nullptr;
     x::Value* leftXValue = nullptr;
     if (setNode->left->kind == ast::KindIdentifierNode) {
-      const auto identifierResult =
-          this->compileIdentifier(xFunction, xBlock, setNode->left, {}, false);
-      if (identifierResult.error) {
-        return {identifierResult.error};
+      const auto identifierNode = setNode->left->data.IdentifierNode;
+      const auto subjectResult =
+          this->getSubjectByName(setNode->left, identifierNode->name, {});
+      if (subjectResult.error) {
+        return {subjectResult.error};
       }
-      leftType = identifierResult.type;
-      leftXValue = identifierResult.xValue;
-      goto proceed;
-    }
-    if (setNode->left->kind == ast::KindGetNode) {
+      if (subjectResult.what != CompilerSubjectResultWhatVariable &&
+          subjectResult.what != CompilerSubjectResultWhatDiia) {
+        return {CompilerError::subjectIsNotRuntimeValue(setNode->left)};
+      }
+      leftType = subjectResult.type;
+      leftXValue = subjectResult.xValue;
+    } else if (setNode->left->kind == ast::KindGetNode) {
       const auto getLeftResult =
           this->compileGet(xFunction, xBlock, setNode->left, false);
       if (getLeftResult.error) {
@@ -25,9 +28,7 @@ namespace tsil::tk {
       }
       leftType = getLeftResult.type;
       leftXValue = getLeftResult.xValue;
-      goto proceed;
-    }
-    if (setNode->left->kind == ast::KindAccessNode) {
+    } else if (setNode->left->kind == ast::KindAccessNode) {
       const auto accessLeftResult =
           this->compileAccess(xFunction, xBlock, setNode->left, false);
       if (accessLeftResult.error) {
@@ -35,12 +36,15 @@ namespace tsil::tk {
       }
       leftType = accessLeftResult.type;
       leftXValue = accessLeftResult.xValue;
-      goto proceed;
+    } else {
+      const auto valueResult =
+          this->compileValue(xFunction, xBlock, setNode->left, {});
+      if (valueResult.error) {
+        return {valueResult.error};
+      }
+      leftType = valueResult.type;
+      leftXValue = valueResult.xValue;
     }
-    return {CompilerError::fromASTValue(
-        astValue, "NOT IMPLEMENTED SET: " +
-                      ast::ast_value_kind_to_string(setNode->left->kind))};
-  proceed:
     if (leftType->type == TypeTypeStructureInstance) {
       if (!leftType->structureInstanceFields.contains(setNode->id)) {
         return {

@@ -141,6 +141,36 @@ namespace tsil::tk {
     return {nullptr, nullptr};
   }
 
+  CompilerSubjectResult Scope::getSubjectByName(
+      ast::ASTValue* contextAstValue,
+      const std::string& name,
+      const std::vector<Type*>& genericValues) {
+    if (this->hasVariable(name)) {
+      const auto& [variableType, variableXValue] = this->getVariable(name);
+      return {CompilerSubjectResultWhatVariable, variableType, variableXValue,
+              nullptr};
+    }
+    if (this->hasBakedDiia(name, genericValues)) {
+      const auto bakedDiia = this->getBakedDiia(name, genericValues);
+      return {CompilerSubjectResultWhatDiia, bakedDiia.first, bakedDiia.second,
+              nullptr};
+    }
+    if (this->hasRawDiia(name)) {
+      const auto rawDiia = this->getRawDiia(name);
+      const auto bakeDiiaResult =
+          this->bakeDiia(contextAstValue, rawDiia, genericValues);
+      if (bakeDiiaResult.error) {
+        return {CompilerSubjectResultWhatNone, nullptr, nullptr,
+                bakeDiiaResult.error};
+      }
+      return {CompilerSubjectResultWhatDiia, bakeDiiaResult.type,
+              bakeDiiaResult.xValue, nullptr};
+    }
+    // todo: handle types, structs etc
+    return {CompilerSubjectResultWhatNone, nullptr, nullptr,
+            CompilerError::subjectNotDefined(contextAstValue)};
+  }
+
   CompilerValueResult Scope::compileValue(
       tsil::x::Function* xFunction,
       tsil::x::FunctionBlock* xBlock,
@@ -153,8 +183,7 @@ namespace tsil::tk {
       return this->compileString(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindIdentifierNode) {
-      return this->compileIdentifier(xFunction, xBlock, astValue, genericValues,
-                                     true);
+      return this->compileLoad(xFunction, xBlock, astValue, genericValues);
     }
     if (astValue->kind == ast::KindGetNode) {
       return this->compileGet(xFunction, xBlock, astValue, true);

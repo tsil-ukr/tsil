@@ -101,8 +101,17 @@ namespace tsil::tk {
     const auto firstArgAstValue = callNode->args[0];
     CompilerValueResult firstArgResult;
     if (firstArgAstValue->kind == ast::KindIdentifierNode) {
-      firstArgResult = this->compileIdentifier(
-          xFunction, xBlock, firstArgAstValue, genericValues, false);
+      const auto subjectResult = this->getSubjectByName(
+          firstArgAstValue, firstArgAstValue->data.IdentifierNode->name, {});
+      if (subjectResult.error) {
+        return {nullptr, nullptr, subjectResult.error};
+      }
+      if (subjectResult.what != CompilerSubjectResultWhatVariable &&
+          subjectResult.what != CompilerSubjectResultWhatDiia) {
+        return {nullptr, nullptr,
+                CompilerError::subjectIsNotRuntimeValue(firstArgAstValue)};
+      }
+      firstArgResult = {subjectResult.type, subjectResult.xValue, nullptr};
     } else if (firstArgAstValue->kind == ast::KindGetNode) {
       firstArgResult =
           this->compileGet(xFunction, xBlock, firstArgAstValue, false);

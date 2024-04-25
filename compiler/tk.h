@@ -127,6 +127,19 @@ namespace tsil::tk {
     std::string error;
   };
 
+  enum CompilerSubjectResultWhat {
+    CompilerSubjectResultWhatNone,
+    CompilerSubjectResultWhatVariable,
+    CompilerSubjectResultWhatDiia,
+  };
+
+  struct CompilerSubjectResult {
+    CompilerSubjectResultWhat what;
+    Type* type;
+    x::Value* xValue;
+    CompilerError* error;
+  };
+
   struct Scope {
     Compiler* compiler;
     Scope* parent;
@@ -164,6 +177,11 @@ namespace tsil::tk {
     bool hasVariable(const std::string& name) const;
     std::pair<Type*, x::Value*> getVariable(const std::string& name);
 
+    CompilerSubjectResult getSubjectByName(
+        ast::ASTValue* contextAstValue,
+        const std::string& name,
+        const std::vector<Type*>& genericValues);
+
     CompilerValueResult compileCall(tsil::x::Function* xFunction,
                                     tsil::x::FunctionBlock* xBlock,
                                     ast::ASTValue* astValue);
@@ -189,12 +207,10 @@ namespace tsil::tk {
     CompilerValueResult compileString(tsil::x::Function* xFunction,
                                       tsil::x::FunctionBlock* xBlock,
                                       ast::ASTValue* astValue);
-    CompilerValueResult compileIdentifier(
-        tsil::x::Function* xFunction,
-        tsil::x::FunctionBlock* xBlock,
-        ast::ASTValue* astValue,
-        const std::vector<Type*>& genericValues,
-        bool load);
+    CompilerValueResult compileLoad(tsil::x::Function* xFunction,
+                                    tsil::x::FunctionBlock* xBlock,
+                                    ast::ASTValue* astValue,
+                                    const std::vector<Type*>& genericValues);
     CompilerValueResult compileAs(tsil::x::Function* xFunction,
                                   tsil::x::FunctionBlock* xBlock,
                                   ast::ASTValue* astValue);
