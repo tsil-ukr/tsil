@@ -52,6 +52,7 @@ enum FuseCommandOutputType {
   FuseCommandOutputTypeObject,
   FuseCommandOutputTypeStaticLibrary,
   FuseCommandOutputTypeSharedLibrary,
+  FuseCommandOutputTypeStaticExecutable,
   FuseCommandOutputTypeExecutable,
   FuseCommandOutputTypeWasm,
 };
@@ -343,7 +344,7 @@ void printHelp() {
   std::cout << "  ціль <ціль> <команда> [аргументи...]" << std::endl;
   std::cout << "  ціль допомога" << std::endl;
   std::cout << "Команди:" << std::endl;
-  std::cout << "  <вихід[.ll|.bc]> підготувати <вхід.ц>" << std::endl;
+  std::cout << "  <вихід[.ll|.bc]> скомпілювати <вхід.ц>" << std::endl;
   std::cout << "  <вихід[|.o|.a|.so|.wasm]> сплавити [опції...] "
                "<вхід[.ц|.c|.cpp|.ll|.bc]...>"
             << std::endl;
@@ -364,7 +365,7 @@ int main(int argc, char** argv) {
   const auto& target = args[1];
   const auto& command = args[2];
 
-  if (command == "підготувати") {
+  if (command == "скомпілювати") {
     if (args.size() < 4) {
       std::cerr << "помилка: Не вказано вхід" << std::endl;
       return 1;
@@ -388,22 +389,24 @@ int main(int argc, char** argv) {
       }
     }
     fuseCommand.outputPath = target;
-    if (target.ends_with(".o")) {
+    if (target.ends_with(".обц") || target.ends_with(".o")) {
       fuseCommand.outputType = FuseCommandOutputTypeObject;
-    } else if (target.ends_with(".a")) {
+    } else if (target.ends_with(".бобц") || target.ends_with(".a")) {
       fuseCommand.outputType = FuseCommandOutputTypeStaticLibrary;
-    } else if (target.ends_with(".so")) {
+    } else if (target.ends_with(".сбобц") || target.ends_with(".so")) {
       fuseCommand.outputType = FuseCommandOutputTypeSharedLibrary;
-    } else if (target.ends_with(".out")) {
-      fuseCommand.outputType = FuseCommandOutputTypeExecutable;
-    } else if (target.ends_with(".wasm")) {
+    } else if (target.ends_with(".виріб") || target.ends_with(".out")) {
+      fuseCommand.outputType = FuseCommandOutputTypeStaticExecutable;
+    } else if (target.ends_with(".васм") || target.ends_with(".wasm")) {
       fuseCommand.outputType = FuseCommandOutputTypeWasm;
-    } else if (std::count(target.begin(), target.end(), '.') == 0) {
+    } else if (target.ends_with(".сплав") ||
+               std::count(target.begin(), target.end(), '.') == 0) {
       fuseCommand.outputType = FuseCommandOutputTypeExecutable;
     } else {
-      std::cerr << "помилка: Вихідний файл повинен мати розширення .o, .a, "
-                   ".so, .out або .wasm"
-                << std::endl;
+      std::cerr
+          << "помилка: Вихідний файл повинен мати розширення .обц, .бобц, "
+             ".сбобц, .виріб, .васм або .сплав"
+          << std::endl;
       return 1;
     }
 
@@ -427,6 +430,13 @@ int main(int argc, char** argv) {
       }
     } else if (fuseCommand.outputType == FuseCommandOutputTypeSharedLibrary) {
       cmd.emplace_back("-shared");
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-O3");
+        cmd.emplace_back("-flto");
+      }
+    } else if (fuseCommand.outputType ==
+               FuseCommandOutputTypeStaticExecutable) {
+      cmd.emplace_back("-static");
       if (fuseCommand.releaseMode) {
         cmd.emplace_back("-O3");
         cmd.emplace_back("-flto");
@@ -456,7 +466,7 @@ int main(int argc, char** argv) {
       if (inputPath.ends_with(".ц")) {
         std::string fsSeparator;
         fsSeparator.push_back(std::filesystem::path::preferred_separator);
-        const auto cacheDirPath = "плавлення" + fsSeparator + "підготовлене";
+        const auto cacheDirPath = "плавлення" + fsSeparator + "скомпільоване";
         const auto inputPathOutput =
             cacheDirPath + fsSeparator +
             inputPath.substr(0, inputPath.size() - std::string(".ц").size()) +
@@ -469,7 +479,7 @@ int main(int argc, char** argv) {
             return 1;
           }
         }
-        std::cout << "> ціль " << inputPathOutput << " підготувати "
+        std::cout << "> ціль " << inputPathOutput << " скомпілювати "
                   << inputPath << std::endl;
         int compilationStatus = compile({inputPath, inputPathOutput});
         if (compilationStatus != 0) {
