@@ -374,8 +374,8 @@ void printHelp() {
 int main(int argc, char** argv) {
   auto args = std::vector<std::string>(argv, argv + argc);
   if (args.size() < 2) {
-    std::cerr << "помилка: недостатньо аргументів" << std::endl;
-    return 1;
+    printHelp();
+    return 0;
   }
   if (args[1] == "допомога") {
     printHelp();
