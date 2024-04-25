@@ -21,9 +21,4 @@ namespace tsil::parser {
     }
     return AV(context, ast::KindBinaryNode, binary_node);
   }
-
-  std::any TsilASTVisitor::visitBitwise_op(
-      TsilParser::Bitwise_opContext* context) {
-    return nullptr;
-  }
 } // namespace tsil::parser

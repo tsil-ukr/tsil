@@ -33,6 +33,14 @@ namespace tsil::tk {
     return false;
   }
 
+  bool Type::isPointer() {
+    return this->type == TypeTypePointer;
+  }
+
+  bool Type::isArray() {
+    return this->type == TypeTypeArray;
+  }
+
   std::string Type::getFullName() {
     if (this->type == TypeTypeDiia) {
       std::string result = "";

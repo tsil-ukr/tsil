@@ -343,7 +343,7 @@ void printHelp() {
   std::cout << "  ціль <ціль> <команда> [аргументи...]" << std::endl;
   std::cout << "  ціль допомога" << std::endl;
   std::cout << "Команди:" << std::endl;
-  std::cout << "  <вихід[.ll|.bc]> скомпілювати <вхід.ц>" << std::endl;
+  std::cout << "  <вихід[.ll|.bc]> підготувати <вхід.ц>" << std::endl;
   std::cout << "  <вихід[|.o|.a|.so|.wasm]> сплавити [опції...] "
                "<вхід[.ц|.c|.cpp|.ll|.bc]...>"
             << std::endl;
@@ -364,7 +364,7 @@ int main(int argc, char** argv) {
   const auto& target = args[1];
   const auto& command = args[2];
 
-  if (command == "скомпілювати") {
+  if (command == "підготувати") {
     if (args.size() < 4) {
       std::cerr << "помилка: Не вказано вхід" << std::endl;
       return 1;
@@ -456,7 +456,7 @@ int main(int argc, char** argv) {
       if (inputPath.ends_with(".ц")) {
         std::string fsSeparator;
         fsSeparator.push_back(std::filesystem::path::preferred_separator);
-        const auto cacheDirPath = "плавлення" + fsSeparator + "корито";
+        const auto cacheDirPath = "плавлення" + fsSeparator + "підготовлене";
         const auto inputPathOutput =
             cacheDirPath + fsSeparator +
             inputPath.substr(0, inputPath.size() - std::string(".ц").size()) +
@@ -469,7 +469,7 @@ int main(int argc, char** argv) {
             return 1;
           }
         }
-        std::cout << "> ціль " << inputPathOutput << " скомпілювати "
+        std::cout << "> ціль " << inputPathOutput << " підготувати "
                   << inputPath << std::endl;
         int compilationStatus = compile({inputPath, inputPathOutput});
         if (compilationStatus != 0) {

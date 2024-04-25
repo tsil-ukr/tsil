@@ -8,7 +8,6 @@ KW_WHILE: 'поки';
 KW_RETURN: 'вернути';
 KW_STRUCT: 'структура';
 KW_AS: 'як';
-KW_SIZEOF: 'розмір!';
 KW_SECTION: 'секція';
 KW_IMPORT: 'взяти';
 KW_EXPORT: 'дати';
@@ -48,6 +47,7 @@ SEMICOLON: ';';
 QUOTE_OPEN: '{';
 QUOTE_CLOSE: '}';
 
+NUMBER: INTEGER | FLOAT | HEX | BIN;
 INTEGER: DIGIT+;
 FLOAT: DIGIT+ '.' DIGIT+;
 HEX: '0ш' ('А' | 'а' | 'Б' | 'б' | 'В' | 'в' | 'Г' | 'г' | 'Ґ' | 'ґ' | 'Д' | 'д' | DIGIT)+;
@@ -60,8 +60,8 @@ STRING: '"' ( ~["\n\r] )* '"';
 COMMENT: '/' '*' (COMMENT | .)*? '*' '/' -> channel(HIDDEN);
 LINE_COMMENT: '/' '/' (LINE_COMMENT | ~[\r\n])* -> channel(HIDDEN);
 
-NL: ( '\r'? '\n' ) -> channel(HIDDEN);
 WS: (' ' | '\t') -> channel(HIDDEN);
+NL: ('\r'? '\n') -> channel(HIDDEN);
 
 fragment DIGIT
     : '0'..'9'

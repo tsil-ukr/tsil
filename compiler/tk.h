@@ -208,6 +208,9 @@ namespace tsil::tk {
                                       tsil::x::FunctionBlock* xBlock,
                                       ast::ASTValue* astValue,
                                       bool load);
+    CompilerResult compileSet(tsil::x::Function* xFunction,
+                              tsil::x::FunctionBlock* xBlock,
+                              ast::ASTValue* astValue);
 
     CompilerValueResult compileGet(tsil::x::Function* xFunction,
                                    tsil::x::FunctionBlock* xBlock,
@@ -269,6 +272,8 @@ namespace tsil::tk {
     x::Type* xType = nullptr;
 
     bool equals(Type* other);
+    bool isPointer();
+    bool isArray();
     std::string getFullName();
     Type* getPointerType(Scope* scope);
     Type* getArrayType(Scope* scope, size_t size);

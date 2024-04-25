@@ -7,89 +7,78 @@ options {
 file: f_program=program EOF;
 
 program: program_element*;
-program_element: structure | diia_declaration |  diia | section | ';';
+program_element: section | structure | diia_declaration | diia | ';';
 
-structure: 'структура' s_name=identifier ('<' s_generics=structure_generics '>')? '{' (s_params=structure_params)? '}';
+section: 'секція' s_name=ID '{' section_element* '}';
+section_element: section | structure | diia_declaration | diia | ';';
+
+structure: 'структура' s_name=ID ('<' s_generics=structure_generics '>')? '{' (s_params=structure_params)? '}';
 structure_generics: structure_generic (',' structure_generic)*;
-structure_generic: sg_name=identifier;
+structure_generic: sg_name=ID;
 structure_params: structure_param (',' structure_param)* ','?;
-structure_param: sp_name=identifier ':' sp_type=full_type;
+structure_param: sp_name=ID ':' sp_type=full_type;
 
-constructor: c_type=full_type '{' (c_args=constructor_args)? '}';
-constructor_args: constructor_arg (',' constructor_arg)* ','?;
-constructor_arg: (ca_name=identifier '=')? ca_value=expr;
-
-diia_head: 'дія' d_name=identifier ('<' d_generics=diia_generics '>')? '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' ('-' '>' d_type=full_type)?;
+diia_head: 'дія' d_name=ID ('<' d_generics=diia_generics '>')? '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' ('-' '>' d_type=full_type)?;
 diia: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? d_head=diia_head '{' (d_body=body)? '}';
-diia_declaration: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? d_head=diia_head ('як' d_as=identifier)? ';';
 diia_generics: diia_generic (',' diia_generic)*;
-diia_generic: dg_name=identifier;
+diia_generic: dg_name=ID;
+diia_declaration: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? d_head=diia_head ('як' d_as=ID)? ';';
+params: param (',' param)* (',')?;
+param: p_name=ID ':' p_type=full_type;
 
-section: 'секція' s_name=identifier '{' section_element* '}';
-section_element: structure | diia_declaration |  diia | section | ';';
+body: body_element+;
+body_element: if | while | (declare ';') | (define ';') | (assign ';') | (set ';') | (expr ';') | (return_body_element ';') | ';';
+return_body_element: 'вернути' (rbl_value=expr)?;
 
 if: 'якщо' i_value=expr '{' (i_body=body)? '}' ('інакше' '{' (i_else_body=body)? '}')?;
 
 while: 'поки' w_value=expr '{' (w_body=body)? '}';
 
-define: 'ціль' d_id=identifier (':' d_type=full_type)? '=' d_value=expr
-      | 'ціль' d_id=identifier ':' d_type=full_type;
+declare: 'ціль' d_id=ID ':' d_type=full_type;
 
-assign: a_id=identifier '=' a_value=expr;
+define: 'ціль' d_id=ID (':' d_type=full_type)? '=' d_value=expr;
 
-set: s_left=identifiers_chain '.' s_id=identifier '=' s_value=expr;
+assign: a_id=ID '=' a_value=expr;
 
-sizeof: 'розмір!' '(' (s_type=full_type | s_value=expr) ')';
+set: s_left=particle ('.' s_id=ID | '[' s_index=expr ']') '=' s_value=expr;
 
-atom: identifier #atom_identifier
-    | g_left=atom '.' g_id=identifier #get
-    | c_value=atom ('<' c_first_generic_type=full_type (',' full_type)* '>')? '(' (c_args=args)? ')' #call
-    | a_value=atom '[' (a_index=expr)? ']' #access
-    | '+' p_value=atom  #positive
-    | '-' n_value=atom  #negative
-    | '!' n_value=atom  #not
-    | '~' bn_value=atom  #bitwise_not
-    | '(' n_value=expr ')' #nested;
-
-// wtf is this?
-molecule: atom #value_atom
-        | number #atom_number
-        | string #atom_string;
-
-expr: molecule #expr_molecule
-    | constructor #atom_constructor
-    | sizeof #atom_sizeof
-    | a_left=molecule 'як' a_type=full_type #as
-    | 'не' nt_value=molecule #not_text
-    | a_left=expr a_operation=('*' | '/' | '%') a_right=expr #arithmetic_mul
-    | a_left=expr a_operation=('+' | '-') a_right=expr #arithmetic_add
-    | b_left=expr b_operation=bitwise_op b_right=expr #bitwise
-    | c_left=expr c_operation=comparison_op c_right=expr #comparison
-    | t_left=expr t_operation=logical_op t_right=expr #logical
-    ;
-
-identifiers_chain: ic_id=ID |  ic_left=identifiers_chain '.' ic_right=ID;
-
-full_type: identifier ('<' t_first_generic_type=full_type (',' full_type)* '>')? #type
-         | sft_arg=full_type '-' '>' sft_ret=full_type #simple_function_type
-         | '(' (cft_args=simple_function_type_args)? ')' '-' '>' cft_ret=full_type #complex_function_type
-         |  at_type=full_type '[' at_size=number ']' #array_type;
-simple_function_type_args: full_type (',' full_type)*;
-
+particle: ID #identifier
+        | g_left=particle '.' g_id=ID #get
+        | a_value=particle '[' (a_index=expr)? ']' #access
+        | c_value=particle ('<' c_first_generic_type=full_type (',' full_type)* '>')? '(' (c_args=args)? ')' #call
+        | '(' n_value=expr ')' #nested;
 args: expr (',' expr)* (',')?;
 
-params: param (',' param)* (',')?;
-param: p_name=identifier ':' p_type=full_type;
+atom: particle #atom_particle
+    | NUMBER #number
+    | (s_prefix=ID)? STRING #string;
 
-body: body_element_or_return+;
-body_element_or_return: body_element | (return_body_element ';');
-body_element: if | while | (define ';') | (assign ';') | (set ';') | (expr ';') | ';';
-return_body_element: 'вернути' (rbl_value=expr)?;
+molecule: atom #molecule_atom
+        | '!' n_value=molecule #not
+        | '+' p_value=atom #positive
+        | '-' n_value=atom #negative
+        | '~' bn_value=atom #bitwise_not;
 
-bitwise_op: '^' | '|' | '&' | '<' '<' | '>' '>';
-comparison_op: '=' '=' | '!' '=' | '>' | '<' | '>' '=' | '<' '=';
-logical_op: '|' '|' | '&' '&' | 'або' | 'і';
+operation: molecule #operation_molecule
+         | a_left=molecule 'як' a_type=full_type #as
+         | a_left=operation a_operation=('*' | '/' | '%') a_right=operation #mul
+         | a_left=operation a_operation=('+' | '-') a_right=operation #add
+         | b_left=operation b_operation=bitwise_op b_right=operation #bitwise
+         | c_left=operation c_operation=comparison_op c_right=operation #comparison
+         | t_left=operation t_operation=logical_op t_right=operation #logical;
 
-number: INTEGER | FLOAT | HEX | BIN;
-string: (s_prefix=ID)?  STRING;
-identifier: ID;
+expr: operation #expr_operation
+    | c_type=full_type '{' (c_args=construct_args)? '}' #construct;
+construct_args: construct_arg (',' construct_arg)* ','?;
+construct_arg: (ca_name=ID '=')? ca_value=expr;
+
+basic_type: ID ('<' t_first_generic_type=full_type (',' full_type)* '>')? #simple_type
+          | at_type=basic_type '[' at_size=NUMBER ']' #array_type;
+full_type: basic_type #full_type_basic_type
+         | '(' (cft_args=complex_function_type_args)? ')' '-' '>' cft_ret=full_type #complex_function_type
+         | sft_arg=full_type '-' '>' sft_ret=full_type #simple_function_type;
+complex_function_type_args: full_type (',' full_type)*;
+
+bitwise_op: '^' | '|' | '&' | ('<' '<') | ('>' '>');
+comparison_op: ('=' '=') | ('!' '=') | '>' | '<' | ('>' '=') | ('<' '=');
+logical_op: ('|' '|') | ('&' '&') | 'або' | 'і';

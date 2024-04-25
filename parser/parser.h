@@ -19,13 +19,15 @@
 namespace tsil::parser {
   void FILL(ast::ASTValue* node, antlr4::ParserRuleContext* context);
 
+  void FILL(ast::ASTValue* node, antlr4::Token* token);
+
   ast::ASTValue* AV(ast::ASTValueKind kind, void* data);
 
   ast::ASTValue* AV(antlr4::ParserRuleContext* context,
                     ast::ASTValueKind kind,
                     void* data);
 
-  void processASTBody(std::vector<ast::ASTValue*>& body);
+  ast::ASTValue* AV(antlr4::Token* token, ast::ASTValueKind kind, void* data);
 
   class TsilASTVisitor final : public TsilParserBaseVisitor {
    public:
@@ -37,31 +39,22 @@ namespace tsil::parser {
 
     std::any visitProgram(TsilParser::ProgramContext* context) override;
 
-    std::any visitProgram_element(
-        TsilParser::Program_elementContext* context) override;
+    std::any visitSection(TsilParser::SectionContext* ctx) override;
 
     std::any visitStructure(TsilParser::StructureContext* ctx) override;
-
-    std::any visitStructure_generics(
-        TsilParser::Structure_genericsContext* ctx) override;
-
-    std::any visitStructure_generic(
-        TsilParser::Structure_genericContext* ctx) override;
-
-    std::any visitStructure_params(
-        TsilParser::Structure_paramsContext* ctx) override;
-
-    std::any visitStructure_param(
-        TsilParser::Structure_paramContext* ctx) override;
 
     std::any visitDiia(TsilParser::DiiaContext* ctx) override;
 
     std::any visitDiia_declaration(
         TsilParser::Diia_declarationContext* ctx) override;
 
+    std::any visitBody(TsilParser::BodyContext* ctx) override;
+
     std::any visitIf(TsilParser::IfContext* ctx) override;
 
     std::any visitWhile(TsilParser::WhileContext* ctx) override;
+
+    std::any visitDeclare(TsilParser::DeclareContext* ctx) override;
 
     std::any visitDefine(TsilParser::DefineContext* ctx) override;
 
@@ -69,104 +62,51 @@ namespace tsil::parser {
 
     std::any visitSet(TsilParser::SetContext* ctx) override;
 
-    std::any visitNumber(TsilParser::NumberContext* ctx) override;
-
-    std::any visitAtom_number(TsilParser::Atom_numberContext* ctx) override;
-
-    std::any visitString(TsilParser::StringContext* ctx) override;
-
-    std::any visitAtom_string(TsilParser::Atom_stringContext* ctx) override;
-
     std::any visitIdentifier(TsilParser::IdentifierContext* ctx) override;
-
-    std::any visitAtom_identifier(
-        TsilParser::Atom_identifierContext* ctx) override;
 
     std::any visitGet(TsilParser::GetContext* ctx) override;
 
+    std::any visitAccess(TsilParser::AccessContext* ctx) override;
+
     std::any visitCall(TsilParser::CallContext* ctx) override;
+
+    std::any visitNested(TsilParser::NestedContext* ctx) override;
+
+    std::any visitNumber(TsilParser::NumberContext* ctx) override;
+
+    std::any visitString(TsilParser::StringContext* ctx) override;
+
+    std::any visitNot(TsilParser::NotContext* ctx) override;
 
     std::any visitPositive(TsilParser::PositiveContext* ctx) override;
 
     std::any visitNegative(TsilParser::NegativeContext* ctx) override;
 
-    std::any visitNot(TsilParser::NotContext* ctx) override;
-
     std::any visitBitwise_not(TsilParser::Bitwise_notContext* ctx) override;
-
-    std::any visitNested(TsilParser::NestedContext* ctx) override;
-
-    std::any visitValue_atom(TsilParser::Value_atomContext* ctx) override;
-
-    std::any visitArithmetic_mul(
-        TsilParser::Arithmetic_mulContext* ctx) override;
-
-    std::any visitArithmetic_add(
-        TsilParser::Arithmetic_addContext* ctx) override;
-
-    std::any visitBitwise(TsilParser::BitwiseContext* ctx) override;
-
-    std::any visitBitwise_op(TsilParser::Bitwise_opContext* ctx) override;
-
-    std::any visitComparison(TsilParser::ComparisonContext* ctx) override;
-
-    std::any visitComparison_op(TsilParser::Comparison_opContext* ctx) override;
-
-    std::any visitLogical(TsilParser::LogicalContext* ctx) override;
-
-    std::any visitLogical_op(TsilParser::Logical_opContext* ctx) override;
-
-    std::any visitIdentifiers_chain(
-        TsilParser::Identifiers_chainContext* ctx) override;
-
-    std::any visitType(TsilParser::TypeContext* ctx) override;
-
-    std::any visitFullType(TsilParser::Full_typeContext* context);
-
-    std::any visitArgs(TsilParser::ArgsContext* ctx) override;
-
-    std::any visitParams(TsilParser::ParamsContext* ctx) override;
-
-    std::any visitParam(TsilParser::ParamContext* ctx) override;
-
-    std::any visitBody(TsilParser::BodyContext* ctx) override;
-
-    std::any visitBody_element_or_return(
-        TsilParser::Body_element_or_returnContext* ctx) override;
-
-    std::any visitBody_element(TsilParser::Body_elementContext* ctx) override;
-
-    std::any visitReturn_body_element(
-        TsilParser::Return_body_elementContext* ctx) override;
-
-    std::any visitConstructor(TsilParser::ConstructorContext* ctx) override;
-
-    std::any visitConstructor_args(
-        TsilParser::Constructor_argsContext* ctx) override;
-
-    std::any visitConstructor_arg(
-        TsilParser::Constructor_argContext* ctx) override;
-
-    std::any visitAtom_constructor(
-        TsilParser::Atom_constructorContext* ctx) override;
-
-    std::any visitSizeof(TsilParser::SizeofContext* ctx) override;
-
-    std::any visitAtom_sizeof(TsilParser::Atom_sizeofContext* ctx) override;
 
     std::any visitAs(TsilParser::AsContext* ctx) override;
 
-    std::any visitExpr_molecule(TsilParser::Expr_moleculeContext* ctx) override;
+    std::any visitMul(TsilParser::MulContext* ctx) override;
+
+    std::any visitAdd(TsilParser::AddContext* ctx) override;
+
+    std::any visitBitwise(TsilParser::BitwiseContext* ctx) override;
+
+    std::any visitComparison(TsilParser::ComparisonContext* ctx) override;
+
+    std::any visitLogical(TsilParser::LogicalContext* ctx) override;
+
+    std::any visitConstruct(TsilParser::ConstructContext* ctx) override;
+
+    std::any visitSimple_type(TsilParser::Simple_typeContext* ctx) override;
+
+    std::any visitArray_type(TsilParser::Array_typeContext* context) override;
 
     std::any visitComplex_function_type(
         TsilParser::Complex_function_typeContext* ctx) override;
 
     std::any visitSimple_function_type(
         TsilParser::Simple_function_typeContext* ctx) override;
-
-    std::any visitArray_type(TsilParser::Array_typeContext* ctx) override;
-
-    std::any visitAccess(TsilParser::AccessContext* ctx) override;
   };
 
   struct TsilParserError {

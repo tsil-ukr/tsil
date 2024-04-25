@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(TSIL_PARSER tsil_parser CACHE INTERNAL "")
 set(TSIL_PARSER_SRC
         visitor/visitAccess.cpp
-        visitor/visitArgs.cpp
         visitor/visitArithmetic.cpp
         visitor/visitAs.cpp
         visitor/visitAssign.cpp
@@ -16,6 +15,7 @@ set(TSIL_PARSER_SRC
         visitor/visitCall.cpp
         visitor/visitComparison.cpp
         visitor/visitConstructor.cpp
+        visitor/visitDeclare.cpp
         visitor/visitDefine.cpp
         visitor/visitDiia.cpp
         visitor/visitFile.cpp
@@ -26,16 +26,14 @@ set(TSIL_PARSER_SRC
         visitor/visitNested.cpp
         visitor/visitNot.cpp
         visitor/visitNumber.cpp
-        visitor/visitParams.cpp
         visitor/visitPositive.cpp
         visitor/visitProgram.cpp
+        visitor/visitSection.cpp
         visitor/visitSet.cpp
-        visitor/visitSizeof.cpp
         visitor/visitString.cpp
         visitor/visitStructure.cpp
         visitor/visitLogical.cpp
         visitor/visitType.cpp
-        visitor/visitValue_atom.cpp
         visitor/visitWhile.cpp
         ast.h
         parser.cpp

@@ -45,7 +45,7 @@ namespace tsil::ast {
   struct IncludeNode;
   struct AccessNode;
 
-  enum BinaryOp {
+  enum BinaryOp : u_int32_t {
     ARITHMETIC_ADD,
     ARITHMETIC_SUB,
     ARITHMETIC_MUL,
@@ -64,19 +64,19 @@ namespace tsil::ast {
     COMPARISON_GE,
   };
 
-  enum LogicalOp {
+  enum LogicalOp : u_int32_t {
     TEST_OR,
     TEST_AND,
   };
 
-  enum UnaryOp {
+  enum UnaryOp : u_int32_t {
     UNARY_POSITIVE,
     UNARY_NEGATIVE,
     UNARY_NOT,
     UNARY_BITWISE_NOT,
   };
 
-  enum ASTValueKind {
+  enum ASTValueKind : u_int32_t {
     KindNone,
     KindAssignNode,
     KindBinaryNode,
@@ -201,6 +201,7 @@ namespace tsil::ast {
   struct SetNode {
     ASTValue* left;
     std::string id;
+    ASTValue* access;
     ASTValue* value;
   };
 
@@ -212,7 +213,7 @@ namespace tsil::ast {
 
   struct ContinueNode {};
 
-  enum DiiaLinkage {
+  enum DiiaLinkage : u_int32_t {
     DiiaLinkageExtern,
     DiiaLinkageLocal,
     DiiaLinkageStatic,

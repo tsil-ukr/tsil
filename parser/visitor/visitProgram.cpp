@@ -2,27 +2,24 @@
 
 namespace tsil::parser {
   std::any TsilASTVisitor::visitProgram(TsilParser::ProgramContext* context) {
-    std::vector<ast::ASTValue*> body;
-    for (const auto program_element : context->program_element()) {
-      body.push_back(AAV(visitProgram_element(program_element)));
-    }
-    processASTBody(body);
     const auto program_node = new ast::ProgramNode();
-    program_node->body = body;
+    for (const auto program_element : context->program_element()) {
+      if (program_element->section()) {
+        program_node->body.push_back(
+            AAV(visitSection(program_element->section())));
+      }
+      if (program_element->structure()) {
+        program_node->body.push_back(
+            AAV(visitStructure(program_element->structure())));
+      }
+      if (program_element->diia_declaration()) {
+        program_node->body.push_back(
+            AAV(visitDiia_declaration(program_element->diia_declaration())));
+      }
+      if (program_element->diia()) {
+        program_node->body.push_back(AAV(visitDiia(program_element->diia())));
+      }
+    }
     return AV(ast::KindProgramNode, program_node);
-  }
-
-  std::any TsilASTVisitor::visitProgram_element(
-      TsilParser::Program_elementContext* context) {
-    if (context->structure()) {
-      return visitStructure(context->structure());
-    }
-    if (context->diia_declaration()) {
-      return visitDiia_declaration(context->diia_declaration());
-    }
-    if (context->diia()) {
-      return visitDiia(context->diia());
-    }
-    return new ast::ASTValue();
   }
 } // namespace tsil::parser

@@ -3,77 +3,37 @@
 namespace tsil::parser {
   std::any TsilASTVisitor::visitBody(TsilParser::BodyContext* context) {
     std::vector<ast::ASTValue*> body;
-    for (const auto body_element : context->body_element_or_return()) {
-      const auto ast_value = AAV(visitBody_element_or_return(body_element));
-      if (ast_value->kind == ast::KindIdentifierNode) {
-        if (ast_value->data.IdentifierNode->name == "перервати") {
-          const auto break_ast_value = new ast::ASTValue();
-          break_ast_value->kind = ast::KindBreakNode;
-          break_ast_value->data.BreakNode = new ast::BreakNode();
-          break_ast_value->start_line = ast_value->start_line;
-          break_ast_value->start_column = ast_value->start_column;
-          break_ast_value->end_line = ast_value->end_line;
-          break_ast_value->end_column = ast_value->end_column;
-          body.push_back(break_ast_value);
-        } else if (ast_value->data.IdentifierNode->name == "продовжити") {
-          const auto continue_ast_value = new ast::ASTValue();
-          continue_ast_value->kind = ast::KindContinueNode;
-          continue_ast_value->data.ContinueNode = new ast::ContinueNode();
-          continue_ast_value->start_line = ast_value->start_line;
-          continue_ast_value->start_column = ast_value->start_column;
-          continue_ast_value->end_line = ast_value->end_line;
-          continue_ast_value->end_column = ast_value->end_column;
-          body.push_back(continue_ast_value);
-        } else {
-          body.push_back(ast_value);
+    for (const auto body_element : context->body_element()) {
+      if (body_element->if_()) {
+        body.push_back(AAV(visitIf(body_element->if_())));
+      }
+      if (body_element->while_()) {
+        body.push_back(AAV(visitWhile(body_element->while_())));
+      }
+      if (body_element->declare()) {
+        body.push_back(AAV(visitDeclare(body_element->declare())));
+      }
+      if (body_element->define()) {
+        body.push_back(AAV(visitDefine(body_element->define())));
+      }
+      if (body_element->assign()) {
+        body.push_back(AAV(visitAssign(body_element->assign())));
+      }
+      if (body_element->set()) {
+        body.push_back(AAV(visitSet(body_element->set())));
+      }
+      if (body_element->expr()) {
+        body.push_back(AAV(visitContext(body_element->expr())));
+      }
+      if (body_element->return_body_element()) {
+        const auto return_node = new ast::ReturnNode();
+        if (body_element->return_body_element()->rbl_value) {
+          return_node->value =
+              AAV(visitContext(body_element->return_body_element()));
         }
-      } else {
-        body.push_back(ast_value);
+        body.push_back(AV(context, ast::KindReturnNode, return_node));
       }
     }
     return body;
-  }
-
-  std::any TsilASTVisitor::visitBody_element(
-      TsilParser::Body_elementContext* context) {
-    if (context->if_()) {
-      return visitIf(context->if_());
-    }
-    if (context->while_()) {
-      return visitWhile(context->while_());
-    }
-    if (context->expr()) {
-      return visitContext(context->expr());
-    }
-    if (context->define()) {
-      return visitDefine(context->define());
-    }
-    if (context->assign()) {
-      return visitAssign(context->assign());
-    }
-    if (context->set()) {
-      return visitSet(context->set());
-    }
-    return new ast::ASTValue();
-  }
-
-  std::any TsilASTVisitor::visitBody_element_or_return(
-      TsilParser::Body_element_or_returnContext* context) {
-    if (context->body_element()) {
-      return visitBody_element(context->body_element());
-    }
-    if (context->return_body_element()) {
-      return visitReturn_body_element(context->return_body_element());
-    }
-    return new ast::ASTValue();
-  }
-
-  std::any TsilASTVisitor::visitReturn_body_element(
-      TsilParser::Return_body_elementContext* context) {
-    const auto return_node = new ast::ReturnNode();
-    if (context->rbl_value) {
-      return_node->value = AAV(visitContext(context->rbl_value));
-    }
-    return AV(context, ast::KindReturnNode, return_node);
   }
 } // namespace tsil::parser

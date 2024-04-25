@@ -1021,12 +1021,12 @@ namespace tsil::tk {
                                         tsil::x::FunctionBlock* xBlock,
                                         ast::ASTValue* astValue,
                                         bool load) {
-    const auto accessNode = astValue->data.GetNode;
+    const auto getNode = astValue->data.GetNode;
     Type* leftType = nullptr;
     x::Value* leftXValue = nullptr;
-    if (accessNode->left->kind == ast::KindIdentifierNode) {
-      const auto identifierResult = this->compileIdentifier(
-          xFunction, xBlock, accessNode->left, {}, false);
+    if (getNode->left->kind == ast::KindIdentifierNode) {
+      const auto identifierResult =
+          this->compileIdentifier(xFunction, xBlock, getNode->left, {}, false);
       if (identifierResult.error) {
         return identifierResult;
       }
@@ -1034,9 +1034,9 @@ namespace tsil::tk {
       leftXValue = identifierResult.xValue;
       goto proceed;
     }
-    if (accessNode->left->kind == ast::KindGetNode) {
+    if (getNode->left->kind == ast::KindGetNode) {
       const auto getLeftResult =
-          this->compileGet(xFunction, xBlock, accessNode->left, false);
+          this->compileGet(xFunction, xBlock, getNode->left, false);
       if (getLeftResult.error) {
         return getLeftResult;
       }
@@ -1044,9 +1044,9 @@ namespace tsil::tk {
       leftXValue = getLeftResult.xValue;
       goto proceed;
     }
-    if (accessNode->left->kind == ast::KindAccessNode) {
+    if (getNode->left->kind == ast::KindAccessNode) {
       const auto accessLeftResult =
-          this->compileAccess(xFunction, xBlock, accessNode->left, false);
+          this->compileAccess(xFunction, xBlock, getNode->left, false);
       if (accessLeftResult.error) {
         return accessLeftResult;
       }
@@ -1054,19 +1054,19 @@ namespace tsil::tk {
       leftXValue = accessLeftResult.xValue;
       goto proceed;
     }
-    return {nullptr, nullptr,
-            CompilerError::fromASTValue(
-                astValue,
-                "NOT IMPLEMENTED GET: " +
-                    ast::ast_value_kind_to_string(accessNode->left->kind))};
+    return {
+        nullptr, nullptr,
+        CompilerError::fromASTValue(
+            astValue, "NOT IMPLEMENTED GET: " +
+                          ast::ast_value_kind_to_string(getNode->left->kind))};
   proceed:
     if (leftType->type == TypeTypeStructureInstance) {
-      if (!leftType->structureInstanceFields.contains(accessNode->id)) {
-        return {nullptr, nullptr,
-                CompilerError::typeHasNoProperty(astValue, leftType,
-                                                 accessNode->id)};
+      if (!leftType->structureInstanceFields.contains(getNode->id)) {
+        return {
+            nullptr, nullptr,
+            CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};
       }
-      const auto field = leftType->structureInstanceFields[accessNode->id];
+      const auto field = leftType->structureInstanceFields[getNode->id];
       const auto gepXValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
               xBlock, leftType->xType, leftXValue,
@@ -1082,9 +1082,100 @@ namespace tsil::tk {
         return {field.type, gepXValue, nullptr};
       }
     }
-    return {
-        nullptr, nullptr,
-        CompilerError::typeHasNoProperty(astValue, leftType, accessNode->id)};
+    return {nullptr, nullptr,
+            CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};
+  }
+
+  CompilerResult Scope::compileSet(tsil::x::Function* xFunction,
+                                   tsil::x::FunctionBlock* xBlock,
+                                   ast::ASTValue* astValue) {
+    const auto setNode = astValue->data.SetNode;
+    Type* leftType = nullptr;
+    x::Value* leftXValue = nullptr;
+    if (setNode->left->kind == ast::KindIdentifierNode) {
+      const auto identifierResult =
+          this->compileIdentifier(xFunction, xBlock, setNode->left, {}, false);
+      if (identifierResult.error) {
+        return {identifierResult.error};
+      }
+      leftType = identifierResult.type;
+      leftXValue = identifierResult.xValue;
+      goto proceed;
+    }
+    if (setNode->left->kind == ast::KindGetNode) {
+      const auto getLeftResult =
+          this->compileGet(xFunction, xBlock, setNode->left, false);
+      if (getLeftResult.error) {
+        return {getLeftResult.error};
+      }
+      leftType = getLeftResult.type;
+      leftXValue = getLeftResult.xValue;
+      goto proceed;
+    }
+    if (setNode->left->kind == ast::KindAccessNode) {
+      const auto accessLeftResult =
+          this->compileAccess(xFunction, xBlock, setNode->left, false);
+      if (accessLeftResult.error) {
+        return {accessLeftResult.error};
+      }
+      leftType = accessLeftResult.type;
+      leftXValue = accessLeftResult.xValue;
+      goto proceed;
+    }
+    return {CompilerError::fromASTValue(
+        astValue, "NOT IMPLEMENTED SET: " +
+                      ast::ast_value_kind_to_string(setNode->left->kind))};
+  proceed:
+    if (leftType->type == TypeTypeStructureInstance) {
+      if (!leftType->structureInstanceFields.contains(setNode->id)) {
+        return {
+            CompilerError::typeHasNoProperty(astValue, leftType, setNode->id)};
+      }
+      const auto field = leftType->structureInstanceFields[setNode->id];
+      const auto gepXValue =
+          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+              xBlock, leftType->xType, leftXValue,
+              {new x::Value(this->compiler->int32Type->xType, "0"),
+               new x::Value(this->compiler->int32Type->xType,
+                            std::to_string(field.index))});
+      const auto valueResult =
+          this->compileValue(xFunction, xBlock, setNode->value, {});
+      const auto storeXValue =
+          this->compiler->xModule->pushFunctionBlockStoreInstruction(
+              xBlock, field.type->xType, valueResult.xValue, gepXValue);
+      return {nullptr};
+    } else {
+      if (setNode->access) {
+        if (leftType->type == TypeTypeArray) {
+          const auto indexResult =
+              this->compileValue(xFunction, xBlock, setNode->access, {});
+          if (indexResult.error) {
+            return {indexResult.error};
+          }
+          const auto valueResult =
+              this->compileValue(xFunction, xBlock, setNode->value, {});
+          if (valueResult.error) {
+            return {valueResult.error};
+          }
+          if (!valueResult.type->equals(leftType->arrayOf)) {
+            return {CompilerError::invalidArgumentType(
+                setNode->value, "значення", leftType->arrayOf,
+                valueResult.type)};
+          }
+          const auto gepXValue =
+              this->compiler->xModule
+                  ->pushFunctionBlockGetElementPtrInstruction(
+                      xBlock, leftType->xType, leftXValue,
+                      {indexResult.xValue});
+          const auto storeXValue =
+              this->compiler->xModule->pushFunctionBlockStoreInstruction(
+                  xBlock, leftType->xType->arrayOf, valueResult.xValue,
+                  gepXValue);
+          return {nullptr};
+        }
+      }
+    }
+    return {CompilerError::typeHasNoProperty(astValue, leftType, setNode->id)};
   }
 
   CompilerValueResult Scope::compileValue(
@@ -1206,8 +1297,11 @@ namespace tsil::tk {
             xBlock, valueResult.type->xType, valueResult.xValue,
             variableXValue);
       } else if (childAstValue->kind == ast::KindSetNode) {
-        return {
-            CompilerError::fromASTValue(childAstValue, "NOT IMPLEMENTED SET")};
+        const auto setResult =
+            this->compileSet(xFunction, xBlock, childAstValue);
+        if (setResult.error) {
+          return {setResult.error};
+        }
       } else if (childAstValue->kind == ast::KindCallNode) {
         const auto valueResult =
             this->compileValue(xFunction, xBlock, childAstValue, {});

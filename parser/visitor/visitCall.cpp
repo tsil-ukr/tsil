@@ -10,7 +10,9 @@ namespace tsil::parser {
       }
     }
     if (context->c_args) {
-      call_node->args = AAVec(visitArgs(context->c_args));
+      for (const auto& arg : context->c_args->expr()) {
+        call_node->args.push_back(AAV(visitContext(arg)));
+      }
     }
     return AV(context, ast::KindCallNode, call_node);
   }

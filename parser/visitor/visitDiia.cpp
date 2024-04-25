@@ -16,15 +16,23 @@ namespace tsil::parser {
       for (const auto& diia_generic :
            context->d_head->d_generics->diia_generic()) {
         diia_head_node->generic_definitions.push_back(
-            diia_generic->identifier()->getText());
+            diia_generic->ID()->getText());
       }
     }
     if (context->d_head->d_params) {
-      diia_head_node->params = AAVec(visitParams(context->d_head->d_params));
+      for (const auto& param : context->d_head->d_params->param()) {
+        const auto param_node = new ast::ParamNode();
+        param_node->id = param->p_name->getText();
+        if (param->p_type) {
+          param_node->type = AAV(visitContext(param->p_type));
+        }
+        diia_head_node->params.push_back(
+            AV(param, ast::KindParamNode, param_node));
+      }
     }
     diia_head_node->is_variadic = context->d_head->d_variadic != nullptr;
     if (context->d_head->d_type) {
-      diia_head_node->type = AAV(visitFullType(context->d_head->d_type));
+      diia_head_node->type = AAV(visitContext(context->d_head->d_type));
     }
     diia_node->head = diia_head_node;
     if (context->d_body) {
@@ -49,15 +57,23 @@ namespace tsil::parser {
       for (const auto& diia_generic :
            context->d_head->d_generics->diia_generic()) {
         diia_head_node->generic_definitions.push_back(
-            diia_generic->identifier()->getText());
+            diia_generic->ID()->getText());
       }
     }
     if (context->d_head->d_params) {
-      diia_head_node->params = AAVec(visitParams(context->d_head->d_params));
+      for (const auto& param : context->d_head->d_params->param()) {
+        const auto param_node = new ast::ParamNode();
+        param_node->id = param->p_name->getText();
+        if (param->p_type) {
+          param_node->type = AAV(visitContext(param->p_type));
+        }
+        diia_head_node->params.push_back(
+            AV(param, ast::KindParamNode, param_node));
+      }
     }
     diia_head_node->is_variadic = context->d_head->d_variadic != nullptr;
     if (context->d_head->d_type) {
-      diia_head_node->type = AAV(visitFullType(context->d_head->d_type));
+      diia_head_node->type = AAV(visitContext(context->d_head->d_type));
     }
     if (context->d_as) {
       diia_declaration_node->as = context->d_as->getText();
