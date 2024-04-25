@@ -63,6 +63,9 @@ struct FuseCommand {
   FuseCommandOutputType outputType;
   bool releaseMode = false;
   bool useCCache = false;
+  std::string clang = "clang++";
+  std::string clangOverride = "";
+  std::string clangAppend = "";
 };
 
 void printCompilerError(const std::string& path,
@@ -342,15 +345,30 @@ int compile(const CompileCommand& compileCommand) {
 void printHelp() {
   std::cout << "Використання:" << std::endl;
   std::cout << "  ціль <ціль> <команда> [аргументи...]" << std::endl;
+  std::cout << std::endl;
+  std::cout << "  ціль версія" << std::endl;
   std::cout << "  ціль допомога" << std::endl;
+  std::cout << "  ціль <команда> допомога" << std::endl;
+  std::cout << std::endl;
   std::cout << "Команди:" << std::endl;
-  std::cout << "  <вихід[.ll|.bc]> скомпілювати <вхід.ц>" << std::endl;
-  std::cout << "  <вихід[|.сплав|.виріб|.обц|.бобц|.сбобц|.васм]> сплавити "
-               "[опції...] "
-               "<вхід[.ц|.c|.cpp|.ll|.bc]...>"
+  std::cout << "  <вихід> скомпілювати <вхід>" << std::endl;
+  std::cout
+      << "    Опис: скомпілювати вхідний файл в зрозумілий для LLVM формат"
+      << std::endl;
+  std::cout << "    Вихід: .ll .bc" << std::endl;
+  std::cout << "    Вхід: .ц" << std::endl;
+  std::cout << std::endl;
+  std::cout << "  <вихід> сплавити [опції...]  <вхід...>" << std::endl;
+  std::cout << "    Опис: сплавити обʼєкт або програму через CLang"
             << std::endl;
-  std::cout << "    --режим=[розробка|випуск]" << std::endl;
-  std::cout << "    --кеш=[ні|ccache]" << std::endl;
+  std::cout << "    Вихід: .сплав .виріб .обц .бобц .сбобц .васм" << std::endl;
+  std::cout << "    Вхід: .ц .c .cpp .ll .bc" << std::endl;
+  std::cout << "    Опції:" << std::endl;
+  std::cout << "      --режим=<розробка|випуск>" << std::endl;
+  std::cout << "      --кеш=<ні|ccache>" << std::endl;
+  std::cout << "      --clang=\"path to clang\"" << std::endl;
+  std::cout << "      --clang-override=\"custom clang options\"" << std::endl;
+  std::cout << "      --clang-append=\"additional clang options\"" << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -361,6 +379,10 @@ int main(int argc, char** argv) {
   }
   if (args[1] == "допомога") {
     printHelp();
+    return 0;
+  }
+  if (args[1] == "версія") {
+    std::cout << "0.1.0" << std::endl;
     return 0;
   }
   const auto& target = args[1];
@@ -381,10 +403,23 @@ int main(int argc, char** argv) {
     FuseCommand fuseCommand;
     for (const auto& inputPath :
          std::vector<std::string>(args.begin() + 3, args.end())) {
-      if (inputPath == "--режим=випуск") {
-        fuseCommand.releaseMode = true;
-      } else if (inputPath == "--кеш=ccache") {
-        fuseCommand.useCCache = true;
+      if (inputPath.starts_with("--")) {
+        if (inputPath == "--режим=випуск") {
+          fuseCommand.releaseMode = true;
+        } else if (inputPath == "--кеш=ccache") {
+          fuseCommand.useCCache = true;
+        } else if (inputPath.starts_with("--clang=")) {
+          fuseCommand.clang = inputPath.substr(std::string("--clang=").size());
+        } else if (inputPath.starts_with("--clang-override=")) {
+          fuseCommand.clangOverride =
+              inputPath.substr(std::string("--clang-override=").size());
+        } else if (inputPath.starts_with("--clang-append=")) {
+          fuseCommand.clangAppend =
+              inputPath.substr(std::string("--clang-append=").size());
+        } else {
+          std::cerr << "помилка: Невідома опція " << inputPath << std::endl;
+          return 1;
+        }
       } else {
         fuseCommand.inputPaths.push_back(inputPath);
       }
@@ -415,51 +450,58 @@ int main(int argc, char** argv) {
     if (fuseCommand.useCCache) {
       cmd.emplace_back("ccache");
     }
-    cmd.emplace_back("clang++");
-    if (fuseCommand.outputType == FuseCommandOutputTypeObject) {
-      cmd.emplace_back("-c");
-      if (fuseCommand.releaseMode) {
-        cmd.emplace_back("-O3");
-        cmd.emplace_back("-flto");
+    cmd.emplace_back(fuseCommand.clang);
+    if (fuseCommand.clangOverride.empty()) {
+      if (fuseCommand.outputType == FuseCommandOutputTypeObject) {
+        cmd.emplace_back("-c");
+        if (fuseCommand.releaseMode) {
+          cmd.emplace_back("-O3");
+          cmd.emplace_back("-flto");
+        }
+      } else if (fuseCommand.outputType == FuseCommandOutputTypeStaticLibrary) {
+        cmd.emplace_back("-c");
+        cmd.emplace_back("-static");
+        if (fuseCommand.releaseMode) {
+          cmd.emplace_back("-O3");
+          cmd.emplace_back("-flto");
+        }
+      } else if (fuseCommand.outputType == FuseCommandOutputTypeSharedLibrary) {
+        cmd.emplace_back("-shared");
+        if (fuseCommand.releaseMode) {
+          cmd.emplace_back("-O3");
+          cmd.emplace_back("-flto");
+        }
+      } else if (fuseCommand.outputType ==
+                 FuseCommandOutputTypeStaticExecutable) {
+        cmd.emplace_back("-static");
+        if (fuseCommand.releaseMode) {
+          cmd.emplace_back("-O3");
+          cmd.emplace_back("-flto");
+        }
+      } else if (fuseCommand.outputType == FuseCommandOutputTypeExecutable) {
+        if (fuseCommand.releaseMode) {
+          cmd.emplace_back("-O3");
+          cmd.emplace_back("-flto");
+        }
+      } else if (fuseCommand.outputType == FuseCommandOutputTypeWasm) {
+        cmd.emplace_back("--target=wasm32");
+        if (fuseCommand.releaseMode) {
+          cmd.emplace_back("-O3");
+          cmd.emplace_back("-flto");
+        }
+        cmd.emplace_back("-nostdlib");
+        cmd.emplace_back("-Wl,--no-entry");
+        cmd.emplace_back("-Wl,--export-all");
+        if (fuseCommand.releaseMode) {
+          cmd.emplace_back("-Wl,--lto-O3");
+        }
+        cmd.emplace_back("-Wl,-z,stack-size=8388608"); // 8MB
       }
-    } else if (fuseCommand.outputType == FuseCommandOutputTypeStaticLibrary) {
-      cmd.emplace_back("-c");
-      cmd.emplace_back("-static");
-      if (fuseCommand.releaseMode) {
-        cmd.emplace_back("-O3");
-        cmd.emplace_back("-flto");
-      }
-    } else if (fuseCommand.outputType == FuseCommandOutputTypeSharedLibrary) {
-      cmd.emplace_back("-shared");
-      if (fuseCommand.releaseMode) {
-        cmd.emplace_back("-O3");
-        cmd.emplace_back("-flto");
-      }
-    } else if (fuseCommand.outputType ==
-               FuseCommandOutputTypeStaticExecutable) {
-      cmd.emplace_back("-static");
-      if (fuseCommand.releaseMode) {
-        cmd.emplace_back("-O3");
-        cmd.emplace_back("-flto");
-      }
-    } else if (fuseCommand.outputType == FuseCommandOutputTypeExecutable) {
-      if (fuseCommand.releaseMode) {
-        cmd.emplace_back("-O3");
-        cmd.emplace_back("-flto");
-      }
-    } else if (fuseCommand.outputType == FuseCommandOutputTypeWasm) {
-      cmd.emplace_back("--target=wasm32");
-      if (fuseCommand.releaseMode) {
-        cmd.emplace_back("-O3");
-        cmd.emplace_back("-flto");
-      }
-      cmd.emplace_back("-nostdlib");
-      cmd.emplace_back("-Wl,--no-entry");
-      cmd.emplace_back("-Wl,--export-all");
-      if (fuseCommand.releaseMode) {
-        cmd.emplace_back("-Wl,--lto-O3");
-      }
-      cmd.emplace_back("-Wl,-z,stack-size=8388608"); // 8MB
+    } else {
+      cmd.push_back(fuseCommand.clangOverride);
+    }
+    if (!fuseCommand.clangAppend.empty()) {
+      cmd.push_back(fuseCommand.clangAppend);
     }
     cmd.emplace_back("-o");
     cmd.push_back(fuseCommand.outputPath);
