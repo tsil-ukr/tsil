@@ -13,7 +13,7 @@ fi
 if [ "$TARGET" = "bin" ] || [ "$TARGET" = "all" ]; then
     mkdir -p build-bin
     cd build-bin
-    cmake ..
+    cmake -DTSIL_X_EXPANDED_NAMES=1 ..
     make -j4 tsil
     cd ..
 fi
@@ -21,7 +21,7 @@ fi
 if [ "$TARGET" = "Obin" ] || [ "$TARGET" = "Oall" ]; then
     mkdir -p build-Obin
     cd build-Obin
-    cmake ..
+    cmake -DTSIL_X_EXPANDED_NAMES=0 ..
     make -j4 tsil_release
     cd ..
 fi

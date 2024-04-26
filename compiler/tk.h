@@ -200,6 +200,9 @@ namespace tsil::tk {
     CompilerValueResult compileCall_Free(tsil::x::Function* xFunction,
                                          tsil::x::FunctionBlock* xBlock,
                                          ast::ASTValue* astValue);
+    CompilerValueResult compileCall_Sizeof(tsil::x::Function* xFunction,
+                                         tsil::x::FunctionBlock* xBlock,
+                                         ast::ASTValue* astValue);
 
     CompilerValueResult compileNumber(tsil::x::Function* xFunction,
                                       tsil::x::FunctionBlock* xBlock,

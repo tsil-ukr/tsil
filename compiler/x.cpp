@@ -13,7 +13,7 @@ namespace tsil::x {
   }
 
   std::string Module::computeNextVarName(const std::string& prefix) {
-    if (TSIL_X_EXPANDED_NAMES) {
+    if (TSIL_X_EXPANDED_NAMES == "1") {
       return "%\"" + prefix + "." + std::to_string(this->variable_counter++) +
              "\"";
     }
@@ -112,7 +112,7 @@ namespace tsil::x {
   FunctionBlock* Module::defineFunctionBlock(Function* function,
                                              const std::string& name) {
     auto block = new FunctionBlock();
-    if (TSIL_X_EXPANDED_NAMES) {
+    if (TSIL_X_EXPANDED_NAMES == "1") {
       block->name = name + "." + std::to_string(function->blocks.size());
     } else {
       block->name = "b." + std::to_string(this->variable_counter++);

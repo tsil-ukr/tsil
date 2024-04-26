@@ -18,7 +18,7 @@ structure_generic: sg_name=ID;
 structure_params: structure_param (',' structure_param)* ','?;
 structure_param: sp_name=ID ':' sp_type=full_type;
 
-diia_head: 'дія' d_name=ID ('<' d_generics=diia_generics '>')? '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' ('-' '>' d_type=full_type)?;
+diia_head: 'дія' d_name=ID ('<' d_generics=diia_generics '>')? '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' (':' d_type=full_type)?;
 diia: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? d_head=diia_head '{' (d_body=body)? '}';
 diia_generics: diia_generic (',' diia_generic)*;
 diia_generic: dg_name=ID;

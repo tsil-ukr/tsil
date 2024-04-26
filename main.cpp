@@ -382,7 +382,7 @@ int main(int argc, char** argv) {
     return 0;
   }
   if (args[1] == "версія") {
-    std::cout << "0.1.0" << std::endl;
+    std::cout << TSIL_VERSION << std::endl;
     return 0;
   }
   const auto& target = args[1];

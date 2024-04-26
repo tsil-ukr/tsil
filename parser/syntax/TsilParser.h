@@ -299,11 +299,10 @@ public:
     antlr4::tree::TerminalNode *PAREN_CLOSE();
     antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *LESSER();
-    std::vector<antlr4::tree::TerminalNode *> GREATER();
-    antlr4::tree::TerminalNode* GREATER(size_t i);
+    antlr4::tree::TerminalNode *GREATER();
     std::vector<antlr4::tree::TerminalNode *> DOT();
     antlr4::tree::TerminalNode* DOT(size_t i);
-    antlr4::tree::TerminalNode *MINUS();
+    antlr4::tree::TerminalNode *COLON();
     Diia_genericsContext *diia_generics();
     ParamsContext *params();
     antlr4::tree::TerminalNode *COMA();

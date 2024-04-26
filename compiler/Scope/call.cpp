@@ -22,6 +22,9 @@ namespace tsil::tk {
       if (identifierNode->name == "звільнити") {
         return this->compileCall_Free(xFunction, xBlock, astValue);
       }
+      if (identifierNode->name == "розмір") {
+        return this->compileCall_Sizeof(xFunction, xBlock, astValue);
+      }
     }
     std::vector<Type*> genericValues;
     for (const auto& diiaGenericAstValue : callNode->generic_values) {
@@ -391,5 +394,37 @@ namespace tsil::tk {
         xBlock, this->compiler->voidType->xType,
         this->compiler->ensureFreeConnected(), {firstArgResult.xValue});
     return {this->compiler->voidType, nullptr, nullptr};
+  }
+
+  CompilerValueResult Scope::compileCall_Sizeof(tsil::x::Function* xFunction,
+                                                tsil::x::FunctionBlock* xBlock,
+                                                ast::ASTValue* astValue) {
+    const auto callNode = astValue->data.CallNode;
+    std::vector<Type*> genericValues;
+    for (const auto& genericAstValue : callNode->generic_values) {
+      const auto bakedTypeResult = this->bakeType(genericAstValue);
+      if (!bakedTypeResult.type) {
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(genericAstValue,
+                                            bakedTypeResult.error)};
+      }
+      genericValues.push_back(bakedTypeResult.type);
+    }
+    if (callNode->args.size() > 0) {
+      return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
+    }
+    if (genericValues.size() < 1) {
+      return {nullptr, nullptr,
+              CompilerError::notEnoughCallTemplateArguments(astValue)};
+    }
+    if (genericValues.size() > 1) {
+      return {nullptr, nullptr,
+              CompilerError::tooManyCallTemplateArguments(astValue)};
+    }
+    const auto firstGenericValue = genericValues[0];
+    const auto sizeOfXValue =
+        new x::Value(this->compiler->uint64Type->xType,
+                     std::to_string(firstGenericValue->getBytesSize(this)));
+    return {this->compiler->uint64Type, sizeOfXValue, nullptr};
   }
 } // namespace tsil::tk

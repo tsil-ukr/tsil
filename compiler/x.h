@@ -2,8 +2,6 @@
 #include "unordered_map"
 #include "vector"
 
-#define TSIL_X_EXPANDED_NAMES 1
-
 namespace tsil::x {
   struct Module;
   struct Value;
