@@ -19,6 +19,7 @@ KW_LOCAL: 'місцева';
 KW_NOT: 'не';
 KW_OR: 'або';
 KW_AND: 'і';
+KW_VAR: 'змінна';
 
 EQUAL: '=';
 GREATER: '>';

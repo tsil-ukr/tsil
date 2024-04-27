@@ -39,7 +39,7 @@ namespace tsil::parser {
 
     std::any visitProgram(TsilParser::ProgramContext* context) override;
 
-    std::any visitSection(TsilParser::SectionContext* ctx) override;
+    std::any visitSection(TsilParser::SectionContext* context) override;
 
     std::any visitStructure(TsilParser::StructureContext* ctx) override;
 

@@ -7,7 +7,7 @@ options {
 file: f_program=program EOF;
 
 program: program_element*;
-program_element: (take ';') | section | structure | diia_declaration | diia | ';';
+program_element: (take ';') | (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
 
 section_access: sa_id=ID #identifier
               | sa_left=section_access ':' ':' sa_right=ID #real_section_access;
@@ -16,7 +16,7 @@ take: 'взяти' t_type=ID (t_string=STRING | t_parts=take_parts);
 take_parts: (tp_relative='.')? ID ('/' ID)*;
 
 section: 'секція' s_name=ID '{' section_element* '}';
-section_element: section | structure | diia_declaration | diia | ';';
+section_element: (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
 
 structure: 'структура' s_name=ID ('<' s_generics=structure_generics '>')? '{' (s_params=structure_params)? '}';
 structure_generics: structure_generic (',' structure_generic)*;
@@ -40,9 +40,9 @@ if: 'якщо' i_value=expr '{' (i_body=body)? '}' ('інакше' '{' (i_else_b
 
 while: 'поки' w_value=expr '{' (w_body=body)? '}';
 
-declare: 'ціль' d_id=ID ':' d_type=full_type;
+declare: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? (d_tsil='ціль' | d_var='змінна') d_id=ID ':' d_type=full_type;
 
-define: 'ціль' d_id=ID (':' d_type=full_type)? '=' d_value=expr;
+define: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? (d_tsil='ціль' | d_var='змінна') d_id=ID (':' d_type=full_type)? '=' d_value=expr;
 
 assign: a_id=ID '=' a_value=expr;
 
