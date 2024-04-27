@@ -4,27 +4,34 @@ namespace tsil::tk {
   BakedTypeResult Scope::bakeType(ast::ASTValue* astValue) {
     if (astValue->kind == ast::KindTypeNode) {
       const auto typeNode = astValue->data.TypeNode;
+      const auto scope = this;
+      std::string typeId;
+      if (typeNode->id->kind == ast::KindIdentifierNode) {
+        typeId = typeNode->id->data.IdentifierNode->name;
+      } else {
+        return {nullptr, "NOT IMPLEMENTED BAKED SECTION TYPE"};
+      }
       std::vector<Type*> genericValues;
       for (const auto& genericAstValue : typeNode->generics) {
-        const auto genericTypeResult = this->bakeType(genericAstValue);
+        const auto genericTypeResult = scope->bakeType(genericAstValue);
         if (!genericTypeResult.type) {
           return {nullptr, genericTypeResult.error};
         }
         genericValues.push_back(genericTypeResult.type);
       }
-      if (this->hasBakedType(typeNode->id, genericValues)) {
-        const auto type = this->getBakedType(typeNode->id, genericValues);
+      if (scope->hasBakedType(typeId, genericValues)) {
+        const auto type = scope->getBakedType(typeId, genericValues);
         return {type, ""};
       }
-      if (typeNode->id == "комірка") {
+      if (typeId == "комірка") {
         if (genericValues.empty()) {
-          return {this->compiler->pointerType};
+          return {scope->compiler->pointerType};
         }
-        const auto type = genericValues[0]->getPointerType(this);
+        const auto type = genericValues[0]->getPointerType(scope);
         return {type, ""};
       }
-      if (this->hasRawType(typeNode->id)) {
-        const auto rawType = this->getRawType(typeNode->id);
+      if (scope->hasRawType(typeId)) {
+        const auto rawType = scope->getRawType(typeId);
         if (rawType->kind == ast::KindStructureNode) {
           const auto structureNode = rawType->data.StructureNode;
           if (structureNode->generic_definitions.size() !=
@@ -33,7 +40,7 @@ namespace tsil::tk {
                     "Кількість параметрів шаблону структури не "
                     "співпадає з кількістю переданих параметрів"};
           }
-          const auto scopeWithGenerics = new Scope(this->compiler, this);
+          const auto scopeWithGenerics = new Scope(scope->compiler, scope);
           int genericIndex = 0;
           for (const auto& genericDefinition :
                structureNode->generic_definitions) {

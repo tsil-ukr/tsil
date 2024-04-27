@@ -25,6 +25,12 @@ public:
   virtual void enterProgram_element(TsilParser::Program_elementContext * /*ctx*/) override { }
   virtual void exitProgram_element(TsilParser::Program_elementContext * /*ctx*/) override { }
 
+  virtual void enterIdentifier(TsilParser::IdentifierContext * /*ctx*/) override { }
+  virtual void exitIdentifier(TsilParser::IdentifierContext * /*ctx*/) override { }
+
+  virtual void enterReal_section_access(TsilParser::Real_section_accessContext * /*ctx*/) override { }
+  virtual void exitReal_section_access(TsilParser::Real_section_accessContext * /*ctx*/) override { }
+
   virtual void enterTake(TsilParser::TakeContext * /*ctx*/) override { }
   virtual void exitTake(TsilParser::TakeContext * /*ctx*/) override { }
 
@@ -103,14 +109,14 @@ public:
   virtual void enterCall(TsilParser::CallContext * /*ctx*/) override { }
   virtual void exitCall(TsilParser::CallContext * /*ctx*/) override { }
 
-  virtual void enterIdentifier(TsilParser::IdentifierContext * /*ctx*/) override { }
-  virtual void exitIdentifier(TsilParser::IdentifierContext * /*ctx*/) override { }
-
   virtual void enterAccess(TsilParser::AccessContext * /*ctx*/) override { }
   virtual void exitAccess(TsilParser::AccessContext * /*ctx*/) override { }
 
   virtual void enterGet(TsilParser::GetContext * /*ctx*/) override { }
   virtual void exitGet(TsilParser::GetContext * /*ctx*/) override { }
+
+  virtual void enterParticle_section_access(TsilParser::Particle_section_accessContext * /*ctx*/) override { }
+  virtual void exitParticle_section_access(TsilParser::Particle_section_accessContext * /*ctx*/) override { }
 
   virtual void enterNested(TsilParser::NestedContext * /*ctx*/) override { }
   virtual void exitNested(TsilParser::NestedContext * /*ctx*/) override { }

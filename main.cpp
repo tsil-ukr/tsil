@@ -307,9 +307,8 @@ void printHelp() {
   std::cout << "    Вхід: .ц" << std::endl;
   std::cout << std::endl;
   std::cout << "  <вихід> сплавити [опції...]  <вхід...>" << std::endl;
-  std::cout << "    Опис: сплавити обʼєкт або програму через CLang"
-            << std::endl;
-  std::cout << "    Вихід: .сплав .виріб .обц .бобц .сбобц .васм" << std::endl;
+  std::cout << "    Опис: сплавити через CLang" << std::endl;
+  std::cout << "    Вихід: .сплав .обʼєкт .динаміт .wasm" << std::endl;
   std::cout << "    Вхід: .ц .c .cpp .ll .bc" << std::endl;
   std::cout << "    Опції:" << std::endl;
   std::cout << "      --режим=<розробка|випуск>" << std::endl;
@@ -373,14 +372,10 @@ int main(int argc, char** argv) {
       }
     }
     fuseCommand.outputPath = target;
-    if (target.ends_with(".обц") || target.ends_with(".o")) {
+    if (target.ends_with(".обʼєкт") || target.ends_with(".o")) {
       fuseCommand.outputType = FuseCommandOutputTypeObject;
-    } else if (target.ends_with(".бобц") || target.ends_with(".a")) {
-      fuseCommand.outputType = FuseCommandOutputTypeStaticLibrary;
-    } else if (target.ends_with(".сбобц") || target.ends_with(".so")) {
+    } else if (target.ends_with(".динаміт") || target.ends_with(".so")) {
       fuseCommand.outputType = FuseCommandOutputTypeSharedLibrary;
-    } else if (target.ends_with(".виріб") || target.ends_with(".out")) {
-      fuseCommand.outputType = FuseCommandOutputTypeStaticExecutable;
     } else if (target.ends_with(".васм") || target.ends_with(".wasm")) {
       fuseCommand.outputType = FuseCommandOutputTypeWasm;
     } else if (target.ends_with(".сплав") ||
@@ -388,8 +383,8 @@ int main(int argc, char** argv) {
       fuseCommand.outputType = FuseCommandOutputTypeExecutable;
     } else {
       std::cerr
-          << "помилка: Вихідний файл повинен мати розширення .обц, .бобц, "
-             ".сбобц, .виріб, .васм або .сплав"
+          << "помилка: Вихідний файл повинен мати розширення .сплав, .обʼєкт, "
+             ".динаміт або .wasm"
           << std::endl;
       return 1;
     }
@@ -406,22 +401,8 @@ int main(int argc, char** argv) {
           cmd.emplace_back("-O3");
           cmd.emplace_back("-flto");
         }
-      } else if (fuseCommand.outputType == FuseCommandOutputTypeStaticLibrary) {
-        cmd.emplace_back("-c");
-        cmd.emplace_back("-static");
-        if (fuseCommand.releaseMode) {
-          cmd.emplace_back("-O3");
-          cmd.emplace_back("-flto");
-        }
       } else if (fuseCommand.outputType == FuseCommandOutputTypeSharedLibrary) {
         cmd.emplace_back("-shared");
-        if (fuseCommand.releaseMode) {
-          cmd.emplace_back("-O3");
-          cmd.emplace_back("-flto");
-        }
-      } else if (fuseCommand.outputType ==
-                 FuseCommandOutputTypeStaticExecutable) {
-        cmd.emplace_back("-static");
         if (fuseCommand.releaseMode) {
           cmd.emplace_back("-O3");
           cmd.emplace_back("-flto");
@@ -443,7 +424,6 @@ int main(int argc, char** argv) {
         if (fuseCommand.releaseMode) {
           cmd.emplace_back("-Wl,--lto-O3");
         }
-        cmd.emplace_back("-Wl,-z,stack-size=8388608"); // 8MB
       }
     } else {
       cmd.push_back(fuseCommand.clangOverride);

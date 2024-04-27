@@ -23,6 +23,12 @@ public:
   virtual void enterProgram_element(TsilParser::Program_elementContext *ctx) = 0;
   virtual void exitProgram_element(TsilParser::Program_elementContext *ctx) = 0;
 
+  virtual void enterIdentifier(TsilParser::IdentifierContext *ctx) = 0;
+  virtual void exitIdentifier(TsilParser::IdentifierContext *ctx) = 0;
+
+  virtual void enterReal_section_access(TsilParser::Real_section_accessContext *ctx) = 0;
+  virtual void exitReal_section_access(TsilParser::Real_section_accessContext *ctx) = 0;
+
   virtual void enterTake(TsilParser::TakeContext *ctx) = 0;
   virtual void exitTake(TsilParser::TakeContext *ctx) = 0;
 
@@ -101,14 +107,14 @@ public:
   virtual void enterCall(TsilParser::CallContext *ctx) = 0;
   virtual void exitCall(TsilParser::CallContext *ctx) = 0;
 
-  virtual void enterIdentifier(TsilParser::IdentifierContext *ctx) = 0;
-  virtual void exitIdentifier(TsilParser::IdentifierContext *ctx) = 0;
-
   virtual void enterAccess(TsilParser::AccessContext *ctx) = 0;
   virtual void exitAccess(TsilParser::AccessContext *ctx) = 0;
 
   virtual void enterGet(TsilParser::GetContext *ctx) = 0;
   virtual void exitGet(TsilParser::GetContext *ctx) = 0;
+
+  virtual void enterParticle_section_access(TsilParser::Particle_section_accessContext *ctx) = 0;
+  virtual void exitParticle_section_access(TsilParser::Particle_section_accessContext *ctx) = 0;
 
   virtual void enterNested(TsilParser::NestedContext *ctx) = 0;
   virtual void exitNested(TsilParser::NestedContext *ctx) = 0;

@@ -9,6 +9,8 @@ file: f_program=program EOF;
 program: program_element*;
 program_element: (take ';') | section | structure | diia_declaration | diia | ';';
 
+section_access: sa_id=ID #identifier
+              | sa_left=section_access ':' ':' sa_right=ID #real_section_access;
 
 take: 'взяти' t_type=ID (t_string=STRING | t_parts=take_parts);
 take_parts: (tp_relative='.')? ID ('/' ID)*;
@@ -19,7 +21,7 @@ section_element: section | structure | diia_declaration | diia | ';';
 structure: 'структура' s_name=ID ('<' s_generics=structure_generics '>')? '{' (s_params=structure_params)? '}';
 structure_generics: structure_generic (',' structure_generic)*;
 structure_generic: sg_name=ID;
-structure_params: structure_param (',' structure_param)* ','?;
+structure_params: (structure_param ';')+;
 structure_param: sp_name=ID ':' sp_type=full_type;
 
 diia_head: 'дія' d_name=ID ('<' d_generics=diia_generics '>')? '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' (':' d_type=full_type)?;
@@ -46,7 +48,7 @@ assign: a_id=ID '=' a_value=expr;
 
 set: s_left=particle ('.' s_id=ID | '[' s_index=expr ']') '=' s_value=expr;
 
-particle: ID #identifier
+particle: section_access #particle_section_access
         | g_left=particle '.' g_id=ID #get
         | a_value=particle '[' (a_index=expr)? ']' #access
         | c_value=particle ('<' c_first_generic_type=full_type (',' full_type)* '>')? '(' (c_args=args)? ')' #call
@@ -76,7 +78,7 @@ expr: operation #expr_operation
 construct_args: construct_arg (',' construct_arg)* ','?;
 construct_arg: (ca_name=ID '=')? ca_value=expr;
 
-basic_type: ID ('<' t_first_generic_type=full_type (',' full_type)* '>')? #simple_type
+basic_type: section_access ('<' t_first_generic_type=full_type (',' full_type)* '>')? #simple_type
           | at_type=basic_type '[' at_size=NUMBER ']' #array_type;
 full_type: basic_type #full_type_basic_type
          | '(' (cft_args=complex_function_type_args)? ')' '-' '>' cft_ret=full_type #complex_function_type

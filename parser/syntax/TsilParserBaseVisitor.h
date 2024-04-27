@@ -27,6 +27,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitIdentifier(TsilParser::IdentifierContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitReal_section_access(TsilParser::Real_section_accessContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitTake(TsilParser::TakeContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -131,15 +139,15 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitIdentifier(TsilParser::IdentifierContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitAccess(TsilParser::AccessContext *ctx) override {
     return visitChildren(ctx);
   }
 
   virtual std::any visitGet(TsilParser::GetContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitParticle_section_access(TsilParser::Particle_section_accessContext *ctx) override {
     return visitChildren(ctx);
   }
 

@@ -26,17 +26,18 @@ public:
   };
 
   enum {
-    RuleFile = 0, RuleProgram = 1, RuleProgram_element = 2, RuleTake = 3, 
-    RuleTake_parts = 4, RuleSection = 5, RuleSection_element = 6, RuleStructure = 7, 
-    RuleStructure_generics = 8, RuleStructure_generic = 9, RuleStructure_params = 10, 
-    RuleStructure_param = 11, RuleDiia_head = 12, RuleDiia = 13, RuleDiia_generics = 14, 
-    RuleDiia_generic = 15, RuleDiia_declaration = 16, RuleParams = 17, RuleParam = 18, 
-    RuleBody = 19, RuleBody_element = 20, RuleReturn_body_element = 21, 
-    RuleIf = 22, RuleWhile = 23, RuleDeclare = 24, RuleDefine = 25, RuleAssign = 26, 
-    RuleSet = 27, RuleParticle = 28, RuleArgs = 29, RuleAtom = 30, RuleMolecule = 31, 
-    RuleOperation = 32, RuleExpr = 33, RuleConstruct_args = 34, RuleConstruct_arg = 35, 
-    RuleBasic_type = 36, RuleFull_type = 37, RuleComplex_function_type_args = 38, 
-    RuleBitwise_op = 39, RuleComparison_op = 40, RuleLogical_op = 41
+    RuleFile = 0, RuleProgram = 1, RuleProgram_element = 2, RuleSection_access = 3, 
+    RuleTake = 4, RuleTake_parts = 5, RuleSection = 6, RuleSection_element = 7, 
+    RuleStructure = 8, RuleStructure_generics = 9, RuleStructure_generic = 10, 
+    RuleStructure_params = 11, RuleStructure_param = 12, RuleDiia_head = 13, 
+    RuleDiia = 14, RuleDiia_generics = 15, RuleDiia_generic = 16, RuleDiia_declaration = 17, 
+    RuleParams = 18, RuleParam = 19, RuleBody = 20, RuleBody_element = 21, 
+    RuleReturn_body_element = 22, RuleIf = 23, RuleWhile = 24, RuleDeclare = 25, 
+    RuleDefine = 26, RuleAssign = 27, RuleSet = 28, RuleParticle = 29, RuleArgs = 30, 
+    RuleAtom = 31, RuleMolecule = 32, RuleOperation = 33, RuleExpr = 34, 
+    RuleConstruct_args = 35, RuleConstruct_arg = 36, RuleBasic_type = 37, 
+    RuleFull_type = 38, RuleComplex_function_type_args = 39, RuleBitwise_op = 40, 
+    RuleComparison_op = 41, RuleLogical_op = 42
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -59,6 +60,7 @@ public:
   class FileContext;
   class ProgramContext;
   class Program_elementContext;
+  class Section_accessContext;
   class TakeContext;
   class Take_partsContext;
   class SectionContext;
@@ -152,6 +154,49 @@ public:
 
   Program_elementContext* program_element();
 
+  class  Section_accessContext : public antlr4::ParserRuleContext {
+  public:
+    Section_accessContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+   
+    Section_accessContext() = default;
+    void copyFrom(Section_accessContext *context);
+    using antlr4::ParserRuleContext::copyFrom;
+
+    virtual size_t getRuleIndex() const override;
+
+   
+  };
+
+  class  IdentifierContext : public Section_accessContext {
+  public:
+    IdentifierContext(Section_accessContext *ctx);
+
+    antlr4::Token *sa_id = nullptr;
+    antlr4::tree::TerminalNode *ID();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Real_section_accessContext : public Section_accessContext {
+  public:
+    Real_section_accessContext(Section_accessContext *ctx);
+
+    TsilParser::Section_accessContext *sa_left = nullptr;
+    antlr4::Token *sa_right = nullptr;
+    std::vector<antlr4::tree::TerminalNode *> COLON();
+    antlr4::tree::TerminalNode* COLON(size_t i);
+    Section_accessContext *section_access();
+    antlr4::tree::TerminalNode *ID();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  Section_accessContext* section_access();
+  Section_accessContext* section_access(int precedence);
   class  TakeContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *t_type = nullptr;
@@ -298,8 +343,8 @@ public:
     virtual size_t getRuleIndex() const override;
     std::vector<Structure_paramContext *> structure_param();
     Structure_paramContext* structure_param(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> COMA();
-    antlr4::tree::TerminalNode* COMA(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> SEMICOLON();
+    antlr4::tree::TerminalNode* SEMICOLON(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -711,17 +756,6 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  IdentifierContext : public ParticleContext {
-  public:
-    IdentifierContext(ParticleContext *ctx);
-
-    antlr4::tree::TerminalNode *ID();
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
   class  AccessContext : public ParticleContext {
   public:
     AccessContext(ParticleContext *ctx);
@@ -747,6 +781,17 @@ public:
     antlr4::tree::TerminalNode *DOT();
     ParticleContext *particle();
     antlr4::tree::TerminalNode *ID();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Particle_section_accessContext : public ParticleContext {
+  public:
+    Particle_section_accessContext(ParticleContext *ctx);
+
+    Section_accessContext *section_access();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
@@ -1136,7 +1181,7 @@ public:
     Simple_typeContext(Basic_typeContext *ctx);
 
     TsilParser::Full_typeContext *t_first_generic_type = nullptr;
-    antlr4::tree::TerminalNode *ID();
+    Section_accessContext *section_access();
     antlr4::tree::TerminalNode *LESSER();
     antlr4::tree::TerminalNode *GREATER();
     std::vector<Full_typeContext *> full_type();
@@ -1308,6 +1353,7 @@ public:
 
   bool sempred(antlr4::RuleContext *_localctx, size_t ruleIndex, size_t predicateIndex) override;
 
+  bool section_accessSempred(Section_accessContext *_localctx, size_t predicateIndex);
   bool particleSempred(ParticleContext *_localctx, size_t predicateIndex);
   bool operationSempred(OperationContext *_localctx, size_t predicateIndex);
   bool basic_typeSempred(Basic_typeContext *_localctx, size_t predicateIndex);

@@ -109,6 +109,9 @@ namespace tsil::parser {
         TsilParser::Simple_function_typeContext* ctx) override;
 
     std::any visitTake(TsilParser::TakeContext* context) override;
+
+    std::any visitReal_section_access(
+        TsilParser::Real_section_accessContext* context) override;
   };
 
   struct TsilParserError {

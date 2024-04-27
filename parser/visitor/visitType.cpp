@@ -4,7 +4,7 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitSimple_type(
       TsilParser::Simple_typeContext* context) {
     const auto type_node = new ast::TypeNode();
-    type_node->id = context->ID()->getText();
+    type_node->id = AAV(visitContext(context->section_access()));
     if (context->t_first_generic_type) {
       for (const auto generic : context->full_type()) {
         type_node->generics.push_back(AAV(visitContext(generic)));

@@ -76,6 +76,8 @@ namespace tsil::ast {
           return "ArrayTypeNode";
         case ast::KindTakeNode:
           return "TakeNode";
+        case ast::KindSectionAccessNode:
+          return "SectionAccessNode";
       }
       return "Unknown";
     }
@@ -284,6 +286,15 @@ namespace tsil::parser {
     if (const auto take_context =
             dynamic_cast<TsilParser::TakeContext*>(context)) {
       return visitTake(take_context);
+    }
+    if (const auto real_section_access_context =
+            dynamic_cast<TsilParser::Real_section_accessContext*>(context)) {
+      return visitReal_section_access(real_section_access_context);
+    }
+    if (const auto particle_section_access_context =
+            dynamic_cast<TsilParser::Particle_section_accessContext*>(
+                context)) {
+      return visitContext(particle_section_access_context->section_access());
     }
     return nullptr;
   }

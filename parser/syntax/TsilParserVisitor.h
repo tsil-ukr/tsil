@@ -25,6 +25,10 @@ public:
 
     virtual std::any visitProgram_element(TsilParser::Program_elementContext *context) = 0;
 
+    virtual std::any visitIdentifier(TsilParser::IdentifierContext *context) = 0;
+
+    virtual std::any visitReal_section_access(TsilParser::Real_section_accessContext *context) = 0;
+
     virtual std::any visitTake(TsilParser::TakeContext *context) = 0;
 
     virtual std::any visitTake_parts(TsilParser::Take_partsContext *context) = 0;
@@ -77,11 +81,11 @@ public:
 
     virtual std::any visitCall(TsilParser::CallContext *context) = 0;
 
-    virtual std::any visitIdentifier(TsilParser::IdentifierContext *context) = 0;
-
     virtual std::any visitAccess(TsilParser::AccessContext *context) = 0;
 
     virtual std::any visitGet(TsilParser::GetContext *context) = 0;
+
+    virtual std::any visitParticle_section_access(TsilParser::Particle_section_accessContext *context) = 0;
 
     virtual std::any visitNested(TsilParser::NestedContext *context) = 0;
 
