@@ -10,8 +10,8 @@ program: program_element*;
 program_element: (take ';') | section | structure | diia_declaration | diia | ';';
 
 
-// взяти визначення мама
-take: 'взяти' t_type=ID (t_string=STRING | t_id=ID);
+take: 'взяти' t_type=ID (t_string=STRING | t_parts=take_parts);
+take_parts: (tp_relative='.')? ID ('/' ID)*;
 
 section: 'секція' s_name=ID '{' section_element* '}';
 section_element: section | structure | diia_declaration | diia | ';';

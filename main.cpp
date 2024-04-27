@@ -133,7 +133,9 @@ int compile(const CompileCommand& compileCommand) {
 
   std::ifstream inputFile(compileCommand.inputPath);
   if (!inputFile.is_open()) {
-    std::cerr << "помилка: Не вдалося відкрити вхідний файл" << std::endl;
+    std::cerr << "помилка: Не вдалося відкрити файл \"" +
+                     compileCommand.inputPath + "\""
+              << std::endl;
     return 1;
   }
   std::string code;

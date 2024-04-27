@@ -70,6 +70,8 @@ namespace tsil::x {
     Type* pointerType;
     Type* voidType;
 
+    std::string targetTriple = "x86_64-pc-linux-gnu";
+
     std::string computeNextVarName(const std::string& prefix);
 
     Value* putStringConstant(const std::string& value);

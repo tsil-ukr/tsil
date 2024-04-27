@@ -345,7 +345,8 @@ namespace tsil::ast {
   struct TakeNode {
     std::string repo;
     std::string path;
-    std::string id;
+    bool parts_relative;
+    std::vector<std::string> parts;
   };
 } // namespace tsil::ast
 #endif // TSIL_AST_H

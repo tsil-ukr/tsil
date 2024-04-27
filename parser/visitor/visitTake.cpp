@@ -8,8 +8,13 @@ namespace tsil::parser {
       take_node->path = context->t_string->getText().substr(
           1, context->t_string->getText().size() - 2);
     }
-    if (context->t_id) {
-      take_node->id = context->t_id->getText();
+    if (context->t_parts) {
+      if (context->t_parts->tp_relative) {
+        take_node->parts_relative = true;
+      }
+      for (const auto id : context->t_parts->ID()) {
+        take_node->parts.push_back(id->getText());
+      }
     }
     return AV(context, ast::KindTakeNode, take_node);
   }

@@ -28,6 +28,9 @@ public:
   virtual void enterTake(TsilParser::TakeContext * /*ctx*/) override { }
   virtual void exitTake(TsilParser::TakeContext * /*ctx*/) override { }
 
+  virtual void enterTake_parts(TsilParser::Take_partsContext * /*ctx*/) override { }
+  virtual void exitTake_parts(TsilParser::Take_partsContext * /*ctx*/) override { }
+
   virtual void enterSection(TsilParser::SectionContext * /*ctx*/) override { }
   virtual void exitSection(TsilParser::SectionContext * /*ctx*/) override { }
 

@@ -685,6 +685,8 @@ namespace tsil::x {
   std::string Module::dumpLL() {
     std::vector<std::string> lines;
 
+    lines.push_back("target triple = \"" + this->targetTriple + "\"");
+
     for (const auto& [name, constant] : this->constants) {
       lines.push_back(constant->dumpLL(this));
     }

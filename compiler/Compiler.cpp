@@ -101,15 +101,16 @@ namespace tsil::tk {
       }
       if (astValue->kind == tsil::ast::KindTakeNode) {
         const auto takeNode = astValue->data.TakeNode;
-        std::string path = takeNode->id + ".в";
-        std::string folderPath = takeNode->id + "/" + path;
+        std::string parts = tsil::parser::tools::implode(takeNode->parts, "/");
+        std::string path = parts + ".в";
+        std::string folderPath = parts + "/" + path;
         if (this->fileExist(path)) {
           //
         } else if (this->fileExist(folderPath)) {
           path = folderPath;
         } else {
           return tsil::tk::CompilerError::fromASTValue(
-              astValue, "Файл \"" + takeNode->id + "\" не знайдено");
+              astValue, "Файл \"" + path + "\" не знайдено");
         }
         const auto takeResult = this->takeDefinitions(path);
         if (takeResult.compilerError) {

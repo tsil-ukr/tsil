@@ -27,16 +27,16 @@ public:
 
   enum {
     RuleFile = 0, RuleProgram = 1, RuleProgram_element = 2, RuleTake = 3, 
-    RuleSection = 4, RuleSection_element = 5, RuleStructure = 6, RuleStructure_generics = 7, 
-    RuleStructure_generic = 8, RuleStructure_params = 9, RuleStructure_param = 10, 
-    RuleDiia_head = 11, RuleDiia = 12, RuleDiia_generics = 13, RuleDiia_generic = 14, 
-    RuleDiia_declaration = 15, RuleParams = 16, RuleParam = 17, RuleBody = 18, 
-    RuleBody_element = 19, RuleReturn_body_element = 20, RuleIf = 21, RuleWhile = 22, 
-    RuleDeclare = 23, RuleDefine = 24, RuleAssign = 25, RuleSet = 26, RuleParticle = 27, 
-    RuleArgs = 28, RuleAtom = 29, RuleMolecule = 30, RuleOperation = 31, 
-    RuleExpr = 32, RuleConstruct_args = 33, RuleConstruct_arg = 34, RuleBasic_type = 35, 
-    RuleFull_type = 36, RuleComplex_function_type_args = 37, RuleBitwise_op = 38, 
-    RuleComparison_op = 39, RuleLogical_op = 40
+    RuleTake_parts = 4, RuleSection = 5, RuleSection_element = 6, RuleStructure = 7, 
+    RuleStructure_generics = 8, RuleStructure_generic = 9, RuleStructure_params = 10, 
+    RuleStructure_param = 11, RuleDiia_head = 12, RuleDiia = 13, RuleDiia_generics = 14, 
+    RuleDiia_generic = 15, RuleDiia_declaration = 16, RuleParams = 17, RuleParam = 18, 
+    RuleBody = 19, RuleBody_element = 20, RuleReturn_body_element = 21, 
+    RuleIf = 22, RuleWhile = 23, RuleDeclare = 24, RuleDefine = 25, RuleAssign = 26, 
+    RuleSet = 27, RuleParticle = 28, RuleArgs = 29, RuleAtom = 30, RuleMolecule = 31, 
+    RuleOperation = 32, RuleExpr = 33, RuleConstruct_args = 34, RuleConstruct_arg = 35, 
+    RuleBasic_type = 36, RuleFull_type = 37, RuleComplex_function_type_args = 38, 
+    RuleBitwise_op = 39, RuleComparison_op = 40, RuleLogical_op = 41
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -60,6 +60,7 @@ public:
   class ProgramContext;
   class Program_elementContext;
   class TakeContext;
+  class Take_partsContext;
   class SectionContext;
   class Section_elementContext;
   class StructureContext;
@@ -155,13 +156,13 @@ public:
   public:
     antlr4::Token *t_type = nullptr;
     antlr4::Token *t_string = nullptr;
-    antlr4::Token *t_id = nullptr;
+    TsilParser::Take_partsContext *t_parts = nullptr;
     TakeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *KW_IMPORT();
-    std::vector<antlr4::tree::TerminalNode *> ID();
-    antlr4::tree::TerminalNode* ID(size_t i);
+    antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *STRING();
+    Take_partsContext *take_parts();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -171,6 +172,26 @@ public:
   };
 
   TakeContext* take();
+
+  class  Take_partsContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *tp_relative = nullptr;
+    Take_partsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    std::vector<antlr4::tree::TerminalNode *> ID();
+    antlr4::tree::TerminalNode* ID(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> DIVIDE();
+    antlr4::tree::TerminalNode* DIVIDE(size_t i);
+    antlr4::tree::TerminalNode *DOT();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Take_partsContext* take_parts();
 
   class  SectionContext : public antlr4::ParserRuleContext {
   public:
