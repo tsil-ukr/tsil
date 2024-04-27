@@ -20,32 +20,50 @@ namespace tsil::tk {
 
   std::string tsilStringToLLVMString(const std::string& value);
 
+  struct TakeResult {
+    std::string error;
+    CompilerError* compilerError;
+  };
+
   struct Compiler {
     x::Module* xModule = nullptr;
     Scope* globalScope = nullptr;
 
     Type* voidType = nullptr;
     Type* pointerType = nullptr;
+
     Type* int1Type = nullptr;
+
     Type* int8Type = nullptr;
     Type* int32Type = nullptr;
     Type* int64Type = nullptr;
-    Type* floatType = nullptr;
+    Type* integerType = nullptr;
+
+    Type* d32Type = nullptr;
+    Type* d64Type = nullptr;
     Type* doubleType = nullptr;
+
     Type* uint8Type = nullptr;
     Type* uint32Type = nullptr;
     Type* uint64Type = nullptr;
-    Type* textType = nullptr;
+    Type* positiveType = nullptr;
 
     x::Value* callocXValue = nullptr;
     x::Value* mallocXValue = nullptr;
     x::Value* reallocXValue = nullptr;
     x::Value* freeXValue = nullptr;
 
+    std::set<std::string> tookDefinitions;
+
     x::Value* ensureCallocConnected();
     x::Value* ensureMallocConnected();
     x::Value* ensureReallocConnected();
     x::Value* ensureFreeConnected();
+
+    std::pair<std::string, bool> readFile(const std::string& path);
+    bool fileExist(const std::string& path);
+    TakeResult takeDefinitions(const std::string& path);
+    CompilerError* compileProgramNode(tsil::ast::ProgramNode* programNode);
   };
 
   struct SecondCompilerError {
@@ -59,6 +77,7 @@ namespace tsil::tk {
     std::string message;
     SecondCompilerError* secondError = nullptr;
 
+    static CompilerError* fromParserError(tsil::parser::TsilParserError* error);
     static CompilerError* fromASTValue(tsil::ast::ASTValue* ast_value,
                                        const std::string& message);
     static CompilerError* subjectAlreadyDefined(tsil::ast::ASTValue* ast_value);
@@ -201,8 +220,8 @@ namespace tsil::tk {
                                          tsil::x::FunctionBlock* xBlock,
                                          ast::ASTValue* astValue);
     CompilerValueResult compileCall_Sizeof(tsil::x::Function* xFunction,
-                                         tsil::x::FunctionBlock* xBlock,
-                                         ast::ASTValue* astValue);
+                                           tsil::x::FunctionBlock* xBlock,
+                                           ast::ASTValue* astValue);
 
     CompilerValueResult compileNumber(tsil::x::Function* xFunction,
                                       tsil::x::FunctionBlock* xBlock,

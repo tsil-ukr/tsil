@@ -23,6 +23,9 @@ public:
   virtual void enterProgram_element(TsilParser::Program_elementContext *ctx) = 0;
   virtual void exitProgram_element(TsilParser::Program_elementContext *ctx) = 0;
 
+  virtual void enterTake(TsilParser::TakeContext *ctx) = 0;
+  virtual void exitTake(TsilParser::TakeContext *ctx) = 0;
+
   virtual void enterSection(TsilParser::SectionContext *ctx) = 0;
   virtual void exitSection(TsilParser::SectionContext *ctx) = 0;
 

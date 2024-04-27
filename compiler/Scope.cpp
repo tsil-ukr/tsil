@@ -284,15 +284,16 @@ namespace tsil::tk {
       return newXValue;
     }
     // (float -> double) = fpext
-    if (type == this->compiler->floatType &&
-        targetType == this->compiler->doubleType) {
+    if (type == this->compiler->d32Type &&
+        (targetType == this->compiler->d64Type ||
+         targetType == this->compiler->doubleType)) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockFpextInstruction(
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
     // (float/double -> char/int/long) = fptosi
-    if ((type == this->compiler->floatType ||
+    if ((type == this->compiler->d32Type || type == this->compiler->d64Type ||
          type == this->compiler->doubleType) &&
         (targetType == this->compiler->int8Type ||
          targetType == this->compiler->int32Type ||
@@ -303,7 +304,7 @@ namespace tsil::tk {
       return newXValue;
     }
     // (float/double -> uchar/uint/ulong) = fptoui
-    if ((type == this->compiler->floatType ||
+    if ((type == this->compiler->d32Type || type == this->compiler->d64Type ||
          type == this->compiler->doubleType) &&
         (targetType == this->compiler->uint8Type ||
          targetType == this->compiler->uint32Type ||
@@ -314,8 +315,9 @@ namespace tsil::tk {
       return newXValue;
     }
     // (double -> float) = fptrunc
-    if (type == this->compiler->doubleType &&
-        targetType == this->compiler->floatType) {
+    if ((type == this->compiler->d64Type ||
+         type == this->compiler->doubleType) &&
+        targetType == this->compiler->d32Type) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockFptruncInstruction(
               xBlock, type->xType, xValue, targetType->xType);
@@ -325,7 +327,8 @@ namespace tsil::tk {
     if ((type == this->compiler->int8Type ||
          type == this->compiler->int32Type ||
          type == this->compiler->int64Type) &&
-        (targetType == this->compiler->floatType ||
+        (targetType == this->compiler->d32Type ||
+         targetType == this->compiler->d64Type ||
          targetType == this->compiler->doubleType)) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockSitofpInstruction(
@@ -336,7 +339,8 @@ namespace tsil::tk {
     if ((type == this->compiler->uint8Type ||
          type == this->compiler->uint32Type ||
          type == this->compiler->uint64Type) &&
-        (targetType == this->compiler->floatType ||
+        (targetType == this->compiler->d32Type ||
+         targetType == this->compiler->d64Type ||
          targetType == this->compiler->doubleType)) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockUitofpInstruction(

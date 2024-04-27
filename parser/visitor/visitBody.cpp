@@ -29,7 +29,7 @@ namespace tsil::parser {
         const auto return_node = new ast::ReturnNode();
         if (body_element->return_body_element()->rbl_value) {
           return_node->value =
-              AAV(visitContext(body_element->return_body_element()));
+              AAV(visitContext(body_element->return_body_element()->rbl_value));
         }
         body.push_back(AV(context, ast::KindReturnNode, return_node));
       }

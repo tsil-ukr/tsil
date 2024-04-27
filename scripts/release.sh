@@ -15,7 +15,7 @@ cd release
 mkdir -p "$DIRNAME"
 cp ../build-Obin/ціль_випуск "$DIRNAME"/ціль
 cp ../Право "$DIRNAME"/Право
-echo -en "Документація тут: https://ціль.укр" >$DIRNAME/Прочитайка
+echo -en "Документація тут: https://ціль.укр" >"$DIRNAME"/Прочитайка
 zip -r -9 "$ZIPNAME" "$DIRNAME"
 cd ..
 

@@ -74,6 +74,8 @@ namespace tsil::ast {
           return "AccessNode";
         case ast::KindArrayTypeNode:
           return "ArrayTypeNode";
+        case ast::KindTakeNode:
+          return "TakeNode";
       }
       return "Unknown";
     }
@@ -278,6 +280,10 @@ namespace tsil::parser {
     if (const auto simple_function_type_context =
             dynamic_cast<TsilParser::Simple_function_typeContext*>(context)) {
       return visitSimple_function_type(simple_function_type_context);
+    }
+    if (const auto take_context =
+            dynamic_cast<TsilParser::TakeContext*>(context)) {
+      return visitTake(take_context);
     }
     return nullptr;
   }

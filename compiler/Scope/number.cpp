@@ -7,7 +7,7 @@ namespace tsil::tk {
     const auto numberNode = astValue->data.NumberNode;
     const auto type = str_contains(numberNode->value, ".")
                           ? this->compiler->doubleType
-                          : this->compiler->int64Type;
+                          : this->compiler->integerType;
     const auto xValue =
         new x::Value(type->xType, tsilNumberToLLVMNumber(numberNode->value));
     return {type, xValue, nullptr};

@@ -4,6 +4,9 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitProgram(TsilParser::ProgramContext* context) {
     const auto program_node = new ast::ProgramNode();
     for (const auto program_element : context->program_element()) {
+      if (program_element->take()) {
+        program_node->body.push_back(AAV(visitTake(program_element->take())));
+      }
       if (program_element->section()) {
         program_node->body.push_back(
             AAV(visitSection(program_element->section())));

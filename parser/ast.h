@@ -44,6 +44,7 @@ namespace tsil::ast {
   struct AsNode;
   struct IncludeNode;
   struct AccessNode;
+  struct TakeNode;
 
   enum BinaryOp : u_int32_t {
     ARITHMETIC_ADD,
@@ -112,6 +113,7 @@ namespace tsil::ast {
     KindAsNode,
     KindIncludeNode,
     KindAccessNode,
+    KindTakeNode,
   };
 
   std::string ast_value_kind_to_string(ASTValueKind kind);
@@ -153,6 +155,7 @@ namespace tsil::ast {
     tsil::ast::AsNode* AsNode;
     tsil::ast::IncludeNode* IncludeNode;
     tsil::ast::AccessNode* AccessNode;
+    tsil::ast::TakeNode* TakeNode;
   };
 
   struct ASTValue {
@@ -337,6 +340,12 @@ namespace tsil::ast {
   struct AccessNode {
     ASTValue* value;
     ASTValue* index;
+  };
+
+  struct TakeNode {
+    std::string repo;
+    std::string path;
+    std::string id;
   };
 } // namespace tsil::ast
 #endif // TSIL_AST_H

@@ -1,6 +1,11 @@
 #include "tk.h"
 
 namespace tsil::tk {
+  CompilerError* CompilerError::fromParserError(
+      tsil::parser::TsilParserError* error) {
+    return new CompilerError(error->line, error->column, error->message);
+  }
+
   CompilerError* CompilerError::fromASTValue(tsil::ast::ASTValue* ast_value,
                                              const std::string& message) {
     return new CompilerError(ast_value->start_line, ast_value->start_column,

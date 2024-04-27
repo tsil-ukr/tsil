@@ -201,17 +201,32 @@ int compile(const CompileCommand& compileCommand) {
 
     const auto int64Type = new tsil::tk::Type();
     int64Type->type = tsil::tk::TypeTypeNative;
-    int64Type->name = "ціле";
+    int64Type->name = "ц64";
     int64Type->xType = compiler->xModule->int64Type;
-    compiler->globalScope->bakedTypes.insert_or_assign({"ціле", {}}, int64Type);
+    compiler->globalScope->bakedTypes.insert_or_assign({"ц64", {}}, int64Type);
     compiler->int64Type = int64Type;
+
+    const auto integerType = new tsil::tk::Type();
+    integerType->type = tsil::tk::TypeTypeNative;
+    integerType->name = "ціле";
+    integerType->xType = compiler->xModule->int64Type;
+    compiler->globalScope->bakedTypes.insert_or_assign({"ціле", {}},
+                                                       integerType);
+    compiler->integerType = integerType;
 
     const auto floatType = new tsil::tk::Type();
     floatType->type = tsil::tk::TypeTypeNative;
     floatType->name = "д32";
     floatType->xType = compiler->xModule->floatType;
     compiler->globalScope->bakedTypes.insert_or_assign({"д32", {}}, floatType);
-    compiler->floatType = floatType;
+    compiler->d32Type = floatType;
+
+    const auto d64Type = new tsil::tk::Type();
+    d64Type->type = tsil::tk::TypeTypeNative;
+    d64Type->name = "д64";
+    d64Type->xType = compiler->xModule->doubleType;
+    compiler->globalScope->bakedTypes.insert_or_assign({"д64", {}}, d64Type);
+    compiler->d64Type = d64Type;
 
     const auto doubleType = new tsil::tk::Type();
     doubleType->type = tsil::tk::TypeTypeNative;
@@ -237,100 +252,31 @@ int compile(const CompileCommand& compileCommand) {
 
     const auto uint64Type = new tsil::tk::Type();
     uint64Type->type = tsil::tk::TypeTypeNative;
-    uint64Type->name = "позитивне";
+    uint64Type->name = "п64";
     uint64Type->xType = compiler->xModule->int64Type;
-    compiler->globalScope->bakedTypes.insert_or_assign({"позитивне", {}},
-                                                       uint64Type);
+    compiler->globalScope->bakedTypes.insert_or_assign({"п64", {}}, uint64Type);
     compiler->uint64Type = uint64Type;
 
-    compiler->globalScope->variables["так"] = {
-        compiler->int8Type, compiler->xModule->putI8Constant(1)};
-    compiler->globalScope->variables["ні"] = {
-        compiler->int8Type, compiler->xModule->putI8Constant(0)};
+    const auto positiveType = new tsil::tk::Type();
+    positiveType->type = tsil::tk::TypeTypeNative;
+    positiveType->name = "позитивне";
+    positiveType->xType = compiler->xModule->int64Type;
+    compiler->globalScope->bakedTypes.insert_or_assign({"позитивне", {}},
+                                                       positiveType);
+    compiler->positiveType = positiveType;
 
-    for (const auto& astValue : parserResult.program_node->body) {
-      if (astValue == nullptr) {
-        continue;
-      }
-      if (astValue->kind == tsil::ast::KindNone) {
-        continue;
-      }
-      if (astValue->kind == tsil::ast::KindStructureNode) {
-        const auto structureNode = astValue->data.StructureNode;
-        if (compiler->globalScope->hasSubject(structureNode->name)) {
-          printCompilerError(
-              compileCommand.inputPath, code,
-              tsil::tk::CompilerError::subjectAlreadyDefined(astValue));
-          return 1;
-        }
-        compiler->globalScope->rawTypes.insert_or_assign(structureNode->name,
-                                                         astValue);
-      } else if (astValue->kind == tsil::ast::KindDiiaDeclarationNode) {
-        const auto diiaDeclarationNode = astValue->data.DiiaDeclarationNode;
-        if (compiler->globalScope->hasSubject(diiaDeclarationNode->head->id)) {
-          printCompilerError(
-              compileCommand.inputPath, code,
-              tsil::tk::CompilerError::subjectAlreadyDefined(astValue));
-          return 1;
-        }
-        if (diiaDeclarationNode->head->generic_definitions.empty()) {
-          const auto bakedDiiaResult =
-              compiler->globalScope->bakeDiia(astValue, astValue, {});
-          if (bakedDiiaResult.error) {
-            printCompilerError(compileCommand.inputPath, code,
-                               bakedDiiaResult.error);
-            return 1;
-          }
-          if (diiaDeclarationNode->as.empty()) {
-            compiler->globalScope
-                ->bakedDiias[{diiaDeclarationNode->head->id, {}}] = {
-                bakedDiiaResult.type, bakedDiiaResult.xValue};
-          } else {
-            compiler->globalScope->bakedDiias[{diiaDeclarationNode->as, {}}] = {
-                bakedDiiaResult.type, bakedDiiaResult.xValue};
-          }
-        } else {
-          if (diiaDeclarationNode->as.empty()) {
-            compiler->globalScope->rawDiias.insert_or_assign(
-                diiaDeclarationNode->head->id, astValue);
-          } else {
-            compiler->globalScope->rawDiias.insert_or_assign(
-                diiaDeclarationNode->as, astValue);
-          }
-        }
-      } else if (astValue->kind == tsil::ast::KindDiiaNode) {
-        const auto diiaNode = astValue->data.DiiaNode;
-        if (compiler->globalScope->hasSubject(diiaNode->head->id)) {
-          printCompilerError(
-              compileCommand.inputPath, code,
-              tsil::tk::CompilerError::subjectAlreadyDefined(astValue));
-          return 1;
-        }
-        if (diiaNode->head->generic_definitions.empty()) {
-          const auto bakedDiiaResult =
-              compiler->globalScope->bakeDiia(astValue, astValue, {});
-          if (bakedDiiaResult.error) {
-            printCompilerError(compileCommand.inputPath, code,
-                               bakedDiiaResult.error);
-            return 1;
-          }
-          compiler->globalScope->bakedDiias[{diiaNode->head->id, {}}] = {
-              bakedDiiaResult.type, bakedDiiaResult.xValue};
-        } else {
-          compiler->globalScope->rawDiias.insert_or_assign(diiaNode->head->id,
-                                                           astValue);
-        }
-      } else {
-        printCompilerError(compileCommand.inputPath, code,
-                           tsil::tk::CompilerError::fromASTValue(
-                               astValue, "Неможливо скомпілювати це речення"));
-        return 1;
-      }
+    const auto compilerError =
+        compiler->compileProgramNode(parserResult.program_node);
+    if (compilerError != nullptr) {
+      printCompilerError(compileCommand.inputPath, code, compilerError);
+      return 1;
     }
 
     std::ofstream outFile(compileCommand.outputPath);
     if (!outFile.is_open()) {
-      std::cerr << "помилка: Не вдалося відкрити вихідний файл" << std::endl;
+      std::cerr << "помилка: Не вдалося відкрити файл \"" +
+                       compileCommand.outputPath + "\""
+                << std::endl;
       return 1;
     }
     outFile << compiler->xModule->dumpLL();
@@ -509,15 +455,19 @@ int main(int argc, char** argv) {
       if (inputPath.ends_with(".ц")) {
         std::string fsSeparator;
         fsSeparator.push_back(std::filesystem::path::preferred_separator);
-        const auto cacheDirPath = "плавлення" + fsSeparator + "скомпільоване";
+        const auto compiledDirPath =
+            ".плавлення" + fsSeparator + "скомпільоване";
         const auto inputPathOutput =
-            cacheDirPath + fsSeparator +
+            compiledDirPath + fsSeparator +
             inputPath.substr(0, inputPath.size() - std::string(".ц").size()) +
             ".ll";
-        if (!std::filesystem::is_directory(cacheDirPath) ||
-            !std::filesystem::exists(cacheDirPath)) {
-          if (!std::filesystem::create_directories(cacheDirPath)) {
-            std::cerr << "помилка: Не вдалося створити директорію \"сплави\""
+        const auto inputPathOutputDirname =
+            std::filesystem::path(inputPathOutput).parent_path();
+        if (!std::filesystem::is_directory(inputPathOutputDirname) ||
+            !std::filesystem::exists(inputPathOutputDirname)) {
+          if (!std::filesystem::create_directories(inputPathOutputDirname)) {
+            std::cerr << "помилка: Не вдалося створити директорію \"" +
+                             std::string(inputPathOutputDirname.c_str()) + "\""
                       << std::endl;
             return 1;
           }

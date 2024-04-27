@@ -145,8 +145,11 @@ namespace tsil::tk {
     if (this == scope->compiler->uint64Type) {
       return 8;
     }
-    if (this == scope->compiler->floatType) {
+    if (this == scope->compiler->d32Type) {
       return 4;
+    }
+    if (this == scope->compiler->d64Type) {
+      return 8;
     }
     if (this == scope->compiler->doubleType) {
       return 8;
@@ -169,7 +172,8 @@ namespace tsil::tk {
            this == scope->compiler->uint8Type ||
            this == scope->compiler->uint32Type ||
            this == scope->compiler->uint64Type ||
-           this == scope->compiler->floatType ||
+           this == scope->compiler->d32Type ||
+           this == scope->compiler->d64Type ||
            this == scope->compiler->doubleType || this->type == TypeTypePointer;
   }
 
@@ -180,7 +184,8 @@ namespace tsil::tk {
   }
 
   bool Type::isFloating(tsil::tk::Scope* scope) {
-    return this == scope->compiler->floatType ||
+    return this == scope->compiler->d32Type ||
+           this == scope->compiler->d64Type ||
            this == scope->compiler->doubleType;
   }
 

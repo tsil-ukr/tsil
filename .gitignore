@@ -17,7 +17,7 @@ cmake-build-debug/
 привіт.сбобц
 привіт.васм
 привіт.wasm
-друк.cpp
+друк/друк.cpp
 друк.o
 результат
 сплав
@@ -31,6 +31,6 @@ m.cpp
 m.ll
 a.out
 raylib-5.0_linux_amd64/
-плавлення/
+.плавлення/
 release/
 build-antlr/

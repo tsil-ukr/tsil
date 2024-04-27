@@ -25,6 +25,8 @@ public:
 
     virtual std::any visitProgram_element(TsilParser::Program_elementContext *context) = 0;
 
+    virtual std::any visitTake(TsilParser::TakeContext *context) = 0;
+
     virtual std::any visitSection(TsilParser::SectionContext *context) = 0;
 
     virtual std::any visitSection_element(TsilParser::Section_elementContext *context) = 0;
