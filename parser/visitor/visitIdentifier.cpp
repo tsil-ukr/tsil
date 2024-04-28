@@ -11,8 +11,9 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitReal_section_access(
       TsilParser::Real_section_accessContext* context) {
     const auto section_access_node = new ast::SectionAccessNode();
-    section_access_node->left = AAV(visitContext(context->sa_left));
-    section_access_node->id = context->sa_right->getText();
+    for (const auto& id : context->ID()) {
+      section_access_node->parts.push_back(id->getText());
+    }
     return AV(context, ast::KindSectionAccessNode, section_access_node);
   }
 } // namespace tsil::parser

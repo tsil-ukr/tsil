@@ -9,20 +9,13 @@ namespace tsil::tk {
     Type* leftType = nullptr;
     x::Value* leftXValue = nullptr;
     if (accessNode->value->kind == ast::KindIdentifierNode) {
-      const auto identifierNode = accessNode->value->data.IdentifierNode;
       const auto subjectResult =
-          this->getSubjectByName(accessNode->value, identifierNode->name, {});
+          this->getRuntimeSubjectByIdentifierNodeAstValue(accessNode->value);
       if (subjectResult.error) {
         return {nullptr, nullptr, subjectResult.error};
       }
-      const auto subject = subjectResult.subject;
-      if (subject.kind != SubjectKindVariable &&
-          subject.kind != SubjectKindDiia) {
-        return {nullptr, nullptr,
-                CompilerError::subjectIsNotRuntimeValue(accessNode->value)};
-      }
-      leftType = subject.type;
-      leftXValue = subject.xValue;
+      leftType = subjectResult.type;
+      leftXValue = subjectResult.xValue;
     } else if (accessNode->value->kind == ast::KindGetNode) {
       const auto getResult =
           this->compileGet(xFunction, xBlock, accessNode->value, false);
@@ -41,7 +34,7 @@ namespace tsil::tk {
       leftXValue = accessResult.xValue;
     } else {
       const auto valueResult =
-          this->compileValue(xFunction, xBlock, accessNode->value, {});
+          this->compileValue(xFunction, xBlock, accessNode->value);
       if (valueResult.error) {
         return valueResult;
       }
@@ -50,7 +43,7 @@ namespace tsil::tk {
     }
     if (leftType->type == TypeTypePointer) {
       auto indexResult =
-          this->compileValue(xFunction, xBlock, accessNode->index, {});
+          this->compileValue(xFunction, xBlock, accessNode->index);
       if (indexResult.error) {
         return indexResult;
       }
@@ -80,7 +73,7 @@ namespace tsil::tk {
     }
     if (leftType->type == TypeTypeArray) {
       auto indexResult =
-          this->compileValue(xFunction, xBlock, accessNode->index, {});
+          this->compileValue(xFunction, xBlock, accessNode->index);
       if (indexResult.error) {
         return indexResult;
       }

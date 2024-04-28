@@ -357,8 +357,7 @@ namespace tsil::ast {
   };
 
   struct SectionAccessNode {
-    ASTValue* left;
-    std::string id;
+    std::vector<std::string> parts;
   };
 
   struct SectionNode {

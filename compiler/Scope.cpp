@@ -155,11 +155,36 @@ namespace tsil::tk {
             CompilerError::subjectNotDefined(contextAstValue)};
   }
 
-  CompilerValueResult Scope::compileValue(
-      tsil::x::Function* xFunction,
-      tsil::x::FunctionBlock* xBlock,
-      ast::ASTValue* astValue,
-      const std::vector<Type*>& genericValues) {
+  CompilerRuntimeSubjectResult Scope::getRuntimeSubjectByIdentifierNodeAstValue(
+      ast::ASTValue* astValue) {
+    const auto identifierNode = astValue->data.IdentifierNode;
+    if (this->hasVariable(identifierNode->name)) {
+      const auto [variableType, variableXValue] =
+          this->getVariable(identifierNode->name);
+      return {variableType, variableXValue, nullptr};
+    } else if (this->hasBakedDiia(identifierNode->name, {})) {
+      const auto [diiaType, diiaXValue] =
+          this->getBakedDiia(identifierNode->name, {});
+      return {diiaType, diiaXValue, nullptr};
+    } else if (this->hasRawDiia(identifierNode->name)) {
+      const auto rawDiiaAstValue = this->getRawDiia(identifierNode->name);
+      const auto bakedDiiaResult =
+          this->bakeDiia(astValue, rawDiiaAstValue, {});
+      if (bakedDiiaResult.error) {
+        return {nullptr, nullptr, bakedDiiaResult.error};
+      }
+      return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
+    } else if (this->hasRawType(identifierNode->name)) {
+      return {nullptr, nullptr,
+              CompilerError::subjectIsNotRuntimeValue(astValue)};
+    } else {
+      return {nullptr, nullptr, CompilerError::subjectNotDefined(astValue)};
+    }
+  }
+
+  CompilerValueResult Scope::compileValue(tsil::x::Function* xFunction,
+                                          tsil::x::FunctionBlock* xBlock,
+                                          ast::ASTValue* astValue) {
     if (astValue->kind == ast::KindNumberNode) {
       return this->compileNumber(xFunction, xBlock, astValue);
     }
@@ -167,7 +192,7 @@ namespace tsil::tk {
       return this->compileString(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindIdentifierNode) {
-      return this->compileLoad(xFunction, xBlock, astValue, genericValues);
+      return this->compileLoad(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindGetNode) {
       return this->compileGet(xFunction, xBlock, astValue, true);
@@ -331,6 +356,14 @@ namespace tsil::tk {
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
+    return nullptr;
+  }
+
+  x::Value* Scope::compileHardCast(tsil::x::Function* xFunction,
+                                   tsil::x::FunctionBlock* xBlock,
+                                   Type* type,
+                                   x::Value* xValue,
+                                   Type* targetType) {
     return nullptr;
   }
 } // namespace tsil::tk

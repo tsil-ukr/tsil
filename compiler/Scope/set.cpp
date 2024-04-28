@@ -39,7 +39,7 @@ namespace tsil::tk {
       leftXValue = accessLeftResult.xValue;
     } else {
       const auto valueResult =
-          this->compileValue(xFunction, xBlock, setNode->left, {});
+          this->compileValue(xFunction, xBlock, setNode->left);
       if (valueResult.error) {
         return {valueResult.error};
       }
@@ -59,7 +59,7 @@ namespace tsil::tk {
                new x::Value(this->compiler->int32Type->xType,
                             std::to_string(field.index))});
       const auto valueResult =
-          this->compileValue(xFunction, xBlock, setNode->value, {});
+          this->compileValue(xFunction, xBlock, setNode->value);
       const auto storeXValue =
           this->compiler->xModule->pushFunctionBlockStoreInstruction(
               xBlock, field.type->xType, valueResult.xValue, gepXValue);
@@ -68,12 +68,12 @@ namespace tsil::tk {
       if (setNode->access) {
         if (leftType->type == TypeTypeArray) {
           const auto indexResult =
-              this->compileValue(xFunction, xBlock, setNode->access, {});
+              this->compileValue(xFunction, xBlock, setNode->access);
           if (indexResult.error) {
             return {indexResult.error};
           }
           auto valueResult =
-              this->compileValue(xFunction, xBlock, setNode->value, {});
+              this->compileValue(xFunction, xBlock, setNode->value);
           if (valueResult.error) {
             return {valueResult.error};
           }

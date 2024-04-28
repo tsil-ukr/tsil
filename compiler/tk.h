@@ -163,6 +163,12 @@ namespace tsil::tk {
     CompilerError* error;
   };
 
+  struct CompilerRuntimeSubjectResult {
+    Type* type;
+    x::Value* xValue;
+    CompilerError* error;
+  };
+
   struct Scope {
     Compiler* compiler;
     Scope* parent;
@@ -204,6 +210,9 @@ namespace tsil::tk {
         const std::string& name,
         const std::vector<Type*>& genericValues);
 
+    CompilerRuntimeSubjectResult getRuntimeSubjectByIdentifierNodeAstValue(
+        ast::ASTValue* astValue);
+
     CompilerValueResult compileCall(tsil::x::Function* xFunction,
                                     tsil::x::FunctionBlock* xBlock,
                                     ast::ASTValue* astValue);
@@ -234,8 +243,7 @@ namespace tsil::tk {
                                       ast::ASTValue* astValue);
     CompilerValueResult compileLoad(tsil::x::Function* xFunction,
                                     tsil::x::FunctionBlock* xBlock,
-                                    ast::ASTValue* astValue,
-                                    const std::vector<Type*>& genericValues);
+                                    ast::ASTValue* astValue);
     CompilerValueResult compileAs(tsil::x::Function* xFunction,
                                   tsil::x::FunctionBlock* xBlock,
                                   ast::ASTValue* astValue);
@@ -261,8 +269,7 @@ namespace tsil::tk {
                                    bool load);
     CompilerValueResult compileValue(x::Function* xFunction,
                                      tsil::x::FunctionBlock* xBlock,
-                                     ast::ASTValue* astValue,
-                                     const std::vector<Type*>& genericValues);
+                                     ast::ASTValue* astValue);
 
     x::Value* compileSoftCast(tsil::x::Function* xFunction,
                               tsil::x::FunctionBlock* xBlock,

@@ -6,7 +6,7 @@ namespace tsil::tk {
                                        ast::ASTValue* astValue) {
     const auto asNode = astValue->data.AsNode;
     const auto valueResult =
-        this->compileValue(xFunction, xBlock, asNode->value, {});
+        this->compileValue(xFunction, xBlock, asNode->value);
     if (valueResult.error) {
       return valueResult;
     }
@@ -18,8 +18,14 @@ namespace tsil::tk {
     auto newXValue = this->compileSoftCast(xFunction, xBlock, valueResult.type,
                                            valueResult.xValue, typeResult.type);
     if (newXValue == nullptr) {
-      newXValue =
-          new x::Value(typeResult.type->xType, valueResult.xValue->name);
+      newXValue = this->compileHardCast(xFunction, xBlock, valueResult.type,
+                                        valueResult.xValue, typeResult.type);
+    }
+    if (newXValue == nullptr) {
+      return {
+          nullptr, nullptr,
+          CompilerError::invalidArgumentType(
+              asNode->value, "значення", typeResult.type, valueResult.type)};
     }
     return {typeResult.type, newXValue, nullptr};
   }

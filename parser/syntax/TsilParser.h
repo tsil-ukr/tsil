@@ -185,12 +185,10 @@ public:
   public:
     Real_section_accessContext(Section_accessContext *ctx);
 
-    TsilParser::Section_accessContext *sa_left = nullptr;
-    antlr4::Token *sa_right = nullptr;
+    std::vector<antlr4::tree::TerminalNode *> ID();
+    antlr4::tree::TerminalNode* ID(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COLON();
     antlr4::tree::TerminalNode* COLON(size_t i);
-    Section_accessContext *section_access();
-    antlr4::tree::TerminalNode *ID();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
@@ -198,7 +196,7 @@ public:
   };
 
   Section_accessContext* section_access();
-  Section_accessContext* section_access(int precedence);
+
   class  TakeContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *t_type = nullptr;
@@ -1375,7 +1373,6 @@ public:
 
   bool sempred(antlr4::RuleContext *_localctx, size_t ruleIndex, size_t predicateIndex) override;
 
-  bool section_accessSempred(Section_accessContext *_localctx, size_t predicateIndex);
   bool particleSempred(ParticleContext *_localctx, size_t predicateIndex);
   bool operationSempred(OperationContext *_localctx, size_t predicateIndex);
   bool basic_typeSempred(Basic_typeContext *_localctx, size_t predicateIndex);

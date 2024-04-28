@@ -9,20 +9,13 @@ namespace tsil::tk {
     Type* leftType = nullptr;
     x::Value* leftXValue = nullptr;
     if (getNode->left->kind == ast::KindIdentifierNode) {
-      const auto identifierNode = getNode->left->data.IdentifierNode;
       const auto subjectResult =
-          this->getSubjectByName(getNode->left, identifierNode->name, {});
+          this->getRuntimeSubjectByIdentifierNodeAstValue(getNode->left);
       if (subjectResult.error) {
         return {nullptr, nullptr, subjectResult.error};
       }
-      const auto subject = subjectResult.subject;
-      if (subject.kind != SubjectKindVariable &&
-          subject.kind != SubjectKindDiia) {
-        return {nullptr, nullptr,
-                CompilerError::subjectIsNotRuntimeValue(getNode->left)};
-      }
-      leftType = subject.type;
-      leftXValue = subject.xValue;
+      leftType = subjectResult.type;
+      leftXValue = subjectResult.xValue;
     } else if (getNode->left->kind == ast::KindGetNode) {
       const auto getLeftResult =
           this->compileGet(xFunction, xBlock, getNode->left, false);
@@ -41,7 +34,7 @@ namespace tsil::tk {
       leftXValue = accessLeftResult.xValue;
     } else {
       const auto valueResult =
-          this->compileValue(xFunction, xBlock, getNode->left, {});
+          this->compileValue(xFunction, xBlock, getNode->left);
       if (valueResult.error) {
         return valueResult;
       }

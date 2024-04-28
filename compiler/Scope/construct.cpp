@@ -46,7 +46,7 @@ namespace tsil::tk {
             typeResult.type->structureInstanceFields[constructorArgNode->id];
       }
       auto argValueResult =
-          this->compileValue(xFunction, xBlock, constructorArgNode->value, {});
+          this->compileValue(xFunction, xBlock, constructorArgNode->value);
       if (argValueResult.error) {
         return {nullptr, nullptr, argValueResult.error};
       }

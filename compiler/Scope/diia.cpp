@@ -37,7 +37,7 @@ namespace tsil::tk {
         }
         if (defineNode->value) {
           auto valueResult =
-              this->compileValue(xFunction, xBlock, defineNode->value, {});
+              this->compileValue(xFunction, xBlock, defineNode->value);
           if (valueResult.error) {
             return {valueResult.error};
           }
@@ -76,7 +76,7 @@ namespace tsil::tk {
         const auto& [variableType, variableXValue] =
             this->getVariable(assignNode->id);
         const auto valueResult =
-            this->compileValue(xFunction, xBlock, assignNode->value, {});
+            this->compileValue(xFunction, xBlock, assignNode->value);
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -95,7 +95,7 @@ namespace tsil::tk {
         }
       } else if (childAstValue->kind == ast::KindCallNode) {
         const auto valueResult =
-            this->compileValue(xFunction, xBlock, childAstValue, {});
+            this->compileValue(xFunction, xBlock, childAstValue);
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -112,7 +112,7 @@ namespace tsil::tk {
                                                                "while_exit");
         const auto valueResult =
             this->compileValue(xFunction, xWhileBlock,
-                               childAstValue->data.WhileNode->condition, {});
+                               childAstValue->data.WhileNode->condition);
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -142,7 +142,7 @@ namespace tsil::tk {
                 : this->compiler->xModule->defineFunctionBlock(xFunction,
                                                                "if_exit");
         const auto valueResult = this->compileValue(
-            xFunction, xIfBlock, childAstValue->data.IfNode->condition, {});
+            xFunction, xIfBlock, childAstValue->data.IfNode->condition);
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -172,7 +172,7 @@ namespace tsil::tk {
         x::Value* xValue = nullptr;
         if (childAstValue->data.ReturnNode->value) {
           const auto valueResult = this->compileValue(
-              xFunction, xBlock, childAstValue->data.ReturnNode->value, {});
+              xFunction, xBlock, childAstValue->data.ReturnNode->value);
           if (valueResult.error) {
             return {valueResult.error};
           }
