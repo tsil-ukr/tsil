@@ -12,14 +12,15 @@ namespace tsil::tk {
     if (subjectResult.error) {
       return {nullptr, nullptr, subjectResult.error};
     }
-    if (subjectResult.what == CompilerSubjectResultWhatVariable) {
+    const auto subject = subjectResult.subject;
+    if (subject.kind == SubjectKindVariable) {
       const auto loadXValue =
           this->compiler->xModule->pushFunctionBlockLoadInstruction(
-              xBlock, subjectResult.type->xType, subjectResult.xValue);
-      return {subjectResult.type, loadXValue, nullptr};
+              xBlock, subject.type->xType, subject.xValue);
+      return {subject.type, loadXValue, nullptr};
     }
-    if (subjectResult.what == CompilerSubjectResultWhatDiia) {
-      return {subjectResult.type, subjectResult.xValue, nullptr};
+    if (subject.kind == SubjectKindDiia) {
+      return {subject.type, subject.xValue, nullptr};
     }
     return {nullptr, nullptr,
             CompilerError::subjectIsNotRuntimeValue(astValue)};

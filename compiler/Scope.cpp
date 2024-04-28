@@ -23,19 +23,6 @@ namespace tsil::tk {
     return false;
   }
 
-  bool Scope::hasNonVariableAndNonDiiaSubject(const std::string& name) const {
-    if (this->rawTypes.contains(name)) {
-      return true;
-    }
-    if (this->bakedTypes.contains({name, {}})) {
-      return true;
-    }
-    if (this->parent) {
-      return this->parent->hasNonVariableAndNonDiiaSubject(name);
-    }
-    return false;
-  }
-
   bool Scope::hasRawDiia(const std::string& name) const {
     if (this->rawDiias.contains(name)) {
       return true;
@@ -147,27 +134,24 @@ namespace tsil::tk {
       const std::vector<Type*>& genericValues) {
     if (this->hasVariable(name)) {
       const auto& [variableType, variableXValue] = this->getVariable(name);
-      return {CompilerSubjectResultWhatVariable, variableType, variableXValue,
-              nullptr};
+      return {{SubjectKindVariable, variableType, variableXValue}, nullptr};
     }
     if (this->hasBakedDiia(name, genericValues)) {
       const auto bakedDiia = this->getBakedDiia(name, genericValues);
-      return {CompilerSubjectResultWhatDiia, bakedDiia.first, bakedDiia.second,
-              nullptr};
+      return {{SubjectKindDiia, bakedDiia.first, bakedDiia.second}, nullptr};
     }
     if (this->hasRawDiia(name)) {
       const auto rawDiia = this->getRawDiia(name);
       const auto bakeDiiaResult =
           this->bakeDiia(contextAstValue, rawDiia, genericValues);
       if (bakeDiiaResult.error) {
-        return {CompilerSubjectResultWhatNone, nullptr, nullptr,
-                bakeDiiaResult.error};
+        return {{SubjectKindNone, nullptr, nullptr}, bakeDiiaResult.error};
       }
-      return {CompilerSubjectResultWhatDiia, bakeDiiaResult.type,
-              bakeDiiaResult.xValue, nullptr};
+      return {{SubjectKindDiia, bakeDiiaResult.type, bakeDiiaResult.xValue},
+              nullptr};
     }
     // todo: handle types, structs etc
-    return {CompilerSubjectResultWhatNone, nullptr, nullptr,
+    return {{SubjectKindNone, nullptr, nullptr},
             CompilerError::subjectNotDefined(contextAstValue)};
   }
 

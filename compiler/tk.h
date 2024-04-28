@@ -146,16 +146,20 @@ namespace tsil::tk {
     std::string error;
   };
 
-  enum CompilerSubjectResultWhat {
-    CompilerSubjectResultWhatNone,
-    CompilerSubjectResultWhatVariable,
-    CompilerSubjectResultWhatDiia,
+  enum SubjectKind {
+    SubjectKindNone,
+    SubjectKindVariable,
+    SubjectKindDiia,
+  };
+
+  struct Subject {
+    SubjectKind kind;
+    Type* type;
+    x::Value* xValue;
   };
 
   struct CompilerSubjectResult {
-    CompilerSubjectResultWhat what;
-    Type* type;
-    x::Value* xValue;
+    Subject subject;
     CompilerError* error;
   };
 
@@ -175,9 +179,6 @@ namespace tsil::tk {
     std::map<std::string, std::pair<Type*, x::Value*>>
         variables; // name => (type, xValue)
 
-    bool hasSubject(const std::string& name) const;
-    bool hasNonVariableAndNonDiiaSubject(const std::string& name) const;
-
     bool hasRawDiia(const std::string& name) const;
     ast::ASTValue* getRawDiia(const std::string& name);
     bool hasBakedDiia(const std::string& name,
@@ -195,6 +196,8 @@ namespace tsil::tk {
 
     bool hasVariable(const std::string& name) const;
     std::pair<Type*, x::Value*> getVariable(const std::string& name);
+
+    bool hasSubject(const std::string& name) const;
 
     CompilerSubjectResult getSubjectByName(
         ast::ASTValue* contextAstValue,

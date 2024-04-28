@@ -15,13 +15,14 @@ namespace tsil::tk {
       if (subjectResult.error) {
         return {nullptr, nullptr, subjectResult.error};
       }
-      if (subjectResult.what != CompilerSubjectResultWhatVariable &&
-          subjectResult.what != CompilerSubjectResultWhatDiia) {
+      const auto subject = subjectResult.subject;
+      if (subject.kind != SubjectKindVariable &&
+          subject.kind != SubjectKindDiia) {
         return {nullptr, nullptr,
                 CompilerError::subjectIsNotRuntimeValue(accessNode->value)};
       }
-      leftType = subjectResult.type;
-      leftXValue = subjectResult.xValue;
+      leftType = subject.type;
+      leftXValue = subject.xValue;
     } else if (accessNode->value->kind == ast::KindGetNode) {
       const auto getResult =
           this->compileGet(xFunction, xBlock, accessNode->value, false);
