@@ -89,6 +89,8 @@ public:
 
     virtual std::any visitNested(TsilParser::NestedContext *context) = 0;
 
+    virtual std::any visitGeneric(TsilParser::GenericContext *context) = 0;
+
     virtual std::any visitArgs(TsilParser::ArgsContext *context) = 0;
 
     virtual std::any visitAtom_particle(TsilParser::Atom_particleContext *context) = 0;

@@ -78,6 +78,10 @@ namespace tsil::ast {
           return "TakeNode";
         case ast::KindSectionAccessNode:
           return "SectionAccessNode";
+        case ast::KindSectionNode:
+          return "SectionNode";
+        case ast::KindGenericNode:
+          return "GenericNode";
       }
       return "Unknown";
     }
@@ -295,6 +299,10 @@ namespace tsil::parser {
             dynamic_cast<TsilParser::Particle_section_accessContext*>(
                 context)) {
       return visitContext(particle_section_access_context->section_access());
+    }
+    if (const auto generic_context =
+            dynamic_cast<TsilParser::GenericContext*>(context)) {
+      return visitGeneric(generic_context);
     }
     return nullptr;
   }

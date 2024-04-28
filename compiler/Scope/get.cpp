@@ -8,39 +8,12 @@ namespace tsil::tk {
     const auto getNode = astValue->data.GetNode;
     Type* leftType = nullptr;
     x::Value* leftXValue = nullptr;
-    if (getNode->left->kind == ast::KindIdentifierNode) {
-      const auto subjectResult =
-          this->getRuntimeSubjectByIdentifierNodeAstValue(getNode->left);
-      if (subjectResult.error) {
-        return {nullptr, nullptr, subjectResult.error};
-      }
-      leftType = subjectResult.type;
-      leftXValue = subjectResult.xValue;
-    } else if (getNode->left->kind == ast::KindGetNode) {
-      const auto getLeftResult =
-          this->compileGet(xFunction, xBlock, getNode->left, false);
-      if (getLeftResult.error) {
-        return getLeftResult;
-      }
-      leftType = getLeftResult.type;
-      leftXValue = getLeftResult.xValue;
-    } else if (getNode->left->kind == ast::KindAccessNode) {
-      const auto accessLeftResult =
-          this->compileAccess(xFunction, xBlock, getNode->left, false);
-      if (accessLeftResult.error) {
-        return accessLeftResult;
-      }
-      leftType = accessLeftResult.type;
-      leftXValue = accessLeftResult.xValue;
-    } else {
-      const auto valueResult =
-          this->compileValue(xFunction, xBlock, getNode->left);
-      if (valueResult.error) {
-        return valueResult;
-      }
-      leftType = valueResult.type;
-      leftXValue = valueResult.xValue;
+    const auto leftResult = this->compileLeft(xFunction, xBlock, getNode->left);
+    if (leftResult.error) {
+      return leftResult;
     }
+    leftType = leftResult.type;
+    leftXValue = leftResult.xValue;
     if (leftType->type == TypeTypeStructureInstance) {
       if (!leftType->structureInstanceFields.contains(getNode->id)) {
         return {

@@ -50,8 +50,9 @@ set: s_left=particle ('.' s_id=ID | '[' s_index=expr ']') '=' s_value=expr;
 
 particle: section_access #particle_section_access
         | g_left=particle '.' g_id=ID #get
+        | g_left=particle '<' sa_generic_value=full_type (',' full_type)* '>' #generic
         | a_value=particle '[' (a_index=expr)? ']' #access
-        | c_value=particle ('<' c_first_generic_type=full_type (',' full_type)* '>')? '(' (c_args=args)? ')' #call
+        | c_value=particle '(' (c_args=args)? ')' #call
         | '(' n_value=expr ')' #nested;
 args: expr (',' expr)* (',')?;
 

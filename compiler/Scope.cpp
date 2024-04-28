@@ -212,8 +212,43 @@ namespace tsil::tk {
     if (astValue->kind == ast::KindAccessNode) {
       return this->compileAccess(xFunction, xBlock, astValue, true);
     }
+    if (astValue->kind == ast::KindGenericNode) {
+      return this->compileGeneric(xFunction, xBlock, astValue);
+    }
     return {nullptr, nullptr,
             CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED VALUE")};
+  }
+
+  CompilerValueResult Scope::compileLeft(x::Function* xFunction,
+                                         tsil::x::FunctionBlock* xBlock,
+                                         ast::ASTValue* astValue) {
+    if (astValue->kind == ast::KindIdentifierNode) {
+      const auto subjectResult =
+          this->getRuntimeSubjectByIdentifierNodeAstValue(astValue);
+      if (subjectResult.error) {
+        return {nullptr, nullptr, subjectResult.error};
+      }
+      return {subjectResult.type, subjectResult.xValue, nullptr};
+    } else if (astValue->kind == ast::KindGetNode) {
+      const auto getResult =
+          this->compileGet(xFunction, xBlock, astValue, false);
+      if (getResult.error) {
+        return getResult;
+      }
+      return getResult;
+    } else if (astValue->kind == ast::KindAccessNode) {
+      const auto accessResult =
+          this->compileAccess(xFunction, xBlock, astValue, false);
+      if (accessResult.error) {
+        return accessResult;
+      }
+      return accessResult;
+    }
+    const auto valueResult = this->compileValue(xFunction, xBlock, astValue);
+    if (valueResult.error) {
+      return valueResult;
+    }
+    return valueResult;
   }
 
   x::Value* Scope::compileSoftCast(tsil::x::Function* xFunction,

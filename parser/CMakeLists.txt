@@ -19,6 +19,7 @@ set(TSIL_PARSER_SRC
         visitor/visitDefine.cpp
         visitor/visitDiia.cpp
         visitor/visitFile.cpp
+        visitor/visitGeneric.cpp
         visitor/visitGet.cpp
         visitor/visitIdentifier.cpp
         visitor/visitIf.cpp

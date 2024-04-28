@@ -155,6 +155,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitGeneric(TsilParser::GenericContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitArgs(TsilParser::ArgsContext *ctx) override {
     return visitChildren(ctx);
   }

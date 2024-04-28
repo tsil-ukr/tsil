@@ -244,6 +244,9 @@ namespace tsil::tk {
     CompilerValueResult compileLoad(tsil::x::Function* xFunction,
                                     tsil::x::FunctionBlock* xBlock,
                                     ast::ASTValue* astValue);
+    CompilerValueResult compileGeneric(tsil::x::Function* xFunction,
+                                       tsil::x::FunctionBlock* xBlock,
+                                       ast::ASTValue* astValue);
     CompilerValueResult compileAs(tsil::x::Function* xFunction,
                                   tsil::x::FunctionBlock* xBlock,
                                   ast::ASTValue* astValue);
@@ -270,6 +273,9 @@ namespace tsil::tk {
     CompilerValueResult compileValue(x::Function* xFunction,
                                      tsil::x::FunctionBlock* xBlock,
                                      ast::ASTValue* astValue);
+    CompilerValueResult compileLeft(x::Function* xFunction,
+                                    tsil::x::FunctionBlock* xBlock,
+                                    ast::ASTValue* astValue);
 
     x::Value* compileSoftCast(tsil::x::Function* xFunction,
                               tsil::x::FunctionBlock* xBlock,

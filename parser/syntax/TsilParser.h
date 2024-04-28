@@ -758,18 +758,11 @@ public:
     CallContext(ParticleContext *ctx);
 
     TsilParser::ParticleContext *c_value = nullptr;
-    TsilParser::Full_typeContext *c_first_generic_type = nullptr;
     TsilParser::ArgsContext *c_args = nullptr;
     antlr4::tree::TerminalNode *PAREN_OPEN();
     antlr4::tree::TerminalNode *PAREN_CLOSE();
     ParticleContext *particle();
-    antlr4::tree::TerminalNode *LESSER();
-    antlr4::tree::TerminalNode *GREATER();
-    std::vector<Full_typeContext *> full_type();
-    Full_typeContext* full_type(size_t i);
     ArgsContext *args();
-    std::vector<antlr4::tree::TerminalNode *> COMA();
-    antlr4::tree::TerminalNode* COMA(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
@@ -826,6 +819,25 @@ public:
     antlr4::tree::TerminalNode *PAREN_OPEN();
     antlr4::tree::TerminalNode *PAREN_CLOSE();
     ExprContext *expr();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  GenericContext : public ParticleContext {
+  public:
+    GenericContext(ParticleContext *ctx);
+
+    TsilParser::ParticleContext *g_left = nullptr;
+    TsilParser::Full_typeContext *sa_generic_value = nullptr;
+    antlr4::tree::TerminalNode *LESSER();
+    antlr4::tree::TerminalNode *GREATER();
+    ParticleContext *particle();
+    std::vector<Full_typeContext *> full_type();
+    Full_typeContext* full_type(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> COMA();
+    antlr4::tree::TerminalNode* COMA(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 

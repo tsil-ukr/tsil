@@ -121,6 +121,9 @@ public:
   virtual void enterNested(TsilParser::NestedContext * /*ctx*/) override { }
   virtual void exitNested(TsilParser::NestedContext * /*ctx*/) override { }
 
+  virtual void enterGeneric(TsilParser::GenericContext * /*ctx*/) override { }
+  virtual void exitGeneric(TsilParser::GenericContext * /*ctx*/) override { }
+
   virtual void enterArgs(TsilParser::ArgsContext * /*ctx*/) override { }
   virtual void exitArgs(TsilParser::ArgsContext * /*ctx*/) override { }
 

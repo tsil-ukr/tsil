@@ -169,9 +169,11 @@ namespace tsil::tk {
            this == scope->compiler->int8Type ||
            this == scope->compiler->int32Type ||
            this == scope->compiler->int64Type ||
+           this == scope->compiler->integerType ||
            this == scope->compiler->uint8Type ||
            this == scope->compiler->uint32Type ||
            this == scope->compiler->uint64Type ||
+           this == scope->compiler->positiveType ||
            this == scope->compiler->d32Type ||
            this == scope->compiler->d64Type ||
            this == scope->compiler->doubleType || this->type == TypeTypePointer;
@@ -180,7 +182,9 @@ namespace tsil::tk {
   bool Type::isUnsigned(tsil::tk::Scope* scope) {
     return this == scope->compiler->uint8Type ||
            this == scope->compiler->uint32Type ||
-           this == scope->compiler->uint64Type || this->type == TypeTypePointer;
+           this == scope->compiler->uint64Type ||
+           this == scope->compiler->positiveType ||
+           this->type == TypeTypePointer;
   }
 
   bool Type::isFloating(tsil::tk::Scope* scope) {
@@ -197,8 +201,11 @@ namespace tsil::tk {
     return this == scope->compiler->int8Type ||
            this == scope->compiler->int32Type ||
            this == scope->compiler->int64Type ||
+           this == scope->compiler->integerType ||
            this == scope->compiler->uint8Type ||
            this == scope->compiler->uint32Type ||
-           this == scope->compiler->uint64Type || this->type == TypeTypePointer;
+           this == scope->compiler->uint64Type ||
+           this == scope->compiler->positiveType ||
+           this->type == TypeTypePointer;
   }
 } // namespace tsil::tk

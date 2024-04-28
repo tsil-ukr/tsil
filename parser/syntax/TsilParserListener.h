@@ -119,6 +119,9 @@ public:
   virtual void enterNested(TsilParser::NestedContext *ctx) = 0;
   virtual void exitNested(TsilParser::NestedContext *ctx) = 0;
 
+  virtual void enterGeneric(TsilParser::GenericContext *ctx) = 0;
+  virtual void exitGeneric(TsilParser::GenericContext *ctx) = 0;
+
   virtual void enterArgs(TsilParser::ArgsContext *ctx) = 0;
   virtual void exitArgs(TsilParser::ArgsContext *ctx) = 0;
 

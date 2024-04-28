@@ -7,45 +7,12 @@ namespace tsil::tk {
     const auto setNode = astValue->data.SetNode;
     Type* leftType = nullptr;
     x::Value* leftXValue = nullptr;
-    if (setNode->left->kind == ast::KindIdentifierNode) {
-      const auto identifierNode = setNode->left->data.IdentifierNode;
-      const auto subjectResult =
-          this->getSubjectByName(setNode->left, identifierNode->name, {});
-      if (subjectResult.error) {
-        return {subjectResult.error};
-      }
-      const auto subject = subjectResult.subject;
-      if (subject.kind != SubjectKindVariable &&
-          subject.kind != SubjectKindDiia) {
-        return {CompilerError::subjectIsNotRuntimeValue(setNode->left)};
-      }
-      leftType = subject.type;
-      leftXValue = subject.xValue;
-    } else if (setNode->left->kind == ast::KindGetNode) {
-      const auto getLeftResult =
-          this->compileGet(xFunction, xBlock, setNode->left, false);
-      if (getLeftResult.error) {
-        return {getLeftResult.error};
-      }
-      leftType = getLeftResult.type;
-      leftXValue = getLeftResult.xValue;
-    } else if (setNode->left->kind == ast::KindAccessNode) {
-      const auto accessLeftResult =
-          this->compileAccess(xFunction, xBlock, setNode->left, false);
-      if (accessLeftResult.error) {
-        return {accessLeftResult.error};
-      }
-      leftType = accessLeftResult.type;
-      leftXValue = accessLeftResult.xValue;
-    } else {
-      const auto valueResult =
-          this->compileValue(xFunction, xBlock, setNode->left);
-      if (valueResult.error) {
-        return {valueResult.error};
-      }
-      leftType = valueResult.type;
-      leftXValue = valueResult.xValue;
+    const auto leftResult = this->compileLeft(xFunction, xBlock, setNode->left);
+    if (leftResult.error) {
+      return {leftResult.error};
     }
+    leftType = leftResult.type;
+    leftXValue = leftResult.xValue;
     if (leftType->type == TypeTypeStructureInstance) {
       if (!leftType->structureInstanceFields.contains(setNode->id)) {
         return {

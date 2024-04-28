@@ -25,16 +25,29 @@ namespace tsil::tk {
       if (identifierNode->name == "розмір") {
         return this->compileCall_Sizeof(xFunction, xBlock, astValue);
       }
-    }
-    std::vector<Type*> genericValues;
-    for (const auto& diiaGenericAstValue : callNode->generic_values) {
-      const auto genericTypeResult = this->bakeType(diiaGenericAstValue);
-      if (!genericTypeResult.type) {
-        return {nullptr, nullptr,
-                CompilerError::fromASTValue(diiaGenericAstValue,
-                                            genericTypeResult.error)};
+    } else if (callNode->value->kind == ast::KindGenericNode) {
+      const auto genericNode = callNode->value->data.GenericNode;
+      if (genericNode->left->kind == ast::KindIdentifierNode) {
+        const auto identifierNode = genericNode->left->data.IdentifierNode;
+        if (identifierNode->name == "комірка") {
+          return this->compileCall_Pointer(xFunction, xBlock, astValue);
+        }
+        if (identifierNode->name == "вміст") {
+          return this->compileCall_Value(xFunction, xBlock, astValue);
+        }
+        if (identifierNode->name == "виділити") {
+          return this->compileCall_Allocate(xFunction, xBlock, astValue);
+        }
+        if (identifierNode->name == "перевиділити") {
+          return this->compileCall_Reallocate(xFunction, xBlock, astValue);
+        }
+        if (identifierNode->name == "звільнити") {
+          return this->compileCall_Free(xFunction, xBlock, astValue);
+        }
+        if (identifierNode->name == "розмір") {
+          return this->compileCall_Sizeof(xFunction, xBlock, astValue);
+        }
       }
-      genericValues.push_back(genericTypeResult.type);
     }
     Type* diiaType;
     x::Value* diiaXValue;
@@ -86,14 +99,17 @@ namespace tsil::tk {
                                                  ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     std::vector<Type*> genericValues;
-    for (const auto& genericAstValue : callNode->generic_values) {
-      const auto bakedTypeResult = this->bakeType(genericAstValue);
-      if (!bakedTypeResult.type) {
-        return {nullptr, nullptr,
-                CompilerError::fromASTValue(genericAstValue,
-                                            bakedTypeResult.error)};
+    if (callNode->value->kind == ast::KindGenericNode) {
+      for (const auto& genericAstValue :
+           callNode->value->data.GenericNode->values) {
+        const auto bakedTypeResult = this->bakeType(genericAstValue);
+        if (!bakedTypeResult.type) {
+          return {nullptr, nullptr,
+                  CompilerError::fromASTValue(genericAstValue,
+                                              bakedTypeResult.error)};
+        }
+        genericValues.push_back(bakedTypeResult.type);
       }
-      genericValues.push_back(bakedTypeResult.type);
     }
     if (callNode->args.size() < 1) {
       return {nullptr, nullptr,
@@ -159,14 +175,17 @@ namespace tsil::tk {
                                                ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     std::vector<Type*> genericValues;
-    for (const auto& genericAstValue : callNode->generic_values) {
-      const auto bakedTypeResult = this->bakeType(genericAstValue);
-      if (!bakedTypeResult.type) {
-        return {nullptr, nullptr,
-                CompilerError::fromASTValue(genericAstValue,
-                                            bakedTypeResult.error)};
+    if (callNode->value->kind == ast::KindGenericNode) {
+      for (const auto& genericAstValue :
+           callNode->value->data.GenericNode->values) {
+        const auto bakedTypeResult = this->bakeType(genericAstValue);
+        if (!bakedTypeResult.type) {
+          return {nullptr, nullptr,
+                  CompilerError::fromASTValue(genericAstValue,
+                                              bakedTypeResult.error)};
+        }
+        genericValues.push_back(bakedTypeResult.type);
       }
-      genericValues.push_back(bakedTypeResult.type);
     }
     if (callNode->args.size() < 1) {
       return {nullptr, nullptr,
@@ -224,14 +243,17 @@ namespace tsil::tk {
       ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     std::vector<Type*> genericValues;
-    for (const auto& genericAstValue : callNode->generic_values) {
-      const auto bakedTypeResult = this->bakeType(genericAstValue);
-      if (!bakedTypeResult.type) {
-        return {nullptr, nullptr,
-                CompilerError::fromASTValue(genericAstValue,
-                                            bakedTypeResult.error)};
+    if (callNode->value->kind == ast::KindGenericNode) {
+      for (const auto& genericAstValue :
+           callNode->value->data.GenericNode->values) {
+        const auto bakedTypeResult = this->bakeType(genericAstValue);
+        if (!bakedTypeResult.type) {
+          return {nullptr, nullptr,
+                  CompilerError::fromASTValue(genericAstValue,
+                                              bakedTypeResult.error)};
+        }
+        genericValues.push_back(bakedTypeResult.type);
       }
-      genericValues.push_back(bakedTypeResult.type);
     }
     if (callNode->args.size() < 1) {
       return {nullptr, nullptr,
@@ -284,14 +306,17 @@ namespace tsil::tk {
       ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     std::vector<Type*> genericValues;
-    for (const auto& genericAstValue : callNode->generic_values) {
-      const auto bakedTypeResult = this->bakeType(genericAstValue);
-      if (!bakedTypeResult.type) {
-        return {nullptr, nullptr,
-                CompilerError::fromASTValue(genericAstValue,
-                                            bakedTypeResult.error)};
+    if (callNode->value->kind == ast::KindGenericNode) {
+      for (const auto& genericAstValue :
+           callNode->value->data.GenericNode->values) {
+        const auto bakedTypeResult = this->bakeType(genericAstValue);
+        if (!bakedTypeResult.type) {
+          return {nullptr, nullptr,
+                  CompilerError::fromASTValue(genericAstValue,
+                                              bakedTypeResult.error)};
+        }
+        genericValues.push_back(bakedTypeResult.type);
       }
-      genericValues.push_back(bakedTypeResult.type);
     }
     if (callNode->args.size() < 2) {
       return {nullptr, nullptr,
@@ -401,14 +426,17 @@ namespace tsil::tk {
                                                 ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     std::vector<Type*> genericValues;
-    for (const auto& genericAstValue : callNode->generic_values) {
-      const auto bakedTypeResult = this->bakeType(genericAstValue);
-      if (!bakedTypeResult.type) {
-        return {nullptr, nullptr,
-                CompilerError::fromASTValue(genericAstValue,
-                                            bakedTypeResult.error)};
+    if (callNode->value->kind == ast::KindGenericNode) {
+      for (const auto& genericAstValue :
+           callNode->value->data.GenericNode->values) {
+        const auto bakedTypeResult = this->bakeType(genericAstValue);
+        if (!bakedTypeResult.type) {
+          return {nullptr, nullptr,
+                  CompilerError::fromASTValue(genericAstValue,
+                                              bakedTypeResult.error)};
+        }
+        genericValues.push_back(bakedTypeResult.type);
       }
-      genericValues.push_back(bakedTypeResult.type);
     }
     if (callNode->args.size() > 0) {
       return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
