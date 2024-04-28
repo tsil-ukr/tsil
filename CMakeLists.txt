@@ -25,6 +25,7 @@ set(TSIL_SRC
         compiler/Scope/get.cpp
         compiler/Scope/identifier.cpp
         compiler/Scope/number.cpp
+        compiler/Scope/section.cpp
         compiler/Scope/set.cpp
         compiler/Scope/string.cpp
         compiler/Scope/type.cpp

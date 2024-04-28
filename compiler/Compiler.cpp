@@ -92,93 +92,9 @@ namespace tsil::tk {
 
   CompilerError* Compiler::compileProgramNode(
       tsil::ast::ProgramNode* programNode) {
-    for (const auto& astValue : programNode->body) {
-      if (astValue == nullptr) {
-        continue;
-      }
-      if (astValue->kind == tsil::ast::KindNone) {
-        continue;
-      }
-      if (astValue->kind == tsil::ast::KindTakeNode) {
-        const auto takeNode = astValue->data.TakeNode;
-        std::string parts = tsil::parser::tools::implode(takeNode->parts, "/");
-        std::string path = parts + ".в";
-        std::string folderPath = parts + "/" + path;
-        if (this->fileExist(path)) {
-          //
-        } else if (this->fileExist(folderPath)) {
-          path = folderPath;
-        } else {
-          return tsil::tk::CompilerError::fromASTValue(
-              astValue, "Файл \"" + path + "\" не знайдено");
-        }
-        const auto takeResult = this->takeDefinitions(path);
-        if (takeResult.compilerError) {
-          return takeResult.compilerError;
-        }
-        if (!takeResult.error.empty()) {
-          return tsil::tk::CompilerError::fromASTValue(astValue,
-                                                       takeResult.error);
-        }
-      } else if (astValue->kind == tsil::ast::KindStructureNode) {
-        const auto structureNode = astValue->data.StructureNode;
-        if (this->globalScope->hasSubject(structureNode->name)) {
-          return tsil::tk::CompilerError::subjectAlreadyDefined(astValue);
-        }
-        this->globalScope->rawTypes.insert_or_assign(structureNode->name,
-                                                     astValue);
-      } else if (astValue->kind == tsil::ast::KindDiiaDeclarationNode) {
-        const auto diiaDeclarationNode = astValue->data.DiiaDeclarationNode;
-        if (!diiaDeclarationNode->head->generic_definitions.empty()) {
-          return tsil::tk::CompilerError::fromASTValue(
-              astValue, "Шаблон-дія повинна мати тіло");
-        }
-        if (this->globalScope->hasSubject(diiaDeclarationNode->head->id)) {
-          return tsil::tk::CompilerError::subjectAlreadyDefined(astValue);
-        }
-        if (diiaDeclarationNode->head->generic_definitions.empty()) {
-          const auto bakedDiiaResult =
-              this->globalScope->bakeDiia(astValue, astValue, {});
-          if (bakedDiiaResult.error) {
-            return bakedDiiaResult.error;
-          }
-          if (diiaDeclarationNode->as.empty()) {
-            this->globalScope->bakedDiias[{diiaDeclarationNode->head->id, {}}] =
-                {bakedDiiaResult.type, bakedDiiaResult.xValue};
-          } else {
-            this->globalScope->bakedDiias[{diiaDeclarationNode->as, {}}] = {
-                bakedDiiaResult.type, bakedDiiaResult.xValue};
-          }
-        } else {
-          if (diiaDeclarationNode->as.empty()) {
-            this->globalScope->rawDiias.insert_or_assign(
-                diiaDeclarationNode->head->id, astValue);
-          } else {
-            this->globalScope->rawDiias.insert_or_assign(
-                diiaDeclarationNode->as, astValue);
-          }
-        }
-      } else if (astValue->kind == tsil::ast::KindDiiaNode) {
-        const auto diiaNode = astValue->data.DiiaNode;
-        if (this->globalScope->hasSubject(diiaNode->head->id)) {
-          return tsil::tk::CompilerError::subjectAlreadyDefined(astValue);
-        }
-        if (diiaNode->head->generic_definitions.empty()) {
-          const auto bakedDiiaResult =
-              this->globalScope->bakeDiia(astValue, astValue, {});
-          if (bakedDiiaResult.error) {
-            return bakedDiiaResult.error;
-          }
-          this->globalScope->bakedDiias[{diiaNode->head->id, {}}] = {
-              bakedDiiaResult.type, bakedDiiaResult.xValue};
-        } else {
-          this->globalScope->rawDiias.insert_or_assign(diiaNode->head->id,
-                                                       astValue);
-        }
-      } else {
-        return tsil::tk::CompilerError::fromASTValue(
-            astValue, "Неможливо скомпілювати це речення");
-      }
+    const auto bodyResult = this->globalScope->compileBody(programNode->body);
+    if (bodyResult.error) {
+      return bodyResult.error;
     }
     return nullptr;
   }
