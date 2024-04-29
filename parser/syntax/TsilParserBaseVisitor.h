@@ -227,11 +227,11 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitExpr_operation(TsilParser::Expr_operationContext *ctx) override {
+  virtual std::any visitConstruct(TsilParser::ConstructContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitConstruct(TsilParser::ConstructContext *ctx) override {
+  virtual std::any visitExpr_operation(TsilParser::Expr_operationContext *ctx) override {
     return visitChildren(ctx);
   }
 

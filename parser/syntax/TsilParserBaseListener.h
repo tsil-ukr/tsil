@@ -175,11 +175,11 @@ public:
   virtual void enterLogical(TsilParser::LogicalContext * /*ctx*/) override { }
   virtual void exitLogical(TsilParser::LogicalContext * /*ctx*/) override { }
 
-  virtual void enterExpr_operation(TsilParser::Expr_operationContext * /*ctx*/) override { }
-  virtual void exitExpr_operation(TsilParser::Expr_operationContext * /*ctx*/) override { }
-
   virtual void enterConstruct(TsilParser::ConstructContext * /*ctx*/) override { }
   virtual void exitConstruct(TsilParser::ConstructContext * /*ctx*/) override { }
+
+  virtual void enterExpr_operation(TsilParser::Expr_operationContext * /*ctx*/) override { }
+  virtual void exitExpr_operation(TsilParser::Expr_operationContext * /*ctx*/) override { }
 
   virtual void enterConstruct_args(TsilParser::Construct_argsContext * /*ctx*/) override { }
   virtual void exitConstruct_args(TsilParser::Construct_argsContext * /*ctx*/) override { }

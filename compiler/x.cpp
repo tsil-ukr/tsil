@@ -20,32 +20,30 @@ namespace tsil::x {
     return "%v." + std::to_string(this->variable_counter++);
   }
 
+  std::string Module::computeNextGlobalName(const std::string& prefix) {
+    if (TSIL_X_EXPANDED_NAMES == "1") {
+      return "@\"" + prefix + "." + std::to_string(this->variable_counter++) +
+             "\"";
+    }
+    return "@v." + std::to_string(this->variable_counter++);
+  }
+
+  Value* Module::putGlobal(tsil::x::Type* type, tsil::x::Value* value) {
+    auto global = new Global();
+    global->variable_index = this->variable_counter++;
+    global->name = this->computeNextGlobalName("global");
+    global->type = type;
+    global->value = value;
+    this->globals[global->name] = global;
+    return new Value(this->pointerType, global->name);
+  }
+
   Value* Module::putStringConstant(const std::string& value) {
     auto constant = new Constant();
     constant->variable_index = this->variable_counter++;
-    constant->name = "@const." + std::to_string(constant->variable_index);
+    constant->name = this->computeNextGlobalName("const");
     constant->type = this->pointerType;
     constant->value = value;
-    this->constants[constant->name] = constant;
-    return new Value(this->pointerType, constant->name);
-  }
-
-  Value* Module::putI64Constant(long value) {
-    auto constant = new Constant();
-    constant->variable_index = this->variable_counter++;
-    constant->name = "@const." + std::to_string(constant->variable_index);
-    constant->type = this->int64Type;
-    constant->value = std::to_string(value);
-    this->constants[constant->name] = constant;
-    return new Value(this->pointerType, constant->name);
-  }
-
-  Value* Module::putI8Constant(char value) {
-    auto constant = new Constant();
-    constant->variable_index = this->variable_counter++;
-    constant->name = "@const." + std::to_string(constant->variable_index);
-    constant->type = this->int8Type;
-    constant->value = std::to_string(value);
     this->constants[constant->name] = constant;
     return new Value(this->pointerType, constant->name);
   }
@@ -691,6 +689,10 @@ namespace tsil::x {
       lines.push_back(constant->dumpLL(this));
     }
 
+    for (const auto& [name, global] : this->globals) {
+      lines.push_back(global->dumpLL(this));
+    }
+
     for (const auto& [name, type] : this->types) {
       if (type->type == TypeTypeType) {
         lines.push_back(type->dumpLL(this));
@@ -720,6 +722,11 @@ namespace tsil::x {
     return this->name + " = constant [" +
            std::to_string(this->value.size() + 1) + " x i8] c\"" + this->value +
            "\\00\"";
+  }
+
+  std::string Global::dumpLL(tsil::x::Module* module) {
+    return this->name + " = global " + this->type->name + " " +
+           this->value->name;
   }
 
   Type* Type::getPointerType(tsil::x::Module* module) {

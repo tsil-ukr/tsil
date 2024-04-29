@@ -125,9 +125,9 @@ public:
 
     virtual std::any visitLogical(TsilParser::LogicalContext *context) = 0;
 
-    virtual std::any visitExpr_operation(TsilParser::Expr_operationContext *context) = 0;
-
     virtual std::any visitConstruct(TsilParser::ConstructContext *context) = 0;
+
+    virtual std::any visitExpr_operation(TsilParser::Expr_operationContext *context) = 0;
 
     virtual std::any visitConstruct_args(TsilParser::Construct_argsContext *context) = 0;
 

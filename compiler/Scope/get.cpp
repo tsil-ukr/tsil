@@ -14,6 +14,7 @@ namespace tsil::tk {
     }
     leftType = leftResult.type;
     leftXValue = leftResult.xValue;
+    bool isPointer = leftType->isPointer();
     if (leftType->isPointer()) {
       leftType = leftType->pointerTo;
     }
@@ -24,12 +25,22 @@ namespace tsil::tk {
             CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};
       }
       const auto field = leftType->structureInstanceFields[getNode->id];
-      const auto gepXValue =
-          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-              xBlock, leftType->xType, leftXValue,
-              {new x::Value(this->compiler->int32Type->xType, "0"),
-               new x::Value(this->compiler->int32Type->xType,
-                            std::to_string(field.index))});
+      x::Value* gepXValue = nullptr;
+      if (isPointer) {
+        gepXValue =
+            this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+                xBlock, leftType->xType, leftXValue,
+                {new x::Value(this->compiler->int32Type->xType, "0"),
+                 new x::Value(this->compiler->int32Type->xType,
+                              std::to_string(field.index))});
+      } else {
+        gepXValue =
+            this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+                xBlock, leftType->xType, leftXValue,
+                {new x::Value(this->compiler->int32Type->xType, "0"),
+                 new x::Value(this->compiler->int32Type->xType,
+                              std::to_string(field.index))});
+      }
       if (load) {
         const auto loadXValue =
             this->compiler->xModule->pushFunctionBlockLoadInstruction(

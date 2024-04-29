@@ -2,15 +2,15 @@
 
 namespace tsil::tk {
   CompilerResult Scope::compileBody(const std::vector<ast::ASTValue*>& body) {
-    for (const auto& astValue : body) {
-      if (astValue == nullptr) {
+    for (const auto& childAstValue : body) {
+      if (childAstValue == nullptr) {
         continue;
       }
-      if (astValue->kind == tsil::ast::KindNone) {
+      if (childAstValue->kind == tsil::ast::KindNone) {
         continue;
       }
-      if (astValue->kind == tsil::ast::KindTakeNode) {
-        const auto takeNode = astValue->data.TakeNode;
+      if (childAstValue->kind == tsil::ast::KindTakeNode) {
+        const auto takeNode = childAstValue->data.TakeNode;
         std::string parts = tsil::parser::tools::implode(takeNode->parts, "/");
         std::string path = parts + ".в";
         std::string folderPath = parts + "/" + path;
@@ -20,38 +20,76 @@ namespace tsil::tk {
           path = folderPath;
         } else {
           return {tsil::tk::CompilerError::fromASTValue(
-              astValue, "Файл \"" + path + "\" не знайдено")};
+              childAstValue, "Файл \"" + path + "\" не знайдено")};
         }
         const auto takeResult = this->compiler->takeDefinitions(path);
         if (takeResult.compilerError) {
           return {takeResult.compilerError};
         }
         if (!takeResult.error.empty()) {
-          return {tsil::tk::CompilerError::fromASTValue(astValue,
+          return {tsil::tk::CompilerError::fromASTValue(childAstValue,
                                                         takeResult.error)};
         }
-      } else if (astValue->kind == tsil::ast::KindSectionNode) {
-        const auto sectionResult = this->compileSection(astValue);
+      } else if (childAstValue->kind == tsil::ast::KindDefineNode) {
+        const auto defineNode = childAstValue->data.DefineNode;
+        if (this->hasLocalSubject(defineNode->id)) {
+          return {CompilerError::subjectAlreadyDefined(childAstValue)};
+        }
+        //        Type* type = nullptr;
+        //        if (defineNode->type) {
+        //          const auto typeResult = this->bakeType(defineNode->type);
+        //          if (!typeResult.type) {
+        //            return {CompilerError::fromASTValue(defineNode->type,
+        //                                                typeResult.error)};
+        //          }
+        //          type = typeResult.type;
+        //        }
+        if (defineNode->value) {
+          if (defineNode->value->kind == ast::KindNumberNode) {
+            const auto numberNode = defineNode->value->data.NumberNode;
+            const auto type = str_contains(numberNode->value, ".")
+                                  ? this->compiler->doubleType
+                                  : this->compiler->integerType;
+            const auto xValue = new x::Value(
+                type->xType, tsilNumberToLLVMNumber(numberNode->value));
+            const auto globalXValue =
+                this->compiler->xModule->putGlobal(type->xType, xValue);
+            this->variables[defineNode->id] = {type, globalXValue};
+          } else {
+            return {CompilerError::fromASTValue(
+                defineNode->value,
+                "Глобальні цілі та змінні можуть мати лише числові значення.")};
+          }
+        } else {
+          return {CompilerError::fromASTValue(defineNode->value,
+                                              "NOT IMPLEMENTED")};
+        }
+      } else if (childAstValue->kind == tsil::ast::KindSectionNode) {
+        const auto sectionResult = this->compileSection(childAstValue);
         if (sectionResult.error) {
           return {sectionResult.error};
         }
-      } else if (astValue->kind == tsil::ast::KindStructureNode) {
-        const auto structureNode = astValue->data.StructureNode;
+      } else if (childAstValue->kind == tsil::ast::KindStructureNode) {
+        const auto structureNode = childAstValue->data.StructureNode;
         if (this->hasSubject(structureNode->name)) {
-          return {tsil::tk::CompilerError::subjectAlreadyDefined(astValue)};
+          return {
+              tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
         }
-        this->rawTypes.insert_or_assign(structureNode->name, astValue);
-      } else if (astValue->kind == tsil::ast::KindDiiaDeclarationNode) {
-        const auto diiaDeclarationNode = astValue->data.DiiaDeclarationNode;
+        this->rawTypes.insert_or_assign(structureNode->name, childAstValue);
+      } else if (childAstValue->kind == tsil::ast::KindDiiaDeclarationNode) {
+        const auto diiaDeclarationNode =
+            childAstValue->data.DiiaDeclarationNode;
         if (!diiaDeclarationNode->head->generic_definitions.empty()) {
           return {tsil::tk::CompilerError::fromASTValue(
-              astValue, "Шаблон-дія повинна мати тіло")};
+              childAstValue, "Шаблон-дія повинна мати тіло")};
         }
         if (this->hasSubject(diiaDeclarationNode->head->id)) {
-          return {tsil::tk::CompilerError::subjectAlreadyDefined(astValue)};
+          return {
+              tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
         }
         if (diiaDeclarationNode->head->generic_definitions.empty()) {
-          const auto bakedDiiaResult = this->bakeDiia(astValue, astValue, {});
+          const auto bakedDiiaResult =
+              this->bakeDiia(childAstValue, childAstValue, {});
           if (bakedDiiaResult.error) {
             return {bakedDiiaResult.error};
           }
@@ -65,29 +103,32 @@ namespace tsil::tk {
         } else {
           if (diiaDeclarationNode->as.empty()) {
             this->rawDiias.insert_or_assign(diiaDeclarationNode->head->id,
-                                            astValue);
+                                            childAstValue);
           } else {
-            this->rawDiias.insert_or_assign(diiaDeclarationNode->as, astValue);
+            this->rawDiias.insert_or_assign(diiaDeclarationNode->as,
+                                            childAstValue);
           }
         }
-      } else if (astValue->kind == tsil::ast::KindDiiaNode) {
-        const auto diiaNode = astValue->data.DiiaNode;
+      } else if (childAstValue->kind == tsil::ast::KindDiiaNode) {
+        const auto diiaNode = childAstValue->data.DiiaNode;
         if (this->hasSubject(diiaNode->head->id)) {
-          return {tsil::tk::CompilerError::subjectAlreadyDefined(astValue)};
+          return {
+              tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
         }
         if (diiaNode->head->generic_definitions.empty()) {
-          const auto bakedDiiaResult = this->bakeDiia(astValue, astValue, {});
+          const auto bakedDiiaResult =
+              this->bakeDiia(childAstValue, childAstValue, {});
           if (bakedDiiaResult.error) {
             return {bakedDiiaResult.error};
           }
           this->bakedDiias[{diiaNode->head->id, {}}] = {bakedDiiaResult.type,
                                                         bakedDiiaResult.xValue};
         } else {
-          this->rawDiias.insert_or_assign(diiaNode->head->id, astValue);
+          this->rawDiias.insert_or_assign(diiaNode->head->id, childAstValue);
         }
       } else {
         return {tsil::tk::CompilerError::fromASTValue(
-            astValue, "Неможливо скомпілювати це речення")};
+            childAstValue, "Неможливо скомпілювати це речення")};
       }
     }
     return {nullptr};

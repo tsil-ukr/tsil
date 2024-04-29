@@ -75,8 +75,8 @@ operation: molecule #operation_molecule
          | c_left=operation c_operation=comparison_op c_right=operation #comparison
          | t_left=operation t_operation=logical_op t_right=operation #logical;
 
-expr: operation #expr_operation
-    | c_type=full_type '{' (c_args=construct_args)? '}' #construct;
+expr: c_type=full_type '{' (c_args=construct_args)? '}' #construct
+    | operation #expr_operation;
 construct_args: construct_arg (',' construct_arg)* ','?;
 construct_arg: (ca_name=ID '=')? ca_value=expr;
 

@@ -6,6 +6,7 @@ namespace tsil::x {
   struct Module;
   struct Value;
   struct Constant;
+  struct Global;
   struct Type;
   struct Function;
   struct FunctionBlock;
@@ -58,6 +59,7 @@ namespace tsil::x {
     size_t variable_counter = 0;
 
     std::unordered_map<std::string, Constant*> constants;
+    std::unordered_map<std::string, Global*> globals;
     std::unordered_map<std::string, Type*> types;
     std::unordered_map<std::string, Function*> functions;
 
@@ -73,10 +75,13 @@ namespace tsil::x {
     std::string targetTriple = "x86_64-pc-linux-gnu";
 
     std::string computeNextVarName(const std::string& prefix);
+    std::string computeNextGlobalName(const std::string& prefix);
 
+    Value* putGlobal(Type* type, Value* value);
     Value* putStringConstant(const std::string& value);
-    Value* putI64Constant(long value);
     Value* putI8Constant(char value);
+    Value* putI32Constant(int value);
+    Value* putI64Constant(long value);
 
     Type* defineNativeType(const std::string& name);
     Type* defineStructType(const std::string& name, std::vector<Type*> fields);
@@ -263,6 +268,15 @@ namespace tsil::x {
     std::string name;
     Type* type;
     std::string value;
+
+    std::string dumpLL(Module* module);
+  };
+
+  struct Global {
+    size_t variable_index;
+    std::string name;
+    Type* type;
+    Value* value;
 
     std::string dumpLL(Module* module);
   };

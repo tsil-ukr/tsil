@@ -173,11 +173,11 @@ public:
   virtual void enterLogical(TsilParser::LogicalContext *ctx) = 0;
   virtual void exitLogical(TsilParser::LogicalContext *ctx) = 0;
 
-  virtual void enterExpr_operation(TsilParser::Expr_operationContext *ctx) = 0;
-  virtual void exitExpr_operation(TsilParser::Expr_operationContext *ctx) = 0;
-
   virtual void enterConstruct(TsilParser::ConstructContext *ctx) = 0;
   virtual void exitConstruct(TsilParser::ConstructContext *ctx) = 0;
+
+  virtual void enterExpr_operation(TsilParser::Expr_operationContext *ctx) = 0;
+  virtual void exitExpr_operation(TsilParser::Expr_operationContext *ctx) = 0;
 
   virtual void enterConstruct_args(TsilParser::Construct_argsContext *ctx) = 0;
   virtual void exitConstruct_args(TsilParser::Construct_argsContext *ctx) = 0;
