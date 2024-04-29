@@ -14,6 +14,9 @@ namespace tsil::tk {
     }
     leftType = leftResult.type;
     leftXValue = leftResult.xValue;
+    if (leftType->isPointer()) {
+      leftType = leftType->pointerTo;
+    }
     if (leftType->type == TypeTypeStructureInstance) {
       if (!leftType->structureInstanceFields.contains(getNode->id)) {
         return {

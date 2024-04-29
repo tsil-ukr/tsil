@@ -308,7 +308,7 @@ void printHelp() {
   std::cout << std::endl;
   std::cout << "  <вихід> сплавити [опції...]  <вхід...>" << std::endl;
   std::cout << "    Опис: сплавити через CLang" << std::endl;
-  std::cout << "    Вихід: .сплав .обʼєкт .динаміт .wasm" << std::endl;
+  std::cout << "    Вихід: без розширення або .сплав .обʼєкт .динаміт .wasm" << std::endl;
   std::cout << "    Вхід: .ц .c .cpp .ll .bc" << std::endl;
   std::cout << "    Опції:" << std::endl;
   std::cout << "      --режим=<розробка|випуск>" << std::endl;

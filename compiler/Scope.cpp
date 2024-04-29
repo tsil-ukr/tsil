@@ -282,7 +282,7 @@ namespace tsil::tk {
         ((type == this->compiler->uint64Type ||
           type == this->compiler->positiveType) &&
          (targetType == this->compiler->int64Type ||
-          targetType == this->compiler->positiveType))) {
+          targetType == this->compiler->integerType))) {
       return xValue;
     }
     // (char -> int/long/uint/ulong) | (int -> long/ulong) = sext
