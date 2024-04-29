@@ -111,6 +111,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitBlock(TsilParser::BlockContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitIf(TsilParser::IfContext *ctx) override {
     return visitChildren(ctx);
   }

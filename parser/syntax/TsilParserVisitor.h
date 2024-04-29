@@ -67,6 +67,8 @@ public:
 
     virtual std::any visitReturn_body_element(TsilParser::Return_body_elementContext *context) = 0;
 
+    virtual std::any visitBlock(TsilParser::BlockContext *context) = 0;
+
     virtual std::any visitIf(TsilParser::IfContext *context) = 0;
 
     virtual std::any visitWhile(TsilParser::WhileContext *context) = 0;

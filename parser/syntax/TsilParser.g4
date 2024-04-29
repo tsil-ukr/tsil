@@ -33,8 +33,9 @@ params: param (',' param)* (',')?;
 param: p_name=ID ':' p_type=full_type;
 
 body: body_element+;
-body_element: if | while | (declare ';') | (define ';') | (assign ';') | (set ';') | (expr ';') | (return_body_element ';') | ';';
+body_element: if | while | (declare ';') | (define ';') | (assign ';') | (set ';') | (expr ';') | (return_body_element ';') | block | ';';
 return_body_element: 'вернути' (rbl_value=expr)?;
+block: '{' body '}';
 
 if: 'якщо' i_value=expr '{' (i_body=body)? '}' ('інакше' '{' (i_else_body=body)? '}')?;
 

@@ -204,6 +204,7 @@ namespace tsil::tk {
     std::pair<Type*, x::Value*> getVariable(const std::string& name);
 
     bool hasSubject(const std::string& name) const;
+    bool hasLocalSubject(const std::string& name) const;
 
     CompilerSubjectResult getSubjectByName(
         ast::ASTValue* contextAstValue,

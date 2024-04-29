@@ -33,7 +33,16 @@ namespace tsil::parser {
         }
         body.push_back(AV(context, ast::KindReturnNode, return_node));
       }
+      if (body_element->block()) {
+        body.push_back(AAV(visitBlock(body_element->block())));
+      }
     }
     return body;
+  }
+
+  std::any TsilASTVisitor::visitBlock(TsilParser::BlockContext* ctx) {
+    const auto block_node = new ast::BlockNode();
+    block_node->body = AAVec(visitBody(ctx->body()));
+    return AV(ctx, ast::KindBlockNode, block_node);
   }
 } // namespace tsil::parser

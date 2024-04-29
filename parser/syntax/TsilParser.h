@@ -32,12 +32,12 @@ public:
     RuleStructure_params = 11, RuleStructure_param = 12, RuleDiia_head = 13, 
     RuleDiia = 14, RuleDiia_generics = 15, RuleDiia_generic = 16, RuleDiia_declaration = 17, 
     RuleParams = 18, RuleParam = 19, RuleBody = 20, RuleBody_element = 21, 
-    RuleReturn_body_element = 22, RuleIf = 23, RuleWhile = 24, RuleDeclare = 25, 
-    RuleDefine = 26, RuleAssign = 27, RuleSet = 28, RuleParticle = 29, RuleArgs = 30, 
-    RuleAtom = 31, RuleMolecule = 32, RuleOperation = 33, RuleExpr = 34, 
-    RuleConstruct_args = 35, RuleConstruct_arg = 36, RuleBasic_type = 37, 
-    RuleFull_type = 38, RuleComplex_function_type_args = 39, RuleBitwise_op = 40, 
-    RuleComparison_op = 41, RuleLogical_op = 42
+    RuleReturn_body_element = 22, RuleBlock = 23, RuleIf = 24, RuleWhile = 25, 
+    RuleDeclare = 26, RuleDefine = 27, RuleAssign = 28, RuleSet = 29, RuleParticle = 30, 
+    RuleArgs = 31, RuleAtom = 32, RuleMolecule = 33, RuleOperation = 34, 
+    RuleExpr = 35, RuleConstruct_args = 36, RuleConstruct_arg = 37, RuleBasic_type = 38, 
+    RuleFull_type = 39, RuleComplex_function_type_args = 40, RuleBitwise_op = 41, 
+    RuleComparison_op = 42, RuleLogical_op = 43
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -80,6 +80,7 @@ public:
   class BodyContext;
   class Body_elementContext;
   class Return_body_elementContext;
+  class BlockContext;
   class IfContext;
   class WhileContext;
   class DeclareContext;
@@ -560,6 +561,7 @@ public:
     SetContext *set();
     ExprContext *expr();
     Return_body_elementContext *return_body_element();
+    BlockContext *block();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -586,6 +588,23 @@ public:
   };
 
   Return_body_elementContext* return_body_element();
+
+  class  BlockContext : public antlr4::ParserRuleContext {
+  public:
+    BlockContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *QUOTE_OPEN();
+    BodyContext *body();
+    antlr4::tree::TerminalNode *QUOTE_CLOSE();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  BlockContext* block();
 
   class  IfContext : public antlr4::ParserRuleContext {
   public:

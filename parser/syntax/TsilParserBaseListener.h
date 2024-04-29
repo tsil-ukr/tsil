@@ -88,6 +88,9 @@ public:
   virtual void enterReturn_body_element(TsilParser::Return_body_elementContext * /*ctx*/) override { }
   virtual void exitReturn_body_element(TsilParser::Return_body_elementContext * /*ctx*/) override { }
 
+  virtual void enterBlock(TsilParser::BlockContext * /*ctx*/) override { }
+  virtual void exitBlock(TsilParser::BlockContext * /*ctx*/) override { }
+
   virtual void enterIf(TsilParser::IfContext * /*ctx*/) override { }
   virtual void exitIf(TsilParser::IfContext * /*ctx*/) override { }
 

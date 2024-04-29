@@ -114,6 +114,8 @@ namespace tsil::parser {
         TsilParser::Real_section_accessContext* context) override;
 
     std::any visitGeneric(TsilParser::GenericContext* ctx) override;
+
+    std::any visitBlock(TsilParser::BlockContext* ctx) override;
   };
 
   struct TsilParserError {

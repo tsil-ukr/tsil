@@ -23,6 +23,25 @@ namespace tsil::tk {
     return false;
   }
 
+  bool Scope::hasLocalSubject(const std::string& name) const {
+    if (this->variables.contains(name)) {
+      return true;
+    }
+    if (this->rawTypes.contains(name)) {
+      return true;
+    }
+    if (this->bakedTypes.contains({name, {}})) {
+      return true;
+    }
+    if (this->rawDiias.contains(name)) {
+      return true;
+    }
+    if (this->bakedDiias.contains({name, {}})) {
+      return true;
+    }
+    return false;
+  }
+
   bool Scope::hasRawDiia(const std::string& name) const {
     if (this->rawDiias.contains(name)) {
       return true;
@@ -263,6 +282,10 @@ namespace tsil::tk {
       // todo: cast pointer?
       return xValue;
     }
+    if (type == this->compiler->int1Type &&
+        targetType == this->compiler->int1Type) {
+      return xValue;
+    }
     if ((type == this->compiler->int8Type &&
          targetType == this->compiler->uint8Type) ||
         (type == this->compiler->uint8Type &&
@@ -286,7 +309,8 @@ namespace tsil::tk {
       return xValue;
     }
     // (char -> int/long/uint/ulong) | (int -> long/ulong) = sext
-    if (((type == this->compiler->int8Type) &&
+    if ((((type == this->compiler->int8Type) ||
+          (type == this->compiler->int1Type)) &&
          (targetType == this->compiler->int32Type ||
           targetType == this->compiler->int64Type ||
           targetType == this->compiler->integerType ||
@@ -325,12 +349,14 @@ namespace tsil::tk {
     if (((type == this->compiler->int32Type ||
           type == this->compiler->int64Type ||
           type == this->compiler->integerType) &&
-         (targetType == this->compiler->int8Type ||
+         (targetType == this->compiler->int1Type ||
+          targetType == this->compiler->int8Type ||
           targetType == this->compiler->uint8Type)) ||
         ((type == this->compiler->uint32Type ||
           type == this->compiler->uint64Type ||
           type == this->compiler->positiveType) &&
-         (targetType == this->compiler->int8Type ||
+         (targetType == this->compiler->int1Type ||
+          targetType == this->compiler->int8Type ||
           targetType == this->compiler->uint8Type)) ||
         ((type == this->compiler->int64Type ||
           type == this->compiler->uint64Type ||
@@ -367,7 +393,8 @@ namespace tsil::tk {
     // (float/double -> uchar/uint/ulong) = fptoui
     if ((type == this->compiler->d32Type || type == this->compiler->d64Type ||
          type == this->compiler->doubleType) &&
-        (targetType == this->compiler->uint8Type ||
+        (targetType == this->compiler->int1Type ||
+         targetType == this->compiler->uint8Type ||
          targetType == this->compiler->uint32Type ||
          targetType == this->compiler->uint64Type ||
          targetType == this->compiler->positiveType)) {
@@ -398,7 +425,8 @@ namespace tsil::tk {
       return newXValue;
     }
     // (uchar/uint/ulong -> float/double) = uitofp
-    if ((type == this->compiler->uint8Type ||
+    if ((type == this->compiler->int1Type ||
+         type == this->compiler->uint8Type ||
          type == this->compiler->uint32Type ||
          type == this->compiler->uint64Type) &&
         (targetType == this->compiler->d32Type ||

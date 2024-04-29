@@ -21,9 +21,17 @@ namespace tsil::tk {
       if (childAstValue->kind == tsil::ast::KindNone) {
         continue;
       }
-      if (childAstValue->kind == ast::KindDefineNode) {
+      if (childAstValue->kind == tsil::ast::KindBlockNode) {
+        const auto blockScope = new Scope(this->compiler, this);
+        const auto blockResult =
+            blockScope->compileDiiaBody(diiaType, xFunction, xBlock, xExitBlock,
+                                        childAstValue->data.BlockNode->body);
+        if (blockResult.error) {
+          return {blockResult.error};
+        }
+      } else if (childAstValue->kind == ast::KindDefineNode) {
         const auto defineNode = childAstValue->data.DefineNode;
-        if (this->hasSubject(defineNode->id)) {
+        if (this->hasLocalSubject(defineNode->id)) {
           return {CompilerError::subjectAlreadyDefined(childAstValue)};
         }
         Type* type = nullptr;
@@ -110,15 +118,26 @@ namespace tsil::tk {
                 ? xExitBlock
                 : this->compiler->xModule->defineFunctionBlock(xFunction,
                                                                "while_exit");
-        const auto valueResult =
-            this->compileValue(xFunction, xWhileBlock,
-                               childAstValue->data.WhileNode->condition);
+        auto valueResult = this->compileValue(
+            xFunction, xWhileBlock, childAstValue->data.WhileNode->condition);
         if (valueResult.error) {
           return {valueResult.error};
         }
+        const auto castedXValue =
+            this->compileSoftCast(xFunction, xWhileBlock, valueResult.type,
+                                  valueResult.xValue, this->compiler->int1Type);
+        if (castedXValue) {
+          valueResult.type = this->compiler->int1Type;
+          valueResult.xValue = castedXValue;
+        } else {
+          return {CompilerError::typesAreNotCompatible(
+              childAstValue->data.WhileNode->condition, valueResult.type,
+              this->compiler->int1Type)};
+        }
         this->compiler->xModule->pushFunctionBlockBrIfInstruction(
             xWhileBlock, valueResult.xValue, xWhileBodyBlock, xWhileExitBlock);
-        const auto whileBodyResult = this->compileDiiaBody(
+        const auto whileScope = new Scope(this->compiler, this);
+        const auto whileBodyResult = whileScope->compileDiiaBody(
             diiaType, xFunction, xWhileBodyBlock, xWhileExitBlock,
             childAstValue->data.WhileNode->body);
         if (whileBodyResult.error) {
@@ -141,20 +160,33 @@ namespace tsil::tk {
                 ? xExitBlock
                 : this->compiler->xModule->defineFunctionBlock(xFunction,
                                                                "if_exit");
-        const auto valueResult = this->compileValue(
+        auto valueResult = this->compileValue(
             xFunction, xIfBlock, childAstValue->data.IfNode->condition);
         if (valueResult.error) {
           return {valueResult.error};
         }
+        const auto castedXValue =
+            this->compileSoftCast(xFunction, xIfBlock, valueResult.type,
+                                  valueResult.xValue, this->compiler->int1Type);
+        if (castedXValue) {
+          valueResult.type = this->compiler->int1Type;
+          valueResult.xValue = castedXValue;
+        } else {
+          return {CompilerError::typesAreNotCompatible(
+              childAstValue->data.WhileNode->condition, valueResult.type,
+              this->compiler->int1Type)};
+        }
         this->compiler->xModule->pushFunctionBlockBrIfInstruction(
             xIfBlock, valueResult.xValue, xIfThenBlock, xIfElseBlock);
-        const auto thenBodyResult = this->compileDiiaBody(
+        const auto thenScope = new Scope(this->compiler, this);
+        const auto thenBodyResult = thenScope->compileDiiaBody(
             diiaType, xFunction, xIfThenBlock, xIfExitBlock,
             childAstValue->data.IfNode->body);
         if (thenBodyResult.error) {
           return {thenBodyResult.error};
         }
-        const auto elseBodyResult = this->compileDiiaBody(
+        const auto elseScope = new Scope(this->compiler, this);
+        const auto elseBodyResult = elseScope->compileDiiaBody(
             diiaType, xFunction, xIfElseBlock, xIfExitBlock,
             childAstValue->data.IfNode->else_body);
         if (elseBodyResult.error) {

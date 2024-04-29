@@ -304,6 +304,10 @@ namespace tsil::parser {
             dynamic_cast<TsilParser::GenericContext*>(context)) {
       return visitGeneric(generic_context);
     }
+    if (const auto block_context =
+            dynamic_cast<TsilParser::BlockContext*>(context)) {
+      return visitBlock(block_context);
+    }
     return nullptr;
   }
 

@@ -86,6 +86,9 @@ public:
   virtual void enterReturn_body_element(TsilParser::Return_body_elementContext *ctx) = 0;
   virtual void exitReturn_body_element(TsilParser::Return_body_elementContext *ctx) = 0;
 
+  virtual void enterBlock(TsilParser::BlockContext *ctx) = 0;
+  virtual void exitBlock(TsilParser::BlockContext *ctx) = 0;
+
   virtual void enterIf(TsilParser::IfContext *ctx) = 0;
   virtual void exitIf(TsilParser::IfContext *ctx) = 0;
 

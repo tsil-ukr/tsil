@@ -20,12 +20,12 @@ namespace tsil::tk {
     if (newXValue == nullptr) {
       newXValue = this->compileHardCast(xFunction, xBlock, valueResult.type,
                                         valueResult.xValue, typeResult.type);
-    }
-    if (newXValue == nullptr) {
-      return {
-          nullptr, nullptr,
-          CompilerError::invalidArgumentType(
-              asNode->value, "значення", typeResult.type, valueResult.type)};
+      if (newXValue == nullptr) {
+        return {
+            nullptr, nullptr,
+            CompilerError::invalidArgumentType(
+                asNode->value, "значення", typeResult.type, valueResult.type)};
+      }
     }
     return {typeResult.type, newXValue, nullptr};
   }
