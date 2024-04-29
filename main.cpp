@@ -291,6 +291,8 @@ int compile(const CompileCommand& compileCommand) {
 }
 
 void printHelp() {
+  std::cout << "Ціль " << TSIL_VERSION << std::endl;
+  std::cout << std::endl;
   std::cout << "Використання:" << std::endl;
   std::cout << "  ціль <ціль> <команда> [аргументи...]" << std::endl;
   std::cout << std::endl;
