@@ -308,7 +308,7 @@ void printHelp() {
   std::cout << std::endl;
   std::cout << "  <вихід> сплавити [опції...]  <вхід...>" << std::endl;
   std::cout << "    Опис: сплавити через CLang" << std::endl;
-  std::cout << "    Вихід: без розширення або .сплав .обʼєкт .динаміт .wasm" << std::endl;
+  std::cout << "    Вихід: без розширення або .o .so .wasm" << std::endl;
   std::cout << "    Вхід: .ц .c .cpp .ll .bc" << std::endl;
   std::cout << "    Опції:" << std::endl;
   std::cout << "      --режим=<розробка|випуск>" << std::endl;
@@ -382,10 +382,9 @@ int main(int argc, char** argv) {
                std::count(target.begin(), target.end(), '.') == 0) {
       fuseCommand.outputType = FuseCommandOutputTypeExecutable;
     } else {
-      std::cerr
-          << "помилка: Вихідний файл повинен мати розширення .сплав, .обʼєкт, "
-             ".динаміт або .wasm"
-          << std::endl;
+      std::cerr << "помилка: Вихідний файл повинен мати розширення .o, "
+                   ".so або .wasm"
+                << std::endl;
       return 1;
     }
 
