@@ -67,25 +67,87 @@ namespace tsil::tk {
     }
     std::vector<x::Value*> xArgs;
     int argIndex = 0;
+    size_t xArgsVecSize = 0;
     for (const auto& argAstValue : callNode->args) {
-      auto argResult = this->compileValue(xFunction, xBlock, argAstValue);
-      if (argResult.error) {
-        return argResult;
-      }
       const auto& diiaParameter = diiaType->diiaParameters[argIndex];
-      const auto castedXValue =
-          this->compileSoftCast(xFunction, xBlock, argResult.type,
-                                argResult.xValue, diiaParameter.type);
-      if (castedXValue) {
-        argResult.type = diiaParameter.type;
-        argResult.xValue = castedXValue;
+      if (argAstValue->kind == ast::KindIdentifierNode ||
+          argAstValue->kind == ast::KindGetNode ||
+          argAstValue->kind == ast::KindAccessNode ||
+          argAstValue->kind == ast::KindConstructorNode) {
+        auto argResult = this->compileLeft(xFunction, xBlock, argAstValue);
+        if (argResult.error) {
+          return argResult;
+        }
+        if (argResult.type->type == TypeTypeStructureInstance) {
+          if (argResult.type != diiaParameter.type) {
+            return {nullptr, nullptr,
+                    CompilerError::invalidArgumentType(
+                        argAstValue, diiaParameter.name, diiaParameter.type,
+                        argResult.type)};
+          }
+          for (const auto& [fieldName, field] :
+               argResult.type->structureInstanceFields) {
+            const auto gepXValue =
+                this->compiler->xModule
+                    ->pushFunctionBlockGetElementPtrInstruction(
+                        xBlock, argResult.type->xType, argResult.xValue,
+                        {new x::Value(this->compiler->int32Type->xType, "0"),
+                         new x::Value(this->compiler->int32Type->xType,
+                                      std::to_string(field.index))});
+            const auto loadXValue =
+                this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                    xBlock, field.type->xType, gepXValue);
+            if ((argIndex + field.index + 1) > xArgsVecSize) {
+              xArgs.resize(argIndex + field.index + 1);
+              xArgsVecSize = argIndex + field.index + 1;
+            }
+            xArgs[argIndex + field.index] = loadXValue;
+          }
+        } else {
+          argResult.xValue =
+              this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                  xBlock, argResult.type->xType, argResult.xValue);
+          const auto castedXValue =
+              this->compileSoftCast(xFunction, xBlock, argResult.type,
+                                    argResult.xValue, diiaParameter.type);
+          if (castedXValue) {
+            argResult.type = diiaParameter.type;
+            argResult.xValue = castedXValue;
+          } else {
+            return {nullptr, nullptr,
+                    CompilerError::invalidArgumentType(
+                        argAstValue, diiaParameter.name, diiaParameter.type,
+                        argResult.type)};
+          }
+          if ((argIndex + 1) > xArgsVecSize) {
+            xArgs.resize(argIndex + 1);
+            xArgsVecSize = argIndex + 1;
+          }
+          xArgs[argIndex] = argResult.xValue;
+        }
       } else {
-        return {nullptr, nullptr,
-                CompilerError::invalidArgumentType(
-                    argAstValue, diiaParameter.name, diiaParameter.type,
-                    argResult.type)};
+        auto argResult = this->compileValue(xFunction, xBlock, argAstValue);
+        if (argResult.error) {
+          return argResult;
+        }
+        const auto castedXValue =
+            this->compileSoftCast(xFunction, xBlock, argResult.type,
+                                  argResult.xValue, diiaParameter.type);
+        if (castedXValue) {
+          argResult.type = diiaParameter.type;
+          argResult.xValue = castedXValue;
+        } else {
+          return {nullptr, nullptr,
+                  CompilerError::invalidArgumentType(
+                      argAstValue, diiaParameter.name, diiaParameter.type,
+                      argResult.type)};
+        }
+        if ((argIndex + 1) > xArgsVecSize) {
+          xArgs.resize(argIndex + 1);
+          xArgsVecSize = argIndex + 1;
+        }
+        xArgs[argIndex] = argResult.xValue;
       }
-      xArgs.push_back(argResult.xValue);
       argIndex++;
     }
     const auto xValue =
@@ -125,20 +187,22 @@ namespace tsil::tk {
     const auto firstArgAstValue = callNode->args[0];
     CompilerValueResult firstArgResult;
     if (firstArgAstValue->kind == ast::KindIdentifierNode) {
-      const auto subjectResult = this->getSubjectByName(
-          firstArgAstValue, firstArgAstValue->data.IdentifierNode->name, {});
+      const auto subjectResult =
+          this->getRuntimeSubjectByIdentifierNodeAstValue(firstArgAstValue);
       if (subjectResult.error) {
         return {nullptr, nullptr, subjectResult.error};
       }
-      const auto subject = subjectResult.subject;
-      if (subject.kind != SubjectKindVariable &&
-          subject.kind != SubjectKindDiia) {
-        return {nullptr, nullptr,
-                CompilerError::subjectIsNotRuntimeValue(firstArgAstValue)};
-      }
-      firstArgResult = {subject.type, subject.xValue, nullptr};
+      firstArgResult = {subjectResult.type, subjectResult.xValue, nullptr};
     } else if (firstArgAstValue->kind == ast::KindGetNode) {
-      firstArgResult = this->compileGetGep(xFunction, xBlock, firstArgAstValue);
+      const auto getResult =
+          this->compileGetGep(xFunction, xBlock, firstArgAstValue);
+      if (getResult.error) {
+        return getResult;
+      }
+      firstArgResult = {getResult.type, getResult.xValue, nullptr};
+    } else if (firstArgAstValue->kind == ast::KindAccessNode) {
+      firstArgResult =
+          this->compileAccessGep(xFunction, xBlock, firstArgAstValue);
     } else {
       return {
           nullptr, nullptr,
@@ -291,11 +355,14 @@ namespace tsil::tk {
     const auto typeSizeXValue =
         new x::Value(this->compiler->uint64Type->xType,
                      std::to_string(firstGenericValue->getBytesSize(this)));
+    const auto addXValue =
+        this->compiler->xModule->pushFunctionBlockMulInstruction(
+            xBlock, this->compiler->uint64Type->xType, firstArgResult.xValue,
+            typeSizeXValue);
     const auto xValue =
         this->compiler->xModule->pushFunctionBlockCallInstruction(
             xBlock, this->compiler->pointerType->xType,
-            this->compiler->ensureCallocConnected(),
-            {firstArgResult.xValue, typeSizeXValue});
+            this->compiler->ensureMallocConnected(), {addXValue});
     return {firstGenericValue->getPointerType(this), xValue, nullptr};
   }
 

@@ -3,7 +3,8 @@
 namespace tsil::tk {
   CompilerValueResult Scope::compileConstructor(tsil::x::Function* xFunction,
                                                 tsil::x::FunctionBlock* xBlock,
-                                                ast::ASTValue* astValue) {
+                                                ast::ASTValue* astValue,
+                                                bool load) {
     const auto constructorNode = astValue->data.ConstructorNode;
     const auto typeResult = this->bakeType(constructorNode->type);
     if (!typeResult.type) {
@@ -72,9 +73,13 @@ namespace tsil::tk {
           xBlock, argValueResult.type->xType, argValueResult.xValue, xGepValue);
       argIndex++;
     }
-    x::Value* xLoadValue =
-        this->compiler->xModule->pushFunctionBlockLoadInstruction(
-            xBlock, typeResult.type->xType, xAllocValue);
-    return {typeResult.type, xLoadValue, nullptr};
+    if (load) {
+      x::Value* xLoadValue =
+          this->compiler->xModule->pushFunctionBlockLoadInstruction(
+              xBlock, typeResult.type->xType, xAllocValue);
+      return {typeResult.type, xLoadValue, nullptr};
+    } else {
+      return {typeResult.type, xAllocValue, nullptr};
+    }
   }
 } // namespace tsil::tk

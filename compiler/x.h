@@ -74,6 +74,7 @@ namespace tsil::x {
 
     std::string targetTriple = "x86_64-pc-linux-gnu";
 
+    std::string computeNextName(const std::string& prefix);
     std::string computeNextVarName(const std::string& prefix);
     std::string computeNextGlobalName(const std::string& prefix);
 
@@ -83,7 +84,7 @@ namespace tsil::x {
     Value* putI32Constant(int value);
     Value* putI64Constant(long value);
 
-    Type* defineNativeType(const std::string& name);
+    Type* defineNativeType(const std::string& name, size_t bytesSize);
     Type* defineStructType(const std::string& name, std::vector<Type*> fields);
 
     std::pair<Function*, Value*> declareFunction(
@@ -297,9 +298,11 @@ namespace tsil::x {
     size_t arraySize;
     Type* arrayOf;
     Type* cachedPointerType;
+    size_t bytesSize;
 
     Type* getPointerType(Module* module);
     Type* getArrayType(Module* module, size_t size);
+    size_t getAlign();
     std::string dumpLL(Module* module);
   };
 

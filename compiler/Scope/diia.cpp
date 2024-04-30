@@ -344,20 +344,43 @@ namespace tsil::tk {
       diiaType = diiaHeadResult.first;
     }
     std::vector<x::Value*> xParamTypes;
-    for (const auto& param : diiaType->diiaParameters) {
-      xParamTypes.push_back(param.xValue);
+    struct CoercedParam {
+      std::string name;
+      Type* type;
+      std::vector<x::Value*> params;
+    };
+    std::vector<CoercedParam> coercedParams;
+    for (const auto& diiaParameter : diiaType->diiaParameters) {
+      if (diiaParameter.type->type == TypeTypeStructureInstance) {
+        CoercedParam coercedParam;
+        coercedParam.name = diiaParameter.name;
+        coercedParam.type = diiaParameter.type;
+        for (const auto& [fieldName, field] :
+             diiaParameter.type->structureInstanceFields) {
+          const auto xValue =
+              new x::Value(field.type->xType,
+                           this->compiler->xModule->computeNextVarName(
+                               "arg.coerce" + std::to_string(field.index)));
+          xParamTypes.push_back(xValue);
+          coercedParam.params.push_back(xValue);
+        }
+        coercedParams.push_back(coercedParam);
+      } else {
+        xParamTypes.push_back(diiaParameter.xValue);
+      }
     }
     x::Type* xReturnType = diiaScope->compiler->xModule->voidType;
     if (diiaType->diiaReturnType) {
       xReturnType = diiaType->diiaReturnType->xType;
     }
-    const auto xFunctionName =
-        diiaType->name == "старт" ? "main" : diiaType->name;
+    auto xFunctionName = diiaType->name == "старт" ? "main" : diiaType->name;
     auto xFunctionAttributes = "";
     if (diiaType->linkage == ast::DiiaLinkageExtern ||
         xFunctionName == "main") {
       xFunctionAttributes = "";
     } else if (diiaType->linkage == ast::DiiaLinkageStatic) {
+      xFunctionName =
+          diiaScope->compiler->xModule->computeNextName(diiaType->name);
       if (diiaAstValue->kind == ast::KindDiiaDeclarationNode) {
         return {nullptr, nullptr,
                 CompilerError::fromASTValue(
@@ -409,15 +432,40 @@ namespace tsil::tk {
             nullptr);
       }
       for (const auto& diiaParameter : diiaType->diiaParameters) {
+        if (diiaParameter.type->type != TypeTypeStructureInstance) {
+          const auto allocXValue =
+              diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
+                  xFunction->entry_block, diiaParameter.name,
+                  diiaParameter.type->xType);
+          diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
+              xFunction->entry_block, diiaParameter.type->xType,
+              diiaParameter.xValue, allocXValue);
+          diiaScope->variables[diiaParameter.name] = {diiaParameter.type,
+                                                      allocXValue};
+        }
+      }
+      for (const auto& coercedParam : coercedParams) {
         const auto allocXValue =
             diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                xFunction->entry_block, diiaParameter.name,
-                diiaParameter.type->xType);
-        diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
-            xFunction->entry_block, diiaParameter.type->xType,
-            diiaParameter.xValue, allocXValue);
-        diiaScope->variables[diiaParameter.name] = {diiaParameter.type,
-                                                    allocXValue};
+                xFunction->entry_block, coercedParam.name,
+                coercedParam.type->xType);
+        int index = 0;
+        for (const auto& paramXValue : coercedParam.params) {
+          const auto gepXValue =
+              diiaScope->compiler->xModule
+                  ->pushFunctionBlockGetElementPtrInstruction(
+                      xFunction->entry_block, coercedParam.type->xType,
+                      allocXValue,
+                      {new x::Value(diiaScope->compiler->int32Type->xType, "0"),
+                       new x::Value(diiaScope->compiler->int32Type->xType,
+                                    std::to_string(index))});
+          diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
+              xFunction->entry_block, paramXValue->type, paramXValue,
+              gepXValue);
+          index++;
+        }
+        diiaScope->variables[coercedParam.name] = {coercedParam.type,
+                                                   allocXValue};
       }
       const auto bodyResult = diiaScope->compileDiiaBody(
           diiaType, xFunction, xFunction->entry_block, xFunction->exit_block,

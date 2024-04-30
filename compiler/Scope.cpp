@@ -147,33 +147,6 @@ namespace tsil::tk {
     return {nullptr, nullptr};
   }
 
-  CompilerSubjectResult Scope::getSubjectByName(
-      ast::ASTValue* contextAstValue,
-      const std::string& name,
-      const std::vector<Type*>& genericValues) {
-    if (this->hasVariable(name)) {
-      const auto& [variableType, variableXValue] = this->getVariable(name);
-      return {{SubjectKindVariable, variableType, variableXValue}, nullptr};
-    }
-    if (this->hasBakedDiia(name, genericValues)) {
-      const auto bakedDiia = this->getBakedDiia(name, genericValues);
-      return {{SubjectKindDiia, bakedDiia.first, bakedDiia.second}, nullptr};
-    }
-    if (this->hasRawDiia(name)) {
-      const auto rawDiia = this->getRawDiia(name);
-      const auto bakeDiiaResult =
-          this->bakeDiia(contextAstValue, rawDiia, genericValues);
-      if (bakeDiiaResult.error) {
-        return {{SubjectKindNone, nullptr, nullptr}, bakeDiiaResult.error};
-      }
-      return {{SubjectKindDiia, bakeDiiaResult.type, bakeDiiaResult.xValue},
-              nullptr};
-    }
-    // todo: handle types, structs etc
-    return {{SubjectKindNone, nullptr, nullptr},
-            CompilerError::subjectNotDefined(contextAstValue)};
-  }
-
   CompilerRuntimeSubjectResult Scope::getRuntimeSubjectByIdentifierNodeAstValue(
       ast::ASTValue* astValue) {
     const auto identifierNode = astValue->data.IdentifierNode;
@@ -233,7 +206,7 @@ namespace tsil::tk {
       return this->compileCall(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindConstructorNode) {
-      return this->compileConstructor(xFunction, xBlock, astValue);
+      return this->compileConstructor(xFunction, xBlock, astValue, true);
     }
     if (astValue->kind == ast::KindAccessNode) {
       const auto accessResult =
@@ -276,12 +249,11 @@ namespace tsil::tk {
         return accessResult;
       }
       return accessResult;
+    } else if (astValue->kind == ast::KindConstructorNode) {
+      return this->compileConstructor(xFunction, xBlock, astValue, false);
     }
-    const auto valueResult = this->compileValue(xFunction, xBlock, astValue);
-    if (valueResult.error) {
-      return valueResult;
-    }
-    return valueResult;
+    return {nullptr, nullptr,
+            CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED LEFT")};
   }
 
   x::Value* Scope::compileSoftCast(tsil::x::Function* xFunction,
@@ -292,10 +264,10 @@ namespace tsil::tk {
     if (type->equals(targetType)) {
       return xValue;
     }
-    if (type->type == TypeTypePointer && targetType->type == TypeTypePointer) {
-      // todo: cast pointer?
-      return xValue;
-    }
+    //    if (type->type == TypeTypePointer && targetType->type == TypeTypePointer) {
+    //      // todo: cast pointer?
+    //      return xValue;
+    //    }
     if (type == this->compiler->int1Type &&
         targetType == this->compiler->int1Type) {
       return xValue;
@@ -429,7 +401,8 @@ namespace tsil::tk {
     // (char/int/long -> float/double) = sitofp
     if ((type == this->compiler->int8Type ||
          type == this->compiler->int32Type ||
-         type == this->compiler->int64Type) &&
+         type == this->compiler->int64Type ||
+         type == this->compiler->integerType) &&
         (targetType == this->compiler->d32Type ||
          targetType == this->compiler->d64Type ||
          targetType == this->compiler->doubleType)) {
@@ -442,7 +415,8 @@ namespace tsil::tk {
     if ((type == this->compiler->int1Type ||
          type == this->compiler->uint8Type ||
          type == this->compiler->uint32Type ||
-         type == this->compiler->uint64Type) &&
+         type == this->compiler->uint64Type ||
+         type == this->compiler->positiveType) &&
         (targetType == this->compiler->d32Type ||
          targetType == this->compiler->d64Type ||
          targetType == this->compiler->doubleType)) {

@@ -212,11 +212,6 @@ namespace tsil::tk {
     bool hasSubject(const std::string& name) const;
     bool hasLocalSubject(const std::string& name) const;
 
-    CompilerSubjectResult getSubjectByName(
-        ast::ASTValue* contextAstValue,
-        const std::string& name,
-        const std::vector<Type*>& genericValues);
-
     CompilerRuntimeSubjectResult getRuntimeSubjectByIdentifierNodeAstValue(
         ast::ASTValue* astValue);
 
@@ -262,7 +257,8 @@ namespace tsil::tk {
                                       ast::ASTValue* astValue);
     CompilerValueResult compileConstructor(tsil::x::Function* xFunction,
                                            tsil::x::FunctionBlock* xBlock,
-                                           ast::ASTValue* astValue);
+                                           ast::ASTValue* astValue,
+                                           bool load);
     CompilerValueResult compileAccessGep(tsil::x::Function* xFunction,
                                          tsil::x::FunctionBlock* xBlock,
                                          ast::ASTValue* astValue);

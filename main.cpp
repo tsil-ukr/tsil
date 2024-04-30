@@ -151,15 +151,20 @@ int compile(const CompileCommand& compileCommand) {
 
     compiler->xModule = new tsil::x::Module();
 
-    compiler->xModule->int1Type = compiler->xModule->defineNativeType("i1");
-    compiler->xModule->int8Type = compiler->xModule->defineNativeType("i8");
-    compiler->xModule->int32Type = compiler->xModule->defineNativeType("i32");
-    compiler->xModule->int64Type = compiler->xModule->defineNativeType("i64");
-    compiler->xModule->floatType = compiler->xModule->defineNativeType("float");
+    compiler->xModule->int1Type = compiler->xModule->defineNativeType("i1", 1);
+    compiler->xModule->int8Type = compiler->xModule->defineNativeType("i8", 1);
+    compiler->xModule->int32Type =
+        compiler->xModule->defineNativeType("i32", 4);
+    compiler->xModule->int64Type =
+        compiler->xModule->defineNativeType("i64", 8);
+    compiler->xModule->floatType =
+        compiler->xModule->defineNativeType("float", 4);
     compiler->xModule->doubleType =
-        compiler->xModule->defineNativeType("double");
-    compiler->xModule->pointerType = compiler->xModule->defineNativeType("ptr");
-    compiler->xModule->voidType = compiler->xModule->defineNativeType("void");
+        compiler->xModule->defineNativeType("double", 8);
+    compiler->xModule->pointerType =
+        compiler->xModule->defineNativeType("ptr", 8);
+    compiler->xModule->voidType =
+        compiler->xModule->defineNativeType("void", 1);
 
     compiler->globalScope = new tsil::tk::Scope();
     compiler->globalScope->compiler = compiler;

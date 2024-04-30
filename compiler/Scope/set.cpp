@@ -73,7 +73,8 @@ namespace tsil::tk {
                 xBlock, leftType->xType, leftXValue);
         const auto gepXValue =
             this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-                xBlock, leftType->xType, loadPtrXValue, {indexResult.xValue});
+                xBlock, leftType->pointerTo->xType, loadPtrXValue,
+                {indexResult.xValue});
         const auto storeXValue =
             this->compiler->xModule->pushFunctionBlockStoreInstruction(
                 xBlock, leftType->xType->pointerTo, valueResult.xValue,

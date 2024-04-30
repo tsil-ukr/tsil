@@ -36,7 +36,7 @@ namespace tsil::tk {
               xBlock, leftType->xType, leftXValue);
       const auto xGepValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-              xBlock, leftType->xType, loadPtrXValue, {indexResult.xValue});
+              xBlock, leftType->pointerTo->xType, loadPtrXValue, {indexResult.xValue});
       return {leftType->pointerTo, xGepValue, nullptr};
     }
     if (leftType->type == TypeTypeArray) {
