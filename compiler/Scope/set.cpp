@@ -62,7 +62,8 @@ namespace tsil::tk {
               this->compiler->xModule
                   ->pushFunctionBlockGetElementPtrInstruction(
                       xBlock, leftType->xType, leftXValue,
-                      {indexResult.xValue});
+                      {new x::Value(this->compiler->int32Type->xType, "0"),
+                       indexResult.xValue});
           const auto storeXValue =
               this->compiler->xModule->pushFunctionBlockStoreInstruction(
                   xBlock, leftType->xType->arrayOf, valueResult.xValue,

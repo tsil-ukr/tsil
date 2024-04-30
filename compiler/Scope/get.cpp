@@ -26,21 +26,12 @@ namespace tsil::tk {
       }
       const auto field = leftType->structureInstanceFields[getNode->id];
       x::Value* gepXValue = nullptr;
-      if (isPointer) {
-        gepXValue =
-            this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-                xBlock, leftType->xType, leftXValue,
-                {new x::Value(this->compiler->int32Type->xType, "0"),
-                 new x::Value(this->compiler->int32Type->xType,
-                              std::to_string(field.index))});
-      } else {
-        gepXValue =
-            this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-                xBlock, leftType->xType, leftXValue,
-                {new x::Value(this->compiler->int32Type->xType, "0"),
-                 new x::Value(this->compiler->int32Type->xType,
-                              std::to_string(field.index))});
-      }
+      gepXValue =
+          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+              xBlock, leftType->xType, leftXValue,
+              {new x::Value(this->compiler->int32Type->xType, "0"),
+               new x::Value(this->compiler->int32Type->xType,
+                            std::to_string(field.index))});
       if (load) {
         const auto loadXValue =
             this->compiler->xModule->pushFunctionBlockLoadInstruction(

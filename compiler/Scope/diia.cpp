@@ -1,7 +1,7 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerResult Scope::compileDiiaBody(
+  BodyCompilerResult Scope::compileDiiaBody(
       Type* diiaType,
       tsil::x::Function* xFunction,
       tsil::x::FunctionBlock* xBlock,
@@ -14,6 +14,7 @@ namespace tsil::tk {
       return {nullptr};
     }
     int childIndex = 0;
+    std::vector<std::pair<x::FunctionBlock*, x::FunctionBlock*>> exits;
     for (const auto& childAstValue : body) {
       if (childAstValue == nullptr) {
         continue;
@@ -27,18 +28,20 @@ namespace tsil::tk {
             blockScope->compileDiiaBody(diiaType, xFunction, xBlock, xExitBlock,
                                         childAstValue->data.BlockNode->body);
         if (blockResult.error) {
-          return {blockResult.error};
+          return {nullptr, nullptr, blockResult.error};
         }
       } else if (childAstValue->kind == ast::KindDefineNode) {
         const auto defineNode = childAstValue->data.DefineNode;
         if (this->hasLocalSubject(defineNode->id)) {
-          return {CompilerError::subjectAlreadyDefined(childAstValue)};
+          return {nullptr, nullptr,
+                  CompilerError::subjectAlreadyDefined(childAstValue)};
         }
         Type* type = nullptr;
         if (defineNode->type) {
           const auto typeResult = this->bakeType(defineNode->type);
           if (!typeResult.type) {
-            return {CompilerError::fromASTValue(defineNode->type,
+            return {nullptr, nullptr,
+                    CompilerError::fromASTValue(defineNode->type,
                                                 typeResult.error)};
           }
           type = typeResult.type;
@@ -47,7 +50,7 @@ namespace tsil::tk {
           auto valueResult =
               this->compileValue(xFunction, xBlock, defineNode->value);
           if (valueResult.error) {
-            return {valueResult.error};
+            return {nullptr, nullptr, valueResult.error};
           }
           if (type) {
             const auto castedXValue = this->compileSoftCast(
@@ -56,8 +59,9 @@ namespace tsil::tk {
               valueResult.type = type;
               valueResult.xValue = castedXValue;
             } else {
-              return {CompilerError::typesAreNotCompatible(
-                  defineNode->value, valueResult.type, type)};
+              return {nullptr, nullptr,
+                      CompilerError::typesAreNotCompatible(
+                          defineNode->value, valueResult.type, type)};
             }
           } else {
             type = valueResult.type;
@@ -78,7 +82,8 @@ namespace tsil::tk {
       } else if (childAstValue->kind == ast::KindAssignNode) {
         const auto assignNode = childAstValue->data.AssignNode;
         if (!this->hasVariable(assignNode->id)) {
-          return {CompilerError::cannotRedefineSubject(childAstValue,
+          return {nullptr, nullptr,
+                  CompilerError::cannotRedefineSubject(childAstValue,
                                                        assignNode->id)};
         }
         const auto& [variableType, variableXValue] =
@@ -86,11 +91,12 @@ namespace tsil::tk {
         const auto valueResult =
             this->compileValue(xFunction, xBlock, assignNode->value);
         if (valueResult.error) {
-          return {valueResult.error};
+          return {nullptr, nullptr, valueResult.error};
         }
         if (variableType->type == TypeTypeDiia) {
-          return {CompilerError::typesAreNotCompatible(
-              childAstValue, variableType, valueResult.type)};
+          return {nullptr, nullptr,
+                  CompilerError::typesAreNotCompatible(
+                      childAstValue, variableType, valueResult.type)};
         }
         this->compiler->xModule->pushFunctionBlockStoreInstruction(
             xBlock, valueResult.type->xType, valueResult.xValue,
@@ -99,13 +105,13 @@ namespace tsil::tk {
         const auto setResult =
             this->compileSet(xFunction, xBlock, childAstValue);
         if (setResult.error) {
-          return {setResult.error};
+          return {nullptr, nullptr, setResult.error};
         }
       } else if (childAstValue->kind == ast::KindCallNode) {
         const auto valueResult =
             this->compileValue(xFunction, xBlock, childAstValue);
         if (valueResult.error) {
-          return {valueResult.error};
+          return {nullptr, nullptr, valueResult.error};
         }
       } else if (childAstValue->kind == ast::KindWhileNode) {
         const auto xWhileBlock =
@@ -114,14 +120,12 @@ namespace tsil::tk {
             this->compiler->xModule->defineFunctionBlock(xFunction,
                                                          "while_body");
         const auto xWhileExitBlock =
-            childIndex == body.size() - 1
-                ? xExitBlock
-                : this->compiler->xModule->defineFunctionBlock(xFunction,
-                                                               "while_exit");
+            this->compiler->xModule->defineFunctionBlock(xFunction,
+                                                         "while_exit");
         auto valueResult = this->compileValue(
             xFunction, xWhileBlock, childAstValue->data.WhileNode->condition);
         if (valueResult.error) {
-          return {valueResult.error};
+          return {nullptr, nullptr, valueResult.error};
         }
         const auto castedXValue =
             this->compileSoftCast(xFunction, xWhileBlock, valueResult.type,
@@ -130,21 +134,20 @@ namespace tsil::tk {
           valueResult.type = this->compiler->int1Type;
           valueResult.xValue = castedXValue;
         } else {
-          return {CompilerError::typesAreNotCompatible(
-              childAstValue->data.WhileNode->condition, valueResult.type,
-              this->compiler->int1Type)};
+          return {nullptr, nullptr,
+                  CompilerError::typesAreNotCompatible(
+                      childAstValue->data.WhileNode->condition,
+                      valueResult.type, this->compiler->int1Type)};
         }
         this->compiler->xModule->pushFunctionBlockBrIfInstruction(
             xWhileBlock, valueResult.xValue, xWhileBodyBlock, xWhileExitBlock);
         const auto whileScope = new Scope(this->compiler, this);
         const auto whileBodyResult = whileScope->compileDiiaBody(
-            diiaType, xFunction, xWhileBodyBlock, xWhileExitBlock,
+            diiaType, xFunction, xWhileBodyBlock, xWhileBlock,
             childAstValue->data.WhileNode->body);
         if (whileBodyResult.error) {
-          return {whileBodyResult.error};
+          return {nullptr, nullptr, whileBodyResult.error};
         }
-        this->compiler->xModule->pushFunctionBlockBrInstruction(xWhileBodyBlock,
-                                                                xWhileBlock);
         this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock,
                                                                 xWhileBlock);
         xBlock = xWhileExitBlock;
@@ -156,14 +159,11 @@ namespace tsil::tk {
         const auto xIfElseBlock =
             this->compiler->xModule->defineFunctionBlock(xFunction, "if_else");
         const auto xIfExitBlock =
-            childIndex == body.size() - 1
-                ? xExitBlock
-                : this->compiler->xModule->defineFunctionBlock(xFunction,
-                                                               "if_exit");
+            this->compiler->xModule->defineFunctionBlock(xFunction, "if_exit");
         auto valueResult = this->compileValue(
             xFunction, xIfBlock, childAstValue->data.IfNode->condition);
         if (valueResult.error) {
-          return {valueResult.error};
+          return {nullptr, nullptr, valueResult.error};
         }
         const auto castedXValue =
             this->compileSoftCast(xFunction, xIfBlock, valueResult.type,
@@ -172,9 +172,10 @@ namespace tsil::tk {
           valueResult.type = this->compiler->int1Type;
           valueResult.xValue = castedXValue;
         } else {
-          return {CompilerError::typesAreNotCompatible(
-              childAstValue->data.WhileNode->condition, valueResult.type,
-              this->compiler->int1Type)};
+          return {nullptr, nullptr,
+                  CompilerError::typesAreNotCompatible(
+                      childAstValue->data.WhileNode->condition,
+                      valueResult.type, this->compiler->int1Type)};
         }
         this->compiler->xModule->pushFunctionBlockBrIfInstruction(
             xIfBlock, valueResult.xValue, xIfThenBlock, xIfElseBlock);
@@ -183,19 +184,15 @@ namespace tsil::tk {
             diiaType, xFunction, xIfThenBlock, xIfExitBlock,
             childAstValue->data.IfNode->body);
         if (thenBodyResult.error) {
-          return {thenBodyResult.error};
+          return {nullptr, nullptr, thenBodyResult.error};
         }
         const auto elseScope = new Scope(this->compiler, this);
         const auto elseBodyResult = elseScope->compileDiiaBody(
             diiaType, xFunction, xIfElseBlock, xIfExitBlock,
             childAstValue->data.IfNode->else_body);
         if (elseBodyResult.error) {
-          return {elseBodyResult.error};
+          return {nullptr, nullptr, elseBodyResult.error};
         }
-        this->compiler->xModule->pushFunctionBlockBrInstruction(xIfThenBlock,
-                                                                xIfExitBlock);
-        this->compiler->xModule->pushFunctionBlockBrInstruction(xIfElseBlock,
-                                                                xIfExitBlock);
         this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock,
                                                                 xIfBlock);
         xBlock = xIfExitBlock;
@@ -206,7 +203,7 @@ namespace tsil::tk {
           const auto valueResult = this->compileValue(
               xFunction, xBlock, childAstValue->data.ReturnNode->value);
           if (valueResult.error) {
-            return {valueResult.error};
+            return {nullptr, nullptr, valueResult.error};
           }
           type = valueResult.type;
           xValue = valueResult.xValue;
@@ -219,9 +216,10 @@ namespace tsil::tk {
           type = diiaType->diiaReturnType;
           xValue = castedXValue;
         } else {
-          return {CompilerError::typesAreNotCompatible(
-              childAstValue->data.ReturnNode->value, type,
-              diiaType->diiaReturnType)};
+          return {nullptr, nullptr,
+                  CompilerError::typesAreNotCompatible(
+                      childAstValue->data.ReturnNode->value, type,
+                      diiaType->diiaReturnType)};
         }
         if (!type->equals(this->compiler->voidType) && xValue) {
           this->compiler->xModule->pushFunctionBlockStoreInstruction(
@@ -230,16 +228,14 @@ namespace tsil::tk {
         this->compiler->xModule->pushFunctionBlockBrInstruction(
             xBlock, xFunction->exit_block);
       } else {
-        return {CompilerError::fromASTValue(childAstValue,
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(childAstValue,
                                             "NOT IMPLEMENTED OTHER")};
       }
       childIndex++;
     }
-    if (xBlock != originalXBlock) {
-      this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock,
-                                                              xExitBlock);
-    }
-    return {nullptr};
+    this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock, xExitBlock);
+    return {xBlock, nullptr};
   }
 
   BakedDiiaResult Scope::bakeDiia(ast::ASTValue* fromAstValue,
@@ -433,8 +429,6 @@ namespace tsil::tk {
         }
         return {nullptr, nullptr, bodyResult.error};
       }
-      this->compiler->xModule->pushFunctionBlockBrInstruction(
-          xFunction->entry_block, xFunction->exit_block);
     }
     return {diiaType, functionXValue, nullptr};
   }

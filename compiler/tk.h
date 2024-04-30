@@ -129,6 +129,12 @@ namespace tsil::tk {
     CompilerError* error;
   };
 
+  struct BodyCompilerResult {
+    x::FunctionBlock* xBlock;
+    x::FunctionBlock* xExitBlock;
+    CompilerError* error;
+  };
+
   struct CompilerValueResult {
     Type* type;
     x::Value* xValue;
@@ -289,11 +295,11 @@ namespace tsil::tk {
                               x::Value* xValue,
                               Type* targetType);
 
-    CompilerResult compileDiiaBody(Type* diiaType,
-                                   tsil::x::Function* xFunction,
-                                   tsil::x::FunctionBlock* xBlock,
-                                   tsil::x::FunctionBlock* xExitBlock,
-                                   const std::vector<ast::ASTValue*>& body);
+    BodyCompilerResult compileDiiaBody(Type* diiaType,
+                                       tsil::x::Function* xFunction,
+                                       tsil::x::FunctionBlock* xBlock,
+                                       tsil::x::FunctionBlock* xExitBlock,
+                                       const std::vector<ast::ASTValue*>& body);
     BakedDiiaResult bakeDiia(ast::ASTValue* fromAstValue,
                              ast::ASTValue* diiaAstValue,
                              const std::vector<Type*>& genericValues);

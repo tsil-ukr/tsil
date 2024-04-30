@@ -831,7 +831,7 @@ namespace tsil::x {
       for (const auto& index : this->getelementptr->indexes) {
         indexes.push_back(index->dumpLL(module));
       }
-      std::string result = this->name + " = getelementptr ";
+      std::string result = this->name + " = getelementptr inbounds ";
       result += this->getelementptr->type->name;
       result += ", ";
       result += this->getelementptr->pointer->dumpLL(module);
