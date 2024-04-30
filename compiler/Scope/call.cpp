@@ -138,8 +138,7 @@ namespace tsil::tk {
       }
       firstArgResult = {subject.type, subject.xValue, nullptr};
     } else if (firstArgAstValue->kind == ast::KindGetNode) {
-      firstArgResult =
-          this->compileGet(xFunction, xBlock, firstArgAstValue, false);
+      firstArgResult = this->compileGetGep(xFunction, xBlock, firstArgAstValue);
     } else {
       return {
           nullptr, nullptr,

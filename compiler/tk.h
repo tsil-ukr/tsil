@@ -263,20 +263,18 @@ namespace tsil::tk {
     CompilerValueResult compileConstructor(tsil::x::Function* xFunction,
                                            tsil::x::FunctionBlock* xBlock,
                                            ast::ASTValue* astValue);
-    CompilerValueResult compileAccess(tsil::x::Function* xFunction,
-                                      tsil::x::FunctionBlock* xBlock,
-                                      ast::ASTValue* astValue,
-                                      bool load);
+    CompilerValueResult compileAccessGep(tsil::x::Function* xFunction,
+                                         tsil::x::FunctionBlock* xBlock,
+                                         ast::ASTValue* astValue);
     CompilerResult compileSet(tsil::x::Function* xFunction,
                               tsil::x::FunctionBlock* xBlock,
                               ast::ASTValue* astValue);
     CompilerResult compileSection(ast::ASTValue* astValue);
     CompilerResult compileBody(const std::vector<ast::ASTValue*>& body);
 
-    CompilerValueResult compileGet(tsil::x::Function* xFunction,
-                                   tsil::x::FunctionBlock* xBlock,
-                                   ast::ASTValue* astValue,
-                                   bool load);
+    CompilerValueResult compileGetGep(tsil::x::Function* xFunction,
+                                      tsil::x::FunctionBlock* xBlock,
+                                      ast::ASTValue* astValue);
     CompilerValueResult compileValue(x::Function* xFunction,
                                      tsil::x::FunctionBlock* xBlock,
                                      ast::ASTValue* astValue);

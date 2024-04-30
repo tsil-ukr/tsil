@@ -735,6 +735,7 @@ namespace tsil::x {
     }
     const auto type = new Type();
     type->type = TypeTypePointer;
+//    type->name = "ptr";
     type->name = this->name + "*";
     type->pointerTo = this;
     this->cachedPointerType = type;

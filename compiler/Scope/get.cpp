@@ -1,10 +1,9 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileGet(tsil::x::Function* xFunction,
-                                        tsil::x::FunctionBlock* xBlock,
-                                        ast::ASTValue* astValue,
-                                        bool load) {
+  CompilerValueResult Scope::compileGetGep(tsil::x::Function* xFunction,
+                                           tsil::x::FunctionBlock* xBlock,
+                                           ast::ASTValue* astValue) {
     const auto getNode = astValue->data.GetNode;
     Type* leftType = nullptr;
     x::Value* leftXValue = nullptr;
@@ -14,9 +13,17 @@ namespace tsil::tk {
     }
     leftType = leftResult.type;
     leftXValue = leftResult.xValue;
-    bool isPointer = leftType->isPointer();
-    if (leftType->isPointer()) {
+    if (leftType->type == TypeTypePointer) {
+      if (!leftType->pointerTo->structureInstanceFields.contains(getNode->id)) {
+        return {nullptr, nullptr,
+                CompilerError::typeHasNoProperty(astValue, leftType->pointerTo,
+                                                 getNode->id)};
+      }
+      const auto loadPtrXValue =
+          this->compiler->xModule->pushFunctionBlockLoadInstruction(
+              xBlock, leftType->xType, leftXValue);
       leftType = leftType->pointerTo;
+      leftXValue = loadPtrXValue;
     }
     if (leftType->type == TypeTypeStructureInstance) {
       if (!leftType->structureInstanceFields.contains(getNode->id)) {
@@ -25,21 +32,13 @@ namespace tsil::tk {
             CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};
       }
       const auto field = leftType->structureInstanceFields[getNode->id];
-      x::Value* gepXValue = nullptr;
-      gepXValue =
+      const auto gepXValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
               xBlock, leftType->xType, leftXValue,
               {new x::Value(this->compiler->int32Type->xType, "0"),
                new x::Value(this->compiler->int32Type->xType,
                             std::to_string(field.index))});
-      if (load) {
-        const auto loadXValue =
-            this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, field.type->xType, gepXValue);
-        return {field.type, loadXValue, nullptr};
-      } else {
-        return {field.type, gepXValue, nullptr};
-      }
+      return {field.type, gepXValue, nullptr};
     }
     return {nullptr, nullptr,
             CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};

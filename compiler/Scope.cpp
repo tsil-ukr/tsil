@@ -214,7 +214,14 @@ namespace tsil::tk {
       return this->compileLoad(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindGetNode) {
-      return this->compileGet(xFunction, xBlock, astValue, true);
+      const auto leftResult = this->compileGetGep(xFunction, xBlock, astValue);
+      if (leftResult.error) {
+        return leftResult;
+      }
+      const auto loadXValue =
+          this->compiler->xModule->pushFunctionBlockLoadInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue);
+      return {leftResult.type, loadXValue, nullptr};
     }
     if (astValue->kind == ast::KindAsNode) {
       return this->compileAs(xFunction, xBlock, astValue);
@@ -229,7 +236,15 @@ namespace tsil::tk {
       return this->compileConstructor(xFunction, xBlock, astValue);
     }
     if (astValue->kind == ast::KindAccessNode) {
-      return this->compileAccess(xFunction, xBlock, astValue, true);
+      const auto accessResult =
+          this->compileAccessGep(xFunction, xBlock, astValue);
+      if (accessResult.error) {
+        return accessResult;
+      }
+      const auto loadXValue =
+          this->compiler->xModule->pushFunctionBlockLoadInstruction(
+              xBlock, accessResult.type->xType, accessResult.xValue);
+      return {accessResult.type, loadXValue, nullptr};
     }
     if (astValue->kind == ast::KindGenericNode) {
       return this->compileGeneric(xFunction, xBlock, astValue);
@@ -249,15 +264,14 @@ namespace tsil::tk {
       }
       return {subjectResult.type, subjectResult.xValue, nullptr};
     } else if (astValue->kind == ast::KindGetNode) {
-      const auto getResult =
-          this->compileGet(xFunction, xBlock, astValue, false);
+      const auto getResult = this->compileGetGep(xFunction, xBlock, astValue);
       if (getResult.error) {
         return getResult;
       }
       return getResult;
     } else if (astValue->kind == ast::KindAccessNode) {
       const auto accessResult =
-          this->compileAccess(xFunction, xBlock, astValue, false);
+          this->compileAccessGep(xFunction, xBlock, astValue);
       if (accessResult.error) {
         return accessResult;
       }

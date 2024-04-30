@@ -1,10 +1,9 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileAccess(tsil::x::Function* xFunction,
-                                           tsil::x::FunctionBlock* xBlock,
-                                           ast::ASTValue* astValue,
-                                           bool load) {
+  CompilerValueResult Scope::compileAccessGep(tsil::x::Function* xFunction,
+                                              tsil::x::FunctionBlock* xBlock,
+                                              ast::ASTValue* astValue) {
     const auto accessNode = astValue->data.AccessNode;
     Type* leftType = nullptr;
     x::Value* leftXValue = nullptr;
@@ -31,30 +30,22 @@ namespace tsil::tk {
                                                  this->compiler->uint64Type,
                                                  indexResult.type)};
     }
-    const auto xGepValue =
-        this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-            xBlock, leftType->xType, leftXValue,
-            {new x::Value(this->compiler->int32Type->xType, "0"),
-             indexResult.xValue});
     if (leftType->type == TypeTypePointer) {
-      if (load) {
-        const auto xLoadValue =
-            this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, leftType->pointerTo->xType, xGepValue);
-        return {leftType->pointerTo, xLoadValue, nullptr};
-      } else {
-        return {leftType->pointerTo, xGepValue, nullptr};
-      }
+      const auto loadPtrXValue =
+          this->compiler->xModule->pushFunctionBlockLoadInstruction(
+              xBlock, leftType->xType, leftXValue);
+      const auto xGepValue =
+          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+              xBlock, leftType->xType, loadPtrXValue, {indexResult.xValue});
+      return {leftType->pointerTo, xGepValue, nullptr};
     }
     if (leftType->type == TypeTypeArray) {
-      if (load) {
-        const auto xLoadValue =
-            this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, leftType->arrayOf->xType, xGepValue);
-        return {leftType->arrayOf, xLoadValue, nullptr};
-      } else {
-        return {leftType->arrayOf, xGepValue, nullptr};
-      }
+      const auto xGepValue =
+          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+              xBlock, leftType->xType, leftXValue,
+              {new x::Value(this->compiler->int32Type->xType, "0"),
+               indexResult.xValue});
+      return {leftType->arrayOf, xGepValue, nullptr};
     }
     return {nullptr, nullptr,
             CompilerError::cannotAccessNonPointer(accessNode->value, leftType)};
