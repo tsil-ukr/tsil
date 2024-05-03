@@ -136,6 +136,9 @@ namespace tsil::tk {
     if (this == scope->compiler->int64Type) {
       return 8;
     }
+    if (this == scope->compiler->integerType) {
+      return 8;
+    }
     if (this == scope->compiler->uint8Type) {
       return 1;
     }
@@ -143,6 +146,9 @@ namespace tsil::tk {
       return 4;
     }
     if (this == scope->compiler->uint64Type) {
+      return 8;
+    }
+    if (this == scope->compiler->positiveType) {
       return 8;
     }
     if (this == scope->compiler->d32Type) {
@@ -156,10 +162,11 @@ namespace tsil::tk {
     }
     if (this->type == TypeTypeStructureInstance) {
       size_t result = 0;
-      for (const auto& field : this->structureInstanceFields) {
-        result += field.second.type->getBytesSize(scope);
+      for (const auto& [fieldName, field] : this->structureInstanceFields) {
+        result += field.type->getBytesSize(scope);
       }
-      return result;
+      // align
+      return (result + 7) / 8 * 8;
     }
     return 0;
   }

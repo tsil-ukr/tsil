@@ -268,6 +268,22 @@ namespace tsil::tk {
     //      // todo: cast pointer?
     //      return xValue;
     //    }
+    if (type == this->compiler->uint64Type &&
+        targetType == this->compiler->positiveType) {
+      return xValue;
+    }
+    if (type == this->compiler->positiveType &&
+        targetType == this->compiler->uint64Type) {
+      return xValue;
+    }
+    if (type == this->compiler->int64Type &&
+        targetType == this->compiler->integerType) {
+      return xValue;
+    }
+    if (type == this->compiler->integerType &&
+        targetType == this->compiler->int64Type) {
+      return xValue;
+    }
     if (type == this->compiler->int1Type &&
         targetType == this->compiler->int1Type) {
       return xValue;
