@@ -70,10 +70,10 @@ namespace tsil::tk {
     size_t xArgsVecSize = 0;
     for (const auto& argAstValue : callNode->args) {
       const auto& diiaParameter = diiaType->diiaParameters[argIndex];
-      if (argAstValue->kind == ast::KindIdentifierNode ||
+      if ((argAstValue->kind == ast::KindIdentifierNode ||
           argAstValue->kind == ast::KindGetNode ||
           argAstValue->kind == ast::KindAccessNode ||
-          argAstValue->kind == ast::KindConstructorNode) {
+          argAstValue->kind == ast::KindConstructorNode) && false) {
         auto argResult = this->compileLeft(xFunction, xBlock, argAstValue);
         if (argResult.error) {
           return argResult;

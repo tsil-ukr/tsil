@@ -351,7 +351,7 @@ namespace tsil::tk {
     };
     std::vector<CoercedParam> coercedParams;
     for (const auto& diiaParameter : diiaType->diiaParameters) {
-      if (diiaParameter.type->type == TypeTypeStructureInstance) {
+      if (diiaParameter.type->type == TypeTypeStructureInstance && false) {
         CoercedParam coercedParam;
         coercedParam.name = diiaParameter.name;
         coercedParam.type = diiaParameter.type;
@@ -432,7 +432,7 @@ namespace tsil::tk {
             nullptr);
       }
       for (const auto& diiaParameter : diiaType->diiaParameters) {
-        if (diiaParameter.type->type != TypeTypeStructureInstance) {
+        if (diiaParameter.type->type != TypeTypeStructureInstance || true) {
           const auto allocXValue =
               diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
                   xFunction->entry_block, diiaParameter.name,
