@@ -23,8 +23,10 @@ namespace tsil::tk {
     type->name = this->name;
     type->genericValues = genericValues;
     type->scopeWithGenerics = scopeWithGenerics;
-    this->bakedTypes[genericValues] = type;
-    std::vector<x::Type*> xFields(this->fields.size());
+    type->xType =
+        scopeWithGenerics->compiler->xModule->defineStructType(this->name, {});
+    this->bakedTypes.insert_or_assign(genericValues, type);
+    type->xType->fields.resize(this->fields.size());
     int paramIndex = 0;
     for (const auto& structureField : this->fields) {
       const auto paramTypeResult =
@@ -32,17 +34,19 @@ namespace tsil::tk {
       if (!paramTypeResult.type) {
         return {nullptr, paramTypeResult.error};
       }
+      if (paramTypeResult.type->type == TypeTypeStructureInstance &&
+          paramTypeResult.type->structureInstanceFields.empty()) {
+        return {nullptr, "Виявлено неповний тип"};
+      }
       const auto field = TypeStructureField{
           .index = paramIndex,
           .type = paramTypeResult.type,
           .name = structureField.name,
       };
       type->structureInstanceFields[structureField.name] = field;
-      xFields[paramIndex] = field.type->xType;
+      type->xType->fields[paramIndex] = field.type->xType;
       paramIndex++;
     }
-    type->xType = scopeWithGenerics->compiler->xModule->defineStructType(
-        this->name, xFields);
     return {type, ""};
   }
 
@@ -55,6 +59,10 @@ namespace tsil::tk {
             bakedType->scopeWithGenerics->bakeType(structureField.type);
         if (!paramTypeResult.type) {
           return paramTypeResult.error;
+        }
+        if (paramTypeResult.type->type == TypeTypeStructureInstance &&
+            paramTypeResult.type->structureInstanceFields.empty()) {
+          return "Виявлено неповний тип";
         }
         const auto field = TypeStructureField{
             .index = paramIndex,

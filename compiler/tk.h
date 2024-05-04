@@ -5,6 +5,7 @@
 #define BUG()                                                       \
   std::cout << "BUG: " << __FILE__ << ":" << __LINE__ << std::endl; \
   exit(1);
+#define WTF() std::cout << "WTF: " << __FILE__ << ":" << __LINE__ << std::endl;
 
 namespace tsil::tk {
   struct Compiler;
