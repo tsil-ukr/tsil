@@ -24,7 +24,8 @@ namespace tsil::tk {
         return {nullptr, nullptr, bakedDiiaResult.error};
       }
       return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
-    } else if (this->hasRawType(identifierNode->name)) {
+    } else if (this->hasPredefinedType(identifierNode->name) ||
+               this->hasStructure(identifierNode->name)) {
       return {nullptr, nullptr,
               CompilerError::subjectIsNotRuntimeValue(astValue)};
     } else {
@@ -61,7 +62,8 @@ namespace tsil::tk {
           return {nullptr, nullptr, bakedDiiaResult.error};
         }
         return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
-      } else if (this->hasRawType(identifierNode->name)) {
+      } else if (this->hasPredefinedType(identifierNode->name) ||
+                 this->hasStructure(identifierNode->name)) {
         return {nullptr, nullptr,
                 CompilerError::subjectIsNotRuntimeValue(astValue)};
       } else {

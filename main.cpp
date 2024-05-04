@@ -151,20 +151,20 @@ int compile(const CompileCommand& compileCommand) {
 
     compiler->xModule = new tsil::x::Module();
 
-    compiler->xModule->int1Type = compiler->xModule->defineNativeType("i1", 1);
-    compiler->xModule->int8Type = compiler->xModule->defineNativeType("i8", 1);
+    compiler->xModule->int1Type = compiler->xModule->defineNativeType("i1");
+    compiler->xModule->int8Type = compiler->xModule->defineNativeType("i8");
     compiler->xModule->int32Type =
-        compiler->xModule->defineNativeType("i32", 4);
+        compiler->xModule->defineNativeType("i32");
     compiler->xModule->int64Type =
-        compiler->xModule->defineNativeType("i64", 8);
+        compiler->xModule->defineNativeType("i64");
     compiler->xModule->floatType =
-        compiler->xModule->defineNativeType("float", 4);
+        compiler->xModule->defineNativeType("float");
     compiler->xModule->doubleType =
-        compiler->xModule->defineNativeType("double", 8);
+        compiler->xModule->defineNativeType("double");
     compiler->xModule->pointerType =
-        compiler->xModule->defineNativeType("ptr", 8);
+        compiler->xModule->defineNativeType("ptr");
     compiler->xModule->voidType =
-        compiler->xModule->defineNativeType("void", 1);
+        compiler->xModule->defineNativeType("void");
 
     compiler->globalScope = new tsil::tk::Scope();
     compiler->globalScope->compiler = compiler;
@@ -173,103 +173,103 @@ int compile(const CompileCommand& compileCommand) {
     voidType->type = tsil::tk::TypeTypeNative;
     voidType->name = "ніщо";
     voidType->xType = compiler->xModule->voidType;
-    compiler->globalScope->bakedTypes.insert_or_assign({"ніщо", {}}, voidType);
+    compiler->globalScope->predefinedTypes.insert_or_assign("ніщо", voidType);
     compiler->voidType = voidType;
 
     const auto pointerType = new tsil::tk::Type();
     pointerType->type = tsil::tk::TypeTypePointer;
     pointerType->name = "невідома_комірка";
     pointerType->xType = compiler->xModule->pointerType;
-    compiler->globalScope->bakedTypes.insert_or_assign({"невідома_комірка", {}},
-                                                       pointerType);
+    compiler->globalScope->predefinedTypes.insert_or_assign("невідома_комірка",
+                                                            pointerType);
     compiler->pointerType = pointerType;
 
     const auto int1Type = new tsil::tk::Type();
     int1Type->type = tsil::tk::TypeTypeNative;
     int1Type->name = "логічне";
     int1Type->xType = compiler->xModule->int1Type;
-    compiler->globalScope->bakedTypes.insert_or_assign({"логічне", {}},
-                                                       int1Type);
+    compiler->globalScope->predefinedTypes.insert_or_assign("логічне",
+                                                            int1Type);
     compiler->int1Type = int1Type;
 
     const auto int8Type = new tsil::tk::Type();
     int8Type->type = tsil::tk::TypeTypeNative;
     int8Type->name = "ц8";
     int8Type->xType = compiler->xModule->int8Type;
-    compiler->globalScope->bakedTypes.insert_or_assign({"ц8", {}}, int8Type);
+    compiler->globalScope->predefinedTypes.insert_or_assign("ц8", int8Type);
     compiler->int8Type = int8Type;
 
     const auto int32Type = new tsil::tk::Type();
     int32Type->type = tsil::tk::TypeTypeNative;
     int32Type->name = "ц32";
     int32Type->xType = compiler->xModule->int32Type;
-    compiler->globalScope->bakedTypes.insert_or_assign({"ц32", {}}, int32Type);
+    compiler->globalScope->predefinedTypes.insert_or_assign("ц32", int32Type);
     compiler->int32Type = int32Type;
 
     const auto int64Type = new tsil::tk::Type();
     int64Type->type = tsil::tk::TypeTypeNative;
     int64Type->name = "ц64";
     int64Type->xType = compiler->xModule->int64Type;
-    compiler->globalScope->bakedTypes.insert_or_assign({"ц64", {}}, int64Type);
+    compiler->globalScope->predefinedTypes.insert_or_assign("ц64", int64Type);
     compiler->int64Type = int64Type;
 
     const auto integerType = new tsil::tk::Type();
     integerType->type = tsil::tk::TypeTypeNative;
     integerType->name = "ціле";
     integerType->xType = compiler->xModule->int64Type;
-    compiler->globalScope->bakedTypes.insert_or_assign({"ціле", {}},
-                                                       integerType);
+    compiler->globalScope->predefinedTypes.insert_or_assign("ціле",
+                                                            integerType);
     compiler->integerType = integerType;
 
     const auto floatType = new tsil::tk::Type();
     floatType->type = tsil::tk::TypeTypeNative;
     floatType->name = "д32";
     floatType->xType = compiler->xModule->floatType;
-    compiler->globalScope->bakedTypes.insert_or_assign({"д32", {}}, floatType);
+    compiler->globalScope->predefinedTypes.insert_or_assign("д32", floatType);
     compiler->d32Type = floatType;
 
     const auto d64Type = new tsil::tk::Type();
     d64Type->type = tsil::tk::TypeTypeNative;
     d64Type->name = "д64";
     d64Type->xType = compiler->xModule->doubleType;
-    compiler->globalScope->bakedTypes.insert_or_assign({"д64", {}}, d64Type);
+    compiler->globalScope->predefinedTypes.insert_or_assign("д64", d64Type);
     compiler->d64Type = d64Type;
 
     const auto doubleType = new tsil::tk::Type();
     doubleType->type = tsil::tk::TypeTypeNative;
     doubleType->name = "дійсне";
     doubleType->xType = compiler->xModule->doubleType;
-    compiler->globalScope->bakedTypes.insert_or_assign({"дійсне", {}},
-                                                       doubleType);
+    compiler->globalScope->predefinedTypes.insert_or_assign("дійсне",
+                                                            doubleType);
     compiler->doubleType = doubleType;
 
     const auto uint8Type = new tsil::tk::Type();
     uint8Type->type = tsil::tk::TypeTypeNative;
     uint8Type->name = "п8";
     uint8Type->xType = compiler->xModule->int8Type;
-    compiler->globalScope->bakedTypes.insert_or_assign({"п8", {}}, uint8Type);
+    compiler->globalScope->predefinedTypes.insert_or_assign("п8", uint8Type);
     compiler->uint8Type = uint8Type;
 
     const auto uint32Type = new tsil::tk::Type();
     uint32Type->type = tsil::tk::TypeTypeNative;
     uint32Type->name = "п32";
     uint32Type->xType = compiler->xModule->int32Type;
-    compiler->globalScope->bakedTypes.insert_or_assign({"п32", {}}, uint32Type);
+    compiler->globalScope->predefinedTypes.insert_or_assign("п32", uint32Type);
     compiler->uint32Type = uint32Type;
 
     const auto uint64Type = new tsil::tk::Type();
     uint64Type->type = tsil::tk::TypeTypeNative;
     uint64Type->name = "п64";
     uint64Type->xType = compiler->xModule->int64Type;
-    compiler->globalScope->bakedTypes.insert_or_assign({"п64", {}}, uint64Type);
+    compiler->globalScope->predefinedTypes.insert_or_assign("п64", uint64Type);
     compiler->uint64Type = uint64Type;
 
     const auto positiveType = new tsil::tk::Type();
     positiveType->type = tsil::tk::TypeTypeNative;
     positiveType->name = "позитивне";
     positiveType->xType = compiler->xModule->int64Type;
-    compiler->globalScope->bakedTypes.insert_or_assign({"позитивне", {}},
-                                                       positiveType);
+    compiler->globalScope->predefinedTypes.insert_or_assign("позитивне",
+                                                            positiveType);
     compiler->positiveType = positiveType;
 
     const auto compilerError =

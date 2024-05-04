@@ -2,6 +2,10 @@
 #include "parser.h"
 #include "x.h"
 
+#define BUG()                                                       \
+  std::cout << "BUG: " << __FILE__ << ":" << __LINE__ << std::endl; \
+  exit(1);
+
 namespace tsil::tk {
   struct Compiler;
   struct CompilerError;
@@ -175,6 +179,23 @@ namespace tsil::tk {
     CompilerError* error;
   };
 
+  struct StructureField {
+    std::string name;
+    ast::ASTValue* type;
+  };
+
+  struct Structure {
+    std::string name;
+    std::vector<std::string> genericDefinitions;
+    std::vector<StructureField> fields;
+
+    std::map<std::vector<Type*>, Type*> bakedTypes; // genericValues => type
+
+    BakedTypeResult bakeType(Scope* scope,
+                             const std::vector<Type*>& genericValues);
+    std::string fillBakedTypesWithFields();
+  };
+
   struct Scope {
     Compiler* compiler;
     Scope* parent;
@@ -184,14 +205,13 @@ namespace tsil::tk {
              std::pair<Type*, x::Value*>>
         bakedDiias; // (name, genericValues) => (type, xValue)
 
-    std::map<std::string, ast::ASTValue*> rawTypes; // name => astValue
-    std::map<std::pair<std::string, std::vector<Type*>>, Type*>
-        bakedTypes; // (name, genericValues) => type
+    std::map<std::string, Type*> predefinedTypes;
+    std::map<std::string, Structure*> structures;
 
     std::map<std::string, std::pair<Type*, x::Value*>>
         variables; // name => (type, xValue)
 
-    bool hasRawDiia(const std::string& name) const;
+    bool hasRawDiia(const std::string& name) const; // NOLINT(*-use-nodiscard)
     ast::ASTValue* getRawDiia(const std::string& name);
     bool hasBakedDiia(const std::string& name,
                       const std::vector<Type*>& genericValues) const;
@@ -199,18 +219,14 @@ namespace tsil::tk {
         const std::string& name,
         const std::vector<Type*>& genericValues);
 
-    bool hasRawType(const std::string& name) const;
-    ast::ASTValue* getRawType(const std::string& name);
-    bool hasBakedType(const std::string& name,
-                      const std::vector<Type*>& genericValues) const;
-    Type* getBakedType(const std::string& name,
-                       const std::vector<Type*>& genericValues);
+    bool hasStructure(const std::string& name) const;
+    Structure* getStructure(const std::string& name);
+
+    bool hasPredefinedType(const std::string& name) const;
+    Type* getPredefinedType(const std::string& name);
 
     bool hasVariable(const std::string& name) const;
     std::pair<Type*, x::Value*> getVariable(const std::string& name);
-
-    bool hasSubject(const std::string& name) const;
-    bool hasLocalSubject(const std::string& name) const;
 
     CompilerRuntimeSubjectResult getRuntimeSubjectByIdentifierNodeAstValue(
         ast::ASTValue* astValue);
@@ -325,6 +341,7 @@ namespace tsil::tk {
     std::string name;
     Type* cachedPointerType = nullptr;
     std::vector<Type*> genericValues;
+    Scope* scopeWithGenerics = nullptr;
     // array
     Type* arrayOf = nullptr;
     size_t arraySize;

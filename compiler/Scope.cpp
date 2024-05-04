@@ -1,45 +1,72 @@
 #include "tk.h"
 
 namespace tsil::tk {
-  bool Scope::hasSubject(const std::string& name) const {
-    if (this->variables.contains(name)) {
-      return true;
+  BakedTypeResult Structure::bakeType(Scope* scope,
+                                      const std::vector<Type*>& genericValues) {
+    if (this->bakedTypes.contains(genericValues)) {
+      return {this->bakedTypes[genericValues], ""};
     }
-    if (this->rawTypes.contains(name)) {
-      return true;
+    if (this->genericDefinitions.size() != genericValues.size()) {
+      return {nullptr,
+              "Кількість параметрів шаблону структури не "
+              "співпадає з кількістю переданих параметрів"};
     }
-    if (this->bakedTypes.contains({name, {}})) {
-      return true;
+    const auto scopeWithGenerics = new Scope(scope->compiler, scope);
+    int genericIndex = 0;
+    for (const auto& genericDefinition : this->genericDefinitions) {
+      const auto genericType = genericValues[genericIndex];
+      scopeWithGenerics->predefinedTypes[genericDefinition] = genericType;
+      genericIndex++;
     }
-    if (this->rawDiias.contains(name)) {
-      return true;
+    const auto type = new Type();
+    type->type = TypeTypeStructureInstance;
+    type->name = this->name;
+    type->genericValues = genericValues;
+    type->scopeWithGenerics = scopeWithGenerics;
+    this->bakedTypes[genericValues] = type;
+    std::vector<x::Type*> xFields(this->fields.size());
+    int paramIndex = 0;
+    for (const auto& structureField : this->fields) {
+      const auto paramTypeResult =
+          scopeWithGenerics->bakeType(structureField.type);
+      if (!paramTypeResult.type) {
+        return {nullptr, paramTypeResult.error};
+      }
+      const auto field = TypeStructureField{
+          .index = paramIndex,
+          .type = paramTypeResult.type,
+          .name = structureField.name,
+      };
+      type->structureInstanceFields[structureField.name] = field;
+      xFields[paramIndex] = field.type->xType;
+      paramIndex++;
     }
-    if (this->bakedDiias.contains({name, {}})) {
-      return true;
-    }
-    if (this->parent) {
-      return this->parent->hasSubject(name);
-    }
-    return false;
+    type->xType = scopeWithGenerics->compiler->xModule->defineStructType(
+        this->name, xFields);
+    return {type, ""};
   }
 
-  bool Scope::hasLocalSubject(const std::string& name) const {
-    if (this->variables.contains(name)) {
-      return true;
+  std::string Structure::fillBakedTypesWithFields() {
+    for (const auto& [bakedTypeGenerics, bakedType] : this->bakedTypes) {
+      bakedType->xType->fields.resize(this->fields.size());
+      int paramIndex = 0;
+      for (const auto& structureField : this->fields) {
+        const auto paramTypeResult =
+            bakedType->scopeWithGenerics->bakeType(structureField.type);
+        if (!paramTypeResult.type) {
+          return paramTypeResult.error;
+        }
+        const auto field = TypeStructureField{
+            .index = paramIndex,
+            .type = paramTypeResult.type,
+            .name = structureField.name,
+        };
+        bakedType->structureInstanceFields[structureField.name] = field;
+        bakedType->xType->fields[paramIndex] = field.type->xType;
+        paramIndex++;
+      }
     }
-    if (this->rawTypes.contains(name)) {
-      return true;
-    }
-    if (this->bakedTypes.contains({name, {}})) {
-      return true;
-    }
-    if (this->rawDiias.contains(name)) {
-      return true;
-    }
-    if (this->bakedDiias.contains({name, {}})) {
-      return true;
-    }
-    return false;
+    return "";
   }
 
   bool Scope::hasRawDiia(const std::string& name) const {
@@ -85,44 +112,42 @@ namespace tsil::tk {
     return {nullptr, nullptr};
   }
 
-  bool Scope::hasRawType(const std::string& name) const {
-    if (this->rawTypes.contains(name)) {
+  bool Scope::hasStructure(const std::string& name) const {
+    if (this->structures.contains(name)) {
       return true;
     }
     if (this->parent) {
-      return this->parent->hasRawType(name);
+      return this->parent->hasStructure(name);
     }
     return false;
   }
 
-  ast::ASTValue* Scope::getRawType(const std::string& name) {
-    if (this->rawTypes.contains(name)) {
-      return this->rawTypes[name];
+  Structure* Scope::getStructure(const std::string& name) {
+    if (this->structures.contains(name)) {
+      return this->structures[name];
     }
     if (this->parent) {
-      return this->parent->getRawType(name);
+      return this->parent->getStructure(name);
     }
     return nullptr;
   }
 
-  bool Scope::hasBakedType(const std::string& name,
-                           const std::vector<Type*>& genericValues) const {
-    if (this->bakedTypes.contains({name, genericValues})) {
+  bool Scope::hasPredefinedType(const std::string& name) const {
+    if (this->predefinedTypes.contains(name)) {
       return true;
     }
     if (this->parent) {
-      return this->parent->hasBakedType(name, genericValues);
+      return this->parent->hasPredefinedType(name);
     }
     return false;
   }
 
-  Type* Scope::getBakedType(const std::string& name,
-                            const std::vector<Type*>& genericValues) {
-    if (this->bakedTypes.contains({name, genericValues})) {
-      return this->bakedTypes[{name, genericValues}];
+  Type* Scope::getPredefinedType(const std::string& name) {
+    if (this->predefinedTypes.contains(name)) {
+      return this->predefinedTypes[name];
     }
     if (this->parent) {
-      return this->parent->getBakedType(name, genericValues);
+      return this->parent->getPredefinedType(name);
     }
     return nullptr;
   }
@@ -166,7 +191,7 @@ namespace tsil::tk {
         return {nullptr, nullptr, bakedDiiaResult.error};
       }
       return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
-    } else if (this->hasRawType(identifierNode->name)) {
+    } else if (this->hasStructure(identifierNode->name)) {
       return {nullptr, nullptr,
               CompilerError::subjectIsNotRuntimeValue(astValue)};
     } else {

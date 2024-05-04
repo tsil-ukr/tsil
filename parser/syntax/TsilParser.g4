@@ -18,7 +18,7 @@ take_parts: (tp_relative='.')? ID ('/' ID)*;
 section: 'секція' s_name=ID '{' section_element* '}';
 section_element: (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
 
-structure: 'структура' s_name=ID ('<' s_generics=structure_generics '>')? '{' (s_params=structure_params)? '}';
+structure: 'структура' s_name=ID ('<' s_generics=structure_generics '>')? ('{' (s_params=structure_params)? '}' | ';');
 structure_generics: structure_generic (',' structure_generic)*;
 structure_generic: sg_name=ID;
 structure_params: (structure_param ';')+;

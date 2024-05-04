@@ -32,7 +32,11 @@ namespace tsil::tk {
         }
       } else if (childAstValue->kind == ast::KindDefineNode) {
         const auto defineNode = childAstValue->data.DefineNode;
-        if (this->hasLocalSubject(defineNode->id)) {
+        if (this->hasVariable(defineNode->id) ||
+            this->hasRawDiia(defineNode->id) ||
+            this->hasBakedDiia(defineNode->id, {}) ||
+            this->hasPredefinedType(defineNode->id) ||
+            this->hasStructure(defineNode->id)) {
           return {nullptr, nullptr,
                   CompilerError::subjectAlreadyDefined(childAstValue)};
         }
@@ -258,7 +262,7 @@ namespace tsil::tk {
       int genericIndex = 0;
       for (const auto& genericDefinition : diiaHeadNode->generic_definitions) {
         const auto genericType = genericValues[genericIndex];
-        diiaScope->bakedTypes[{genericDefinition, {}}] = genericType;
+        diiaScope->predefinedTypes[genericDefinition] = genericType;
         genericIndex++;
       }
       const auto diiaType = new Type();

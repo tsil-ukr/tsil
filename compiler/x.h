@@ -84,7 +84,7 @@ namespace tsil::x {
     Value* putI32Constant(int value);
     Value* putI64Constant(long value);
 
-    Type* defineNativeType(const std::string& name, size_t bytesSize);
+    Type* defineNativeType(const std::string& name);
     Type* defineStructType(const std::string& name, std::vector<Type*> fields);
 
     std::pair<Function*, Value*> declareFunction(
@@ -298,7 +298,6 @@ namespace tsil::x {
     size_t arraySize;
     Type* arrayOf;
     Type* cachedPointerType;
-    size_t bytesSize;
 
     Type* getPointerType(Module* module);
     Type* getArrayType(Module* module, size_t size);

@@ -55,12 +55,11 @@ namespace tsil::x {
     return new Value(this->pointerType, constant->name);
   }
 
-  Type* Module::defineNativeType(const std::string& name, size_t bytesSize) {
+  Type* Module::defineNativeType(const std::string& name) {
     auto type = new Type();
     type->variable_index = this->variable_counter++;
     type->type = TypeTypeNative;
     type->name = name;
-    type->bytesSize = bytesSize;
     this->types[name] = type;
     return type;
   }
@@ -72,10 +71,6 @@ namespace tsil::x {
     type->type = TypeTypeType;
     type->name = this->computeNextVarName(name);
     type->fields = fields;
-    type->bytesSize = 0;
-    for (auto& field : fields) {
-      type->bytesSize += field->bytesSize;
-    }
     this->types[type->name] = type;
     return type;
   }
@@ -747,10 +742,9 @@ namespace tsil::x {
     }
     const auto type = new Type();
     type->type = TypeTypePointer;
-        type->name = "ptr";
-//    type->name = this->name + "*";
+    type->name = "ptr";
+    //    type->name = this->name + "*";
     type->pointerTo = this;
-    type->bytesSize = 8;
     this->cachedPointerType = type;
     return type;
   }
@@ -764,19 +758,18 @@ namespace tsil::x {
     type->name += this->name;
     type->name += "]";
     type->arraySize = size;
-    type->bytesSize = this->bytesSize * size;
     type->arrayOf = this;
     return type;
   }
 
   size_t Type::getAlign() {
     if (this->type == TypeTypeNative) {
-      return this->bytesSize;
+      return 0;
     }
     if (this->type == TypeTypePointer) {
       return 8;
     }
-    if (this->bytesSize == 4) {
+    if (0 == 4) {
       return 4;
     }
     if (this->type == TypeTypeArray) {

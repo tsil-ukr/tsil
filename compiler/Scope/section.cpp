@@ -32,7 +32,11 @@ namespace tsil::tk {
         }
       } else if (childAstValue->kind == tsil::ast::KindDefineNode) {
         const auto defineNode = childAstValue->data.DefineNode;
-        if (this->hasLocalSubject(defineNode->id)) {
+        if (this->hasVariable(defineNode->id) ||
+            this->hasRawDiia(defineNode->id) ||
+            this->hasBakedDiia(defineNode->id, {}) ||
+            this->hasPredefinedType(defineNode->id) ||
+            this->hasStructure(defineNode->id)) {
           return {CompilerError::subjectAlreadyDefined(childAstValue)};
         }
         //        Type* type = nullptr;
@@ -71,11 +75,66 @@ namespace tsil::tk {
         }
       } else if (childAstValue->kind == tsil::ast::KindStructureNode) {
         const auto structureNode = childAstValue->data.StructureNode;
-        if (this->hasSubject(structureNode->name)) {
-          return {
-              tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
+        if (this->hasStructure(structureNode->name)) {
+          const auto structure = this->getStructure(structureNode->name);
+          if (structure->fields.empty()) {
+            if (structure->genericDefinitions.size() !=
+                structureNode->generic_definitions.size()) {
+              return {tsil::tk::CompilerError::fromASTValue(
+                  childAstValue,
+                  "Кількість параметрів шаблон-структур не співпадає")};
+            }
+            for (size_t i = 0; i < structure->genericDefinitions.size(); i++) {
+              const auto genericDefinition = structure->genericDefinitions[i];
+              const auto genericNode = structureNode->generic_definitions[i];
+              if (genericDefinition != genericNode) {
+                return {tsil::tk::CompilerError::fromASTValue(
+                    childAstValue, "Параметри шаблон-структур не співпадають")};
+              }
+            }
+            if (structureNode->params.empty()) {
+              continue;
+            }
+            for (const auto& paramAstValue : structureNode->params) {
+              const auto paramNode = paramAstValue->data.ParamNode;
+              StructureField field{};
+              field.name = paramNode->id;
+              field.type = paramNode->type;
+              structure->fields.push_back(field);
+            }
+            const auto fillErrorText = structure->fillBakedTypesWithFields();
+            if (!fillErrorText.empty()) {
+              return {tsil::tk::CompilerError::fromASTValue(childAstValue,
+                                                            fillErrorText)};
+            }
+          } else {
+            return {
+                tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
+          }
+        } else {
+          if (this->hasVariable(structureNode->name) ||
+              this->hasRawDiia(structureNode->name) ||
+              this->hasBakedDiia(structureNode->name, {}) ||
+              this->hasPredefinedType(structureNode->name)) {
+            return {
+                tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
+          }
+          const auto structure = new Structure();
+          structure->name = structureNode->name;
+          for (const auto& genericDefinition :
+               structureNode->generic_definitions) {
+            structure->genericDefinitions.push_back(genericDefinition);
+          }
+          for (const auto& paramAstValue : structureNode->params) {
+            const auto paramNode = paramAstValue->data.ParamNode;
+            StructureField field{};
+            field.name = paramNode->id;
+            field.type = paramNode->type;
+            structure->fields.push_back(field);
+          }
+          this->structures.insert_or_assign(structureNode->name, structure);
         }
-        this->rawTypes.insert_or_assign(structureNode->name, childAstValue);
+
       } else if (childAstValue->kind == tsil::ast::KindDiiaDeclarationNode) {
         const auto diiaDeclarationNode =
             childAstValue->data.DiiaDeclarationNode;
@@ -83,7 +142,11 @@ namespace tsil::tk {
           return {tsil::tk::CompilerError::fromASTValue(
               childAstValue, "Шаблон-дія повинна мати тіло")};
         }
-        if (this->hasSubject(diiaDeclarationNode->head->id)) {
+        if (this->hasVariable(diiaDeclarationNode->head->id) ||
+            this->hasRawDiia(diiaDeclarationNode->head->id) ||
+            this->hasBakedDiia(diiaDeclarationNode->head->id, {}) ||
+            this->hasPredefinedType(diiaDeclarationNode->head->id) ||
+            this->hasStructure(diiaDeclarationNode->head->id)) {
           return {
               tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
         }
@@ -111,7 +174,11 @@ namespace tsil::tk {
         }
       } else if (childAstValue->kind == tsil::ast::KindDiiaNode) {
         const auto diiaNode = childAstValue->data.DiiaNode;
-        if (this->hasSubject(diiaNode->head->id)) {
+        if (this->hasVariable(diiaNode->head->id) ||
+            this->hasRawDiia(diiaNode->head->id) ||
+            this->hasBakedDiia(diiaNode->head->id, {}) ||
+            this->hasPredefinedType(diiaNode->head->id) ||
+            this->hasStructure(diiaNode->head->id)) {
           return {
               tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
         }
