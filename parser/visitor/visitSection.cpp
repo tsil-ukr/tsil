@@ -3,6 +3,7 @@
 namespace tsil::parser {
   std::any TsilASTVisitor::visitSection(TsilParser::SectionContext* context) {
     const auto section_node = new ast::SectionNode();
+    section_node->id = context->s_name->getText();
     for (const auto section_element : context->section_element()) {
       if (section_element->declare()) {
         section_node->body.push_back(

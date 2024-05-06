@@ -221,13 +221,15 @@ namespace tsil::tk {
   struct Scope {
     Compiler* compiler;
     Scope* parent;
+    std::string sectionName;
 
     std::map<std::string, Type*> predefinedTypes;
     std::map<std::string, Structure*> structures;
     std::map<std::string, Diia*> diias;
+    std::map<std::string, std::pair<Type*, x::Value*>> variables;
+    std::map<std::string, Scope*> sections;
 
-    std::map<std::string, std::pair<Type*, x::Value*>>
-        variables; // name => (type, xValue)
+    std::string getSectionPrefixForName();
 
     bool hasPredefinedType(const std::string& name) const;
     Type* getPredefinedType(const std::string& name);
@@ -240,6 +242,9 @@ namespace tsil::tk {
 
     bool hasVariable(const std::string& name) const;
     std::pair<Type*, x::Value*> getVariable(const std::string& name);
+
+    bool hasSection(const std::string& name) const;
+    Scope* getSection(const std::string& name);
 
     CompilerRuntimeSubjectResult getRuntimeSubjectByIdentifierNodeAstValue(
         ast::ASTValue* astValue);

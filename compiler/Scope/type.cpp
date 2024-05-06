@@ -4,10 +4,25 @@ namespace tsil::tk {
   BakedTypeResult Scope::bakeType(ast::ASTValue* astValue) {
     if (astValue->kind == ast::KindTypeNode) {
       const auto typeNode = astValue->data.TypeNode;
-      const auto scope = this;
+      auto scope = this;
       std::string typeId;
       if (typeNode->id->kind == ast::KindIdentifierNode) {
         typeId = typeNode->id->data.IdentifierNode->name;
+      } else if (typeNode->id->kind == ast::KindSectionAccessNode) {
+        const auto sectionAccessNode = typeNode->id->data.SectionAccessNode;
+        const auto lastPart = sectionAccessNode->parts.back();
+        std::vector<std::string> partsWithoutLast;
+        for (size_t i = 0; i < sectionAccessNode->parts.size() - 1; i++) {
+          partsWithoutLast.push_back(sectionAccessNode->parts[i]);
+        }
+        for (const auto& part : partsWithoutLast) {
+          if (scope->hasSection(part)) {
+            scope = scope->getSection(part);
+          } else {
+            return {nullptr, "Секція \"" + part + "\" не знайдена"};
+          }
+        }
+        typeId = lastPart;
       } else {
         return {nullptr, "NOT IMPLEMENTED BAKED SECTION TYPE"};
       }

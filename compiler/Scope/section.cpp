@@ -35,7 +35,8 @@ namespace tsil::tk {
         if (this->hasVariable(defineNode->id) ||
             this->hasPredefinedType(defineNode->id) ||
             this->hasDiia(defineNode->id) ||
-            this->hasStructure(defineNode->id)) {
+            this->hasStructure(defineNode->id) ||
+            this->hasSection(defineNode->id)) {
           return {CompilerError::subjectAlreadyDefined(childAstValue)};
         }
         //        Type* type = nullptr;
@@ -113,12 +114,14 @@ namespace tsil::tk {
         } else {
           if (this->hasVariable(structureNode->name) ||
               this->hasPredefinedType(structureNode->name) ||
-              this->hasDiia(structureNode->name)) {
+              this->hasDiia(structureNode->name) ||
+              this->hasSection(structureNode->name)) {
             return {
                 tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
           }
           const auto structure = new Structure();
-          structure->name = structureNode->name;
+          structure->name =
+              this->getSectionPrefixForName() + structureNode->name;
           for (const auto& genericDefinition :
                structureNode->generic_definitions) {
             structure->genericDefinitions.push_back(genericDefinition);
@@ -140,7 +143,8 @@ namespace tsil::tk {
                               ? diiaDeclarationNode->head->id
                               : diiaDeclarationNode->as;
         if (this->hasVariable(name) || this->hasPredefinedType(name) ||
-            this->hasStructure(name)) {
+            this->hasStructure(name) || this->hasPredefinedType(name) ||
+            this->hasSection(name)) {
           return {
               tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
         }
@@ -151,7 +155,8 @@ namespace tsil::tk {
           const auto diia = new Diia();
           diia->isDeclaration = true;
           diia->linkage = diiaDeclarationNode->head->linkage;
-          diia->name = diiaDeclarationNode->head->id;
+          diia->name =
+              this->getSectionPrefixForName() + diiaDeclarationNode->head->id;
           diia->genericDefinitions =
               diiaDeclarationNode->head->generic_definitions;
           for (const auto& param : diiaDeclarationNode->head->params) {
@@ -185,7 +190,7 @@ namespace tsil::tk {
           const auto diia = new Diia();
           diia->isDeclaration = false;
           diia->linkage = diiaNode->head->linkage;
-          diia->name = diiaNode->head->id;
+          diia->name = this->getSectionPrefixForName() + diiaNode->head->id;
           diia->genericDefinitions = diiaNode->head->generic_definitions;
           for (const auto& param : diiaNode->head->params) {
             diia->parameters.push_back(
@@ -212,7 +217,21 @@ namespace tsil::tk {
 
   CompilerResult Scope::compileSection(ast::ASTValue* astValue) {
     const auto sectionNode = astValue->data.SectionNode;
-    const auto bodyResult = this->compileBody(sectionNode->body);
+    const auto sectionId = sectionNode->id;
+    Scope* sectionScope;
+    if (this->hasPredefinedType(sectionId) ||
+        this->hasStructure(sectionId) || this->hasDiia(sectionId) ||
+        this->hasVariable(sectionId)) {
+      return {CompilerError::subjectAlreadyDefined(astValue)};
+    }
+    if (this->hasSection(sectionId)) {
+      sectionScope = this->getSection(sectionId);
+    } else {
+      sectionScope = new Scope(this->compiler, this);
+      sectionScope->sectionName = sectionId;
+      this->sections.insert_or_assign(sectionId, sectionScope);
+    }
+    const auto bodyResult = sectionScope->compileBody(sectionNode->body);
     if (bodyResult.error) {
       return {bodyResult.error};
     }

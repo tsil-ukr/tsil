@@ -1,6 +1,123 @@
 #include "tk.h"
 
 namespace tsil::tk {
+  std::string Scope::getSectionPrefixForName() {
+    std::vector<std::string> sectionNames;
+    Scope* scope = this;
+    while (scope) {
+      if (!scope->sectionName.empty()) {
+        sectionNames.push_back(scope->sectionName);
+      }
+      scope = scope->parent;
+    }
+    std::reverse(sectionNames.begin(), sectionNames.end());
+    const auto result = tsil::parser::tools::implode(sectionNames, "::");
+    if (result.empty()) {
+      return result;
+    }
+    return result + "::";
+  }
+
+  bool Scope::hasPredefinedType(const std::string& name) const {
+    if (this->predefinedTypes.contains(name)) {
+      return true;
+    }
+    if (this->parent) {
+      return this->parent->hasPredefinedType(name);
+    }
+    return false;
+  }
+
+  Type* Scope::getPredefinedType(const std::string& name) {
+    if (this->predefinedTypes.contains(name)) {
+      return this->predefinedTypes[name];
+    }
+    if (this->parent) {
+      return this->parent->getPredefinedType(name);
+    }
+    return nullptr;
+  }
+
+  bool Scope::hasStructure(const std::string& name) const {
+    if (this->structures.contains(name)) {
+      return true;
+    }
+    if (this->parent) {
+      return this->parent->hasStructure(name);
+    }
+    return false;
+  }
+
+  Structure* Scope::getStructure(const std::string& name) {
+    if (this->structures.contains(name)) {
+      return this->structures[name];
+    }
+    if (this->parent) {
+      return this->parent->getStructure(name);
+    }
+    return nullptr;
+  }
+
+  bool Scope::hasDiia(const std::string& name) const {
+    if (this->diias.contains(name)) {
+      return true;
+    }
+    if (this->parent) {
+      return this->parent->hasDiia(name);
+    }
+    return false;
+  }
+
+  Diia* Scope::getDiia(const std::string& name) {
+    if (this->diias.contains(name)) {
+      return this->diias[name];
+    }
+    if (this->parent) {
+      return this->parent->getDiia(name);
+    }
+    return nullptr;
+  }
+
+  bool Scope::hasVariable(const std::string& name) const {
+    if (this->variables.contains(name)) {
+      return true;
+    }
+    if (this->parent) {
+      return this->parent->hasVariable(name);
+    }
+    return false;
+  }
+
+  std::pair<Type*, x::Value*> Scope::getVariable(const std::string& name) {
+    if (this->variables.contains(name)) {
+      return this->variables[name];
+    }
+    if (this->parent) {
+      return this->parent->getVariable(name);
+    }
+    return {nullptr, nullptr};
+  }
+
+  bool Scope::hasSection(const std::string& name) const {
+    if (this->sections.contains(name)) {
+      return true;
+    }
+    if (this->parent) {
+      return this->parent->hasSection(name);
+    }
+    return false;
+  }
+
+  Scope* Scope::getSection(const std::string& name) {
+    if (this->sections.contains(name)) {
+      return this->sections[name];
+    }
+    if (this->parent) {
+      return this->parent->getSection(name);
+    }
+    return nullptr;
+  }
+
   BakedTypeResult Structure::bakeType(Scope* scope,
                                       const std::vector<Type*>& genericValues) {
     if (this->bakedTypes.contains(genericValues)) {
@@ -261,86 +378,6 @@ namespace tsil::tk {
       }
     }
     return nullptr;
-  }
-
-  bool Scope::hasPredefinedType(const std::string& name) const {
-    if (this->predefinedTypes.contains(name)) {
-      return true;
-    }
-    if (this->parent) {
-      return this->parent->hasPredefinedType(name);
-    }
-    return false;
-  }
-
-  Type* Scope::getPredefinedType(const std::string& name) {
-    if (this->predefinedTypes.contains(name)) {
-      return this->predefinedTypes[name];
-    }
-    if (this->parent) {
-      return this->parent->getPredefinedType(name);
-    }
-    return nullptr;
-  }
-
-  bool Scope::hasStructure(const std::string& name) const {
-    if (this->structures.contains(name)) {
-      return true;
-    }
-    if (this->parent) {
-      return this->parent->hasStructure(name);
-    }
-    return false;
-  }
-
-  Structure* Scope::getStructure(const std::string& name) {
-    if (this->structures.contains(name)) {
-      return this->structures[name];
-    }
-    if (this->parent) {
-      return this->parent->getStructure(name);
-    }
-    return nullptr;
-  }
-
-  bool Scope::hasDiia(const std::string& name) const {
-    if (this->diias.contains(name)) {
-      return true;
-    }
-    if (this->parent) {
-      return this->parent->hasDiia(name);
-    }
-    return false;
-  }
-
-  Diia* Scope::getDiia(const std::string& name) {
-    if (this->diias.contains(name)) {
-      return this->diias[name];
-    }
-    if (this->parent) {
-      return this->parent->getDiia(name);
-    }
-    return nullptr;
-  }
-
-  bool Scope::hasVariable(const std::string& name) const {
-    if (this->variables.contains(name)) {
-      return true;
-    }
-    if (this->parent) {
-      return this->parent->hasVariable(name);
-    }
-    return false;
-  }
-
-  std::pair<Type*, x::Value*> Scope::getVariable(const std::string& name) {
-    if (this->variables.contains(name)) {
-      return this->variables[name];
-    }
-    if (this->parent) {
-      return this->parent->getVariable(name);
-    }
-    return {nullptr, nullptr};
   }
 
   CompilerRuntimeSubjectResult Scope::getRuntimeSubjectByIdentifierNodeAstValue(
