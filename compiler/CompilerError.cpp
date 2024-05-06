@@ -12,6 +12,12 @@ namespace tsil::tk {
                              message);
   }
 
+  CompilerError* CompilerError::fromLocation(const Location& location,
+                                             const std::string& message) {
+    return new CompilerError(location.start_line, location.start_column,
+                             message);
+  }
+
   CompilerError* CompilerError::subjectAlreadyDefined(
       tsil::ast::ASTValue* ast_value) {
     std::string name;

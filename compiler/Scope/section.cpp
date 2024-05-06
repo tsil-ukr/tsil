@@ -33,9 +33,8 @@ namespace tsil::tk {
       } else if (childAstValue->kind == tsil::ast::KindDefineNode) {
         const auto defineNode = childAstValue->data.DefineNode;
         if (this->hasVariable(defineNode->id) ||
-            this->hasRawDiia(defineNode->id) ||
-            this->hasBakedDiia(defineNode->id, {}) ||
             this->hasPredefinedType(defineNode->id) ||
+            this->hasDiia(defineNode->id) ||
             this->hasStructure(defineNode->id)) {
           return {CompilerError::subjectAlreadyDefined(childAstValue)};
         }
@@ -113,9 +112,8 @@ namespace tsil::tk {
           }
         } else {
           if (this->hasVariable(structureNode->name) ||
-              this->hasRawDiia(structureNode->name) ||
-              this->hasBakedDiia(structureNode->name, {}) ||
-              this->hasPredefinedType(structureNode->name)) {
+              this->hasPredefinedType(structureNode->name) ||
+              this->hasDiia(structureNode->name)) {
             return {
                 tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
           }
@@ -138,60 +136,71 @@ namespace tsil::tk {
       } else if (childAstValue->kind == tsil::ast::KindDiiaDeclarationNode) {
         const auto diiaDeclarationNode =
             childAstValue->data.DiiaDeclarationNode;
-        if (!diiaDeclarationNode->head->generic_definitions.empty()) {
-          return {tsil::tk::CompilerError::fromASTValue(
-              childAstValue, "Шаблон-дія повинна мати тіло")};
-        }
-        if (this->hasVariable(diiaDeclarationNode->head->id) ||
-            this->hasRawDiia(diiaDeclarationNode->head->id) ||
-            this->hasBakedDiia(diiaDeclarationNode->head->id, {}) ||
-            this->hasPredefinedType(diiaDeclarationNode->head->id) ||
-            this->hasStructure(diiaDeclarationNode->head->id)) {
+        const auto name = diiaDeclarationNode->as.empty()
+                              ? diiaDeclarationNode->head->id
+                              : diiaDeclarationNode->as;
+        if (this->hasVariable(name) || this->hasPredefinedType(name) ||
+            this->hasStructure(name)) {
           return {
               tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
         }
-        if (diiaDeclarationNode->head->generic_definitions.empty()) {
-          const auto bakedDiiaResult =
-              this->bakeDiia(childAstValue, childAstValue, {});
-          if (bakedDiiaResult.error) {
-            return {bakedDiiaResult.error};
-          }
-          if (diiaDeclarationNode->as.empty()) {
-            this->bakedDiias[{diiaDeclarationNode->head->id, {}}] = {
-                bakedDiiaResult.type, bakedDiiaResult.xValue};
-          } else {
-            this->bakedDiias[{diiaDeclarationNode->as, {}}] = {
-                bakedDiiaResult.type, bakedDiiaResult.xValue};
-          }
+        if (this->hasDiia(name)) {
+          const auto diia = this->getDiia(name);
+          // todo: validate head signature
         } else {
-          if (diiaDeclarationNode->as.empty()) {
-            this->rawDiias.insert_or_assign(diiaDeclarationNode->head->id,
-                                            childAstValue);
-          } else {
-            this->rawDiias.insert_or_assign(diiaDeclarationNode->as,
-                                            childAstValue);
+          const auto diia = new Diia();
+          diia->isDeclaration = true;
+          diia->linkage = diiaDeclarationNode->head->linkage;
+          diia->name = diiaDeclarationNode->head->id;
+          diia->genericDefinitions =
+              diiaDeclarationNode->head->generic_definitions;
+          for (const auto& param : diiaDeclarationNode->head->params) {
+            diia->parameters.push_back(
+                {param->data.ParamNode->id, param->data.ParamNode->type});
           }
+          diia->isVariadic = diiaDeclarationNode->head->is_variadic;
+          diia->returnType = diiaDeclarationNode->head->type;
+          this->diias.insert_or_assign(name, diia);
         }
       } else if (childAstValue->kind == tsil::ast::KindDiiaNode) {
         const auto diiaNode = childAstValue->data.DiiaNode;
         if (this->hasVariable(diiaNode->head->id) ||
-            this->hasRawDiia(diiaNode->head->id) ||
-            this->hasBakedDiia(diiaNode->head->id, {}) ||
             this->hasPredefinedType(diiaNode->head->id) ||
             this->hasStructure(diiaNode->head->id)) {
           return {
               tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
         }
-        if (diiaNode->head->generic_definitions.empty()) {
-          const auto bakedDiiaResult =
-              this->bakeDiia(childAstValue, childAstValue, {});
-          if (bakedDiiaResult.error) {
-            return {bakedDiiaResult.error};
+        if (this->hasDiia(diiaNode->head->id)) {
+          const auto diia = this->getDiia(diiaNode->head->id);
+          // todo: validate head signature
+          if (diia->isDeclaration) {
+            diia->body = diiaNode->body;
+            diia->isDeclaration = false;
+            diia->fillBakedDiiasWithBodies();
+          } else {
+            return {
+                tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
           }
-          this->bakedDiias[{diiaNode->head->id, {}}] = {bakedDiiaResult.type,
-                                                        bakedDiiaResult.xValue};
         } else {
-          this->rawDiias.insert_or_assign(diiaNode->head->id, childAstValue);
+          const auto diia = new Diia();
+          diia->isDeclaration = false;
+          diia->linkage = diiaNode->head->linkage;
+          diia->name = diiaNode->head->id;
+          diia->genericDefinitions = diiaNode->head->generic_definitions;
+          for (const auto& param : diiaNode->head->params) {
+            diia->parameters.push_back(
+                {param->data.ParamNode->id, param->data.ParamNode->type});
+          }
+          diia->isVariadic = diiaNode->head->is_variadic;
+          diia->returnType = diiaNode->head->type;
+          diia->body = diiaNode->body;
+          this->diias.insert_or_assign(diiaNode->head->id, diia);
+          if (diia->genericDefinitions.empty()) {
+            const auto bakedDiiaResult = diia->bakeDiia(this, {});
+            if (bakedDiiaResult.error) {
+              return {bakedDiiaResult.error};
+            }
+          }
         }
       } else {
         return {tsil::tk::CompilerError::fromASTValue(

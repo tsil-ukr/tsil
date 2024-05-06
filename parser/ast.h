@@ -232,7 +232,7 @@ namespace tsil::ast {
   };
 
   struct DiiaHeadNode {
-    DiiaLinkage linkage;
+    ast::DiiaLinkage linkage;
     std::string id;
     std::vector<std::string> generic_definitions;
     std::vector<ASTValue*> params;

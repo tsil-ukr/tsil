@@ -76,6 +76,13 @@ namespace tsil::tk {
     size_t column;
   };
 
+  struct Location {
+    size_t start_line;
+    size_t start_column;
+    size_t end_line;
+    size_t end_column;
+  };
+
   struct CompilerError {
     size_t line;
     size_t column;
@@ -84,6 +91,8 @@ namespace tsil::tk {
 
     static CompilerError* fromParserError(tsil::parser::TsilParserError* error);
     static CompilerError* fromASTValue(tsil::ast::ASTValue* ast_value,
+                                       const std::string& message);
+    static CompilerError* fromLocation(const Location& location,
                                        const std::string& message);
     static CompilerError* subjectAlreadyDefined(tsil::ast::ASTValue* ast_value);
     static CompilerError* subjectNotDefined(tsil::ast::ASTValue* ast_value);
@@ -157,23 +166,6 @@ namespace tsil::tk {
     std::string error;
   };
 
-  enum SubjectKind {
-    SubjectKindNone,
-    SubjectKindVariable,
-    SubjectKindDiia,
-  };
-
-  struct Subject {
-    SubjectKind kind;
-    Type* type;
-    x::Value* xValue;
-  };
-
-  struct CompilerSubjectResult {
-    Subject subject;
-    CompilerError* error;
-  };
-
   struct CompilerRuntimeSubjectResult {
     Type* type;
     x::Value* xValue;
@@ -197,34 +189,54 @@ namespace tsil::tk {
     std::string fillBakedTypesWithFields();
   };
 
+  struct DiiaParameter {
+    std::string name;
+    ast::ASTValue* type;
+  };
+
+  struct BakedDiia {
+    Type* type;
+    x::Value* xValue;
+    x::Function* xFunction;
+  };
+
+  struct Diia {
+    bool isDeclaration;
+    ast::DiiaLinkage linkage;
+    std::string name;
+    std::vector<std::string> genericDefinitions;
+    std::vector<DiiaParameter> parameters;
+    bool isVariadic;
+    ast::ASTValue* returnType;
+    std::vector<ast::ASTValue*> body;
+
+    std::map<std::vector<Type*>, BakedDiia>
+        bakedDiias; // genericValues => (type, xValue)
+
+    BakedDiiaResult bakeDiia(Scope* scope,
+                             const std::vector<Type*>& genericValues);
+    CompilerError* fillBakedDiiasWithBodies();
+  };
+
   struct Scope {
     Compiler* compiler;
     Scope* parent;
 
-    std::map<std::string, ast::ASTValue*> rawDiias; // name => astValue
-    std::map<std::pair<std::string, std::vector<Type*>>,
-             std::pair<Type*, x::Value*>>
-        bakedDiias; // (name, genericValues) => (type, xValue)
-
     std::map<std::string, Type*> predefinedTypes;
     std::map<std::string, Structure*> structures;
+    std::map<std::string, Diia*> diias;
 
     std::map<std::string, std::pair<Type*, x::Value*>>
         variables; // name => (type, xValue)
 
-    bool hasRawDiia(const std::string& name) const; // NOLINT(*-use-nodiscard)
-    ast::ASTValue* getRawDiia(const std::string& name);
-    bool hasBakedDiia(const std::string& name,
-                      const std::vector<Type*>& genericValues) const;
-    std::pair<Type*, x::Value*> getBakedDiia(
-        const std::string& name,
-        const std::vector<Type*>& genericValues);
+    bool hasPredefinedType(const std::string& name) const;
+    Type* getPredefinedType(const std::string& name);
 
     bool hasStructure(const std::string& name) const;
     Structure* getStructure(const std::string& name);
 
-    bool hasPredefinedType(const std::string& name) const;
-    Type* getPredefinedType(const std::string& name);
+    bool hasDiia(const std::string& name) const;
+    Diia* getDiia(const std::string& name);
 
     bool hasVariable(const std::string& name) const;
     std::pair<Type*, x::Value*> getVariable(const std::string& name);
@@ -311,9 +323,6 @@ namespace tsil::tk {
                                        tsil::x::FunctionBlock* xBlock,
                                        tsil::x::FunctionBlock* xExitBlock,
                                        const std::vector<ast::ASTValue*>& body);
-    BakedDiiaResult bakeDiia(ast::ASTValue* fromAstValue,
-                             ast::ASTValue* diiaAstValue,
-                             const std::vector<Type*>& genericValues);
     BakedTypeResult bakeType(ast::ASTValue* astValue);
   };
 

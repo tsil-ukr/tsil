@@ -77,47 +77,210 @@ namespace tsil::tk {
     return "";
   }
 
-  bool Scope::hasRawDiia(const std::string& name) const {
-    if (this->rawDiias.contains(name)) {
-      return true;
+  BakedDiiaResult Diia::bakeDiia(tsil::tk::Scope* scope,
+                                 const std::vector<Type*>& genericValues) {
+    if (this->bakedDiias.contains(genericValues)) {
+      const auto bakedDiia = this->bakedDiias[genericValues];
+      return {bakedDiia.type, bakedDiia.xValue, nullptr};
     }
-    if (this->parent) {
-      return this->parent->hasRawDiia(name);
+    const auto diiaScope = new Scope(scope->compiler, scope);
+    const auto compileDiiaHeadNode =
+        [&genericValues, &diiaScope,
+         this]() -> std::pair<Type*, CompilerError*> {
+      if (genericValues.size() != this->genericDefinitions.size()) {
+        const auto compilerError = CompilerError::fromLocation(
+            {0, 0, 0, 0}, "Кількість параметрів шаблону дії не співпадає");
+        return {nullptr, compilerError};
+      }
+      int genericIndex = 0;
+      for (const auto& genericDefinition : this->genericDefinitions) {
+        const auto genericType = genericValues[genericIndex];
+        diiaScope->predefinedTypes[genericDefinition] = genericType;
+        genericIndex++;
+      }
+      const auto diiaType = new Type();
+      diiaType->type = TypeTypeDiia;
+      diiaType->name = this->name;
+      diiaType->xType = diiaScope->compiler->xModule->pointerType;
+      diiaType->linkage = this->linkage;
+      diiaType->diiaIsVariadic = this->isVariadic;
+      diiaType->diiaReturnType = diiaScope->compiler->voidType;
+      diiaType->scopeWithGenerics = diiaScope;
+      for (const auto& parameter : this->parameters) {
+        const auto paramTypeResult = diiaScope->bakeType(parameter.type);
+        if (!paramTypeResult.type) {
+          const auto compilerError = CompilerError::fromASTValue(
+              parameter.type, paramTypeResult.error);
+          return {nullptr, compilerError};
+        }
+        const auto paramXValue = new x::Value(
+            paramTypeResult.type->xType,
+            diiaScope->compiler->xModule->computeNextVarName("arg"));
+        diiaType->diiaParameters.push_back(
+            TypeDiiaParameter{.name = parameter.name,
+                              .type = paramTypeResult.type,
+                              .xValue = paramXValue});
+        diiaScope->variables[parameter.name] = {paramTypeResult.type,
+                                                paramXValue};
+      }
+      if (this->returnType) {
+        const auto diiaResultTypeResult = diiaScope->bakeType(this->returnType);
+        if (!diiaResultTypeResult.type) {
+          const auto compilerError = CompilerError::fromASTValue(
+              this->returnType, diiaResultTypeResult.error);
+          return {nullptr, compilerError};
+        }
+        diiaType->diiaReturnType = diiaResultTypeResult.type;
+      }
+      return {diiaType, nullptr};
+    };
+    if (this->name == "main") {
+      return {
+          nullptr, nullptr,
+          CompilerError::fromLocation(
+              {0, 0, 0, 0}, "Неможливо визначити субʼєкт з назвою \"main\"")};
     }
-    return false;
+    const auto [diiaType, diiaHeadError] = compileDiiaHeadNode();
+    if (diiaHeadError) {
+      return {nullptr, nullptr, diiaHeadError};
+    }
+    std::vector<x::Value*> xParamTypes;
+    for (const auto& diiaParameter : diiaType->diiaParameters) {
+      xParamTypes.push_back(diiaParameter.xValue);
+    }
+    x::Type* xReturnType = diiaScope->compiler->xModule->voidType;
+    if (diiaType->diiaReturnType) {
+      xReturnType = diiaType->diiaReturnType->xType;
+    }
+    auto xFunctionName = diiaType->name == "старт" ? "main" : diiaType->name;
+    auto xFunctionAttributes = "";
+    if (diiaType->linkage == ast::DiiaLinkageExtern ||
+        xFunctionName == "main") {
+      xFunctionAttributes = "";
+    } else if (diiaType->linkage == ast::DiiaLinkageStatic) {
+      xFunctionName =
+          diiaScope->compiler->xModule->computeNextName(diiaType->name);
+      xFunctionAttributes = "internal";
+    } else {
+      xFunctionAttributes = "dso_local";
+    }
+    const auto& [xFunction, functionXValue] =
+        diiaScope->compiler->xModule->declareFunction(
+            xFunctionAttributes, xFunctionName, xReturnType, xParamTypes);
+    this->bakedDiias.insert_or_assign(
+        genericValues, BakedDiia{diiaType, functionXValue, xFunction});
+    if (!this->isDeclaration) {
+      xFunction->entry_block =
+          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "entry");
+      if (xFunction->result_type) {
+        if (xFunction->result_type != diiaScope->compiler->xModule->voidType) {
+          xFunction->return_alloca =
+              diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
+                  xFunction->entry_block, "return", xFunction->result_type);
+        }
+      }
+      xFunction->exit_block =
+          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "exit");
+      if (xFunction->return_alloca) {
+        const auto returnLoadXValue =
+            diiaScope->compiler->xModule->pushFunctionBlockLoadInstruction(
+                xFunction->exit_block, xFunction->result_type,
+                xFunction->return_alloca);
+        diiaScope->compiler->xModule->pushFunctionBlockRetInstruction(
+            xFunction->exit_block, xFunction->result_type, returnLoadXValue);
+      } else {
+        diiaScope->compiler->xModule->pushFunctionBlockRetInstruction(
+            xFunction->exit_block, diiaScope->compiler->xModule->voidType,
+            nullptr);
+      }
+      for (const auto& diiaParameter : diiaType->diiaParameters) {
+        const auto allocXValue =
+            diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
+                xFunction->entry_block, diiaParameter.name,
+                diiaParameter.type->xType);
+        diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
+            xFunction->entry_block, diiaParameter.type->xType,
+            diiaParameter.xValue, allocXValue);
+        diiaScope->variables[diiaParameter.name] = {diiaParameter.type,
+                                                    allocXValue};
+      }
+      const auto bodyResult = diiaScope->compileDiiaBody(
+          diiaType, xFunction, xFunction->entry_block, xFunction->exit_block,
+          this->body);
+      if (bodyResult.error) {
+        return {nullptr, nullptr, bodyResult.error};
+      }
+    }
+    return {diiaType, functionXValue, nullptr};
   }
 
-  ast::ASTValue* Scope::getRawDiia(const std::string& name) {
-    if (this->rawDiias.contains(name)) {
-      return this->rawDiias[name];
-    }
-    if (this->parent) {
-      return this->parent->getRawDiia(name);
+  CompilerError* Diia::fillBakedDiiasWithBodies() {
+    for (const auto& [genericValues, bakedDiia] : this->bakedDiias) {
+      const auto diiaType = bakedDiia.type;
+      const auto xFunction = bakedDiia.xFunction;
+      const auto diiaScope = diiaType->scopeWithGenerics;
+      xFunction->entry_block =
+          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "entry");
+      if (xFunction->result_type) {
+        if (xFunction->result_type != diiaScope->compiler->xModule->voidType) {
+          xFunction->return_alloca =
+              diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
+                  xFunction->entry_block, "return", xFunction->result_type);
+        }
+      }
+      xFunction->exit_block =
+          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "exit");
+      if (xFunction->return_alloca) {
+        const auto returnLoadXValue =
+            diiaScope->compiler->xModule->pushFunctionBlockLoadInstruction(
+                xFunction->exit_block, xFunction->result_type,
+                xFunction->return_alloca);
+        diiaScope->compiler->xModule->pushFunctionBlockRetInstruction(
+            xFunction->exit_block, xFunction->result_type, returnLoadXValue);
+      } else {
+        diiaScope->compiler->xModule->pushFunctionBlockRetInstruction(
+            xFunction->exit_block, diiaScope->compiler->xModule->voidType,
+            nullptr);
+      }
+      for (const auto& diiaParameter : diiaType->diiaParameters) {
+        const auto allocXValue =
+            diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
+                xFunction->entry_block, diiaParameter.name,
+                diiaParameter.type->xType);
+        diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
+            xFunction->entry_block, diiaParameter.type->xType,
+            diiaParameter.xValue, allocXValue);
+        diiaScope->variables[diiaParameter.name] = {diiaParameter.type,
+                                                    allocXValue};
+      }
+      const auto bodyResult = diiaScope->compileDiiaBody(
+          diiaType, xFunction, xFunction->entry_block, xFunction->exit_block,
+          this->body);
+      if (bodyResult.error) {
+        return bodyResult.error;
+      }
     }
     return nullptr;
   }
 
-  bool Scope::hasBakedDiia(const std::string& name,
-                           const std::vector<Type*>& genericValues) const {
-    if (this->bakedDiias.contains({name, genericValues})) {
+  bool Scope::hasPredefinedType(const std::string& name) const {
+    if (this->predefinedTypes.contains(name)) {
       return true;
     }
     if (this->parent) {
-      return this->parent->hasBakedDiia(name, genericValues);
+      return this->parent->hasPredefinedType(name);
     }
     return false;
   }
 
-  std::pair<Type*, x::Value*> Scope::getBakedDiia(
-      const std::string& name,
-      const std::vector<Type*>& genericValues) {
-    if (this->bakedDiias.contains({name, genericValues})) {
-      return this->bakedDiias[{name, genericValues}];
+  Type* Scope::getPredefinedType(const std::string& name) {
+    if (this->predefinedTypes.contains(name)) {
+      return this->predefinedTypes[name];
     }
     if (this->parent) {
-      return this->parent->getBakedDiia(name, genericValues);
+      return this->parent->getPredefinedType(name);
     }
-    return {nullptr, nullptr};
+    return nullptr;
   }
 
   bool Scope::hasStructure(const std::string& name) const {
@@ -140,22 +303,22 @@ namespace tsil::tk {
     return nullptr;
   }
 
-  bool Scope::hasPredefinedType(const std::string& name) const {
-    if (this->predefinedTypes.contains(name)) {
+  bool Scope::hasDiia(const std::string& name) const {
+    if (this->diias.contains(name)) {
       return true;
     }
     if (this->parent) {
-      return this->parent->hasPredefinedType(name);
+      return this->parent->hasDiia(name);
     }
     return false;
   }
 
-  Type* Scope::getPredefinedType(const std::string& name) {
-    if (this->predefinedTypes.contains(name)) {
-      return this->predefinedTypes[name];
+  Diia* Scope::getDiia(const std::string& name) {
+    if (this->diias.contains(name)) {
+      return this->diias[name];
     }
     if (this->parent) {
-      return this->parent->getPredefinedType(name);
+      return this->parent->getDiia(name);
     }
     return nullptr;
   }
@@ -187,14 +350,13 @@ namespace tsil::tk {
       const auto [variableType, variableXValue] =
           this->getVariable(identifierNode->name);
       return {variableType, variableXValue, nullptr};
-    } else if (this->hasBakedDiia(identifierNode->name, {})) {
-      const auto [diiaType, diiaXValue] =
-          this->getBakedDiia(identifierNode->name, {});
-      return {diiaType, diiaXValue, nullptr};
-    } else if (this->hasRawDiia(identifierNode->name)) {
-      const auto rawDiiaAstValue = this->getRawDiia(identifierNode->name);
-      const auto bakedDiiaResult =
-          this->bakeDiia(astValue, rawDiiaAstValue, {});
+    } else if (this->hasDiia(identifierNode->name)) {
+      const auto diia = this->getDiia(identifierNode->name);
+      if (diia->bakedDiias.contains({})) {
+        const auto bakedDiia = diia->bakedDiias[{}];
+        return {bakedDiia.type, bakedDiia.xValue, nullptr};
+      }
+      const auto bakedDiiaResult = diia->bakeDiia(this, {});
       if (bakedDiiaResult.error) {
         return {nullptr, nullptr, bakedDiiaResult.error};
       }
