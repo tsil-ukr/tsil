@@ -26,18 +26,18 @@ public:
   };
 
   enum {
-    RuleFile = 0, RuleProgram = 1, RuleProgram_element = 2, RuleSection_access = 3, 
-    RuleTake = 4, RuleTake_parts = 5, RuleSection = 6, RuleSection_element = 7, 
-    RuleStructure = 8, RuleStructure_generics = 9, RuleStructure_generic = 10, 
-    RuleStructure_params = 11, RuleStructure_param = 12, RuleDiia_head = 13, 
-    RuleDiia = 14, RuleDiia_generics = 15, RuleDiia_generic = 16, RuleDiia_declaration = 17, 
-    RuleParams = 18, RuleParam = 19, RuleBody = 20, RuleBody_element = 21, 
-    RuleReturn_body_element = 22, RuleBlock = 23, RuleIf = 24, RuleWhile = 25, 
-    RuleDeclare = 26, RuleDefine = 27, RuleAssign = 28, RuleSet = 29, RuleParticle = 30, 
-    RuleArgs = 31, RuleAtom = 32, RuleMolecule = 33, RuleOperation = 34, 
-    RuleExpr = 35, RuleConstruct_args = 36, RuleConstruct_arg = 37, RuleBasic_type = 38, 
-    RuleFull_type = 39, RuleComplex_function_type_args = 40, RuleBitwise_op = 41, 
-    RuleComparison_op = 42, RuleLogical_op = 43
+    RuleFile = 0, RuleProgram = 1, RuleProgram_element = 2, RuleIdentifier = 3, 
+    RuleSection_access = 4, RuleTake = 5, RuleTake_parts = 6, RuleSection = 7, 
+    RuleSection_element = 8, RuleStructure = 9, RuleStructure_generics = 10, 
+    RuleStructure_generic = 11, RuleStructure_params = 12, RuleStructure_param = 13, 
+    RuleDiia_head = 14, RuleDiia = 15, RuleDiia_generics = 16, RuleDiia_generic = 17, 
+    RuleDiia_declaration = 18, RuleParams = 19, RuleParam = 20, RuleBody = 21, 
+    RuleBody_element = 22, RuleReturn_body_element = 23, RuleBlock = 24, 
+    RuleIf = 25, RuleWhile = 26, RuleDeclare = 27, RuleDefine = 28, RuleAssign = 29, 
+    RuleSet = 30, RuleParticle = 31, RuleArgs = 32, RuleAtom = 33, RuleMolecule = 34, 
+    RuleOperation = 35, RuleExpr = 36, RuleConstruct_args = 37, RuleConstruct_arg = 38, 
+    RuleBasic_type = 39, RuleFull_type = 40, RuleComplex_function_type_args = 41, 
+    RuleBitwise_op = 42, RuleComparison_op = 43, RuleLogical_op = 44
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -60,6 +60,7 @@ public:
   class FileContext;
   class ProgramContext;
   class Program_elementContext;
+  class IdentifierContext;
   class Section_accessContext;
   class TakeContext;
   class Take_partsContext;
@@ -157,6 +158,21 @@ public:
 
   Program_elementContext* program_element();
 
+  class  IdentifierContext : public antlr4::ParserRuleContext {
+  public:
+    IdentifierContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *ID();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  IdentifierContext* identifier();
+
   class  Section_accessContext : public antlr4::ParserRuleContext {
   public:
     Section_accessContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -170,24 +186,12 @@ public:
    
   };
 
-  class  IdentifierContext : public Section_accessContext {
-  public:
-    IdentifierContext(Section_accessContext *ctx);
-
-    antlr4::Token *sa_id = nullptr;
-    antlr4::tree::TerminalNode *ID();
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
   class  Real_section_accessContext : public Section_accessContext {
   public:
     Real_section_accessContext(Section_accessContext *ctx);
 
-    std::vector<antlr4::tree::TerminalNode *> ID();
-    antlr4::tree::TerminalNode* ID(size_t i);
+    std::vector<IdentifierContext *> identifier();
+    IdentifierContext* identifier(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COLON();
     antlr4::tree::TerminalNode* COLON(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;

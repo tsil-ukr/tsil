@@ -168,7 +168,7 @@ int compile(const CompileCommand& compileCommand) {
     voidType->type = tsil::tk::TypeTypeNative;
     voidType->name = "ніщо";
     voidType->xType = compiler->xModule->voidType;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "ніщо", tsil::tk::Subject{tsil::tk::SubjectKindType, voidType});
     compiler->voidType = voidType;
 
@@ -176,7 +176,7 @@ int compile(const CompileCommand& compileCommand) {
     pointerType->type = tsil::tk::TypeTypePointer;
     pointerType->name = "невідома_комірка";
     pointerType->xType = compiler->xModule->pointerType;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "невідома_комірка",
         tsil::tk::Subject{tsil::tk::SubjectKindType, pointerType});
     compiler->pointerType = pointerType;
@@ -185,7 +185,7 @@ int compile(const CompileCommand& compileCommand) {
     int1Type->type = tsil::tk::TypeTypeNative;
     int1Type->name = "логічне";
     int1Type->xType = compiler->xModule->int1Type;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "ц1", tsil::tk::Subject{tsil::tk::SubjectKindType, int1Type});
     compiler->int1Type = int1Type;
 
@@ -193,7 +193,7 @@ int compile(const CompileCommand& compileCommand) {
     int8Type->type = tsil::tk::TypeTypeNative;
     int8Type->name = "ц8";
     int8Type->xType = compiler->xModule->int8Type;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "ц8", tsil::tk::Subject{tsil::tk::SubjectKindType, int8Type});
     compiler->int8Type = int8Type;
 
@@ -201,7 +201,7 @@ int compile(const CompileCommand& compileCommand) {
     int32Type->type = tsil::tk::TypeTypeNative;
     int32Type->name = "ц32";
     int32Type->xType = compiler->xModule->int32Type;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "ц32", tsil::tk::Subject{tsil::tk::SubjectKindType, int32Type});
     compiler->int32Type = int32Type;
 
@@ -209,7 +209,7 @@ int compile(const CompileCommand& compileCommand) {
     int64Type->type = tsil::tk::TypeTypeNative;
     int64Type->name = "ц64";
     int64Type->xType = compiler->xModule->int64Type;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "ц64", tsil::tk::Subject{tsil::tk::SubjectKindType, int64Type});
     compiler->int64Type = int64Type;
 
@@ -217,7 +217,7 @@ int compile(const CompileCommand& compileCommand) {
     integerType->type = tsil::tk::TypeTypeNative;
     integerType->name = "ціле";
     integerType->xType = compiler->xModule->int64Type;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "ціле", tsil::tk::Subject{tsil::tk::SubjectKindType, integerType});
     compiler->integerType = integerType;
 
@@ -225,7 +225,7 @@ int compile(const CompileCommand& compileCommand) {
     floatType->type = tsil::tk::TypeTypeNative;
     floatType->name = "д32";
     floatType->xType = compiler->xModule->floatType;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "д32", tsil::tk::Subject{tsil::tk::SubjectKindType, floatType});
     compiler->d32Type = floatType;
 
@@ -233,7 +233,7 @@ int compile(const CompileCommand& compileCommand) {
     d64Type->type = tsil::tk::TypeTypeNative;
     d64Type->name = "д64";
     d64Type->xType = compiler->xModule->doubleType;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "д64", tsil::tk::Subject{tsil::tk::SubjectKindType, d64Type});
     compiler->d64Type = d64Type;
 
@@ -241,7 +241,7 @@ int compile(const CompileCommand& compileCommand) {
     doubleType->type = tsil::tk::TypeTypeNative;
     doubleType->name = "дійсне";
     doubleType->xType = compiler->xModule->doubleType;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "дійсне", tsil::tk::Subject{tsil::tk::SubjectKindType, doubleType});
     compiler->doubleType = doubleType;
 
@@ -249,7 +249,7 @@ int compile(const CompileCommand& compileCommand) {
     uint8Type->type = tsil::tk::TypeTypeNative;
     uint8Type->name = "п8";
     uint8Type->xType = compiler->xModule->int8Type;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "п8", tsil::tk::Subject{tsil::tk::SubjectKindType, uint8Type});
     compiler->uint8Type = uint8Type;
 
@@ -257,7 +257,7 @@ int compile(const CompileCommand& compileCommand) {
     uint32Type->type = tsil::tk::TypeTypeNative;
     uint32Type->name = "п32";
     uint32Type->xType = compiler->xModule->int32Type;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "п32", tsil::tk::Subject{tsil::tk::SubjectKindType, uint32Type});
     compiler->uint32Type = uint32Type;
 
@@ -265,7 +265,7 @@ int compile(const CompileCommand& compileCommand) {
     uint64Type->type = tsil::tk::TypeTypeNative;
     uint64Type->name = "п64";
     uint64Type->xType = compiler->xModule->int64Type;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "п64", tsil::tk::Subject{tsil::tk::SubjectKindType, uint64Type});
     compiler->uint64Type = uint64Type;
 
@@ -273,7 +273,7 @@ int compile(const CompileCommand& compileCommand) {
     positiveType->type = tsil::tk::TypeTypeNative;
     positiveType->name = "позитивне";
     positiveType->xType = compiler->xModule->int64Type;
-    compiler->globalScope->subjects.insert_or_assign(
+    compiler->globalScope->setSubject(
         "позитивне",
         tsil::tk::Subject{tsil::tk::SubjectKindType, positiveType});
     compiler->positiveType = positiveType;

@@ -9,25 +9,13 @@ namespace tsil::tk {
       if (typeNode->id->kind == ast::KindIdentifierNode) {
         typeId = typeNode->id->data.IdentifierNode->name;
       } else if (typeNode->id->kind == ast::KindSectionAccessNode) {
-        const auto sectionAccessNode = typeNode->id->data.SectionAccessNode;
-        const auto lastPart = sectionAccessNode->parts.back();
-        std::vector<std::string> partsWithoutLast;
-        for (size_t i = 0; i < sectionAccessNode->parts.size() - 1; i++) {
-          partsWithoutLast.push_back(sectionAccessNode->parts[i]);
+        const auto sectionAccessResult =
+            this->resolveSectionAccess(typeNode->id);
+        if (sectionAccessResult.error) {
+          return {nullptr, sectionAccessResult.error->message};
         }
-        for (const auto& part : partsWithoutLast) {
-          if (scope->hasSubject(part)) {
-            const auto subject = scope->getSubject(part);
-            if (subject.kind == SubjectKindSection) {
-              scope = subject.data.section;
-            } else {
-              return {nullptr, "Секція \"" + part + "\" не знайдена"};
-            }
-          } else {
-            return {nullptr, "Секція \"" + part + "\" не знайдена"};
-          }
-        }
-        typeId = lastPart;
+        scope = sectionAccessResult.scope;
+        typeId = sectionAccessResult.lastPart->data.IdentifierNode->name;
       } else {
         return {nullptr, "NOT IMPLEMENTED BAKED SECTION TYPE"};
       }

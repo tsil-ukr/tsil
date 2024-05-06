@@ -57,9 +57,8 @@ namespace tsil::tk {
             const auto variable = new Variable();
             variable->type = type;
             variable->xValue = globalXValue;
-            this->subjects.insert_or_assign(
-                defineNode->id,
-                Subject{SubjectKindVariable, {.variable = variable}});
+            this->setSubject(defineNode->id, Subject{SubjectKindVariable,
+                                                     {.variable = variable}});
           } else {
             return {CompilerError::fromASTValue(
                 defineNode->value,
@@ -135,7 +134,7 @@ namespace tsil::tk {
             field.type = paramNode->type;
             structure->fields.push_back(field);
           }
-          this->subjects.insert_or_assign(
+          this->setSubject(
               structureNode->name,
               Subject{SubjectKindStructure, {.structure = structure}});
         }
@@ -168,8 +167,7 @@ namespace tsil::tk {
           }
           diia->isVariadic = diiaDeclarationNode->head->is_variadic;
           diia->returnType = diiaDeclarationNode->head->type;
-          this->subjects.insert_or_assign(
-              name, Subject{SubjectKindDiia, {.diia = diia}});
+          this->setSubject(name, Subject{SubjectKindDiia, {.diia = diia}});
         }
       } else if (childAstValue->kind == tsil::ast::KindDiiaNode) {
         const auto diiaNode = childAstValue->data.DiiaNode;
@@ -204,8 +202,8 @@ namespace tsil::tk {
           diia->isVariadic = diiaNode->head->is_variadic;
           diia->returnType = diiaNode->head->type;
           diia->body = diiaNode->body;
-          this->subjects.insert_or_assign(
-              diiaNode->head->id, Subject{SubjectKindDiia, {.diia = diia}});
+          this->setSubject(diiaNode->head->id,
+                           Subject{SubjectKindDiia, {.diia = diia}});
           if (diia->genericDefinitions.empty()) {
             const auto bakedDiiaResult = diia->bakeDiia(this, {});
             if (bakedDiiaResult.error) {
@@ -235,8 +233,8 @@ namespace tsil::tk {
     } else {
       sectionScope = new Scope(this->compiler, this);
       sectionScope->sectionName = sectionId;
-      this->subjects.insert_or_assign(
-          sectionId, Subject{SubjectKindSection, {.section = sectionScope}});
+      this->setSubject(sectionId,
+                       Subject{SubjectKindSection, {.section = sectionScope}});
     }
     const auto bodyResult = sectionScope->compileBody(sectionNode->body);
     if (bodyResult.error) {

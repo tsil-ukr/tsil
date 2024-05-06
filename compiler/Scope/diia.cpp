@@ -75,9 +75,8 @@ namespace tsil::tk {
           const auto variable = new Variable();
           variable->type = type;
           variable->xValue = allocaXValue;
-          this->subjects.insert_or_assign(
-              defineNode->id,
-              Subject{SubjectKindVariable, {.variable = variable}});
+          this->setSubject(defineNode->id, Subject{SubjectKindVariable,
+                                                   {.variable = variable}});
         } else {
           const auto allocaXValue =
               this->compiler->xModule->pushFunctionBlockAllocaInstruction(
@@ -85,9 +84,8 @@ namespace tsil::tk {
           const auto variable = new Variable();
           variable->type = type;
           variable->xValue = allocaXValue;
-          this->subjects.insert_or_assign(
-              defineNode->id,
-              Subject{SubjectKindVariable, {.variable = variable}});
+          this->setSubject(defineNode->id, Subject{SubjectKindVariable,
+                                                   {.variable = variable}});
         }
       } else if (childAstValue->kind == ast::KindAssignNode) {
         const auto assignNode = childAstValue->data.AssignNode;

@@ -13,7 +13,6 @@ namespace tsil::tk {
     }
     leftType = leftResult.type;
     leftXValue = leftResult.xValue;
-
     if (setNode->access) {
       if (leftType->type == TypeTypeArray) {
         const auto indexResult =
@@ -106,8 +105,21 @@ namespace tsil::tk {
                 {new x::Value(this->compiler->int32Type->xType, "0"),
                  new x::Value(this->compiler->int32Type->xType,
                               std::to_string(field.index))});
-        const auto valueResult =
+        auto valueResult =
             this->compileValue(xFunction, xBlock, setNode->value);
+        if (valueResult.error) {
+          return {valueResult.error};
+        }
+        const auto castedXValue =
+            this->compileSoftCast(xFunction, xBlock, valueResult.type,
+                                  valueResult.xValue, field.type);
+        if (castedXValue) {
+          valueResult.type = field.type;
+          valueResult.xValue = castedXValue;
+        } else {
+          return {CompilerError::invalidArgumentType(
+              setNode->value, field.name, field.type, valueResult.type)};
+        }
         const auto storeXValue =
             this->compiler->xModule->pushFunctionBlockStoreInstruction(
                 xBlock, field.type->xType, valueResult.xValue, gepXValue);

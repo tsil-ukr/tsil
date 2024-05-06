@@ -9,8 +9,8 @@ file: f_program=program EOF;
 program: program_element*;
 program_element: (take ';') | (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
 
-section_access: sa_id=ID #identifier
-              | ID (':' ':' ID)+ #real_section_access;
+identifier: ID;
+section_access: identifier (':' ':' identifier)* #real_section_access;
 
 take: 'взяти' t_type=ID (t_string=STRING | t_parts=take_parts);
 take_parts: (tp_relative='.')? ID ('/' ID)*;

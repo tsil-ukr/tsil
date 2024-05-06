@@ -5,7 +5,9 @@
 #define BUG()                                                       \
   std::cout << "BUG: " << __FILE__ << ":" << __LINE__ << std::endl; \
   exit(1);
-#define WTF() std::cout << "WTF: " << __FILE__ << ":" << __LINE__ << std::endl;
+#define WTF(value)                                                      \
+  std::cout << "WTF: " << (value) << " " << __FILE__ << ":" << __LINE__ \
+            << std::endl;
 
 namespace tsil::tk {
   struct Compiler;
@@ -244,13 +246,21 @@ namespace tsil::tk {
     } data;
   };
 
+  struct SectionAccessResult {
+    Scope* scope;
+    ast::ASTValue* lastPart;
+    CompilerError* error;
+  };
+
   struct Scope {
-    Compiler* compiler;
-    Scope* parent;
+    Compiler* compiler = nullptr;
+    Scope* parent = nullptr;
     std::string sectionName;
+    bool light = false;
 
     std::map<std::string, Subject> subjects;
 
+    void setSubject(const std::string& name, Subject subject);
     bool hasSubject(const std::string& name) const;
     bool hasLocalSubject(const std::string& name) const;
     Subject getSubject(const std::string& name);
@@ -313,6 +323,8 @@ namespace tsil::tk {
                               ast::ASTValue* astValue);
     CompilerResult compileSection(ast::ASTValue* astValue);
     CompilerResult compileBody(const std::vector<ast::ASTValue*>& body);
+
+    SectionAccessResult resolveSectionAccess(ast::ASTValue* astValue);
 
     CompilerValueResult compileGetGep(tsil::x::Function* xFunction,
                                       tsil::x::FunctionBlock* xBlock,

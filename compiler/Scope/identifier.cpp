@@ -42,20 +42,30 @@ namespace tsil::tk {
       }
       genericValues.push_back(result.type);
     }
-    if (genericNode->left->kind == ast::KindIdentifierNode) {
-      const auto identifierNode = genericNode->left->data.IdentifierNode;
-      if (this->hasSubject(identifierNode->name)) {
-        const auto subject = this->getSubject(identifierNode->name);
+    ast::ASTValue* left = genericNode->left;
+    Scope* scope = this;
+    if (left->kind == ast::KindSectionAccessNode) {
+      const auto sectionAccessResult = scope->resolveSectionAccess(left);
+      if (sectionAccessResult.error) {
+        return {nullptr, nullptr, sectionAccessResult.error};
+      }
+      left = sectionAccessResult.lastPart;
+      scope = sectionAccessResult.scope;
+    }
+    if (left->kind == ast::KindIdentifierNode) {
+      const auto identifierNode = left->data.IdentifierNode;
+      if (scope->hasSubject(identifierNode->name)) {
+        const auto subject = scope->getSubject(identifierNode->name);
         if (subject.kind == SubjectKindVariable) {
           const auto variable = subject.data.variable;
           const auto loadXValue =
-              this->compiler->xModule->pushFunctionBlockLoadInstruction(
+              scope->compiler->xModule->pushFunctionBlockLoadInstruction(
                   xBlock, variable->type->xType, variable->xValue);
           return {variable->type, loadXValue, nullptr};
         }
         if (subject.kind == SubjectKindDiia) {
           const auto diia = subject.data.diia;
-          const auto bakedDiiaResult = diia->bakeDiia(this, genericValues);
+          const auto bakedDiiaResult = diia->bakeDiia(scope, genericValues);
           if (bakedDiiaResult.error) {
             return {nullptr, nullptr, bakedDiiaResult.error};
           }
@@ -67,8 +77,8 @@ namespace tsil::tk {
         return {nullptr, nullptr, CompilerError::subjectNotDefined(astValue)};
       }
     }
-    return {nullptr, nullptr,
-            CompilerError::fromASTValue(astValue->data.GenericNode->left,
-                                        "NOT IMPLEMENTED GENERIC LEFT")};
+    return {
+        nullptr, nullptr,
+        CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED GENERIC LEFT")};
   }
 } // namespace tsil::tk

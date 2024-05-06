@@ -70,84 +70,27 @@ namespace tsil::tk {
     size_t xArgsVecSize = 0;
     for (const auto& argAstValue : callNode->args) {
       const auto& diiaParameter = diiaType->diiaParameters[argIndex];
-      if ((argAstValue->kind == ast::KindIdentifierNode ||
-          argAstValue->kind == ast::KindGetNode ||
-          argAstValue->kind == ast::KindAccessNode ||
-          argAstValue->kind == ast::KindConstructorNode) && false) {
-        auto argResult = this->compileLeft(xFunction, xBlock, argAstValue);
-        if (argResult.error) {
-          return argResult;
-        }
-        if (argResult.type->type == TypeTypeStructureInstance) {
-          if (argResult.type != diiaParameter.type) {
-            return {nullptr, nullptr,
-                    CompilerError::invalidArgumentType(
-                        argAstValue, diiaParameter.name, diiaParameter.type,
-                        argResult.type)};
-          }
-          for (const auto& [fieldName, field] :
-               argResult.type->structureInstanceFields) {
-            const auto gepXValue =
-                this->compiler->xModule
-                    ->pushFunctionBlockGetElementPtrInstruction(
-                        xBlock, argResult.type->xType, argResult.xValue,
-                        {new x::Value(this->compiler->int32Type->xType, "0"),
-                         new x::Value(this->compiler->int32Type->xType,
-                                      std::to_string(field.index))});
-            const auto loadXValue =
-                this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                    xBlock, field.type->xType, gepXValue);
-            if ((argIndex + field.index + 1) > xArgsVecSize) {
-              xArgs.resize(argIndex + field.index + 1);
-              xArgsVecSize = argIndex + field.index + 1;
-            }
-            xArgs[argIndex + field.index] = loadXValue;
-          }
-        } else {
-          argResult.xValue =
-              this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                  xBlock, argResult.type->xType, argResult.xValue);
-          const auto castedXValue =
-              this->compileSoftCast(xFunction, xBlock, argResult.type,
-                                    argResult.xValue, diiaParameter.type);
-          if (castedXValue) {
-            argResult.type = diiaParameter.type;
-            argResult.xValue = castedXValue;
-          } else {
-            return {nullptr, nullptr,
-                    CompilerError::invalidArgumentType(
-                        argAstValue, diiaParameter.name, diiaParameter.type,
-                        argResult.type)};
-          }
-          if ((argIndex + 1) > xArgsVecSize) {
-            xArgs.resize(argIndex + 1);
-            xArgsVecSize = argIndex + 1;
-          }
-          xArgs[argIndex] = argResult.xValue;
-        }
-      } else {
-        auto argResult = this->compileValue(xFunction, xBlock, argAstValue);
-        if (argResult.error) {
-          return argResult;
-        }
-        const auto castedXValue =
-            this->compileSoftCast(xFunction, xBlock, argResult.type,
-                                  argResult.xValue, diiaParameter.type);
-        if (castedXValue) {
-          argResult.type = diiaParameter.type;
-          argResult.xValue = castedXValue;
-        } else {
-          return {nullptr, nullptr,
-                  CompilerError::invalidArgumentType(
-                      argAstValue, diiaParameter.name, diiaParameter.type,
-                      argResult.type)};
-        }
-        if ((argIndex + 1) > xArgsVecSize) {
-          xArgs.resize(argIndex + 1);
-          xArgsVecSize = argIndex + 1;
-        }
-        xArgs[argIndex] = argResult.xValue;
+      auto argResult = this->compileValue(xFunction, xBlock, argAstValue);
+      if (argResult.error) {
+        return argResult;
       }
+      const auto castedXValue =
+          this->compileSoftCast(xFunction, xBlock, argResult.type,
+                                argResult.xValue, diiaParameter.type);
+      if (castedXValue) {
+        argResult.type = diiaParameter.type;
+        argResult.xValue = castedXValue;
+      } else {
+        return {nullptr, nullptr,
+                CompilerError::invalidArgumentType(
+                    argAstValue, diiaParameter.name, diiaParameter.type,
+                    argResult.type)};
+      }
+      if ((argIndex + 1) > xArgsVecSize) {
+        xArgs.resize(argIndex + 1);
+        xArgsVecSize = argIndex + 1;
+      }
+      xArgs[argIndex] = argResult.xValue;
       argIndex++;
     }
     const auto xValue =
@@ -189,6 +132,19 @@ namespace tsil::tk {
     if (firstArgAstValue->kind == ast::KindIdentifierNode) {
       const auto subjectResult =
           this->getRuntimeSubjectByIdentifierNodeAstValue(firstArgAstValue);
+      if (subjectResult.error) {
+        return {nullptr, nullptr, subjectResult.error};
+      }
+      firstArgResult = {subjectResult.type, subjectResult.xValue, nullptr};
+    } else if (firstArgAstValue->kind == ast::KindSectionAccessNode) {
+      const auto sectionAccessResult =
+          this->resolveSectionAccess(firstArgAstValue);
+      if (sectionAccessResult.error) {
+        return {nullptr, nullptr, sectionAccessResult.error};
+      }
+      const auto subjectResult =
+          sectionAccessResult.scope->getRuntimeSubjectByIdentifierNodeAstValue(
+              sectionAccessResult.lastPart);
       if (subjectResult.error) {
         return {nullptr, nullptr, subjectResult.error};
       }

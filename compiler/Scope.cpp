@@ -1,6 +1,14 @@
 #include "tk.h"
 
 namespace tsil::tk {
+  void Scope::setSubject(const std::string& name, Subject subject) {
+    if (this->light) {
+      this->parent->setSubject(name, subject);
+    } else {
+      this->subjects.insert_or_assign(name, subject);
+    }
+  }
+
   bool Scope::hasSubject(const std::string& name) const {
     if (this->subjects.contains(name)) {
       return true;
@@ -12,7 +20,13 @@ namespace tsil::tk {
   }
 
   bool Scope::hasLocalSubject(const std::string& name) const {
-    return this->subjects.contains(name);
+    if (this->subjects.contains(name)) {
+      return true;
+    }
+    if (this->light) {
+      return this->parent->hasLocalSubject(name);
+    }
+    return false;
   }
 
   Subject Scope::getSubject(const std::string& name) {
@@ -28,6 +42,9 @@ namespace tsil::tk {
   Subject Scope::getLocalSubject(const std::string& name) {
     if (this->subjects.contains(name)) {
       return this->subjects[name];
+    }
+    if (this->light) {
+      return this->parent->getLocalSubject(name);
     }
     return {SubjectKindNone};
   }
@@ -59,7 +76,7 @@ namespace tsil::tk {
               "Кількість параметрів шаблону структури не "
               "співпадає з кількістю переданих параметрів"};
     }
-    const auto scopeWithGenerics = new Scope(scope->compiler, scope);
+    const auto scopeWithGenerics = new Scope(scope->compiler, scope, "", true);
     int genericIndex = 0;
     for (const auto& genericDefinition : this->genericDefinitions) {
       const auto genericType = genericValues[genericIndex];
@@ -173,9 +190,8 @@ namespace tsil::tk {
         const auto variable = new Variable();
         variable->type = paramTypeResult.type;
         variable->xValue = paramXValue;
-        diiaScope->subjects.insert_or_assign(
-            parameter.name,
-            Subject{SubjectKindVariable, {.variable = variable}});
+        diiaScope->setSubject(parameter.name, Subject{SubjectKindVariable,
+                                                      {.variable = variable}});
       }
       if (this->returnType) {
         const auto diiaResultTypeResult = diiaScope->bakeType(this->returnType);
@@ -258,7 +274,7 @@ namespace tsil::tk {
         const auto variable = new Variable();
         variable->type = diiaParameter.type;
         variable->xValue = allocXValue;
-        diiaScope->subjects.insert_or_assign(
+        diiaScope->setSubject(
             diiaParameter.name,
             Subject{SubjectKindVariable, {.variable = variable}});
       }
@@ -311,7 +327,7 @@ namespace tsil::tk {
         const auto variable = new Variable();
         variable->type = diiaParameter.type;
         variable->xValue = allocXValue;
-        diiaScope->subjects.insert_or_assign(
+        diiaScope->setSubject(
             diiaParameter.name,
             Subject{SubjectKindVariable, {.variable = variable}});
       }
@@ -397,8 +413,44 @@ namespace tsil::tk {
     if (astValue->kind == ast::KindGenericNode) {
       return this->compileGeneric(xFunction, xBlock, astValue);
     }
+    if (astValue->kind == ast::KindSectionAccessNode) {
+      const auto sectionAccessResult = this->resolveSectionAccess(astValue);
+      if (sectionAccessResult.error) {
+        return {nullptr, nullptr, sectionAccessResult.error};
+      }
+      return sectionAccessResult.scope->compileValue(
+          xFunction, xBlock, sectionAccessResult.lastPart);
+    }
     return {nullptr, nullptr,
             CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED VALUE")};
+  }
+
+  SectionAccessResult Scope::resolveSectionAccess(ast::ASTValue* astValue) {
+    const auto sectionAccessNode = astValue->data.SectionAccessNode;
+    const auto lastPart = sectionAccessNode->parts.back();
+    std::vector<ast::ASTValue*> partsWithoutLast;
+    for (size_t i = 0; i < sectionAccessNode->parts.size() - 1; i++) {
+      partsWithoutLast.push_back(sectionAccessNode->parts[i]);
+    }
+    Scope* scope;
+    for (const auto& partAstValue : partsWithoutLast) {
+      const auto partName = partAstValue->data.IdentifierNode->name;
+      if (this->hasSubject(partName)) {
+        const auto subject = this->getSubject(partName);
+        if (subject.kind == SubjectKindSection) {
+          scope = subject.data.section;
+        } else {
+          return {nullptr, nullptr,
+                  CompilerError::fromASTValue(
+                      partAstValue, "Секція \"" + partName + "\" не знайдена")};
+        }
+      } else {
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(
+                    partAstValue, "Секція \"" + partName + "\" не знайдена")};
+      }
+    }
+    return {scope, lastPart, nullptr};
   }
 
   CompilerValueResult Scope::compileLeft(x::Function* xFunction,
@@ -411,6 +463,13 @@ namespace tsil::tk {
         return {nullptr, nullptr, subjectResult.error};
       }
       return {subjectResult.type, subjectResult.xValue, nullptr};
+    } else if (astValue->kind == ast::KindSectionAccessNode) {
+      const auto sectionAccessResult = this->resolveSectionAccess(astValue);
+      if (sectionAccessResult.error) {
+        return {nullptr, nullptr, sectionAccessResult.error};
+      }
+      return sectionAccessResult.scope->compileLeft(
+          xFunction, xBlock, sectionAccessResult.lastPart);
     } else if (astValue->kind == ast::KindGetNode) {
       const auto getResult = this->compileGetGep(xFunction, xBlock, astValue);
       if (getResult.error) {
