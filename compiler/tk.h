@@ -12,6 +12,7 @@ namespace tsil::tk {
   struct CompilerError;
   struct CompilerResult;
   struct Scope;
+  struct Subject;
   struct Type;
 
   void str_replace_all(std::string& str,
@@ -218,33 +219,44 @@ namespace tsil::tk {
     CompilerError* fillBakedDiiasWithBodies();
   };
 
+  struct Variable {
+    Type* type;
+    x::Value* xValue;
+  };
+
+  enum SubjectKind {
+    SubjectKindNone,
+    SubjectKindType,
+    SubjectKindStructure,
+    SubjectKindDiia,
+    SubjectKindSection,
+    SubjectKindVariable,
+  };
+
+  struct Subject {
+    SubjectKind kind;
+    union {
+      Type* type;
+      Structure* structure;
+      Diia* diia;
+      Scope* section;
+      Variable* variable;
+    } data;
+  };
+
   struct Scope {
     Compiler* compiler;
     Scope* parent;
     std::string sectionName;
 
-    std::map<std::string, Type*> predefinedTypes;
-    std::map<std::string, Structure*> structures;
-    std::map<std::string, Diia*> diias;
-    std::map<std::string, std::pair<Type*, x::Value*>> variables;
-    std::map<std::string, Scope*> sections;
+    std::map<std::string, Subject> subjects;
+
+    bool hasSubject(const std::string& name) const;
+    bool hasLocalSubject(const std::string& name) const;
+    Subject getSubject(const std::string& name);
+    Subject getLocalSubject(const std::string& name);
 
     std::string getSectionPrefixForName();
-
-    bool hasPredefinedType(const std::string& name) const;
-    Type* getPredefinedType(const std::string& name);
-
-    bool hasStructure(const std::string& name) const;
-    Structure* getStructure(const std::string& name);
-
-    bool hasDiia(const std::string& name) const;
-    Diia* getDiia(const std::string& name);
-
-    bool hasVariable(const std::string& name) const;
-    std::pair<Type*, x::Value*> getVariable(const std::string& name);
-
-    bool hasSection(const std::string& name) const;
-    Scope* getSection(const std::string& name);
 
     CompilerRuntimeSubjectResult getRuntimeSubjectByIdentifierNodeAstValue(
         ast::ASTValue* astValue);

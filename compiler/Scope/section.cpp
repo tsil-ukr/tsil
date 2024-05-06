@@ -32,11 +32,7 @@ namespace tsil::tk {
         }
       } else if (childAstValue->kind == tsil::ast::KindDefineNode) {
         const auto defineNode = childAstValue->data.DefineNode;
-        if (this->hasVariable(defineNode->id) ||
-            this->hasPredefinedType(defineNode->id) ||
-            this->hasDiia(defineNode->id) ||
-            this->hasStructure(defineNode->id) ||
-            this->hasSection(defineNode->id)) {
+        if (this->hasLocalSubject(defineNode->id)) {
           return {CompilerError::subjectAlreadyDefined(childAstValue)};
         }
         //        Type* type = nullptr;
@@ -58,7 +54,12 @@ namespace tsil::tk {
                 type->xType, tsilNumberToLLVMNumber(numberNode->value));
             const auto globalXValue =
                 this->compiler->xModule->putGlobal(type->xType, xValue);
-            this->variables[defineNode->id] = {type, globalXValue};
+            const auto variable = new Variable();
+            variable->type = type;
+            variable->xValue = globalXValue;
+            this->subjects.insert_or_assign(
+                defineNode->id,
+                Subject{SubjectKindVariable, {.variable = variable}});
           } else {
             return {CompilerError::fromASTValue(
                 defineNode->value,
@@ -75,50 +76,51 @@ namespace tsil::tk {
         }
       } else if (childAstValue->kind == tsil::ast::KindStructureNode) {
         const auto structureNode = childAstValue->data.StructureNode;
-        if (this->hasStructure(structureNode->name)) {
-          const auto structure = this->getStructure(structureNode->name);
-          if (structure->fields.empty()) {
-            if (structure->genericDefinitions.size() !=
-                structureNode->generic_definitions.size()) {
-              return {tsil::tk::CompilerError::fromASTValue(
-                  childAstValue,
-                  "Кількість параметрів шаблон-структур не співпадає")};
-            }
-            for (size_t i = 0; i < structure->genericDefinitions.size(); i++) {
-              const auto genericDefinition = structure->genericDefinitions[i];
-              const auto genericNode = structureNode->generic_definitions[i];
-              if (genericDefinition != genericNode) {
+        if (this->hasLocalSubject(structureNode->name)) {
+          const auto subject = this->getLocalSubject(structureNode->name);
+          if (subject.kind == SubjectKindStructure) {
+            const auto structure = subject.data.structure;
+            if (structure->fields.empty()) {
+              if (structure->genericDefinitions.size() !=
+                  structureNode->generic_definitions.size()) {
                 return {tsil::tk::CompilerError::fromASTValue(
-                    childAstValue, "Параметри шаблон-структур не співпадають")};
+                    childAstValue,
+                    "Кількість параметрів шаблон-структур не співпадає")};
               }
-            }
-            if (structureNode->params.empty()) {
-              continue;
-            }
-            for (const auto& paramAstValue : structureNode->params) {
-              const auto paramNode = paramAstValue->data.ParamNode;
-              StructureField field{};
-              field.name = paramNode->id;
-              field.type = paramNode->type;
-              structure->fields.push_back(field);
-            }
-            const auto fillErrorText = structure->fillBakedTypesWithFields();
-            if (!fillErrorText.empty()) {
-              return {tsil::tk::CompilerError::fromASTValue(childAstValue,
-                                                            fillErrorText)};
+              for (size_t i = 0; i < structure->genericDefinitions.size();
+                   i++) {
+                const auto genericDefinition = structure->genericDefinitions[i];
+                const auto genericNode = structureNode->generic_definitions[i];
+                if (genericDefinition != genericNode) {
+                  return {tsil::tk::CompilerError::fromASTValue(
+                      childAstValue,
+                      "Параметри шаблон-структур не співпадають")};
+                }
+              }
+              if (structureNode->params.empty()) {
+                continue;
+              }
+              for (const auto& paramAstValue : structureNode->params) {
+                const auto paramNode = paramAstValue->data.ParamNode;
+                StructureField field{};
+                field.name = paramNode->id;
+                field.type = paramNode->type;
+                structure->fields.push_back(field);
+              }
+              const auto fillErrorText = structure->fillBakedTypesWithFields();
+              if (!fillErrorText.empty()) {
+                return {tsil::tk::CompilerError::fromASTValue(childAstValue,
+                                                              fillErrorText)};
+              }
+            } else {
+              return {tsil::tk::CompilerError::subjectAlreadyDefined(
+                  childAstValue)};
             }
           } else {
             return {
                 tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
           }
         } else {
-          if (this->hasVariable(structureNode->name) ||
-              this->hasPredefinedType(structureNode->name) ||
-              this->hasDiia(structureNode->name) ||
-              this->hasSection(structureNode->name)) {
-            return {
-                tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
-          }
           const auto structure = new Structure();
           structure->name =
               this->getSectionPrefixForName() + structureNode->name;
@@ -133,24 +135,25 @@ namespace tsil::tk {
             field.type = paramNode->type;
             structure->fields.push_back(field);
           }
-          this->structures.insert_or_assign(structureNode->name, structure);
+          this->subjects.insert_or_assign(
+              structureNode->name,
+              Subject{SubjectKindStructure, {.structure = structure}});
         }
-
       } else if (childAstValue->kind == tsil::ast::KindDiiaDeclarationNode) {
         const auto diiaDeclarationNode =
             childAstValue->data.DiiaDeclarationNode;
         const auto name = diiaDeclarationNode->as.empty()
                               ? diiaDeclarationNode->head->id
                               : diiaDeclarationNode->as;
-        if (this->hasVariable(name) || this->hasPredefinedType(name) ||
-            this->hasStructure(name) || this->hasPredefinedType(name) ||
-            this->hasSection(name)) {
-          return {
-              tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
-        }
-        if (this->hasDiia(name)) {
-          const auto diia = this->getDiia(name);
-          // todo: validate head signature
+        if (this->hasLocalSubject(name)) {
+          const auto subject = this->getLocalSubject(name);
+          if (subject.kind == SubjectKindDiia) {
+            const auto diia = subject.data.diia;
+            // todo: validate head signature
+          } else {
+            return {
+                tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
+          }
         } else {
           const auto diia = new Diia();
           diia->isDeclaration = true;
@@ -165,23 +168,25 @@ namespace tsil::tk {
           }
           diia->isVariadic = diiaDeclarationNode->head->is_variadic;
           diia->returnType = diiaDeclarationNode->head->type;
-          this->diias.insert_or_assign(name, diia);
+          this->subjects.insert_or_assign(
+              name, Subject{SubjectKindDiia, {.diia = diia}});
         }
       } else if (childAstValue->kind == tsil::ast::KindDiiaNode) {
         const auto diiaNode = childAstValue->data.DiiaNode;
-        if (this->hasVariable(diiaNode->head->id) ||
-            this->hasPredefinedType(diiaNode->head->id) ||
-            this->hasStructure(diiaNode->head->id)) {
-          return {
-              tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
-        }
-        if (this->hasDiia(diiaNode->head->id)) {
-          const auto diia = this->getDiia(diiaNode->head->id);
-          // todo: validate head signature
-          if (diia->isDeclaration) {
-            diia->body = diiaNode->body;
-            diia->isDeclaration = false;
-            diia->fillBakedDiiasWithBodies();
+        const auto name = diiaNode->head->id;
+        if (this->hasLocalSubject(name)) {
+          const auto subject = this->getLocalSubject(name);
+          if (subject.kind == SubjectKindDiia) {
+            const auto diia = subject.data.diia;
+            // todo: validate head signature
+            if (diia->isDeclaration) {
+              diia->body = diiaNode->body;
+              diia->isDeclaration = false;
+              diia->fillBakedDiiasWithBodies();
+            } else {
+              return {tsil::tk::CompilerError::subjectAlreadyDefined(
+                  childAstValue)};
+            }
           } else {
             return {
                 tsil::tk::CompilerError::subjectAlreadyDefined(childAstValue)};
@@ -199,7 +204,8 @@ namespace tsil::tk {
           diia->isVariadic = diiaNode->head->is_variadic;
           diia->returnType = diiaNode->head->type;
           diia->body = diiaNode->body;
-          this->diias.insert_or_assign(diiaNode->head->id, diia);
+          this->subjects.insert_or_assign(
+              diiaNode->head->id, Subject{SubjectKindDiia, {.diia = diia}});
           if (diia->genericDefinitions.empty()) {
             const auto bakedDiiaResult = diia->bakeDiia(this, {});
             if (bakedDiiaResult.error) {
@@ -219,17 +225,18 @@ namespace tsil::tk {
     const auto sectionNode = astValue->data.SectionNode;
     const auto sectionId = sectionNode->id;
     Scope* sectionScope;
-    if (this->hasPredefinedType(sectionId) ||
-        this->hasStructure(sectionId) || this->hasDiia(sectionId) ||
-        this->hasVariable(sectionId)) {
-      return {CompilerError::subjectAlreadyDefined(astValue)};
-    }
-    if (this->hasSection(sectionId)) {
-      sectionScope = this->getSection(sectionId);
+    if (this->hasLocalSubject(sectionId)) {
+      const auto subject = this->getLocalSubject(sectionId);
+      if (subject.kind == SubjectKindSection) {
+        sectionScope = subject.data.section;
+      } else {
+        return {CompilerError::subjectAlreadyDefined(astValue)};
+      }
     } else {
       sectionScope = new Scope(this->compiler, this);
       sectionScope->sectionName = sectionId;
-      this->sections.insert_or_assign(sectionId, sectionScope);
+      this->subjects.insert_or_assign(
+          sectionId, Subject{SubjectKindSection, {.section = sectionScope}});
     }
     const auto bodyResult = sectionScope->compileBody(sectionNode->body);
     if (bodyResult.error) {

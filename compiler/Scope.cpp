@@ -1,6 +1,37 @@
 #include "tk.h"
 
 namespace tsil::tk {
+  bool Scope::hasSubject(const std::string& name) const {
+    if (this->subjects.contains(name)) {
+      return true;
+    }
+    if (this->parent) {
+      return this->parent->hasSubject(name);
+    }
+    return false;
+  }
+
+  bool Scope::hasLocalSubject(const std::string& name) const {
+    return this->subjects.contains(name);
+  }
+
+  Subject Scope::getSubject(const std::string& name) {
+    if (this->subjects.contains(name)) {
+      return this->subjects[name];
+    }
+    if (this->parent) {
+      return this->parent->getSubject(name);
+    }
+    return {SubjectKindNone};
+  }
+
+  Subject Scope::getLocalSubject(const std::string& name) {
+    if (this->subjects.contains(name)) {
+      return this->subjects[name];
+    }
+    return {SubjectKindNone};
+  }
+
   std::string Scope::getSectionPrefixForName() {
     std::vector<std::string> sectionNames;
     Scope* scope = this;
@@ -18,106 +49,6 @@ namespace tsil::tk {
     return result + "::";
   }
 
-  bool Scope::hasPredefinedType(const std::string& name) const {
-    if (this->predefinedTypes.contains(name)) {
-      return true;
-    }
-    if (this->parent) {
-      return this->parent->hasPredefinedType(name);
-    }
-    return false;
-  }
-
-  Type* Scope::getPredefinedType(const std::string& name) {
-    if (this->predefinedTypes.contains(name)) {
-      return this->predefinedTypes[name];
-    }
-    if (this->parent) {
-      return this->parent->getPredefinedType(name);
-    }
-    return nullptr;
-  }
-
-  bool Scope::hasStructure(const std::string& name) const {
-    if (this->structures.contains(name)) {
-      return true;
-    }
-    if (this->parent) {
-      return this->parent->hasStructure(name);
-    }
-    return false;
-  }
-
-  Structure* Scope::getStructure(const std::string& name) {
-    if (this->structures.contains(name)) {
-      return this->structures[name];
-    }
-    if (this->parent) {
-      return this->parent->getStructure(name);
-    }
-    return nullptr;
-  }
-
-  bool Scope::hasDiia(const std::string& name) const {
-    if (this->diias.contains(name)) {
-      return true;
-    }
-    if (this->parent) {
-      return this->parent->hasDiia(name);
-    }
-    return false;
-  }
-
-  Diia* Scope::getDiia(const std::string& name) {
-    if (this->diias.contains(name)) {
-      return this->diias[name];
-    }
-    if (this->parent) {
-      return this->parent->getDiia(name);
-    }
-    return nullptr;
-  }
-
-  bool Scope::hasVariable(const std::string& name) const {
-    if (this->variables.contains(name)) {
-      return true;
-    }
-    if (this->parent) {
-      return this->parent->hasVariable(name);
-    }
-    return false;
-  }
-
-  std::pair<Type*, x::Value*> Scope::getVariable(const std::string& name) {
-    if (this->variables.contains(name)) {
-      return this->variables[name];
-    }
-    if (this->parent) {
-      return this->parent->getVariable(name);
-    }
-    return {nullptr, nullptr};
-  }
-
-  bool Scope::hasSection(const std::string& name) const {
-    if (this->sections.contains(name)) {
-      return true;
-    }
-    if (this->parent) {
-      return this->parent->hasSection(name);
-    }
-    return false;
-  }
-
-  Scope* Scope::getSection(const std::string& name) {
-    if (this->sections.contains(name)) {
-      return this->sections[name];
-    }
-    if (this->parent) {
-      return this->parent->getSection(name);
-    }
-    return nullptr;
-  }
-
   BakedTypeResult Structure::bakeType(Scope* scope,
                                       const std::vector<Type*>& genericValues) {
     if (this->bakedTypes.contains(genericValues)) {
@@ -132,7 +63,8 @@ namespace tsil::tk {
     int genericIndex = 0;
     for (const auto& genericDefinition : this->genericDefinitions) {
       const auto genericType = genericValues[genericIndex];
-      scopeWithGenerics->predefinedTypes[genericDefinition] = genericType;
+      scopeWithGenerics->subjects.insert_or_assign(
+          genericDefinition, Subject{SubjectKindType, {.type = genericType}});
       genericIndex++;
     }
     const auto type = new Type();
@@ -212,7 +144,8 @@ namespace tsil::tk {
       int genericIndex = 0;
       for (const auto& genericDefinition : this->genericDefinitions) {
         const auto genericType = genericValues[genericIndex];
-        diiaScope->predefinedTypes[genericDefinition] = genericType;
+        diiaScope->subjects.insert_or_assign(
+            genericDefinition, Subject{SubjectKindType, {.type = genericType}});
         genericIndex++;
       }
       const auto diiaType = new Type();
@@ -237,8 +170,12 @@ namespace tsil::tk {
             TypeDiiaParameter{.name = parameter.name,
                               .type = paramTypeResult.type,
                               .xValue = paramXValue});
-        diiaScope->variables[parameter.name] = {paramTypeResult.type,
-                                                paramXValue};
+        const auto variable = new Variable();
+        variable->type = paramTypeResult.type;
+        variable->xValue = paramXValue;
+        diiaScope->subjects.insert_or_assign(
+            parameter.name,
+            Subject{SubjectKindVariable, {.variable = variable}});
       }
       if (this->returnType) {
         const auto diiaResultTypeResult = diiaScope->bakeType(this->returnType);
@@ -318,8 +255,12 @@ namespace tsil::tk {
         diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
             xFunction->entry_block, diiaParameter.type->xType,
             diiaParameter.xValue, allocXValue);
-        diiaScope->variables[diiaParameter.name] = {diiaParameter.type,
-                                                    allocXValue};
+        const auto variable = new Variable();
+        variable->type = diiaParameter.type;
+        variable->xValue = allocXValue;
+        diiaScope->subjects.insert_or_assign(
+            diiaParameter.name,
+            Subject{SubjectKindVariable, {.variable = variable}});
       }
       const auto bodyResult = diiaScope->compileDiiaBody(
           diiaType, xFunction, xFunction->entry_block, xFunction->exit_block,
@@ -367,8 +308,12 @@ namespace tsil::tk {
         diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
             xFunction->entry_block, diiaParameter.type->xType,
             diiaParameter.xValue, allocXValue);
-        diiaScope->variables[diiaParameter.name] = {diiaParameter.type,
-                                                    allocXValue};
+        const auto variable = new Variable();
+        variable->type = diiaParameter.type;
+        variable->xValue = allocXValue;
+        diiaScope->subjects.insert_or_assign(
+            diiaParameter.name,
+            Subject{SubjectKindVariable, {.variable = variable}});
       }
       const auto bodyResult = diiaScope->compileDiiaBody(
           diiaType, xFunction, xFunction->entry_block, xFunction->exit_block,
@@ -383,22 +328,20 @@ namespace tsil::tk {
   CompilerRuntimeSubjectResult Scope::getRuntimeSubjectByIdentifierNodeAstValue(
       ast::ASTValue* astValue) {
     const auto identifierNode = astValue->data.IdentifierNode;
-    if (this->hasVariable(identifierNode->name)) {
-      const auto [variableType, variableXValue] =
-          this->getVariable(identifierNode->name);
-      return {variableType, variableXValue, nullptr};
-    } else if (this->hasDiia(identifierNode->name)) {
-      const auto diia = this->getDiia(identifierNode->name);
-      if (diia->bakedDiias.contains({})) {
-        const auto bakedDiia = diia->bakedDiias[{}];
-        return {bakedDiia.type, bakedDiia.xValue, nullptr};
+    if (this->hasSubject(identifierNode->name)) {
+      const auto subject = this->getSubject(identifierNode->name);
+      if (subject.kind == SubjectKindVariable) {
+        const auto variable = subject.data.variable;
+        return {variable->type, variable->xValue, nullptr};
       }
-      const auto bakedDiiaResult = diia->bakeDiia(this, {});
-      if (bakedDiiaResult.error) {
-        return {nullptr, nullptr, bakedDiiaResult.error};
+      if (subject.kind == SubjectKindDiia) {
+        const auto diia = subject.data.diia;
+        const auto bakedDiiaResult = diia->bakeDiia(this, {});
+        if (bakedDiiaResult.error) {
+          return {nullptr, nullptr, bakedDiiaResult.error};
+        }
+        return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
       }
-      return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
-    } else if (this->hasStructure(identifierNode->name)) {
       return {nullptr, nullptr,
               CompilerError::subjectIsNotRuntimeValue(astValue)};
     } else {

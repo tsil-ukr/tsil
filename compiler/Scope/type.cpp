@@ -16,8 +16,13 @@ namespace tsil::tk {
           partsWithoutLast.push_back(sectionAccessNode->parts[i]);
         }
         for (const auto& part : partsWithoutLast) {
-          if (scope->hasSection(part)) {
-            scope = scope->getSection(part);
+          if (scope->hasSubject(part)) {
+            const auto subject = scope->getSubject(part);
+            if (subject.kind == SubjectKindSection) {
+              scope = subject.data.section;
+            } else {
+              return {nullptr, "Секція \"" + part + "\" не знайдена"};
+            }
           } else {
             return {nullptr, "Секція \"" + part + "\" не знайдена"};
           }
@@ -41,18 +46,22 @@ namespace tsil::tk {
         const auto type = genericValues[0]->getPointerType(scope);
         return {type, ""};
       }
-      if (scope->hasPredefinedType(typeId)) {
-        const auto type = scope->getPredefinedType(typeId);
-        if (genericValues.size()) {
-          return {nullptr, "Неможливо застосувати шаблон до типу \"" +
-                               type->name + "\""};
+      if (scope->hasSubject(typeId)) {
+        const auto subject = scope->getSubject(typeId);
+        if (subject.kind == SubjectKindType) {
+          const auto type = subject.data.type;
+          if (genericValues.size()) {
+            return {nullptr, "Неможливо застосувати шаблон до типу \"" +
+                                 type->name + "\""};
+          }
+          return {type, ""};
         }
-        return {type, ""};
+        if (subject.kind == SubjectKindStructure) {
+          const auto structure = subject.data.structure;
+          return structure->bakeType(scope, genericValues);
+        }
       }
-      if (scope->hasStructure(typeId)) {
-        const auto structure = scope->getStructure(typeId);
-        return structure->bakeType(scope, genericValues);
-      }
+      return {nullptr, "Субʼєкт \"" + typeId + "\" не знайдено"};
     }
     if (astValue->kind == ast::KindFunctionTypeNode) {
       const auto functionTypeNode = astValue->data.FunctionTypeNode;

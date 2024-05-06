@@ -32,10 +32,7 @@ namespace tsil::tk {
         }
       } else if (childAstValue->kind == ast::KindDefineNode) {
         const auto defineNode = childAstValue->data.DefineNode;
-        if (this->hasVariable(defineNode->id) ||
-            this->hasPredefinedType(defineNode->id) ||
-            this->hasDiia(defineNode->id) ||
-            this->hasStructure(defineNode->id)) {
+        if (this->hasLocalSubject(defineNode->id)) {
           return {nullptr, nullptr,
                   CompilerError::subjectAlreadyDefined(childAstValue)};
         }
@@ -75,35 +72,53 @@ namespace tsil::tk {
           this->compiler->xModule->pushFunctionBlockStoreInstruction(
               xBlock, valueResult.type->xType, valueResult.xValue,
               allocaXValue);
-          this->variables[defineNode->id] = {type, allocaXValue};
+          const auto variable = new Variable();
+          variable->type = type;
+          variable->xValue = allocaXValue;
+          this->subjects.insert_or_assign(
+              defineNode->id,
+              Subject{SubjectKindVariable, {.variable = variable}});
         } else {
           const auto allocaXValue =
               this->compiler->xModule->pushFunctionBlockAllocaInstruction(
                   xBlock, defineNode->id, type->xType);
-          this->variables[defineNode->id] = {type, allocaXValue};
+          const auto variable = new Variable();
+          variable->type = type;
+          variable->xValue = allocaXValue;
+          this->subjects.insert_or_assign(
+              defineNode->id,
+              Subject{SubjectKindVariable, {.variable = variable}});
         }
       } else if (childAstValue->kind == ast::KindAssignNode) {
         const auto assignNode = childAstValue->data.AssignNode;
-        if (!this->hasVariable(assignNode->id)) {
+        if (this->hasSubject(assignNode->id)) {
+          const auto subject = this->getSubject(assignNode->id);
+          if (subject.kind == SubjectKindVariable) {
+            const auto variable = subject.data.variable;
+            const auto variableType = variable->type;
+            const auto variableXValue = variable->xValue;
+            const auto valueResult =
+                this->compileValue(xFunction, xBlock, assignNode->value);
+            if (valueResult.error) {
+              return {nullptr, nullptr, valueResult.error};
+            }
+            if (variableType->type == TypeTypeDiia) {
+              return {nullptr, nullptr,
+                      CompilerError::typesAreNotCompatible(
+                          childAstValue, variableType, valueResult.type)};
+            }
+            this->compiler->xModule->pushFunctionBlockStoreInstruction(
+                xBlock, valueResult.type->xType, valueResult.xValue,
+                variableXValue);
+          } else {
+            return {nullptr, nullptr,
+                    CompilerError::cannotRedefineSubject(childAstValue,
+                                                         assignNode->id)};
+          }
+        } else {
           return {nullptr, nullptr,
-                  CompilerError::cannotRedefineSubject(childAstValue,
-                                                       assignNode->id)};
+                  CompilerError::subjectNotDefined(childAstValue)};
         }
-        const auto& [variableType, variableXValue] =
-            this->getVariable(assignNode->id);
-        const auto valueResult =
-            this->compileValue(xFunction, xBlock, assignNode->value);
-        if (valueResult.error) {
-          return {nullptr, nullptr, valueResult.error};
-        }
-        if (variableType->type == TypeTypeDiia) {
-          return {nullptr, nullptr,
-                  CompilerError::typesAreNotCompatible(
-                      childAstValue, variableType, valueResult.type)};
-        }
-        this->compiler->xModule->pushFunctionBlockStoreInstruction(
-            xBlock, valueResult.type->xType, valueResult.xValue,
-            variableXValue);
       } else if (childAstValue->kind == ast::KindSetNode) {
         const auto setResult =
             this->compileSet(xFunction, xBlock, childAstValue);

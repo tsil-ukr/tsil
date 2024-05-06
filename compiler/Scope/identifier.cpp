@@ -5,26 +5,23 @@ namespace tsil::tk {
                                          tsil::x::FunctionBlock* xBlock,
                                          ast::ASTValue* astValue) {
     const auto identifierNode = astValue->data.IdentifierNode;
-    if (this->hasVariable(identifierNode->name)) {
-      const auto [variableType, variableXValue] =
-          this->getVariable(identifierNode->name);
-      const auto loadXValue =
-          this->compiler->xModule->pushFunctionBlockLoadInstruction(
-              xBlock, variableType->xType, variableXValue);
-      return {variableType, loadXValue, nullptr};
-    } else if (this->hasDiia(identifierNode->name)) {
-      const auto diia = this->getDiia(identifierNode->name);
-      if (diia->bakedDiias.contains({})) {
-        const auto bakedDiia = diia->bakedDiias[{}];
-        return {bakedDiia.type, bakedDiia.xValue, nullptr};
+    if (this->hasSubject(identifierNode->name)) {
+      const auto subject = this->getSubject(identifierNode->name);
+      if (subject.kind == SubjectKindVariable) {
+        const auto variable = subject.data.variable;
+        const auto loadXValue =
+            this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                xBlock, variable->type->xType, variable->xValue);
+        return {variable->type, loadXValue, nullptr};
       }
-      const auto bakedDiiaResult = diia->bakeDiia(this, {});
-      if (bakedDiiaResult.error) {
-        return {nullptr, nullptr, bakedDiiaResult.error};
+      if (subject.kind == SubjectKindDiia) {
+        const auto diia = subject.data.diia;
+        const auto bakedDiiaResult = diia->bakeDiia(this, {});
+        if (bakedDiiaResult.error) {
+          return {nullptr, nullptr, bakedDiiaResult.error};
+        }
+        return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
       }
-      return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
-    } else if (this->hasPredefinedType(identifierNode->name) ||
-               this->hasStructure(identifierNode->name)) {
       return {nullptr, nullptr,
               CompilerError::subjectIsNotRuntimeValue(astValue)};
     } else {
@@ -47,26 +44,23 @@ namespace tsil::tk {
     }
     if (genericNode->left->kind == ast::KindIdentifierNode) {
       const auto identifierNode = genericNode->left->data.IdentifierNode;
-      if (this->hasVariable(identifierNode->name)) {
-        const auto [variableType, variableXValue] =
-            this->getVariable(identifierNode->name);
-        const auto loadXValue =
-            this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, variableType->xType, variableXValue);
-        return {variableType, loadXValue, nullptr};
-      } else if (this->hasDiia(identifierNode->name)) {
-        const auto diia = this->getDiia(identifierNode->name);
-        if (diia->bakedDiias.contains(genericValues)) {
-          const auto bakedDiia = diia->bakedDiias[genericValues];
-          return {bakedDiia.type, bakedDiia.xValue, nullptr};
+      if (this->hasSubject(identifierNode->name)) {
+        const auto subject = this->getSubject(identifierNode->name);
+        if (subject.kind == SubjectKindVariable) {
+          const auto variable = subject.data.variable;
+          const auto loadXValue =
+              this->compiler->xModule->pushFunctionBlockLoadInstruction(
+                  xBlock, variable->type->xType, variable->xValue);
+          return {variable->type, loadXValue, nullptr};
         }
-        const auto bakedDiiaResult = diia->bakeDiia(this, genericValues);
-        if (bakedDiiaResult.error) {
-          return {nullptr, nullptr, bakedDiiaResult.error};
+        if (subject.kind == SubjectKindDiia) {
+          const auto diia = subject.data.diia;
+          const auto bakedDiiaResult = diia->bakeDiia(this, genericValues);
+          if (bakedDiiaResult.error) {
+            return {nullptr, nullptr, bakedDiiaResult.error};
+          }
+          return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
         }
-        return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
-      } else if (this->hasPredefinedType(identifierNode->name) ||
-                 this->hasStructure(identifierNode->name)) {
         return {nullptr, nullptr,
                 CompilerError::subjectIsNotRuntimeValue(astValue)};
       } else {
