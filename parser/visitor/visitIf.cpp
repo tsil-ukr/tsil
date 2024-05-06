@@ -10,6 +10,9 @@ namespace tsil::parser {
     if (context->i_else_body) {
       if_node->else_body = AAVec(visitBody(context->i_else_body));
     }
+    if (context->i_else_if) {
+      if_node->else_body.push_back(AAV(visitIf(context->i_else_if)));
+    }
     return AV(context, ast::KindIfNode, if_node);
   }
 } // namespace tsil::parser

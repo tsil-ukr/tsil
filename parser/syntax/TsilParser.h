@@ -612,6 +612,7 @@ public:
     TsilParser::ExprContext *i_value = nullptr;
     TsilParser::BodyContext *i_body = nullptr;
     TsilParser::BodyContext *i_else_body = nullptr;
+    TsilParser::IfContext *i_else_if = nullptr;
     IfContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *KW_IF();
@@ -623,6 +624,7 @@ public:
     antlr4::tree::TerminalNode *KW_ELSE();
     std::vector<BodyContext *> body();
     BodyContext* body(size_t i);
+    IfContext *if_();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

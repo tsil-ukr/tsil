@@ -37,7 +37,7 @@ body_element: if | while | (declare ';') | (define ';') | (assign ';') | (set ';
 return_body_element: 'вернути' (rbl_value=expr)?;
 block: '{' body '}';
 
-if: 'якщо' i_value=expr '{' (i_body=body)? '}' ('інакше' '{' (i_else_body=body)? '}')?;
+if: 'якщо' i_value=expr '{' (i_body=body)? '}' ('інакше' ('{' (i_else_body=body)? '}' | i_else_if=if))?;
 
 while: 'поки' w_value=expr '{' (w_body=body)? '}';
 
