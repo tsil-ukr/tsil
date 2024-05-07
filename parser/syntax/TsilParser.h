@@ -343,8 +343,9 @@ public:
   public:
     Section_elementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    DeclareContext *declare();
+    SynonymContext *synonym();
     antlr4::tree::TerminalNode *SEMICOLON();
+    DeclareContext *declare();
     DefineContext *define();
     SectionContext *section();
     StructureContext *structure();

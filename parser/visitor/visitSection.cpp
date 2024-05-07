@@ -5,6 +5,10 @@ namespace tsil::parser {
     const auto section_node = new ast::SectionNode();
     section_node->id = context->s_name->getText();
     for (const auto section_element : context->section_element()) {
+      if (section_element->synonym()) {
+        section_node->body.push_back(
+            AAV(visitSynonym(section_element->synonym())));
+      }
       if (section_element->declare()) {
         section_node->body.push_back(
             AAV(visitDeclare(section_element->declare())));

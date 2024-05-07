@@ -21,7 +21,7 @@ synonym: 'синонім' s_name=ID '=' s_value=synonym_value;
 synonym_value: full_type | number | string;
 
 section: 'секція' s_name=ID '{' section_element* '}';
-section_element: (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
+section_element: (synonym ';') | (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
 
 structure: 'структура' s_name=ID ('<' s_generics=structure_generics '>')? ('{' (s_params=structure_params)? '}' | ';');
 structure_generics: structure_generic (',' structure_generic)*;
