@@ -132,9 +132,19 @@ namespace tsil::tk {
       } else {
         return {CompilerError::subjectNotDefined(synonymNode->value)};
       }
+    } else if (synonymNode->value->kind == ast::KindArrayTypeNode ||
+               synonymNode->value->kind == ast::KindFunctionTypeNode) {
+      const auto bakedTypeResult = this->bakeType(synonymNode->value);
+      if (!bakedTypeResult.type) {
+        return {CompilerError::fromASTValue(synonymNode->value,
+                                            bakedTypeResult.error)};
+      }
+      this->setSubject(
+          synonymNode->id,
+          Subject{SubjectKindType, {.type = bakedTypeResult.type}});
     } else {
       return {CompilerError::fromASTValue(
-          synonymNode->value, "Синоніми можуть мати лише числові значення")};
+          synonymNode->value, "Неможливо створити синонім до цього субʼєкта")};
     }
     return {nullptr};
   }
