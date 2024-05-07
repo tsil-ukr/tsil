@@ -59,6 +59,8 @@ namespace tsil::tk {
           }
           result += ")";
         }
+      } else {
+        result = "()";
       }
       const auto resultFullName = this->diiaReturnType->getFullName();
       result += " -> " + (this->diiaReturnType->type == TypeTypeDiia

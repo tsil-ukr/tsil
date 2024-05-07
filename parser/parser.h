@@ -116,6 +116,8 @@ namespace tsil::parser {
     std::any visitGeneric(TsilParser::GenericContext* ctx) override;
 
     std::any visitBlock(TsilParser::BlockContext* ctx) override;
+
+    std::any visitSynonym(TsilParser::SynonymContext* ctx) override;
   };
 
   struct TsilParserError {

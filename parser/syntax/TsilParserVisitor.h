@@ -29,9 +29,17 @@ public:
 
     virtual std::any visitReal_section_access(TsilParser::Real_section_accessContext *context) = 0;
 
+    virtual std::any visitNumber(TsilParser::NumberContext *context) = 0;
+
+    virtual std::any visitString(TsilParser::StringContext *context) = 0;
+
     virtual std::any visitTake(TsilParser::TakeContext *context) = 0;
 
     virtual std::any visitTake_parts(TsilParser::Take_partsContext *context) = 0;
+
+    virtual std::any visitSynonym(TsilParser::SynonymContext *context) = 0;
+
+    virtual std::any visitSynonym_value(TsilParser::Synonym_valueContext *context) = 0;
 
     virtual std::any visitSection(TsilParser::SectionContext *context) = 0;
 
@@ -97,9 +105,9 @@ public:
 
     virtual std::any visitAtom_particle(TsilParser::Atom_particleContext *context) = 0;
 
-    virtual std::any visitNumber(TsilParser::NumberContext *context) = 0;
+    virtual std::any visitAtom_number(TsilParser::Atom_numberContext *context) = 0;
 
-    virtual std::any visitString(TsilParser::StringContext *context) = 0;
+    virtual std::any visitAtom_string(TsilParser::Atom_stringContext *context) = 0;
 
     virtual std::any visitMolecule_atom(TsilParser::Molecule_atomContext *context) = 0;
 

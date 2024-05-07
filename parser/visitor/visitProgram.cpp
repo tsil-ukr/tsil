@@ -7,6 +7,10 @@ namespace tsil::parser {
       if (program_element->take()) {
         program_node->body.push_back(AAV(visitTake(program_element->take())));
       }
+      if (program_element->synonym()) {
+        program_node->body.push_back(
+            AAV(visitSynonym(program_element->synonym())));
+      }
       if (program_element->declare()) {
         program_node->body.push_back(
             AAV(visitDeclare(program_element->declare())));

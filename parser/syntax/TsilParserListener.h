@@ -29,11 +29,23 @@ public:
   virtual void enterReal_section_access(TsilParser::Real_section_accessContext *ctx) = 0;
   virtual void exitReal_section_access(TsilParser::Real_section_accessContext *ctx) = 0;
 
+  virtual void enterNumber(TsilParser::NumberContext *ctx) = 0;
+  virtual void exitNumber(TsilParser::NumberContext *ctx) = 0;
+
+  virtual void enterString(TsilParser::StringContext *ctx) = 0;
+  virtual void exitString(TsilParser::StringContext *ctx) = 0;
+
   virtual void enterTake(TsilParser::TakeContext *ctx) = 0;
   virtual void exitTake(TsilParser::TakeContext *ctx) = 0;
 
   virtual void enterTake_parts(TsilParser::Take_partsContext *ctx) = 0;
   virtual void exitTake_parts(TsilParser::Take_partsContext *ctx) = 0;
+
+  virtual void enterSynonym(TsilParser::SynonymContext *ctx) = 0;
+  virtual void exitSynonym(TsilParser::SynonymContext *ctx) = 0;
+
+  virtual void enterSynonym_value(TsilParser::Synonym_valueContext *ctx) = 0;
+  virtual void exitSynonym_value(TsilParser::Synonym_valueContext *ctx) = 0;
 
   virtual void enterSection(TsilParser::SectionContext *ctx) = 0;
   virtual void exitSection(TsilParser::SectionContext *ctx) = 0;
@@ -131,11 +143,11 @@ public:
   virtual void enterAtom_particle(TsilParser::Atom_particleContext *ctx) = 0;
   virtual void exitAtom_particle(TsilParser::Atom_particleContext *ctx) = 0;
 
-  virtual void enterNumber(TsilParser::NumberContext *ctx) = 0;
-  virtual void exitNumber(TsilParser::NumberContext *ctx) = 0;
+  virtual void enterAtom_number(TsilParser::Atom_numberContext *ctx) = 0;
+  virtual void exitAtom_number(TsilParser::Atom_numberContext *ctx) = 0;
 
-  virtual void enterString(TsilParser::StringContext *ctx) = 0;
-  virtual void exitString(TsilParser::StringContext *ctx) = 0;
+  virtual void enterAtom_string(TsilParser::Atom_stringContext *ctx) = 0;
+  virtual void exitAtom_string(TsilParser::Atom_stringContext *ctx) = 0;
 
   virtual void enterMolecule_atom(TsilParser::Molecule_atomContext *ctx) = 0;
   virtual void exitMolecule_atom(TsilParser::Molecule_atomContext *ctx) = 0;

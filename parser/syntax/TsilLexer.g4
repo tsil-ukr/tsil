@@ -20,6 +20,7 @@ KW_NOT: 'не';
 KW_OR: 'або';
 KW_AND: 'і';
 KW_VAR: 'змінна';
+KW_SYNONYM: 'синонім';
 
 EQUAL: '=';
 GREATER: '>';

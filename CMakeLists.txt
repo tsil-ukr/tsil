@@ -28,6 +28,7 @@ set(TSIL_SRC
         compiler/Scope/section.cpp
         compiler/Scope/set.cpp
         compiler/Scope/string.cpp
+        compiler/Scope/synonym.cpp
         compiler/Scope/type.cpp
         compiler/Compiler.cpp
         compiler/CompilerError.cpp

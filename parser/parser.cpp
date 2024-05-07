@@ -204,6 +204,14 @@ namespace tsil::parser {
             dynamic_cast<TsilParser::Atom_particleContext*>(context)) {
       return visitContext(atom_particle_context->particle());
     }
+    if (const auto atom_number_context =
+            dynamic_cast<TsilParser::Atom_numberContext*>(context)) {
+      return visitContext(atom_number_context->number());
+    }
+    if (const auto atom_string_context =
+            dynamic_cast<TsilParser::Atom_stringContext*>(context)) {
+      return visitContext(atom_string_context->string());
+    }
     if (const auto number_context =
             dynamic_cast<TsilParser::NumberContext*>(context)) {
       return visitNumber(number_context);
@@ -307,6 +315,10 @@ namespace tsil::parser {
     if (const auto block_context =
             dynamic_cast<TsilParser::BlockContext*>(context)) {
       return visitBlock(block_context);
+    }
+    if (const auto synonym_context =
+            dynamic_cast<TsilParser::SynonymContext*>(context)) {
+      return visitSynonym(synonym_context);
     }
     return nullptr;
   }

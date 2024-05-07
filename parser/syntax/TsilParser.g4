@@ -7,13 +7,18 @@ options {
 file: f_program=program EOF;
 
 program: program_element*;
-program_element: (take ';') | (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
+program_element: (take ';') | (synonym ';') | (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
 
 identifier: ID;
 section_access: identifier (':' ':' identifier)* #real_section_access;
+number: NUMBER;
+string: (s_prefix=ID)? STRING;
 
 take: 'взяти' t_type=ID (t_string=STRING | t_parts=take_parts);
 take_parts: (tp_relative='.')? ID ('/' ID)*;
+
+synonym: 'синонім' s_name=ID '=' s_value=synonym_value;
+synonym_value: full_type | number | string;
 
 section: 'секція' s_name=ID '{' section_element* '}';
 section_element: (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
@@ -33,7 +38,7 @@ params: param (',' param)* (',')?;
 param: p_name=ID ':' p_type=full_type;
 
 body: body_element+;
-body_element: if | while | (declare ';') | (define ';') | (assign ';') | (set ';') | (expr ';') | (return_body_element ';') | block | ';';
+body_element: if | while | (synonym ';') | (declare ';') | (define ';') | (assign ';') | (set ';') | (expr ';') | (return_body_element ';') | block | ';';
 return_body_element: 'вернути' (rbl_value=expr)?;
 block: '{' body '}';
 
@@ -58,8 +63,8 @@ particle: section_access #particle_section_access
 args: expr (',' expr)* (',')?;
 
 atom: particle #atom_particle
-    | NUMBER #number
-    | (s_prefix=ID)? STRING #string;
+    | number #atom_number
+    | string #atom_string;
 
 molecule: atom #molecule_atom
         | '!' n_value=molecule #not

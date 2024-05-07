@@ -22,6 +22,10 @@ namespace tsil::tk {
         }
         return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
       }
+      if (subject.kind == SubjectKindConstant) {
+        const auto constant = subject.data.constant;
+        return {constant->type, constant->xValue, nullptr};
+      }
       return {nullptr, nullptr,
               CompilerError::subjectIsNotRuntimeValue(astValue)};
     } else {
@@ -70,6 +74,10 @@ namespace tsil::tk {
             return {nullptr, nullptr, bakedDiiaResult.error};
           }
           return {bakedDiiaResult.type, bakedDiiaResult.xValue, nullptr};
+        }
+        if (subject.kind == SubjectKindConstant) {
+          const auto constant = subject.data.constant;
+          return {constant->type, constant->xValue, nullptr};
         }
         return {nullptr, nullptr,
                 CompilerError::subjectIsNotRuntimeValue(astValue)};

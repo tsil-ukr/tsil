@@ -233,6 +233,12 @@ namespace tsil::tk {
     SubjectKindDiia,
     SubjectKindSection,
     SubjectKindVariable,
+    SubjectKindConstant,
+  };
+
+  struct Constant {
+    Type* type;
+    x::Value* xValue;
   };
 
   struct Subject {
@@ -243,6 +249,7 @@ namespace tsil::tk {
       Diia* diia;
       Scope* section;
       Variable* variable;
+      Constant* constant;
     } data;
   };
 
@@ -335,6 +342,7 @@ namespace tsil::tk {
     CompilerValueResult compileLeft(x::Function* xFunction,
                                     tsil::x::FunctionBlock* xBlock,
                                     ast::ASTValue* astValue);
+    CompilerResult compileSynonym(ast::ASTValue* astValue);
 
     x::Value* compileSoftCast(tsil::x::Function* xFunction,
                               tsil::x::FunctionBlock* xBlock,

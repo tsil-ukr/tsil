@@ -38,7 +38,7 @@ namespace tsil::tk {
         const auto subject = scope->getSubject(typeId);
         if (subject.kind == SubjectKindType) {
           const auto type = subject.data.type;
-          if (genericValues.size()) {
+          if (!genericValues.empty()) {
             return {nullptr, "Неможливо застосувати шаблон до типу \"" +
                                  type->name + "\""};
           }

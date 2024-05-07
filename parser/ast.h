@@ -48,6 +48,7 @@ namespace tsil::ast {
   struct SectionAccessNode;
   struct SectionNode;
   struct GenericNode;
+  struct SynonymNode;
 
   enum BinaryOp : u_int32_t {
     ARITHMETIC_ADD,
@@ -120,6 +121,7 @@ namespace tsil::ast {
     KindSectionAccessNode,
     KindSectionNode,
     KindGenericNode,
+    KindSynonymNode,
   };
 
   std::string ast_value_kind_to_string(ASTValueKind kind);
@@ -166,6 +168,7 @@ namespace tsil::ast {
     tsil::ast::SectionNode* SectionNode;
     tsil::ast::ASTValue* ASTValue;
     tsil::ast::GenericNode* GenericNode;
+    tsil::ast::SynonymNode* SynonymNode;
   };
 
   struct ASTValue {
@@ -370,6 +373,11 @@ namespace tsil::ast {
   struct GenericNode {
     ASTValue* left;
     std::vector<ASTValue*> values;
+  };
+
+  struct SynonymNode {
+    std::string id;
+    ASTValue* value;
   };
 } // namespace tsil::ast
 #endif // TSIL_AST_H

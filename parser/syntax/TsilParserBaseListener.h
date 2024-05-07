@@ -31,11 +31,23 @@ public:
   virtual void enterReal_section_access(TsilParser::Real_section_accessContext * /*ctx*/) override { }
   virtual void exitReal_section_access(TsilParser::Real_section_accessContext * /*ctx*/) override { }
 
+  virtual void enterNumber(TsilParser::NumberContext * /*ctx*/) override { }
+  virtual void exitNumber(TsilParser::NumberContext * /*ctx*/) override { }
+
+  virtual void enterString(TsilParser::StringContext * /*ctx*/) override { }
+  virtual void exitString(TsilParser::StringContext * /*ctx*/) override { }
+
   virtual void enterTake(TsilParser::TakeContext * /*ctx*/) override { }
   virtual void exitTake(TsilParser::TakeContext * /*ctx*/) override { }
 
   virtual void enterTake_parts(TsilParser::Take_partsContext * /*ctx*/) override { }
   virtual void exitTake_parts(TsilParser::Take_partsContext * /*ctx*/) override { }
+
+  virtual void enterSynonym(TsilParser::SynonymContext * /*ctx*/) override { }
+  virtual void exitSynonym(TsilParser::SynonymContext * /*ctx*/) override { }
+
+  virtual void enterSynonym_value(TsilParser::Synonym_valueContext * /*ctx*/) override { }
+  virtual void exitSynonym_value(TsilParser::Synonym_valueContext * /*ctx*/) override { }
 
   virtual void enterSection(TsilParser::SectionContext * /*ctx*/) override { }
   virtual void exitSection(TsilParser::SectionContext * /*ctx*/) override { }
@@ -133,11 +145,11 @@ public:
   virtual void enterAtom_particle(TsilParser::Atom_particleContext * /*ctx*/) override { }
   virtual void exitAtom_particle(TsilParser::Atom_particleContext * /*ctx*/) override { }
 
-  virtual void enterNumber(TsilParser::NumberContext * /*ctx*/) override { }
-  virtual void exitNumber(TsilParser::NumberContext * /*ctx*/) override { }
+  virtual void enterAtom_number(TsilParser::Atom_numberContext * /*ctx*/) override { }
+  virtual void exitAtom_number(TsilParser::Atom_numberContext * /*ctx*/) override { }
 
-  virtual void enterString(TsilParser::StringContext * /*ctx*/) override { }
-  virtual void exitString(TsilParser::StringContext * /*ctx*/) override { }
+  virtual void enterAtom_string(TsilParser::Atom_stringContext * /*ctx*/) override { }
+  virtual void exitAtom_string(TsilParser::Atom_stringContext * /*ctx*/) override { }
 
   virtual void enterMolecule_atom(TsilParser::Molecule_atomContext * /*ctx*/) override { }
   virtual void exitMolecule_atom(TsilParser::Molecule_atomContext * /*ctx*/) override { }

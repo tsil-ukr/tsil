@@ -30,6 +30,11 @@ namespace tsil::tk {
         if (blockResult.error) {
           return {nullptr, nullptr, blockResult.error};
         }
+      } else if (childAstValue->kind == tsil::ast::KindSynonymNode) {
+        const auto result = this->compileSynonym(childAstValue);
+        if (result.error) {
+          return {nullptr, nullptr, result.error};
+        }
       } else if (childAstValue->kind == ast::KindDefineNode) {
         const auto defineNode = childAstValue->data.DefineNode;
         if (this->hasLocalSubject(defineNode->id)) {

@@ -35,11 +35,27 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitNumber(TsilParser::NumberContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitString(TsilParser::StringContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitTake(TsilParser::TakeContext *ctx) override {
     return visitChildren(ctx);
   }
 
   virtual std::any visitTake_parts(TsilParser::Take_partsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSynonym(TsilParser::SynonymContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSynonym_value(TsilParser::Synonym_valueContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -171,11 +187,11 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitNumber(TsilParser::NumberContext *ctx) override {
+  virtual std::any visitAtom_number(TsilParser::Atom_numberContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitString(TsilParser::StringContext *ctx) override {
+  virtual std::any visitAtom_string(TsilParser::Atom_stringContext *ctx) override {
     return visitChildren(ctx);
   }
 

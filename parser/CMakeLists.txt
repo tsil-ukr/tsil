@@ -33,6 +33,7 @@ set(TSIL_PARSER_SRC
         visitor/visitSet.cpp
         visitor/visitString.cpp
         visitor/visitStructure.cpp
+        visitor/visitSynonym.cpp
         visitor/visitLogical.cpp
         visitor/visitTake.cpp
         visitor/visitType.cpp

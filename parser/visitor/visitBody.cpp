@@ -10,6 +10,9 @@ namespace tsil::parser {
       if (body_element->while_()) {
         body.push_back(AAV(visitWhile(body_element->while_())));
       }
+      if (body_element->synonym()) {
+        body.push_back(AAV(visitSynonym(body_element->synonym())));
+      }
       if (body_element->declare()) {
         body.push_back(AAV(visitDeclare(body_element->declare())));
       }

@@ -15,29 +15,30 @@ public:
     KW_TSIL = 1, KW_DIIA = 2, KW_IF = 3, KW_ELSE = 4, KW_WHILE = 5, KW_RETURN = 6, 
     KW_STRUCT = 7, KW_AS = 8, KW_SECTION = 9, KW_IMPORT = 10, KW_EXPORT = 11, 
     KW_COMPOSITION = 12, KW_PROPERTY = 13, KW_PUBLIC = 14, KW_PRIVATE = 15, 
-    KW_LOCAL = 16, KW_NOT = 17, KW_OR = 18, KW_AND = 19, KW_VAR = 20, EQUAL = 21, 
-    GREATER = 22, LESSER = 23, DOT = 24, PLUS = 25, MINUS = 26, MULTIPLY = 27, 
-    DIVIDE = 28, MOD = 29, POWER = 30, AND = 31, OR = 32, PAREN_OPEN = 33, 
-    PAREN_CLOSE = 34, BRACKET_OPEN = 35, BRACKET_CLOSE = 36, QUESTION = 37, 
-    COLON = 38, TILDA = 39, QUOTE = 40, DOUBLE_QUOTE = 41, EXCLAMATION = 42, 
-    COMA = 43, SEMICOLON = 44, QUOTE_OPEN = 45, QUOTE_CLOSE = 46, NUMBER = 47, 
-    INTEGER = 48, FLOAT = 49, HEX = 50, BIN = 51, ID = 52, STRING = 53, 
-    COMMENT = 54, LINE_COMMENT = 55, WS = 56, NL = 57
+    KW_LOCAL = 16, KW_NOT = 17, KW_OR = 18, KW_AND = 19, KW_VAR = 20, KW_SYNONYM = 21, 
+    EQUAL = 22, GREATER = 23, LESSER = 24, DOT = 25, PLUS = 26, MINUS = 27, 
+    MULTIPLY = 28, DIVIDE = 29, MOD = 30, POWER = 31, AND = 32, OR = 33, 
+    PAREN_OPEN = 34, PAREN_CLOSE = 35, BRACKET_OPEN = 36, BRACKET_CLOSE = 37, 
+    QUESTION = 38, COLON = 39, TILDA = 40, QUOTE = 41, DOUBLE_QUOTE = 42, 
+    EXCLAMATION = 43, COMA = 44, SEMICOLON = 45, QUOTE_OPEN = 46, QUOTE_CLOSE = 47, 
+    NUMBER = 48, INTEGER = 49, FLOAT = 50, HEX = 51, BIN = 52, ID = 53, 
+    STRING = 54, COMMENT = 55, LINE_COMMENT = 56, WS = 57, NL = 58
   };
 
   enum {
     RuleFile = 0, RuleProgram = 1, RuleProgram_element = 2, RuleIdentifier = 3, 
-    RuleSection_access = 4, RuleTake = 5, RuleTake_parts = 6, RuleSection = 7, 
-    RuleSection_element = 8, RuleStructure = 9, RuleStructure_generics = 10, 
-    RuleStructure_generic = 11, RuleStructure_params = 12, RuleStructure_param = 13, 
-    RuleDiia_head = 14, RuleDiia = 15, RuleDiia_generics = 16, RuleDiia_generic = 17, 
-    RuleDiia_declaration = 18, RuleParams = 19, RuleParam = 20, RuleBody = 21, 
-    RuleBody_element = 22, RuleReturn_body_element = 23, RuleBlock = 24, 
-    RuleIf = 25, RuleWhile = 26, RuleDeclare = 27, RuleDefine = 28, RuleAssign = 29, 
-    RuleSet = 30, RuleParticle = 31, RuleArgs = 32, RuleAtom = 33, RuleMolecule = 34, 
-    RuleOperation = 35, RuleExpr = 36, RuleConstruct_args = 37, RuleConstruct_arg = 38, 
-    RuleBasic_type = 39, RuleFull_type = 40, RuleComplex_function_type_args = 41, 
-    RuleBitwise_op = 42, RuleComparison_op = 43, RuleLogical_op = 44
+    RuleSection_access = 4, RuleNumber = 5, RuleString = 6, RuleTake = 7, 
+    RuleTake_parts = 8, RuleSynonym = 9, RuleSynonym_value = 10, RuleSection = 11, 
+    RuleSection_element = 12, RuleStructure = 13, RuleStructure_generics = 14, 
+    RuleStructure_generic = 15, RuleStructure_params = 16, RuleStructure_param = 17, 
+    RuleDiia_head = 18, RuleDiia = 19, RuleDiia_generics = 20, RuleDiia_generic = 21, 
+    RuleDiia_declaration = 22, RuleParams = 23, RuleParam = 24, RuleBody = 25, 
+    RuleBody_element = 26, RuleReturn_body_element = 27, RuleBlock = 28, 
+    RuleIf = 29, RuleWhile = 30, RuleDeclare = 31, RuleDefine = 32, RuleAssign = 33, 
+    RuleSet = 34, RuleParticle = 35, RuleArgs = 36, RuleAtom = 37, RuleMolecule = 38, 
+    RuleOperation = 39, RuleExpr = 40, RuleConstruct_args = 41, RuleConstruct_arg = 42, 
+    RuleBasic_type = 43, RuleFull_type = 44, RuleComplex_function_type_args = 45, 
+    RuleBitwise_op = 46, RuleComparison_op = 47, RuleLogical_op = 48
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -62,8 +63,12 @@ public:
   class Program_elementContext;
   class IdentifierContext;
   class Section_accessContext;
+  class NumberContext;
+  class StringContext;
   class TakeContext;
   class Take_partsContext;
+  class SynonymContext;
+  class Synonym_valueContext;
   class SectionContext;
   class Section_elementContext;
   class StructureContext;
@@ -142,6 +147,7 @@ public:
     virtual size_t getRuleIndex() const override;
     TakeContext *take();
     antlr4::tree::TerminalNode *SEMICOLON();
+    SynonymContext *synonym();
     DeclareContext *declare();
     DefineContext *define();
     SectionContext *section();
@@ -202,6 +208,38 @@ public:
 
   Section_accessContext* section_access();
 
+  class  NumberContext : public antlr4::ParserRuleContext {
+  public:
+    NumberContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *NUMBER();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  NumberContext* number();
+
+  class  StringContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *s_prefix = nullptr;
+    StringContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *STRING();
+    antlr4::tree::TerminalNode *ID();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  StringContext* string();
+
   class  TakeContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *t_type = nullptr;
@@ -242,6 +280,43 @@ public:
   };
 
   Take_partsContext* take_parts();
+
+  class  SynonymContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *s_name = nullptr;
+    TsilParser::Synonym_valueContext *s_value = nullptr;
+    SynonymContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_SYNONYM();
+    antlr4::tree::TerminalNode *EQUAL();
+    antlr4::tree::TerminalNode *ID();
+    Synonym_valueContext *synonym_value();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  SynonymContext* synonym();
+
+  class  Synonym_valueContext : public antlr4::ParserRuleContext {
+  public:
+    Synonym_valueContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    Full_typeContext *full_type();
+    NumberContext *number();
+    StringContext *string();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Synonym_valueContext* synonym_value();
 
   class  SectionContext : public antlr4::ParserRuleContext {
   public:
@@ -559,8 +634,9 @@ public:
     virtual size_t getRuleIndex() const override;
     IfContext *if_();
     WhileContext *while_();
-    DeclareContext *declare();
+    SynonymContext *synonym();
     antlr4::tree::TerminalNode *SEMICOLON();
+    DeclareContext *declare();
     DefineContext *define();
     AssignContext *assign();
     SetContext *set();
@@ -914,24 +990,22 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  NumberContext : public AtomContext {
+  class  Atom_numberContext : public AtomContext {
   public:
-    NumberContext(AtomContext *ctx);
+    Atom_numberContext(AtomContext *ctx);
 
-    antlr4::tree::TerminalNode *NUMBER();
+    NumberContext *number();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  StringContext : public AtomContext {
+  class  Atom_stringContext : public AtomContext {
   public:
-    StringContext(AtomContext *ctx);
+    Atom_stringContext(AtomContext *ctx);
 
-    antlr4::Token *s_prefix = nullptr;
-    antlr4::tree::TerminalNode *STRING();
-    antlr4::tree::TerminalNode *ID();
+    StringContext *string();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
