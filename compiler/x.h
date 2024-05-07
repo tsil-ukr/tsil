@@ -78,11 +78,9 @@ namespace tsil::x {
     std::string computeNextVarName(const std::string& prefix);
     std::string computeNextGlobalName(const std::string& prefix);
 
-    Value* putGlobal(Type* type, Value* value);
-    Value* putStringConstant(const std::string& value);
-    Value* putI8Constant(char value);
-    Value* putI32Constant(int value);
-    Value* putI64Constant(long value);
+    Value* putGlobal(const std::string& attributes, Type* type, Value* value);
+    Value* putStringConstant(const std::string& attributes,
+                             const std::string& value);
 
     Type* defineNativeType(const std::string& name);
     Type* defineStructType(const std::string& name, std::vector<Type*> fields);
@@ -265,7 +263,7 @@ namespace tsil::x {
   };
 
   struct Constant {
-    size_t variable_index;
+    std::string attributes;
     std::string name;
     Type* type;
     std::string value;
@@ -274,7 +272,7 @@ namespace tsil::x {
   };
 
   struct Global {
-    size_t variable_index;
+    std::string attributes;
     std::string name;
     Type* type;
     Value* value;
@@ -290,7 +288,6 @@ namespace tsil::x {
   };
 
   struct Type {
-    size_t variable_index;
     TypeType type;
     std::string name;
     std::vector<Type*> fields;

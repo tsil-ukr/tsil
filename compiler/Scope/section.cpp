@@ -52,8 +52,8 @@ namespace tsil::tk {
                                   : this->compiler->integerType;
             const auto xValue = new x::Value(
                 type->xType, tsilNumberToLLVMNumber(numberNode->value));
-            const auto globalXValue =
-                this->compiler->xModule->putGlobal(type->xType, xValue);
+            const auto globalXValue = this->compiler->xModule->putGlobal(
+                "private", type->xType, xValue);
             const auto variable = new Variable();
             variable->type = type;
             variable->xValue = globalXValue;
@@ -181,6 +181,12 @@ namespace tsil::tk {
               diia->body = diiaNode->body;
               diia->isDeclaration = false;
               diia->fillBakedDiiasWithBodies();
+              if (diia->genericDefinitions.empty()) {
+                const auto bakedDiiaResult = diia->bakeDiia(this, {});
+                if (bakedDiiaResult.error) {
+                  return {bakedDiiaResult.error};
+                }
+              }
             } else {
               return {tsil::tk::CompilerError::subjectAlreadyDefined(
                   childAstValue)};

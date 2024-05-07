@@ -385,14 +385,18 @@ int main(int argc, char** argv) {
       }
     }
     fuseCommand.outputPath = target;
-    if (target.ends_with(".обʼєкт") || target.ends_with(".o")) {
+    std::string targetFileName = std::filesystem::path(target).filename();
+    if (targetFileName.ends_with(".обʼєкт") || targetFileName.ends_with(".o")) {
       fuseCommand.outputType = FuseCommandOutputTypeObject;
-    } else if (target.ends_with(".динаміт") || target.ends_with(".so")) {
+    } else if (targetFileName.ends_with(".динаміт") ||
+               targetFileName.ends_with(".so")) {
       fuseCommand.outputType = FuseCommandOutputTypeSharedLibrary;
-    } else if (target.ends_with(".васм") || target.ends_with(".wasm")) {
+    } else if (targetFileName.ends_with(".васм") ||
+               targetFileName.ends_with(".wasm")) {
       fuseCommand.outputType = FuseCommandOutputTypeWasm;
-    } else if (target.ends_with(".сплав") ||
-               std::count(target.begin(), target.end(), '.') == 0) {
+    } else if (targetFileName.ends_with(".сплав") ||
+               std::count(targetFileName.begin(), targetFileName.end(), '.') ==
+                   0) {
       fuseCommand.outputType = FuseCommandOutputTypeExecutable;
     } else {
       std::cerr << "помилка: Вихідний файл повинен мати розширення .o, "
