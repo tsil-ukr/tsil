@@ -7,7 +7,8 @@ namespace tsil::tk {
     const auto callNode = astValue->data.CallNode;
     if (callNode->value->kind == ast::KindIdentifierNode) {
       const auto identifierNode = callNode->value->data.IdentifierNode;
-      if (identifierNode->name == "комірка") {
+      if (identifierNode->name == "комірка" ||
+          identifierNode->name == "памʼять") {
         return this->compileCall_Pointer(xFunction, xBlock, astValue);
       }
       if (identifierNode->name == "вміст") {
@@ -29,7 +30,8 @@ namespace tsil::tk {
       const auto genericNode = callNode->value->data.GenericNode;
       if (genericNode->left->kind == ast::KindIdentifierNode) {
         const auto identifierNode = genericNode->left->data.IdentifierNode;
-        if (identifierNode->name == "комірка") {
+        if (identifierNode->name == "комірка" ||
+            identifierNode->name == "памʼять") {
           return this->compileCall_Pointer(xFunction, xBlock, astValue);
         }
         if (identifierNode->name == "вміст") {

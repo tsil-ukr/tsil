@@ -27,7 +27,7 @@ namespace tsil::tk {
         }
         genericValues.push_back(genericTypeResult.type);
       }
-      if (typeId == "комірка") {
+      if (typeId == "комірка" || typeId == "памʼять") {
         if (genericValues.empty()) {
           return {scope->compiler->pointerType};
         }
