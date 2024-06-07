@@ -16,6 +16,7 @@ namespace tsil::tk {
   struct Scope;
   struct Subject;
   struct Type;
+  struct Constant;
 
   void str_replace_all(std::string& str,
                        const std::string& from,
@@ -55,6 +56,8 @@ namespace tsil::tk {
     Type* uint32Type = nullptr;
     Type* uint64Type = nullptr;
     Type* positiveType = nullptr;
+
+    Constant* nullConstant = nullptr;
 
     x::Value* callocXValue = nullptr;
     x::Value* mallocXValue = nullptr;

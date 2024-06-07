@@ -278,6 +278,13 @@ int compile(const CompileCommand& compileCommand) {
         tsil::tk::Subject{tsil::tk::SubjectKindType, positiveType});
     compiler->positiveType = positiveType;
 
+    compiler->nullConstant = new tsil::tk::Constant(
+        pointerType,
+        new tsil::x::Value(compiler->xModule->pointerType, "null"));
+    compiler->globalScope->setSubject(
+        "пусто", {.kind = tsil::tk::SubjectKindConstant,
+                  .data = {.constant = compiler->nullConstant}});
+
     const auto compilerError =
         compiler->compileProgramNode(parserResult.program_node);
     if (compilerError != nullptr) {

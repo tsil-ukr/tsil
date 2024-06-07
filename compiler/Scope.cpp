@@ -498,10 +498,10 @@ namespace tsil::tk {
     if (type->equals(targetType)) {
       return xValue;
     }
-    //    if (type->type == TypeTypePointer && targetType->type == TypeTypePointer) {
-    //      // todo: cast pointer?
-    //      return xValue;
-    //    }
+    if (type->type == TypeTypePointer &&
+        xValue == this->compiler->nullConstant->xValue) {
+      return xValue;
+    }
     if (type == this->compiler->uint64Type &&
         targetType == this->compiler->positiveType) {
       return xValue;
@@ -683,6 +683,15 @@ namespace tsil::tk {
                                    Type* type,
                                    x::Value* xValue,
                                    Type* targetType) {
+    if (type->isPointer() && targetType->isPointer()) {
+      return new x::Value(targetType->xType, xValue->name);
+    }
+    if (type->isPointer() && targetType->type == TypeTypeDiia) {
+      return new x::Value(targetType->xType, xValue->name);
+    }
+    if (type->type == TypeTypeDiia && targetType->type == TypeTypeDiia) {
+      return new x::Value(targetType->xType, xValue->name);
+    }
     return nullptr;
   }
 } // namespace tsil::tk
