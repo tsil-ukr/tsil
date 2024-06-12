@@ -422,24 +422,20 @@ int main(int argc, char** argv) {
         cmd.emplace_back("-c");
         if (fuseCommand.releaseMode) {
           cmd.emplace_back("-O3");
-          cmd.emplace_back("-flto");
         }
       } else if (fuseCommand.outputType == FuseCommandOutputTypeSharedLibrary) {
         cmd.emplace_back("-shared");
         if (fuseCommand.releaseMode) {
           cmd.emplace_back("-O3");
-          cmd.emplace_back("-flto");
         }
       } else if (fuseCommand.outputType == FuseCommandOutputTypeExecutable) {
         if (fuseCommand.releaseMode) {
           cmd.emplace_back("-O3");
-          cmd.emplace_back("-flto");
         }
       } else if (fuseCommand.outputType == FuseCommandOutputTypeWasm) {
         cmd.emplace_back("--target=wasm32");
         if (fuseCommand.releaseMode) {
           cmd.emplace_back("-O3");
-          cmd.emplace_back("-flto");
         }
         cmd.emplace_back("-nostdlib");
         cmd.emplace_back("-Wl,--no-entry");
