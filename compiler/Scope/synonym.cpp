@@ -20,7 +20,7 @@ namespace tsil::tk {
                        Subject{SubjectKindConstant, {.constant = constant}});
     } else if (synonymNode->value->kind == ast::KindStringNode) {
       const auto stringNode = synonymNode->value->data.StringNode;
-      const auto stringValue = tsilStringToLLVMString(stringNode->value);
+      const auto stringValue = tsilStringToCString(stringNode->value);
       const auto xStringConstant =
           this->compiler->xModule->putStringConstant("private", stringValue);
       Type* type = nullptr;

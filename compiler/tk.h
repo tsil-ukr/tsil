@@ -27,7 +27,7 @@ namespace tsil::tk {
 
   std::string tsilNumberToLLVMNumber(const std::string& value);
 
-  std::string tsilStringToLLVMString(const std::string& value);
+  std::string tsilStringToCString(const std::string& value);
 
   struct TakeResult {
     std::string error;

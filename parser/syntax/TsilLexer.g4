@@ -57,7 +57,7 @@ BIN: '0д' ('0' | '1')+;
 
 ID: ID_START ID_CONTINUE*;
 
-STRING: '"' ( ~["\n\r] )* '"';
+STRING: '"' ( ~["\n\r] | '\\"' )* '"';
 
 COMMENT: '/' '*' (COMMENT | .)*? '*' '/' -> channel(HIDDEN);
 LINE_COMMENT: '/' '/' (LINE_COMMENT | ~[\r\n])* -> channel(HIDDEN);

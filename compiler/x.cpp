@@ -1,6 +1,19 @@
 #include "x.h"
 
 namespace tsil::x {
+  void str_replace_all(std::string& str,
+                       const std::string& from,
+                       const std::string& to) {
+    if (from.empty()) {
+      return;
+    }
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+      str.replace(start_pos, from.length(), to);
+      start_pos += to.length();
+    }
+  }
+
   void implode(std::vector<std::string>& v,
                const std::string& sep,
                std::string& result) {
@@ -10,6 +23,21 @@ namespace tsil::x {
         result += sep;
       }
     }
+  }
+
+  std::string cStringToLLVMString(const std::string& value) {
+    auto stringValue = value;
+    str_replace_all(stringValue, "\n", "\\0A");
+    str_replace_all(stringValue, "\t", "\\09");
+    str_replace_all(stringValue, "\r", "\\0D");
+    str_replace_all(stringValue, "\\", "\\5C");
+    str_replace_all(stringValue, "\a", "\\07");
+    str_replace_all(stringValue, "\b", "\\08");
+    str_replace_all(stringValue, "\f", "\\0C");
+    str_replace_all(stringValue, "\v", "\\0B");
+    str_replace_all(stringValue, "\"", "\\22");
+    str_replace_all(stringValue, "\0", "\\00");
+    return stringValue;
   }
 
   std::string Module::computeNextName(const std::string& prefix) {
@@ -732,7 +760,7 @@ namespace tsil::x {
       result += "constant " + this->type->name + " " + this->value;
     } else {
       result += "constant [" + std::to_string(this->value.size() + 1) +
-                " x i8] c\"" + this->value + "\\00\"";
+                " x i8] c\"" + cStringToLLVMString(this->value) + "\\00\"";
     }
     return result;
   }

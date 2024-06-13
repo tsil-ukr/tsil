@@ -80,7 +80,7 @@ namespace tsil::tk {
     return value;
   }
 
-  std::string tsilStringToLLVMString(const std::string& value) {
+  std::string tsilStringToCString(const std::string& value) {
     auto stringValue = value;
     str_replace_all(stringValue, "\\н", "\n");
     str_replace_all(stringValue, "\\т", "\t");
@@ -88,7 +88,6 @@ namespace tsil::tk {
     str_replace_all(stringValue, "\\n", "\n");
     str_replace_all(stringValue, "\\t", "\t");
     str_replace_all(stringValue, "\\r", "\r");
-    str_replace_all(stringValue, "\\\"", "\"");
     str_replace_all(stringValue, "\\\\", "\\");
     str_replace_all(stringValue, "\\a", "\a");
     str_replace_all(stringValue, "\\b", "\b");
