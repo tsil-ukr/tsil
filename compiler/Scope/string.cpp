@@ -8,7 +8,7 @@ namespace tsil::tk {
     const auto stringValue = tsilStringToCString(stringNode->value);
     const auto xStringConstant =
         this->compiler->xModule->putStringConstant("private", stringValue);
-    if (stringNode->prefix == "сі") {
+    if (stringNode->prefix == "ю8") {
       return {this->compiler->int8Type->getPointerType(this), xStringConstant,
               nullptr};
     }

@@ -502,6 +502,9 @@ namespace tsil::tk {
         xValue == this->compiler->nullConstant->xValue) {
       return xValue;
     }
+    if (type->type == TypeTypeDiia && (targetType->isPointer() && targetType->pointerTo == nullptr)) {
+      return xValue;
+    }
     if (type == this->compiler->uint64Type &&
         targetType == this->compiler->positiveType) {
       return xValue;

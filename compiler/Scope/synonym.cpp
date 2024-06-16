@@ -24,7 +24,7 @@ namespace tsil::tk {
       const auto xStringConstant =
           this->compiler->xModule->putStringConstant("private", stringValue);
       Type* type = nullptr;
-      if (stringNode->prefix == "сі") {
+      if (stringNode->prefix == "ю8") {
         type = this->compiler->int8Type->getPointerType(this);
       } else {
         return {CompilerError::fromASTValue(

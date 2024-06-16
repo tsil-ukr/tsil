@@ -1,6 +1,6 @@
 #include <iostream>
 
-extern "C" void друк_сі(char* value) {
+extern "C" void друк_ю8(char* value) {
   std::cout << value << std::endl;
 }
 
@@ -48,7 +48,7 @@ extern "C" void друк_дійсне(double value) {
   std::cout << value << std::endl;
 }
 
-extern "C" void вивести_сі(char* value) {
+extern "C" void вивести_ю8(char* value) {
   std::cout << value;
 }
 
