@@ -52,8 +52,8 @@ namespace tsil::tk {
           type = typeResult.type;
         }
         if (defineNode->value) {
-          auto valueResult =
-              this->compileValue(xFunction, xBlock, defineNode->value);
+          auto valueResult = this->compileValueNoVariation(xFunction, xBlock,
+                                                           defineNode->value);
           if (valueResult.error) {
             return {nullptr, nullptr, valueResult.error};
           }
@@ -100,8 +100,8 @@ namespace tsil::tk {
             const auto variable = subject.data.variable;
             const auto variableType = variable->type;
             const auto variableXValue = variable->xValue;
-            const auto valueResult =
-                this->compileValue(xFunction, xBlock, assignNode->value);
+            const auto valueResult = this->compileValueNoVariation(
+                xFunction, xBlock, assignNode->value);
             if (valueResult.error) {
               return {nullptr, nullptr, valueResult.error};
             }
@@ -130,7 +130,7 @@ namespace tsil::tk {
         }
       } else if (childAstValue->kind == ast::KindCallNode) {
         const auto valueResult =
-            this->compileValue(xFunction, xBlock, childAstValue);
+            this->compileValueNoVariation(xFunction, xBlock, childAstValue);
         if (valueResult.error) {
           return {nullptr, nullptr, valueResult.error};
         }
@@ -143,7 +143,7 @@ namespace tsil::tk {
         const auto xWhileExitBlock =
             this->compiler->xModule->defineFunctionBlock(xFunction,
                                                          "while_exit");
-        auto valueResult = this->compileValue(
+        auto valueResult = this->compileValueNoVariation(
             xFunction, xWhileBlock, childAstValue->data.WhileNode->condition);
         if (valueResult.error) {
           return {nullptr, nullptr, valueResult.error};
@@ -181,7 +181,7 @@ namespace tsil::tk {
             this->compiler->xModule->defineFunctionBlock(xFunction, "if_else");
         const auto xIfExitBlock =
             this->compiler->xModule->defineFunctionBlock(xFunction, "if_exit");
-        auto valueResult = this->compileValue(
+        auto valueResult = this->compileValueNoVariation(
             xFunction, xIfBlock, childAstValue->data.IfNode->condition);
         if (valueResult.error) {
           return {nullptr, nullptr, valueResult.error};
@@ -221,7 +221,7 @@ namespace tsil::tk {
         Type* type = nullptr;
         x::Value* xValue = nullptr;
         if (childAstValue->data.ReturnNode->value) {
-          const auto valueResult = this->compileValue(
+          const auto valueResult = this->compileValueNoVariation(
               xFunction, xBlock, childAstValue->data.ReturnNode->value);
           if (valueResult.error) {
             return {nullptr, nullptr, valueResult.error};

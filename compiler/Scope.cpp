@@ -382,6 +382,9 @@ namespace tsil::tk {
       if (leftResult.error) {
         return leftResult;
       }
+      if (leftResult.type->type == TypeTypeVariationInstance) {
+        return {leftResult.type, leftResult.xValue, nullptr};
+      }
       const auto loadXValue =
           this->compiler->xModule->pushFunctionBlockLoadInstruction(
               xBlock, leftResult.type->xType, leftResult.xValue);
@@ -418,11 +421,27 @@ namespace tsil::tk {
       if (sectionAccessResult.error) {
         return {nullptr, nullptr, sectionAccessResult.error};
       }
-      return sectionAccessResult.scope->compileValue(
+      return sectionAccessResult.scope->compileValueNoVariation(
           xFunction, xBlock, sectionAccessResult.lastPart);
     }
     return {nullptr, nullptr,
             CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED VALUE")};
+  }
+
+  CompilerValueResult Scope::compileValueNoVariation(
+      tsil::x::Function* xFunction,
+      tsil::x::FunctionBlock* xBlock,
+      ast::ASTValue* astValue) {
+    const auto result = this->compileValue(xFunction, xBlock, astValue);
+    if (result.error) {
+      return result;
+    }
+    if (result.type->type == TypeTypeVariationInstance) {
+      return {nullptr, nullptr,
+              CompilerError::fromASTValue(
+                  astValue, "Неможливо отримати варіацію як значення")};
+    }
+    return result;
   }
 
   SectionAccessResult Scope::resolveSectionAccess(ast::ASTValue* astValue) {

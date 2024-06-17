@@ -54,7 +54,7 @@ namespace tsil::tk {
     Type* diiaType;
     x::Value* diiaXValue;
     const auto valueResult =
-        this->compileValue(xFunction, xBlock, callNode->value);
+        this->compileValueNoVariation(xFunction, xBlock, callNode->value);
     if (valueResult.error) {
       return {nullptr, nullptr, valueResult.error};
     }
@@ -72,7 +72,8 @@ namespace tsil::tk {
     size_t xArgsVecSize = 0;
     for (const auto& argAstValue : callNode->args) {
       const auto& diiaParameter = diiaType->diiaParameters[argIndex];
-      auto argResult = this->compileValue(xFunction, xBlock, argAstValue);
+      auto argResult =
+          this->compileValueNoVariation(xFunction, xBlock, argAstValue);
       if (argResult.error) {
         return argResult;
       }
@@ -221,7 +222,7 @@ namespace tsil::tk {
     }
     const auto firstArgAstValue = callNode->args[0];
     auto firstArgResult =
-        this->compileValue(xFunction, xBlock, firstArgAstValue);
+        this->compileValueNoVariation(xFunction, xBlock, firstArgAstValue);
     if (firstArgResult.error) {
       return firstArgResult;
     }
@@ -293,7 +294,7 @@ namespace tsil::tk {
     }
     const auto firstArgAstValue = callNode->args[0];
     auto firstArgResult =
-        this->compileValue(xFunction, xBlock, firstArgAstValue);
+        this->compileValueNoVariation(xFunction, xBlock, firstArgAstValue);
     if (firstArgResult.error) {
       return firstArgResult;
     }
@@ -359,7 +360,7 @@ namespace tsil::tk {
     }
     const auto firstArgAstValue = callNode->args[0];
     auto firstArgResult =
-        this->compileValue(xFunction, xBlock, firstArgAstValue);
+        this->compileValueNoVariation(xFunction, xBlock, firstArgAstValue);
     if (firstArgResult.error) {
       return firstArgResult;
     }
@@ -379,7 +380,7 @@ namespace tsil::tk {
     }
     const auto secondArgAstValue = callNode->args[1];
     auto secondArgResult =
-        this->compileValue(xFunction, xBlock, secondArgAstValue);
+        this->compileValueNoVariation(xFunction, xBlock, secondArgAstValue);
     if (secondArgResult.error) {
       return secondArgResult;
     }
@@ -423,7 +424,7 @@ namespace tsil::tk {
     }
     auto firstArgAstValue = callNode->args[0];
     auto firstArgResult =
-        this->compileValue(xFunction, xBlock, firstArgAstValue);
+        this->compileValueNoVariation(xFunction, xBlock, firstArgAstValue);
     if (firstArgResult.error) {
       return firstArgResult;
     }

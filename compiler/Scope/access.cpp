@@ -14,7 +14,8 @@ namespace tsil::tk {
     }
     leftType = leftResult.type;
     leftXValue = leftResult.xValue;
-    auto indexResult = this->compileValue(xFunction, xBlock, accessNode->index);
+    auto indexResult =
+        this->compileValueNoVariation(xFunction, xBlock, accessNode->index);
     if (indexResult.error) {
       return indexResult;
     }
@@ -36,7 +37,8 @@ namespace tsil::tk {
               xBlock, leftType->xType, leftXValue);
       const auto xGepValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-              xBlock, leftType->pointerTo->xType, loadPtrXValue, {indexResult.xValue});
+              xBlock, leftType->pointerTo->xType, loadPtrXValue,
+              {indexResult.xValue});
       return {leftType->pointerTo, xGepValue, nullptr};
     }
     if (leftType->type == TypeTypeArray) {

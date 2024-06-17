@@ -6,7 +6,7 @@ namespace tsil::tk {
                                        ast::ASTValue* astValue) {
     const auto asNode = astValue->data.AsNode;
     const auto valueResult =
-        this->compileValue(xFunction, xBlock, asNode->value);
+        this->compileValueNoVariation(xFunction, xBlock, asNode->value);
     if (valueResult.error) {
       return valueResult;
     }
@@ -21,10 +21,9 @@ namespace tsil::tk {
       newXValue = this->compileHardCast(xFunction, xBlock, valueResult.type,
                                         valueResult.xValue, typeResult.type);
       if (newXValue == nullptr) {
-        return {
-            nullptr, nullptr,
-            CompilerError::cannotCast(
-                asNode->value, valueResult.type, typeResult.type)};
+        return {nullptr, nullptr,
+                CompilerError::cannotCast(asNode->value, valueResult.type,
+                                          typeResult.type)};
       }
     }
     return {typeResult.type, newXValue, nullptr};

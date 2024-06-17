@@ -32,13 +32,46 @@ namespace tsil::tk {
             CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};
       }
       const auto field = leftType->structureInstanceFields[getNode->id];
+      auto fieldType = field.type;
+      if (fieldType->type == TypeTypeVariationInstance) {
+        fieldType->shortTermVariationIndex = field.index;
+        fieldType->shortTermVariationLeftType = leftType;
+        return {fieldType, leftXValue, nullptr};
+      }
       const auto gepXValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
               xBlock, leftType->xType, leftXValue,
               {new x::Value(this->compiler->int32Type->xType, "0"),
                new x::Value(this->compiler->int32Type->xType,
                             std::to_string(field.index))});
-      return {field.type, gepXValue, nullptr};
+      return {fieldType, gepXValue, nullptr};
+    }
+    if (leftType->type == TypeTypeVariationInstance) {
+      if (!leftType->variationInstanceFields.contains(getNode->id)) {
+        return {
+            nullptr, nullptr,
+            CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};
+      }
+      const auto field = leftType->variationInstanceFields[getNode->id];
+      auto fieldType = field.type;
+      if (leftType->shortTermVariationIndex == -1) {
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(astValue, "Щось пішло не так")};
+      }
+      if (leftType->shortTermVariationLeftType == nullptr) {
+        return {nullptr, nullptr,
+                CompilerError::fromASTValue(astValue, "Щось пішло не так")};
+      }
+      const auto gepXValue =
+          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+              xBlock, leftType->shortTermVariationLeftType->xType, leftXValue,
+              {new x::Value(this->compiler->int32Type->xType, "0"),
+               new x::Value(
+                   this->compiler->int32Type->xType,
+                   std::to_string(leftType->shortTermVariationIndex))});
+      leftType->shortTermVariationIndex = -1;
+      leftType->shortTermVariationLeftType = nullptr;
+      return {fieldType, gepXValue, nullptr};
     }
     return {nullptr, nullptr,
             CompilerError::typeHasNoProperty(astValue, leftType, getNode->id)};

@@ -346,6 +346,9 @@ namespace tsil::tk {
     CompilerValueResult compileValue(x::Function* xFunction,
                                      tsil::x::FunctionBlock* xBlock,
                                      ast::ASTValue* astValue);
+    CompilerValueResult compileValueNoVariation(x::Function* xFunction,
+                                                tsil::x::FunctionBlock* xBlock,
+                                                ast::ASTValue* astValue);
     CompilerValueResult compileLeft(x::Function* xFunction,
                                     tsil::x::FunctionBlock* xBlock,
                                     ast::ASTValue* astValue);
@@ -412,6 +415,9 @@ namespace tsil::tk {
     // structure
     std::unordered_map<std::string, TypeStructureField> structureInstanceFields;
     // variation
+    Type* variationType = nullptr;
+    size_t shortTermVariationIndex = -1; // very bad hack
+    Type* shortTermVariationLeftType = nullptr; // very bad hack
     std::unordered_map<std::string, TypeVariationField> variationInstanceFields;
     // diia
     ast::DiiaLinkage linkage;

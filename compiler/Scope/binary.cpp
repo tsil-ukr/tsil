@@ -6,12 +6,12 @@ namespace tsil::tk {
                                            ast::ASTValue* astValue) {
     const auto binaryNode = astValue->data.BinaryNode;
     CompilerValueResult leftResult =
-        this->compileValue(xFunction, xBlock, binaryNode->left);
+        this->compileValueNoVariation(xFunction, xBlock, binaryNode->left);
     if (leftResult.error) {
       return leftResult;
     }
     CompilerValueResult rightResult =
-        this->compileValue(xFunction, xBlock, binaryNode->right);
+        this->compileValueNoVariation(xFunction, xBlock, binaryNode->right);
     if (rightResult.error) {
       return rightResult;
     }

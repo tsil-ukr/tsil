@@ -16,12 +16,12 @@ namespace tsil::tk {
     if (setNode->access) {
       if (leftType->type == TypeTypeArray) {
         const auto indexResult =
-            this->compileValue(xFunction, xBlock, setNode->access);
+            this->compileValueNoVariation(xFunction, xBlock, setNode->access);
         if (indexResult.error) {
           return {indexResult.error};
         }
         auto valueResult =
-            this->compileValue(xFunction, xBlock, setNode->value);
+            this->compileValueNoVariation(xFunction, xBlock, setNode->value);
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -47,12 +47,12 @@ namespace tsil::tk {
         return {nullptr};
       } else if (leftType->type == TypeTypePointer) {
         const auto indexResult =
-            this->compileValue(xFunction, xBlock, setNode->access);
+            this->compileValueNoVariation(xFunction, xBlock, setNode->access);
         if (indexResult.error) {
           return {indexResult.error};
         }
         auto valueResult =
-            this->compileValue(xFunction, xBlock, setNode->value);
+            this->compileValueNoVariation(xFunction, xBlock, setNode->value);
         if (valueResult.error) {
           return {valueResult.error};
         }
@@ -107,7 +107,7 @@ namespace tsil::tk {
                  new x::Value(this->compiler->int32Type->xType,
                               std::to_string(field.index))});
         auto valueResult =
-            this->compileValue(xFunction, xBlock, setNode->value);
+            this->compileValueNoVariation(xFunction, xBlock, setNode->value);
         if (valueResult.error) {
           return {valueResult.error};
         }

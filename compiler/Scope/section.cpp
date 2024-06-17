@@ -207,6 +207,7 @@ namespace tsil::tk {
                                                     variationTypeResult.error)};
               }
               type->xType = variationTypeResult.type->xType;
+              type->variationType = variationTypeResult.type;
             } else {
               return {CompilerError::fromASTValue(
                   childAstValue, "Декларація варіації повинна мати тип")};
@@ -242,6 +243,8 @@ namespace tsil::tk {
             }
             type->xType =
                 type->variationInstanceFields.begin()->second.type->xType;
+            type->variationType =
+                type->variationInstanceFields.begin()->second.type;
           }
           this->setSubject(variationNode->name,
                            Subject{SubjectKindType, {.type = type}});
