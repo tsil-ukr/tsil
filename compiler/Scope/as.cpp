@@ -23,8 +23,8 @@ namespace tsil::tk {
       if (newXValue == nullptr) {
         return {
             nullptr, nullptr,
-            CompilerError::invalidArgumentType(
-                asNode->value, "значення", typeResult.type, valueResult.type)};
+            CompilerError::cannotCast(
+                asNode->value, valueResult.type, typeResult.type)};
       }
     }
     return {typeResult.type, newXValue, nullptr};

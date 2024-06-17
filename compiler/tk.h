@@ -144,6 +144,9 @@ namespace tsil::tk {
                                                  Type* type);
     static CompilerError* tooManyConstructorArguments(
         tsil::ast::ASTValue* astValue);
+    static CompilerError* cannotCast(tsil::ast::ASTValue* astValue,
+                                     Type* from,
+                                     Type* to);
   };
 
   struct CompilerResult {
@@ -374,9 +377,16 @@ namespace tsil::tk {
     TypeTypeStructureInstance,
     TypeTypeDiia,
     TypeTypeUndefined,
+    TypeTypeVariationInstance,
   };
 
   struct TypeStructureField {
+    int index;
+    Type* type;
+    std::string name;
+  };
+
+  struct TypeVariationField {
     int index;
     Type* type;
     std::string name;
@@ -401,6 +411,8 @@ namespace tsil::tk {
     Type* pointerTo = nullptr;
     // structure
     std::unordered_map<std::string, TypeStructureField> structureInstanceFields;
+    // variation
+    std::unordered_map<std::string, TypeVariationField> variationInstanceFields;
     // diia
     ast::DiiaLinkage linkage;
     std::vector<TypeDiiaParameter> diiaParameters;

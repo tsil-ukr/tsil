@@ -201,4 +201,13 @@ namespace tsil::tk {
     return new CompilerError(astValue->start_line, astValue->start_column,
                              "Забагато аргументів для конструктора");
   }
+
+  CompilerError* CompilerError::cannotCast(tsil::ast::ASTValue* astValue,
+                                           Type* from,
+                                           Type* to) {
+    return new CompilerError(astValue->start_line, astValue->start_column,
+                             "Неможливо виконати приведення типів з \"" +
+                                 from->getFullName() + "\" до \"" +
+                                 to->getFullName() + "\"");
+  }
 } // namespace tsil::tk

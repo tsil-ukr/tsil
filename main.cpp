@@ -23,7 +23,7 @@ std::pair<size_t, std::string> strtrim(const std::string& str) {
     }
   }
   const auto res = str.substr(start, end - start);
-  return {start, res};
+  return {start + 1, res};
 }
 
 std::string strgetline(const std::string& code, size_t line) {

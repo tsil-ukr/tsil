@@ -68,6 +68,15 @@ public:
   virtual void enterStructure_param(TsilParser::Structure_paramContext *ctx) = 0;
   virtual void exitStructure_param(TsilParser::Structure_paramContext *ctx) = 0;
 
+  virtual void enterVariation(TsilParser::VariationContext *ctx) = 0;
+  virtual void exitVariation(TsilParser::VariationContext *ctx) = 0;
+
+  virtual void enterVariation_params(TsilParser::Variation_paramsContext *ctx) = 0;
+  virtual void exitVariation_params(TsilParser::Variation_paramsContext *ctx) = 0;
+
+  virtual void enterVariation_param(TsilParser::Variation_paramContext *ctx) = 0;
+  virtual void exitVariation_param(TsilParser::Variation_paramContext *ctx) = 0;
+
   virtual void enterDiia_head(TsilParser::Diia_headContext *ctx) = 0;
   virtual void exitDiia_head(TsilParser::Diia_headContext *ctx) = 0;
 

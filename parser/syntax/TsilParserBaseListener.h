@@ -70,6 +70,15 @@ public:
   virtual void enterStructure_param(TsilParser::Structure_paramContext * /*ctx*/) override { }
   virtual void exitStructure_param(TsilParser::Structure_paramContext * /*ctx*/) override { }
 
+  virtual void enterVariation(TsilParser::VariationContext * /*ctx*/) override { }
+  virtual void exitVariation(TsilParser::VariationContext * /*ctx*/) override { }
+
+  virtual void enterVariation_params(TsilParser::Variation_paramsContext * /*ctx*/) override { }
+  virtual void exitVariation_params(TsilParser::Variation_paramsContext * /*ctx*/) override { }
+
+  virtual void enterVariation_param(TsilParser::Variation_paramContext * /*ctx*/) override { }
+  virtual void exitVariation_param(TsilParser::Variation_paramContext * /*ctx*/) override { }
+
   virtual void enterDiia_head(TsilParser::Diia_headContext * /*ctx*/) override { }
   virtual void exitDiia_head(TsilParser::Diia_headContext * /*ctx*/) override { }
 

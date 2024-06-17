@@ -13,16 +13,16 @@ class  TsilParser : public antlr4::Parser {
 public:
   enum {
     KW_TSIL = 1, KW_DIIA = 2, KW_IF = 3, KW_ELSE = 4, KW_WHILE = 5, KW_RETURN = 6, 
-    KW_STRUCT = 7, KW_AS = 8, KW_SECTION = 9, KW_IMPORT = 10, KW_EXPORT = 11, 
-    KW_COMPOSITION = 12, KW_PROPERTY = 13, KW_PUBLIC = 14, KW_PRIVATE = 15, 
-    KW_LOCAL = 16, KW_NOT = 17, KW_OR = 18, KW_AND = 19, KW_VAR = 20, KW_SYNONYM = 21, 
-    EQUAL = 22, GREATER = 23, LESSER = 24, DOT = 25, PLUS = 26, MINUS = 27, 
-    MULTIPLY = 28, DIVIDE = 29, MOD = 30, POWER = 31, AND = 32, OR = 33, 
-    PAREN_OPEN = 34, PAREN_CLOSE = 35, BRACKET_OPEN = 36, BRACKET_CLOSE = 37, 
-    QUESTION = 38, COLON = 39, TILDA = 40, QUOTE = 41, DOUBLE_QUOTE = 42, 
-    EXCLAMATION = 43, COMA = 44, SEMICOLON = 45, QUOTE_OPEN = 46, QUOTE_CLOSE = 47, 
-    NUMBER = 48, INTEGER = 49, FLOAT = 50, HEX = 51, BIN = 52, ID = 53, 
-    STRING = 54, COMMENT = 55, LINE_COMMENT = 56, WS = 57, NL = 58
+    KW_STRUCT = 7, KW_VARIATION = 8, KW_AS = 9, KW_SECTION = 10, KW_IMPORT = 11, 
+    KW_EXPORT = 12, KW_COMPOSITION = 13, KW_PROPERTY = 14, KW_PUBLIC = 15, 
+    KW_PRIVATE = 16, KW_LOCAL = 17, KW_NOT = 18, KW_OR = 19, KW_AND = 20, 
+    KW_VAR = 21, KW_SYNONYM = 22, EQUAL = 23, GREATER = 24, LESSER = 25, 
+    DOT = 26, PLUS = 27, MINUS = 28, MULTIPLY = 29, DIVIDE = 30, MOD = 31, 
+    POWER = 32, AND = 33, OR = 34, PAREN_OPEN = 35, PAREN_CLOSE = 36, BRACKET_OPEN = 37, 
+    BRACKET_CLOSE = 38, QUESTION = 39, COLON = 40, TILDA = 41, QUOTE = 42, 
+    DOUBLE_QUOTE = 43, EXCLAMATION = 44, COMA = 45, SEMICOLON = 46, QUOTE_OPEN = 47, 
+    QUOTE_CLOSE = 48, NUMBER = 49, INTEGER = 50, FLOAT = 51, HEX = 52, BIN = 53, 
+    ID = 54, STRING = 55, COMMENT = 56, LINE_COMMENT = 57, WS = 58, NL = 59
   };
 
   enum {
@@ -31,14 +31,15 @@ public:
     RuleTake_parts = 8, RuleSynonym = 9, RuleSynonym_value = 10, RuleSection = 11, 
     RuleSection_element = 12, RuleStructure = 13, RuleStructure_generics = 14, 
     RuleStructure_generic = 15, RuleStructure_params = 16, RuleStructure_param = 17, 
-    RuleDiia_head = 18, RuleDiia = 19, RuleDiia_generics = 20, RuleDiia_generic = 21, 
-    RuleDiia_declaration = 22, RuleParams = 23, RuleParam = 24, RuleBody = 25, 
-    RuleBody_element = 26, RuleReturn_body_element = 27, RuleBlock = 28, 
-    RuleIf = 29, RuleWhile = 30, RuleDeclare = 31, RuleDefine = 32, RuleAssign = 33, 
-    RuleSet = 34, RuleParticle = 35, RuleArgs = 36, RuleAtom = 37, RuleMolecule = 38, 
-    RuleOperation = 39, RuleExpr = 40, RuleConstruct_args = 41, RuleConstruct_arg = 42, 
-    RuleBasic_type = 43, RuleFull_type = 44, RuleComplex_function_type_args = 45, 
-    RuleBitwise_op = 46, RuleComparison_op = 47, RuleLogical_op = 48
+    RuleVariation = 18, RuleVariation_params = 19, RuleVariation_param = 20, 
+    RuleDiia_head = 21, RuleDiia = 22, RuleDiia_generics = 23, RuleDiia_generic = 24, 
+    RuleDiia_declaration = 25, RuleParams = 26, RuleParam = 27, RuleBody = 28, 
+    RuleBody_element = 29, RuleReturn_body_element = 30, RuleBlock = 31, 
+    RuleIf = 32, RuleWhile = 33, RuleDeclare = 34, RuleDefine = 35, RuleAssign = 36, 
+    RuleSet = 37, RuleParticle = 38, RuleArgs = 39, RuleAtom = 40, RuleMolecule = 41, 
+    RuleOperation = 42, RuleExpr = 43, RuleConstruct_args = 44, RuleConstruct_arg = 45, 
+    RuleBasic_type = 46, RuleFull_type = 47, RuleComplex_function_type_args = 48, 
+    RuleBitwise_op = 49, RuleComparison_op = 50, RuleLogical_op = 51
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -76,6 +77,9 @@ public:
   class Structure_genericContext;
   class Structure_paramsContext;
   class Structure_paramContext;
+  class VariationContext;
+  class Variation_paramsContext;
+  class Variation_paramContext;
   class Diia_headContext;
   class DiiaContext;
   class Diia_genericsContext;
@@ -152,6 +156,7 @@ public:
     DefineContext *define();
     SectionContext *section();
     StructureContext *structure();
+    VariationContext *variation();
     Diia_declarationContext *diia_declaration();
     DiiaContext *diia();
 
@@ -349,6 +354,7 @@ public:
     DefineContext *define();
     SectionContext *section();
     StructureContext *structure();
+    VariationContext *variation();
     Diia_declarationContext *diia_declaration();
     DiiaContext *diia();
 
@@ -457,6 +463,68 @@ public:
   };
 
   Structure_paramContext* structure_param();
+
+  class  VariationContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *v_name = nullptr;
+    TsilParser::Full_typeContext *v_type = nullptr;
+    TsilParser::Variation_paramsContext *v_params = nullptr;
+    VariationContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_VARIATION();
+    antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *QUOTE_OPEN();
+    antlr4::tree::TerminalNode *QUOTE_CLOSE();
+    antlr4::tree::TerminalNode *SEMICOLON();
+    antlr4::tree::TerminalNode *COLON();
+    Full_typeContext *full_type();
+    Variation_paramsContext *variation_params();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  VariationContext* variation();
+
+  class  Variation_paramsContext : public antlr4::ParserRuleContext {
+  public:
+    Variation_paramsContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    std::vector<Variation_paramContext *> variation_param();
+    Variation_paramContext* variation_param(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> SEMICOLON();
+    antlr4::tree::TerminalNode* SEMICOLON(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Variation_paramsContext* variation_params();
+
+  class  Variation_paramContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *vp_name = nullptr;
+    TsilParser::Full_typeContext *vp_type = nullptr;
+    Variation_paramContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *COLON();
+    antlr4::tree::TerminalNode *ID();
+    Full_typeContext *full_type();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Variation_paramContext* variation_param();
 
   class  Diia_headContext : public antlr4::ParserRuleContext {
   public:

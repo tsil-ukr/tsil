@@ -91,16 +91,16 @@ namespace tsil::ast {
 namespace tsil::parser {
   void FILL(ast::ASTValue* ast_value, antlr4::ParserRuleContext* context) {
     ast_value->start_line = context->getStart()->getLine();
-    ast_value->start_column = context->getStart()->getCharPositionInLine();
+    ast_value->start_column = context->getStart()->getCharPositionInLine() + 1;
     ast_value->end_line = context->getStop()->getLine();
-    ast_value->end_column = context->getStop()->getCharPositionInLine();
+    ast_value->end_column = context->getStop()->getCharPositionInLine() + 1;
   }
 
   void FILL(ast::ASTValue* ast_value, antlr4::Token* token) {
     ast_value->start_line = token->getLine();
-    ast_value->start_column = token->getCharPositionInLine();
+    ast_value->start_column = token->getCharPositionInLine() + 1;
     ast_value->end_line = token->getLine();
-    ast_value->end_column = token->getCharPositionInLine();
+    ast_value->end_column = token->getCharPositionInLine() + 1;
   }
 
   ast::ASTValue* AV(ast::ASTValueKind kind, void* data) {
@@ -144,6 +144,10 @@ namespace tsil::parser {
     if (const auto structure_context =
             dynamic_cast<TsilParser::StructureContext*>(context)) {
       return visitStructure(structure_context);
+    }
+    if (const auto variation_context =
+            dynamic_cast<TsilParser::VariationContext*>(context)) {
+      return visitVariation(variation_context);
     }
     if (const auto diia_context =
             dynamic_cast<TsilParser::DiiaContext*>(context)) {

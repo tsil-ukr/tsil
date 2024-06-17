@@ -43,6 +43,8 @@ namespace tsil::parser {
 
     std::any visitStructure(TsilParser::StructureContext* ctx) override;
 
+    std::any visitVariation(TsilParser::VariationContext* ctx) override;
+
     std::any visitDiia(TsilParser::DiiaContext* ctx) override;
 
     std::any visitDiia_declaration(

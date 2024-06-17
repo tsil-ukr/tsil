@@ -37,6 +37,7 @@ set(TSIL_PARSER_SRC
         visitor/visitLogical.cpp
         visitor/visitTake.cpp
         visitor/visitType.cpp
+        visitor/visitVariation.cpp
         visitor/visitWhile.cpp
         ast.h
         parser.cpp

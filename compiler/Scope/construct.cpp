@@ -51,16 +51,30 @@ namespace tsil::tk {
       if (argValueResult.error) {
         return {nullptr, nullptr, argValueResult.error};
       }
+      auto fieldType = field.type;
+      if (fieldType->type == TypeTypeVariationInstance) {
+        if (fieldType->variationInstanceFields.empty()) {
+          return {nullptr, nullptr,
+                  CompilerError::fromASTValue(argAstValue, "Аййй")};
+        }
+        for (const auto& [id, variationField] :
+             fieldType->variationInstanceFields) {
+          if (variationField.type == argValueResult.type) {
+            fieldType = variationField.type;
+            break;
+          }
+        }
+      }
       const auto castedXValue =
           this->compileSoftCast(xFunction, xBlock, argValueResult.type,
-                                argValueResult.xValue, field.type);
+                                argValueResult.xValue, fieldType);
       if (castedXValue) {
-        argValueResult.type = field.type;
+        argValueResult.type = fieldType;
         argValueResult.xValue = castedXValue;
       } else {
         return {nullptr, nullptr,
                 CompilerError::invalidArgumentType(constructorArgNode->value,
-                                                   field.name, field.type,
+                                                   field.name, fieldType,
                                                    argValueResult.type)};
       }
       const auto xGepValue =

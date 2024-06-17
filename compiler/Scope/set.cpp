@@ -99,6 +99,7 @@ namespace tsil::tk {
                                                    setNode->id)};
         }
         const auto field = leftType->structureInstanceFields[setNode->id];
+        auto fieldType = field.type;
         const auto gepXValue =
             this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
                 xBlock, leftType->xType, leftXValue,
@@ -110,19 +111,30 @@ namespace tsil::tk {
         if (valueResult.error) {
           return {valueResult.error};
         }
-        const auto castedXValue =
-            this->compileSoftCast(xFunction, xBlock, valueResult.type,
-                                  valueResult.xValue, field.type);
+        if (fieldType->type == TypeTypeVariationInstance) {
+          if (fieldType->variationInstanceFields.empty()) {
+            return {CompilerError::fromASTValue(astValue, "Аййй")};
+          }
+          for (const auto& [id, variationField] :
+               fieldType->variationInstanceFields) {
+            if (variationField.type == valueResult.type) {
+              fieldType = variationField.type;
+              break;
+            }
+          }
+        }
+        const auto castedXValue = this->compileSoftCast(
+            xFunction, xBlock, valueResult.type, valueResult.xValue, fieldType);
         if (castedXValue) {
-          valueResult.type = field.type;
+          valueResult.type = fieldType;
           valueResult.xValue = castedXValue;
         } else {
           return {CompilerError::invalidArgumentType(
-              setNode->value, field.name, field.type, valueResult.type)};
+              setNode->value, field.name, fieldType, valueResult.type)};
         }
         const auto storeXValue =
             this->compiler->xModule->pushFunctionBlockStoreInstruction(
-                xBlock, field.type->xType, valueResult.xValue, gepXValue);
+                xBlock, fieldType->xType, valueResult.xValue, gepXValue);
         return {nullptr};
       }
     }

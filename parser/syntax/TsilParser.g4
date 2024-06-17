@@ -7,7 +7,7 @@ options {
 file: f_program=program EOF;
 
 program: program_element*;
-program_element: (take ';') | (synonym ';') | (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
+program_element: (take ';') | (synonym ';') | (declare ';') | (define ';') | section | structure | variation | diia_declaration | diia | ';';
 
 identifier: ID;
 section_access: identifier (':' ':' identifier)* #real_section_access;
@@ -21,13 +21,17 @@ synonym: 'синонім' s_name=ID '=' s_value=synonym_value;
 synonym_value: full_type | number | string;
 
 section: 'секція' s_name=ID '{' section_element* '}';
-section_element: (synonym ';') | (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
+section_element: (synonym ';') | (declare ';') | (define ';') | section | structure | variation | diia_declaration | diia | ';';
 
 structure: 'структура' s_name=ID ('<' s_generics=structure_generics '>')? ('{' (s_params=structure_params)? '}' | ';');
 structure_generics: structure_generic (',' structure_generic)*;
 structure_generic: sg_name=ID;
 structure_params: (structure_param ';')+;
 structure_param: sp_name=ID ':' sp_type=full_type;
+
+variation: 'варіація' v_name=ID (':' v_type=full_type)? ('{' (v_params=variation_params)? '}' | ';');
+variation_params: (variation_param ';')+;
+variation_param: vp_name=ID ':' vp_type=full_type;
 
 diia_head: 'дія' d_name=ID ('<' d_generics=diia_generics '>')? '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' (':' d_type=full_type)?;
 diia: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? d_head=diia_head '{' (d_body=body)? '}';

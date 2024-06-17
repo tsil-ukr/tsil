@@ -7,6 +7,7 @@ KW_ELSE: 'інакше';
 KW_WHILE: 'поки';
 KW_RETURN: 'вернути';
 KW_STRUCT: 'структура';
+KW_VARIATION: 'варіація';
 KW_AS: 'як';
 KW_SECTION: 'секція';
 KW_IMPORT: 'взяти';

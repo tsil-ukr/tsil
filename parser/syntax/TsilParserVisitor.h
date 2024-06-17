@@ -55,6 +55,12 @@ public:
 
     virtual std::any visitStructure_param(TsilParser::Structure_paramContext *context) = 0;
 
+    virtual std::any visitVariation(TsilParser::VariationContext *context) = 0;
+
+    virtual std::any visitVariation_params(TsilParser::Variation_paramsContext *context) = 0;
+
+    virtual std::any visitVariation_param(TsilParser::Variation_paramContext *context) = 0;
+
     virtual std::any visitDiia_head(TsilParser::Diia_headContext *context) = 0;
 
     virtual std::any visitDiia(TsilParser::DiiaContext *context) = 0;
