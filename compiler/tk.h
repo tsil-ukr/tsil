@@ -56,6 +56,7 @@ namespace tsil::tk {
     Type* uint32Type = nullptr;
     Type* uint64Type = nullptr;
     Type* positiveType = nullptr;
+    Type* undefined64Type = nullptr;
 
     Constant* nullConstant = nullptr;
 
@@ -372,6 +373,7 @@ namespace tsil::tk {
     TypeTypeArray,
     TypeTypeStructureInstance,
     TypeTypeDiia,
+    TypeTypeUndefined,
   };
 
   struct TypeStructureField {

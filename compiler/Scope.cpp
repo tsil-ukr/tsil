@@ -502,8 +502,26 @@ namespace tsil::tk {
         xValue == this->compiler->nullConstant->xValue) {
       return xValue;
     }
-    if (type->type == TypeTypeDiia && (targetType->isPointer() && targetType->pointerTo == nullptr)) {
+    if (type->type == TypeTypeDiia &&
+        (targetType->isPointer() && targetType->pointerTo == nullptr)) {
       return xValue;
+    }
+    if (targetType == this->compiler->undefined64Type &&
+        (type->isPointer() || type == this->compiler->int8Type ||
+         type == this->compiler->int32Type ||
+         type == this->compiler->int64Type ||
+         type == this->compiler->integerType ||
+         type == this->compiler->d32Type || type == this->compiler->d64Type ||
+         type == this->compiler->doubleType ||
+         type == this->compiler->uint8Type ||
+         type == this->compiler->uint32Type ||
+         type == this->compiler->uint64Type ||
+         type == this->compiler->positiveType ||
+         type == this->compiler->undefined64Type)) {
+      const auto newXValue =
+          this->compiler->xModule->pushFunctionBlockBitcastInstruction(
+              xBlock, type->xType, xValue, targetType->xType);
+      return newXValue;
     }
     if (type == this->compiler->uint64Type &&
         targetType == this->compiler->positiveType) {
@@ -694,6 +712,24 @@ namespace tsil::tk {
     }
     if (type->type == TypeTypeDiia && targetType->type == TypeTypeDiia) {
       return new x::Value(targetType->xType, xValue->name);
+    }
+    if (type == this->compiler->undefined64Type &&
+        (targetType->isPointer() || targetType == this->compiler->int8Type ||
+         targetType == this->compiler->int32Type ||
+         targetType == this->compiler->int64Type ||
+         targetType == this->compiler->integerType ||
+         targetType == this->compiler->d32Type ||
+         targetType == this->compiler->d64Type ||
+         targetType == this->compiler->doubleType ||
+         targetType == this->compiler->uint8Type ||
+         targetType == this->compiler->uint32Type ||
+         targetType == this->compiler->uint64Type ||
+         targetType == this->compiler->positiveType ||
+         targetType == this->compiler->undefined64Type)) {
+      const auto newXValue =
+          this->compiler->xModule->pushFunctionBlockBitcastInstruction(
+              xBlock, type->xType, xValue, targetType->xType);
+      return newXValue;
     }
     return nullptr;
   }

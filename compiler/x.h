@@ -48,6 +48,7 @@ namespace tsil::x {
   struct FunctionInstructionSitofp;
   struct FunctionInstructionPtrtoint;
   struct FunctionInstructionInttoptr;
+  struct FunctionInstructionBitcast;
 
   void implode(std::vector<std::string>& v,
                const std::string& sep,
@@ -246,6 +247,10 @@ namespace tsil::x {
                                                 Type* type,
                                                 Value* value,
                                                 Type* toType);
+    Value* pushFunctionBlockBitcastInstruction(FunctionBlock* block,
+                                               Type* type,
+                                               Value* value,
+                                               Type* toType);
 
     std::string dumpLL();
   };
@@ -362,6 +367,7 @@ namespace tsil::x {
     FunctionInstructionSitofp* sitofp;
     FunctionInstructionPtrtoint* ptrtoint;
     FunctionInstructionInttoptr* inttoptr;
+    FunctionInstructionBitcast* bitcast;
 
     std::string dumpLL(Module* module);
   };
@@ -579,6 +585,12 @@ namespace tsil::x {
   };
 
   struct FunctionInstructionInttoptr {
+    Type* type;
+    Value* value;
+    Type* toType;
+  };
+
+  struct FunctionInstructionBitcast {
     Type* type;
     Value* value;
     Type* toType;

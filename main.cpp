@@ -278,6 +278,15 @@ int compile(const CompileCommand& compileCommand) {
         tsil::tk::Subject{tsil::tk::SubjectKindType, positiveType});
     compiler->positiveType = positiveType;
 
+    const auto undefined64Type = new tsil::tk::Type();
+    undefined64Type->type = tsil::tk::TypeTypeUndefined;
+    undefined64Type->name = "невідомо_64";
+    undefined64Type->xType = compiler->xModule->int64Type;
+    compiler->globalScope->setSubject(
+        "невідомо_64",
+        tsil::tk::Subject{tsil::tk::SubjectKindType, undefined64Type});
+    compiler->undefined64Type = undefined64Type;
+
     compiler->nullConstant = new tsil::tk::Constant(
         pointerType,
         new tsil::x::Value(compiler->xModule->pointerType, "null"));

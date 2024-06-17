@@ -716,6 +716,21 @@ namespace tsil::x {
     return new Value(toType, instruction->name);
   }
 
+  Value* Module::pushFunctionBlockBitcastInstruction(FunctionBlock* block,
+                                                     Type* type,
+                                                     Value* value,
+                                                     Type* toType) {
+    const auto instruction = new FunctionInstruction();
+    const auto bitcast = new FunctionInstructionBitcast();
+    bitcast->type = type;
+    bitcast->value = value;
+    bitcast->toType = toType;
+    instruction->name = this->computeNextVarName("bitcast");
+    instruction->bitcast = bitcast;
+    block->instructions.push_back(instruction);
+    return new Value(toType, instruction->name);
+  }
+
   std::string Module::dumpLL() {
     std::vector<std::string> lines;
 
@@ -1073,6 +1088,11 @@ namespace tsil::x {
       return this->name + " = inttoptr " + this->inttoptr->type->name + " " +
              this->inttoptr->value->name + " to " +
              this->inttoptr->toType->name;
+    }
+    if (this->bitcast) {
+      return this->name + " = bitcast " + this->bitcast->type->name + " " +
+             this->bitcast->value->name + " to " +
+             this->bitcast->toType->name;
     }
     return "";
   }

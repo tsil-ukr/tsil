@@ -162,6 +162,9 @@ namespace tsil::tk {
     if (this == scope->compiler->doubleType) {
       return 8;
     }
+    if (this == scope->compiler->undefined64Type) {
+      return 8;
+    }
     if (this->type == TypeTypeStructureInstance) {
       size_t result = 0;
       for (const auto& [fieldName, field] : this->structureInstanceFields) {
