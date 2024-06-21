@@ -91,10 +91,6 @@ namespace tsil::x {
         const std::string& name,
         Type* result_type,
         std::vector<Value*> parameters);
-    Value* defineFunction(const std::string& attributes,
-                          const std::string& name,
-                          Type* result_type,
-                          std::vector<Value*> parameters);
     FunctionBlock* defineFunctionBlock(Function* function,
                                        const std::string& name);
     FunctionBlock* getFunctionBlock(Function* function,
@@ -314,6 +310,7 @@ namespace tsil::x {
     std::vector<Value*> parameters;
     std::vector<FunctionBlock*> blocks;
     Value* return_alloca = nullptr;
+    FunctionBlock* alloca_block = nullptr;
     FunctionBlock* entry_block = nullptr;
     FunctionBlock* exit_block = nullptr;
 

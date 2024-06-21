@@ -240,13 +240,15 @@ namespace tsil::tk {
     this->bakedDiias.insert_or_assign(
         genericValues, BakedDiia{diiaType, functionXValue, xFunction});
     if (!this->isDeclaration) {
+      xFunction->alloca_block =
+          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "alloca");
       xFunction->entry_block =
           diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "entry");
       if (xFunction->result_type) {
         if (xFunction->result_type != diiaScope->compiler->xModule->voidType) {
           xFunction->return_alloca =
               diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                  xFunction->entry_block, "return", xFunction->result_type);
+                  xFunction->alloca_block, "return", xFunction->result_type);
         }
       }
       xFunction->exit_block =
@@ -266,7 +268,7 @@ namespace tsil::tk {
       for (const auto& diiaParameter : diiaType->diiaParameters) {
         const auto allocXValue =
             diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                xFunction->entry_block, diiaParameter.name,
+                xFunction->alloca_block, diiaParameter.name,
                 diiaParameter.type->xType);
         diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
             xFunction->entry_block, diiaParameter.type->xType,
@@ -293,13 +295,15 @@ namespace tsil::tk {
       const auto diiaType = bakedDiia.type;
       const auto xFunction = bakedDiia.xFunction;
       const auto diiaScope = diiaType->scopeWithGenerics;
+      xFunction->alloca_block =
+          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "alloca");
       xFunction->entry_block =
           diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "entry");
       if (xFunction->result_type) {
         if (xFunction->result_type != diiaScope->compiler->xModule->voidType) {
           xFunction->return_alloca =
               diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                  xFunction->entry_block, "return", xFunction->result_type);
+                  xFunction->alloca_block, "return", xFunction->result_type);
         }
       }
       xFunction->exit_block =
@@ -319,7 +323,7 @@ namespace tsil::tk {
       for (const auto& diiaParameter : diiaType->diiaParameters) {
         const auto allocXValue =
             diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                xFunction->entry_block, diiaParameter.name,
+                xFunction->alloca_block, diiaParameter.name,
                 diiaParameter.type->xType);
         diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
             xFunction->entry_block, diiaParameter.type->xType,

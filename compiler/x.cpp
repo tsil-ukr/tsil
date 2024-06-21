@@ -118,31 +118,6 @@ namespace tsil::x {
     return {function, new Value(this->pointerType, function->name)};
   }
 
-  Value* Module::defineFunction(const std::string& attributes,
-                                const std::string& name,
-                                Type* result_type,
-                                std::vector<Value*> parameters) {
-    auto function = new Function();
-    function->attributes = attributes;
-    function->name = "@" + name;
-    function->result_type = result_type;
-    function->parameters = parameters;
-    const auto entryBlock = this->defineFunctionBlock(function, "entry");
-    if (result_type) {
-      if (result_type != this->voidType) {
-        function->return_alloca = this->pushFunctionBlockAllocaInstruction(
-            entryBlock, "return", result_type);
-        const auto exitBlock = this->defineFunctionBlock(function, "exit");
-        const auto loadedReturnValue = this->pushFunctionBlockLoadInstruction(
-            exitBlock, result_type, function->return_alloca);
-        this->pushFunctionBlockRetInstruction(exitBlock, result_type,
-                                              loadedReturnValue);
-      }
-    }
-    this->functions[name] = function;
-    return new Value(this->pointerType, function->name);
-  }
-
   FunctionBlock* Module::defineFunctionBlock(Function* function,
                                              const std::string& name) {
     auto block = new FunctionBlock();
@@ -890,6 +865,8 @@ namespace tsil::x {
       implode(parameters, ", ", result);
       result += ") {\n";
       std::vector<std::string> blocks;
+      module->pushFunctionBlockBrInstruction(this->alloca_block,
+                                             this->entry_block);
       for (const auto& block : this->blocks) {
         blocks.push_back(block->dumpLL(module));
       }
@@ -1091,8 +1068,7 @@ namespace tsil::x {
     }
     if (this->bitcast) {
       return this->name + " = bitcast " + this->bitcast->type->name + " " +
-             this->bitcast->value->name + " to " +
-             this->bitcast->toType->name;
+             this->bitcast->value->name + " to " + this->bitcast->toType->name;
     }
     return "";
   }

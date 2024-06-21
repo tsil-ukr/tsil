@@ -19,7 +19,7 @@ namespace tsil::tk {
     }
     const auto xAllocValue =
         this->compiler->xModule->pushFunctionBlockAllocaInstruction(
-            xBlock, "construct", typeResult.type->xType);
+            xFunction->alloca_block, "construct", typeResult.type->xType);
     int argIndex = 0;
     for (const auto argAstValue : constructorNode->args) {
       const auto constructorArgNode = argAstValue->data.ConstructorArgNode;

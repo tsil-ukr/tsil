@@ -73,7 +73,7 @@ namespace tsil::tk {
           }
           const auto allocaXValue =
               this->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                  xBlock, defineNode->id, type->xType);
+                  xFunction->alloca_block, defineNode->id, type->xType);
           this->compiler->xModule->pushFunctionBlockStoreInstruction(
               xBlock, valueResult.type->xType, valueResult.xValue,
               allocaXValue);
@@ -85,7 +85,7 @@ namespace tsil::tk {
         } else {
           const auto allocaXValue =
               this->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                  xBlock, defineNode->id, type->xType);
+                  xFunction->alloca_block, defineNode->id, type->xType);
           const auto variable = new Variable();
           variable->type = type;
           variable->xValue = allocaXValue;
