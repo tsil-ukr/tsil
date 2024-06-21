@@ -277,10 +277,6 @@ namespace tsil::tk {
         genericValues.push_back(bakedTypeResult.type);
       }
     }
-    if (callNode->args.size() < 1) {
-      return {nullptr, nullptr,
-              CompilerError::notEnoughCallArguments(astValue)};
-    }
     if (callNode->args.size() > 1) {
       return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
     }
@@ -292,23 +288,30 @@ namespace tsil::tk {
       return {nullptr, nullptr,
               CompilerError::tooManyCallTemplateArguments(astValue)};
     }
-    const auto firstArgAstValue = callNode->args[0];
-    auto firstArgResult =
-        this->compileValueNoVariation(xFunction, xBlock, firstArgAstValue);
-    if (firstArgResult.error) {
-      return firstArgResult;
-    }
-    const auto castedXValue = this->compileSoftCast(
-        xFunction, xBlock, firstArgResult.type, firstArgResult.xValue,
-        this->compiler->uint64Type);
-    if (castedXValue) {
+    CompilerValueResult firstArgResult{nullptr, nullptr, nullptr};
+    if (callNode->args.empty()) {
       firstArgResult.type = this->compiler->uint64Type;
-      firstArgResult.xValue = castedXValue;
+      firstArgResult.xValue =
+          new tsil::x::Value(compiler->xModule->int64Type, "1");
     } else {
-      return {nullptr, nullptr,
-              CompilerError::invalidArgumentType(firstArgAstValue, "розмір",
-                                                 this->compiler->uint64Type,
-                                                 firstArgResult.type)};
+      const auto firstArgAstValue = callNode->args[0];
+      firstArgResult =
+          this->compileValueNoVariation(xFunction, xBlock, firstArgAstValue);
+      if (firstArgResult.error) {
+        return firstArgResult;
+      }
+      const auto castedXValue = this->compileSoftCast(
+          xFunction, xBlock, firstArgResult.type, firstArgResult.xValue,
+          this->compiler->uint64Type);
+      if (castedXValue) {
+        firstArgResult.type = this->compiler->uint64Type;
+        firstArgResult.xValue = castedXValue;
+      } else {
+        return {nullptr, nullptr,
+                CompilerError::invalidArgumentType(firstArgAstValue, "розмір",
+                                                   this->compiler->uint64Type,
+                                                   firstArgResult.type)};
+      }
     }
     const auto firstGenericValue = genericValues[0];
     const auto typeSizeXValue =
