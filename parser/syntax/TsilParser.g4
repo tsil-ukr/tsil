@@ -42,9 +42,11 @@ params: param (',' param)* (',')?;
 param: p_name=ID ':' p_type=full_type;
 
 body: body_element+;
-body_element: if | while | (synonym ';') | (declare ';') | (define ';') | (assign ';') | (set ';') | (expr ';') | (return_body_element ';') | block | ';';
+body_element: if | while | (synonym ';') | (declare ';') | (define ';') | (assign ';') | (set ';') | (expr ';') | (return_body_element ';') | (defer ';') | block | ';';
 return_body_element: 'вернути' (rbl_value=expr)?;
 block: '{' body '}';
+
+defer: 'відкласти' (assign | set | expr);
 
 if: 'якщо' i_value=expr '{' (i_body=body)? '}' ('інакше' ('{' (i_else_body=body)? '}' | i_else_if=if))?;
 

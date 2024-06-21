@@ -143,6 +143,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitDefer(TsilParser::DeferContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitIf(TsilParser::IfContext *ctx) override {
     return visitChildren(ctx);
   }

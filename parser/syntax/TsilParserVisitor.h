@@ -83,6 +83,8 @@ public:
 
     virtual std::any visitBlock(TsilParser::BlockContext *context) = 0;
 
+    virtual std::any visitDefer(TsilParser::DeferContext *context) = 0;
+
     virtual std::any visitIf(TsilParser::IfContext *context) = 0;
 
     virtual std::any visitWhile(TsilParser::WhileContext *context) = 0;

@@ -13,16 +13,17 @@ class  TsilParser : public antlr4::Parser {
 public:
   enum {
     KW_TSIL = 1, KW_DIIA = 2, KW_IF = 3, KW_ELSE = 4, KW_WHILE = 5, KW_RETURN = 6, 
-    KW_STRUCT = 7, KW_VARIATION = 8, KW_AS = 9, KW_SECTION = 10, KW_IMPORT = 11, 
-    KW_EXPORT = 12, KW_COMPOSITION = 13, KW_PROPERTY = 14, KW_PUBLIC = 15, 
-    KW_PRIVATE = 16, KW_LOCAL = 17, KW_NOT = 18, KW_OR = 19, KW_AND = 20, 
-    KW_VAR = 21, KW_SYNONYM = 22, EQUAL = 23, GREATER = 24, LESSER = 25, 
-    DOT = 26, PLUS = 27, MINUS = 28, MULTIPLY = 29, DIVIDE = 30, MOD = 31, 
-    POWER = 32, AND = 33, OR = 34, PAREN_OPEN = 35, PAREN_CLOSE = 36, BRACKET_OPEN = 37, 
-    BRACKET_CLOSE = 38, QUESTION = 39, COLON = 40, TILDA = 41, QUOTE = 42, 
-    DOUBLE_QUOTE = 43, EXCLAMATION = 44, COMA = 45, SEMICOLON = 46, QUOTE_OPEN = 47, 
-    QUOTE_CLOSE = 48, NUMBER = 49, INTEGER = 50, FLOAT = 51, HEX = 52, BIN = 53, 
-    ID = 54, STRING = 55, COMMENT = 56, LINE_COMMENT = 57, WS = 58, NL = 59
+    KW_DEFER = 7, KW_STRUCT = 8, KW_VARIATION = 9, KW_AS = 10, KW_SECTION = 11, 
+    KW_IMPORT = 12, KW_EXPORT = 13, KW_COMPOSITION = 14, KW_PROPERTY = 15, 
+    KW_PUBLIC = 16, KW_PRIVATE = 17, KW_LOCAL = 18, KW_NOT = 19, KW_OR = 20, 
+    KW_AND = 21, KW_VAR = 22, KW_SYNONYM = 23, EQUAL = 24, GREATER = 25, 
+    LESSER = 26, DOT = 27, PLUS = 28, MINUS = 29, MULTIPLY = 30, DIVIDE = 31, 
+    MOD = 32, POWER = 33, AND = 34, OR = 35, PAREN_OPEN = 36, PAREN_CLOSE = 37, 
+    BRACKET_OPEN = 38, BRACKET_CLOSE = 39, QUESTION = 40, COLON = 41, TILDA = 42, 
+    QUOTE = 43, DOUBLE_QUOTE = 44, EXCLAMATION = 45, COMA = 46, SEMICOLON = 47, 
+    QUOTE_OPEN = 48, QUOTE_CLOSE = 49, NUMBER = 50, INTEGER = 51, FLOAT = 52, 
+    HEX = 53, BIN = 54, ID = 55, STRING = 56, COMMENT = 57, LINE_COMMENT = 58, 
+    WS = 59, NL = 60
   };
 
   enum {
@@ -35,11 +36,11 @@ public:
     RuleDiia_head = 21, RuleDiia = 22, RuleDiia_generics = 23, RuleDiia_generic = 24, 
     RuleDiia_declaration = 25, RuleParams = 26, RuleParam = 27, RuleBody = 28, 
     RuleBody_element = 29, RuleReturn_body_element = 30, RuleBlock = 31, 
-    RuleIf = 32, RuleWhile = 33, RuleDeclare = 34, RuleDefine = 35, RuleAssign = 36, 
-    RuleSet = 37, RuleParticle = 38, RuleArgs = 39, RuleAtom = 40, RuleMolecule = 41, 
-    RuleOperation = 42, RuleExpr = 43, RuleConstruct_args = 44, RuleConstruct_arg = 45, 
-    RuleBasic_type = 46, RuleFull_type = 47, RuleComplex_function_type_args = 48, 
-    RuleBitwise_op = 49, RuleComparison_op = 50, RuleLogical_op = 51
+    RuleDefer = 32, RuleIf = 33, RuleWhile = 34, RuleDeclare = 35, RuleDefine = 36, 
+    RuleAssign = 37, RuleSet = 38, RuleParticle = 39, RuleArgs = 40, RuleAtom = 41, 
+    RuleMolecule = 42, RuleOperation = 43, RuleExpr = 44, RuleConstruct_args = 45, 
+    RuleConstruct_arg = 46, RuleBasic_type = 47, RuleFull_type = 48, RuleComplex_function_type_args = 49, 
+    RuleBitwise_op = 50, RuleComparison_op = 51, RuleLogical_op = 52
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -91,6 +92,7 @@ public:
   class Body_elementContext;
   class Return_body_elementContext;
   class BlockContext;
+  class DeferContext;
   class IfContext;
   class WhileContext;
   class DeclareContext;
@@ -711,6 +713,7 @@ public:
     SetContext *set();
     ExprContext *expr();
     Return_body_elementContext *return_body_element();
+    DeferContext *defer();
     BlockContext *block();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -755,6 +758,24 @@ public:
   };
 
   BlockContext* block();
+
+  class  DeferContext : public antlr4::ParserRuleContext {
+  public:
+    DeferContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_DEFER();
+    AssignContext *assign();
+    SetContext *set();
+    ExprContext *expr();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  DeferContext* defer();
 
   class  IfContext : public antlr4::ParserRuleContext {
   public:

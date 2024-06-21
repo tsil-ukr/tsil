@@ -110,6 +110,9 @@ public:
   virtual void enterBlock(TsilParser::BlockContext *ctx) = 0;
   virtual void exitBlock(TsilParser::BlockContext *ctx) = 0;
 
+  virtual void enterDefer(TsilParser::DeferContext *ctx) = 0;
+  virtual void exitDefer(TsilParser::DeferContext *ctx) = 0;
+
   virtual void enterIf(TsilParser::IfContext *ctx) = 0;
   virtual void exitIf(TsilParser::IfContext *ctx) = 0;
 

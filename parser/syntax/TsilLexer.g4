@@ -6,6 +6,7 @@ KW_IF: 'якщо';
 KW_ELSE: 'інакше';
 KW_WHILE: 'поки';
 KW_RETURN: 'вернути';
+KW_DEFER: 'відкласти';
 KW_STRUCT: 'структура';
 KW_VARIATION: 'варіація';
 KW_AS: 'як';

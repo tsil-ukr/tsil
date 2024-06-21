@@ -112,6 +112,9 @@ public:
   virtual void enterBlock(TsilParser::BlockContext * /*ctx*/) override { }
   virtual void exitBlock(TsilParser::BlockContext * /*ctx*/) override { }
 
+  virtual void enterDefer(TsilParser::DeferContext * /*ctx*/) override { }
+  virtual void exitDefer(TsilParser::DeferContext * /*ctx*/) override { }
+
   virtual void enterIf(TsilParser::IfContext * /*ctx*/) override { }
   virtual void exitIf(TsilParser::IfContext * /*ctx*/) override { }
 
