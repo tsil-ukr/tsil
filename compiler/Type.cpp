@@ -129,6 +129,9 @@ namespace tsil::tk {
     if (this == scope->compiler->int1Type) {
       return 1;
     }
+    if (this == scope->compiler->logicalType) {
+      return 1;
+    }
     if (this == scope->compiler->int8Type) {
       return 1;
     }
@@ -162,9 +165,6 @@ namespace tsil::tk {
     if (this == scope->compiler->doubleType) {
       return 8;
     }
-    if (this == scope->compiler->undefined64Type) {
-      return 8;
-    }
     if (this->type == TypeTypeStructureInstance) {
       size_t result = 0;
       for (const auto& [fieldName, field] : this->structureInstanceFields) {
@@ -183,6 +183,7 @@ namespace tsil::tk {
 
   bool Type::isComparable(Scope* scope) {
     return this == scope->compiler->int1Type ||
+           this == scope->compiler->logicalType ||
            this == scope->compiler->int8Type ||
            this == scope->compiler->int32Type ||
            this == scope->compiler->int64Type ||
@@ -215,7 +216,8 @@ namespace tsil::tk {
   }
 
   bool Type::isBitwisible(tsil::tk::Scope* scope) {
-    return this == scope->compiler->int8Type ||
+    return this == scope->compiler->logicalType ||
+           this == scope->compiler->int8Type ||
            this == scope->compiler->int32Type ||
            this == scope->compiler->int64Type ||
            this == scope->compiler->integerType ||

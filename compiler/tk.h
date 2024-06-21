@@ -43,6 +43,7 @@ namespace tsil::tk {
 
     Type* int1Type = nullptr;
 
+    Type* logicalType = nullptr;
     Type* int8Type = nullptr;
     Type* int32Type = nullptr;
     Type* int64Type = nullptr;
@@ -56,9 +57,10 @@ namespace tsil::tk {
     Type* uint32Type = nullptr;
     Type* uint64Type = nullptr;
     Type* positiveType = nullptr;
-    Type* undefined64Type = nullptr;
 
     Constant* nullConstant = nullptr;
+    Constant* yesConstant = nullptr;
+    Constant* noConstant = nullptr;
 
     x::Value* callocXValue = nullptr;
     x::Value* mallocXValue = nullptr;

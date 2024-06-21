@@ -183,11 +183,19 @@ int compile(const CompileCommand& compileCommand) {
 
     const auto int1Type = new tsil::tk::Type();
     int1Type->type = tsil::tk::TypeTypeNative;
-    int1Type->name = "логічне";
+    int1Type->name = "ц1";
     int1Type->xType = compiler->xModule->int1Type;
     compiler->globalScope->setSubject(
         "ц1", tsil::tk::Subject{tsil::tk::SubjectKindType, int1Type});
     compiler->int1Type = int1Type;
+
+    const auto logicalType = new tsil::tk::Type();
+    logicalType->type = tsil::tk::TypeTypeNative;
+    logicalType->name = "логічне";
+    logicalType->xType = compiler->xModule->int8Type;
+    compiler->globalScope->setSubject(
+        "логічне", tsil::tk::Subject{tsil::tk::SubjectKindType, logicalType});
+    compiler->logicalType = logicalType;
 
     const auto int8Type = new tsil::tk::Type();
     int8Type->type = tsil::tk::TypeTypeNative;
@@ -278,21 +286,23 @@ int compile(const CompileCommand& compileCommand) {
         tsil::tk::Subject{tsil::tk::SubjectKindType, positiveType});
     compiler->positiveType = positiveType;
 
-    const auto undefined64Type = new tsil::tk::Type();
-    undefined64Type->type = tsil::tk::TypeTypeUndefined;
-    undefined64Type->name = "невідомо_64";
-    undefined64Type->xType = compiler->xModule->int64Type;
-    compiler->globalScope->setSubject(
-        "невідомо_64",
-        tsil::tk::Subject{tsil::tk::SubjectKindType, undefined64Type});
-    compiler->undefined64Type = undefined64Type;
-
     compiler->nullConstant = new tsil::tk::Constant(
         pointerType,
         new tsil::x::Value(compiler->xModule->pointerType, "null"));
     compiler->globalScope->setSubject(
         "пусто", {.kind = tsil::tk::SubjectKindConstant,
                   .data = {.constant = compiler->nullConstant}});
+
+    compiler->yesConstant = new tsil::tk::Constant(
+        logicalType, new tsil::x::Value(compiler->xModule->int8Type, "1"));
+    compiler->globalScope->setSubject(
+        "так", {.kind = tsil::tk::SubjectKindConstant,
+                .data = {.constant = compiler->yesConstant}});
+    compiler->noConstant = new tsil::tk::Constant(
+        logicalType, new tsil::x::Value(compiler->xModule->int8Type, "0"));
+    compiler->globalScope->setSubject(
+        "ні", {.kind = tsil::tk::SubjectKindConstant,
+               .data = {.constant = compiler->noConstant}});
 
     const auto compilerError =
         compiler->compileProgramNode(parserResult.program_node);
