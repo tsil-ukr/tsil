@@ -575,8 +575,7 @@ namespace tsil::tk {
     }
     // (char -> int/long/uint/ulong) | (int -> long/ulong) = sext
     if ((((type == this->compiler->logicalType ||
-           type == this->compiler->int8Type) ||
-          (type == this->compiler->int1Type)) &&
+           type == this->compiler->int8Type)) &&
          (targetType == this->compiler->int32Type ||
           targetType == this->compiler->int64Type ||
           targetType == this->compiler->integerType ||
@@ -593,8 +592,9 @@ namespace tsil::tk {
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (uchar -> int/long/uint/ulong) | (uint -> long/ulong) = zext
-    if (((type == this->compiler->uint8Type) &&
+    // (i1/uchar -> int/long/uint/ulong) | (uint -> long/ulong) = zext
+    if (((type == this->compiler->int1Type ||
+          type == this->compiler->uint8Type) &&
          (targetType == this->compiler->int32Type ||
           targetType == this->compiler->int64Type ||
           targetType == this->compiler->integerType ||
@@ -611,7 +611,7 @@ namespace tsil::tk {
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (int/long -> char/uchar) | (uint/ulong -> char/uchar) | (long|ulong -> int|uint) = trunc
+    // (int/long -> i1/char/uchar) | (uint/ulong -> i1/char/uchar) | (long|ulong -> int|uint)) | (char|uchar -> i1) = trunc
     if (((type == this->compiler->int32Type ||
           type == this->compiler->int64Type ||
           type == this->compiler->integerType) &&
@@ -631,7 +631,11 @@ namespace tsil::tk {
           type == this->compiler->integerType ||
           type == this->compiler->positiveType) &&
          (targetType == this->compiler->int32Type ||
-          targetType == this->compiler->uint32Type))) {
+          targetType == this->compiler->uint32Type)) ||
+        ((type == this->compiler->logicalType ||
+          type == this->compiler->int8Type ||
+          type == this->compiler->uint8Type) &&
+         (targetType == this->compiler->int1Type))) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockTruncInstruction(
               xBlock, type->xType, xValue, targetType->xType);
@@ -659,7 +663,7 @@ namespace tsil::tk {
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (float/double -> uchar/uint/ulong) = fptoui
+    // (float/double -> i1/uchar/uint/ulong) = fptoui
     if ((type == this->compiler->d32Type || type == this->compiler->d64Type ||
          type == this->compiler->doubleType) &&
         (targetType == this->compiler->int1Type ||
@@ -695,7 +699,7 @@ namespace tsil::tk {
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (uchar/uint/ulong -> float/double) = uitofp
+    // (i1/uchar/uint/ulong -> float/double) = uitofp
     if ((type == this->compiler->int1Type ||
          type == this->compiler->uint8Type ||
          type == this->compiler->uint32Type ||
