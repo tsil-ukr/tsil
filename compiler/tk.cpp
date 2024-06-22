@@ -97,6 +97,7 @@ namespace tsil::tk {
     str_replace_all(stringValue, "\\'", "\'");
     str_replace_all(stringValue, "\\\"", "\"");
     str_replace_all(stringValue, "\\0", "\0");
+    str_replace_all(stringValue, "\\e", "\e");
     return stringValue;
   }
 } // namespace tsil::tk

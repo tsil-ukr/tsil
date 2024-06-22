@@ -37,6 +37,7 @@ namespace tsil::x {
     str_replace_all(stringValue, "\v", "\\0B");
     str_replace_all(stringValue, "\"", "\\22");
     str_replace_all(stringValue, "\0", "\\00");
+    str_replace_all(stringValue, "\e", "\\1B");
     return stringValue;
   }
 
