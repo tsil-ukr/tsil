@@ -1,94 +1,6 @@
 #include "parser.h"
 
-namespace tsil::ast {
-  std::string ast_value_kind_to_string(ast::ASTValueKind kind) {
-    {
-      switch (kind) {
-        case ast::KindNone:
-          return "None";
-        case ast::KindAssignNode:
-          return "AssignNode";
-        case ast::KindBinaryNode:
-          return "BinaryNode";
-        case ast::KindBreakNode:
-          return "BreakNode";
-        case ast::KindCallNode:
-          return "CallNode";
-        case ast::KindDefineNode:
-          return "DefineNode";
-        case ast::KindGetNode:
-          return "GetNode";
-        case ast::KindSetNode:
-          return "SetNode";
-        case ast::KindComparisonNode:
-          return "ComparisonNode";
-        case ast::KindContinueNode:
-          return "ContinueNode";
-        case ast::KindDiiaHeadNode:
-          return "DiiaHeadNode";
-        case ast::KindDiiaNode:
-          return "DiiaNode";
-        case ast::KindDiiaDeclarationNode:
-          return "DiiaDeclarationNode";
-        case ast::KindIdentifierNode:
-          return "IdentifierNode";
-        case ast::KindIfNode:
-          return "IfNode";
-        case ast::KindNumberNode:
-          return "NumberNode";
-        case ast::KindParamNode:
-          return "ParamNode";
-        case ast::KindProgramNode:
-          return "ProgramNode";
-        case ast::KindReturnNode:
-          return "ReturnNode";
-        case ast::KindStringNode:
-          return "StringNode";
-        case ast::KindStructureNode:
-          return "StructureNode";
-        case ast::KindLogicalNode:
-          return "LogicalNode";
-        case ast::KindTypeNode:
-          return "TypeNode";
-        case ast::KindUnaryNode:
-          return "UnaryNode";
-        case ast::KindWhileNode:
-          return "WhileNode";
-        case ast::KindBlockNode:
-          return "BlockNode";
-        case ast::KindGetPointerNode:
-          return "GetPointerNode";
-        case ast::KindConstructorNode:
-          return "ConstructorNode";
-        case ast::KindConstructorArgNode:
-          return "ConstructorArgNode";
-        case ast::KindSizeofNode:
-          return "SizeofNode";
-        case ast::KindAsNode:
-          return "AsNode";
-        case ast::KindFunctionTypeNode:
-          return "FunctionTypeNode";
-        case ast::KindVariationTypeNode:
-          return "VariationTypeNode";
-        case ast::KindIncludeNode:
-          return "IncludeNode";
-        case ast::KindAccessNode:
-          return "AccessNode";
-        case ast::KindArrayTypeNode:
-          return "ArrayTypeNode";
-        case ast::KindTakeNode:
-          return "TakeNode";
-        case ast::KindSectionAccessNode:
-          return "SectionAccessNode";
-        case ast::KindSectionNode:
-          return "SectionNode";
-        case ast::KindGenericNode:
-          return "GenericNode";
-      }
-      return "Unknown";
-    }
-  }
-} // namespace tsil::ast
+namespace tsil::ast {} // namespace tsil::ast
 
 namespace tsil::parser {
   void FILL(ast::ASTValue* ast_value, antlr4::ParserRuleContext* context) {
@@ -333,6 +245,10 @@ namespace tsil::parser {
     if (const auto synonym_context =
             dynamic_cast<TsilParser::SynonymContext*>(context)) {
       return visitSynonym(synonym_context);
+    }
+    if (const auto defer_context =
+            dynamic_cast<TsilParser::DeferContext*>(context)) {
+      return visitDefer(defer_context);
     }
     return nullptr;
   }

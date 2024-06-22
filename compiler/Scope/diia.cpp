@@ -7,14 +7,14 @@ namespace tsil::tk {
       tsil::x::FunctionBlock* xBlock,
       tsil::x::FunctionBlock* xExitBlock,
       const std::vector<ast::ASTValue*>& body) {
-    const auto originalXBlock = xBlock;
     if (body.empty()) {
       this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock,
                                                               xExitBlock);
       return {nullptr};
     }
+    const auto deferXBlock = this->compiler->xModule->createFunctionBlock(
+        xFunction, "exitWithDefer");
     int childIndex = 0;
-    std::vector<std::pair<x::FunctionBlock*, x::FunctionBlock*>> exits;
     for (const auto& childAstValue : body) {
       if (childAstValue == nullptr) {
         continue;
@@ -23,13 +23,24 @@ namespace tsil::tk {
         continue;
       }
       if (childAstValue->kind == tsil::ast::KindBlockNode) {
+        const auto xBlockBodyBlock =
+            this->compiler->xModule->defineFunctionBlock(xFunction,
+                                                         "block_body");
+        const auto xBlockExitBlock =
+            this->compiler->xModule->defineFunctionBlock(xFunction,
+                                                         "block_exit");
         const auto blockScope = new Scope(this->compiler, this);
-        const auto blockResult =
-            blockScope->compileDiiaBody(diiaType, xFunction, xBlock, xExitBlock,
-                                        childAstValue->data.BlockNode->body);
+        const auto blockResult = blockScope->compileDiiaBody(
+            diiaType, xFunction, xBlockBodyBlock, xBlockExitBlock,
+            childAstValue->data.BlockNode->body);
         if (blockResult.error) {
           return {nullptr, nullptr, blockResult.error};
         }
+        this->compiler->xModule->pushFunctionBlockBrInstruction(
+            xBlockBodyBlock, xBlockExitBlock);
+        this->compiler->xModule->pushFunctionBlockBrInstruction(
+            xBlock, xBlockBodyBlock);
+        xBlock = xBlockExitBlock;
       } else if (childAstValue->kind == tsil::ast::KindSynonymNode) {
         const auto result = this->compileSynonym(childAstValue);
         if (result.error) {
@@ -248,6 +259,13 @@ namespace tsil::tk {
         }
         this->compiler->xModule->pushFunctionBlockBrInstruction(
             xBlock, xFunction->exit_block);
+      } else if (childAstValue->kind == tsil::ast::KindDeferNode) {
+        const auto deferNode = childAstValue->data.DeferNode;
+        const auto valueResult = this->compileValueNoVariation(
+            xFunction, deferXBlock, deferNode->value);
+        if (valueResult.error) {
+          return {nullptr, nullptr, valueResult.error};
+        }
       } else {
         return {nullptr, nullptr,
                 CompilerError::fromASTValue(childAstValue,
@@ -255,6 +273,14 @@ namespace tsil::tk {
       }
       childIndex++;
     }
+    std::vector<x::FunctionInstruction*> newExitBlockInstructions;
+    for (const auto deferInstruction : deferXBlock->instructions) {
+      newExitBlockInstructions.push_back(deferInstruction);
+    }
+    for (const auto exitBlockInstruction : xExitBlock->instructions) {
+      newExitBlockInstructions.push_back(exitBlockInstruction);
+    }
+    xExitBlock->instructions = newExitBlockInstructions;
     this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock, xExitBlock);
     return {xBlock, nullptr};
   }

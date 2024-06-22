@@ -39,6 +39,9 @@ namespace tsil::parser {
       if (body_element->block()) {
         body.push_back(AAV(visitBlock(body_element->block())));
       }
+      if (body_element->defer()) {
+        body.push_back(AAV(visitDefer(body_element->defer())));
+      }
     }
     return body;
   }
@@ -47,5 +50,19 @@ namespace tsil::parser {
     const auto block_node = new ast::BlockNode();
     block_node->body = AAVec(visitBody(ctx->body()));
     return AV(ctx, ast::KindBlockNode, block_node);
+  }
+
+  std::any TsilASTVisitor::visitDefer(TsilParser::DeferContext* ctx) {
+    const auto defer_node = new ast::DeferNode();
+    if (ctx->assign()) {
+      defer_node->value = AAV(visitContext(ctx->assign()));
+    }
+    if (ctx->set()) {
+      defer_node->value = AAV(visitContext(ctx->set()));
+    }
+    if (ctx->expr()) {
+      defer_node->value = AAV(visitContext(ctx->expr()));
+    }
+    return AV(ctx, ast::KindDeferNode, defer_node);
   }
 } // namespace tsil::parser

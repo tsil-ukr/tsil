@@ -118,6 +118,17 @@ namespace tsil::x {
     return {function, new Value(this->pointerType, function->name)};
   }
 
+  FunctionBlock* Module::createFunctionBlock(Function* function,
+                                             const std::string& name) {
+    auto block = new FunctionBlock();
+    if (TSIL_X_EXPANDED_NAMES == "1") {
+      block->name = name + "." + std::to_string(function->blocks.size());
+    } else {
+      block->name = "b." + std::to_string(this->variable_counter++);
+    }
+    return block;
+  }
+
   FunctionBlock* Module::defineFunctionBlock(Function* function,
                                              const std::string& name) {
     auto block = new FunctionBlock();

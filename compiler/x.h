@@ -91,6 +91,8 @@ namespace tsil::x {
         const std::string& name,
         Type* result_type,
         std::vector<Value*> parameters);
+    FunctionBlock* createFunctionBlock(Function* function,
+                                       const std::string& name);
     FunctionBlock* defineFunctionBlock(Function* function,
                                        const std::string& name);
     FunctionBlock* getFunctionBlock(Function* function,

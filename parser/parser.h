@@ -129,6 +129,8 @@ namespace tsil::parser {
     std::any visitBlock(TsilParser::BlockContext* ctx) override;
 
     std::any visitSynonym(TsilParser::SynonymContext* ctx) override;
+
+    std::any visitDefer(TsilParser::DeferContext* ctx) override;
   };
 
   struct TsilParserError {
