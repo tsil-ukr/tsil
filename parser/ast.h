@@ -34,6 +34,7 @@ namespace tsil::ast {
   struct LogicalNode;
   struct TypeNode;
   struct FunctionTypeNode;
+  struct VariationTypeNode;
   struct ArrayTypeNode;
   struct UnaryNode;
   struct WhileNode;
@@ -124,6 +125,7 @@ namespace tsil::ast {
     KindGenericNode = 38,
     KindSynonymNode = 39,
     KindVariationNode = 40,
+    KindVariationTypeNode = 41,
   };
 
   std::string ast_value_kind_to_string(ASTValueKind kind);
@@ -155,6 +157,7 @@ namespace tsil::ast {
     tsil::ast::LogicalNode* LogicalNode;
     tsil::ast::TypeNode* TypeNode;
     tsil::ast::FunctionTypeNode* FunctionTypeNode;
+    tsil::ast::VariationTypeNode* VariationTypeNode;
     tsil::ast::ArrayTypeNode* ArrayTypeNode;
     tsil::ast::UnaryNode* UnaryNode;
     tsil::ast::WhileNode* WhileNode;
@@ -308,6 +311,10 @@ namespace tsil::ast {
   struct FunctionTypeNode {
     std::vector<ASTValue*> args;
     ASTValue* return_type;
+  };
+
+  struct VariationTypeNode {
+    std::vector<ASTValue*> types;
   };
 
   struct ArrayTypeNode {

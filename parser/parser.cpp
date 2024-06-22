@@ -68,6 +68,8 @@ namespace tsil::ast {
           return "AsNode";
         case ast::KindFunctionTypeNode:
           return "FunctionTypeNode";
+        case ast::KindVariationTypeNode:
+          return "VariationTypeNode";
         case ast::KindIncludeNode:
           return "IncludeNode";
         case ast::KindAccessNode:
@@ -287,10 +289,6 @@ namespace tsil::parser {
             dynamic_cast<TsilParser::Array_typeContext*>(context)) {
       return visitArray_type(array_type_context);
     }
-    if (const auto full_type_basic_type_context =
-            dynamic_cast<TsilParser::Full_type_basic_typeContext*>(context)) {
-      return visitContext(full_type_basic_type_context->basic_type());
-    }
     if (const auto complex_function_type_context =
             dynamic_cast<TsilParser::Complex_function_typeContext*>(context)) {
       return visitComplex_function_type(complex_function_type_context);
@@ -298,6 +296,18 @@ namespace tsil::parser {
     if (const auto simple_function_type_context =
             dynamic_cast<TsilParser::Simple_function_typeContext*>(context)) {
       return visitSimple_function_type(simple_function_type_context);
+    }
+    if (const auto variation_type_context =
+            dynamic_cast<TsilParser::Variation_typeContext*>(context)) {
+      return visitVariation_type(variation_type_context);
+    }
+    if (const auto full_type_nested_context =
+            dynamic_cast<TsilParser::Full_type_nestedContext*>(context)) {
+      return visitFull_type_nested(full_type_nested_context);
+    }
+    if (const auto basic_type_real_basic_context =
+            dynamic_cast<TsilParser::Basic_type_real_basicContext*>(context)) {
+      return visitBasic_type_real_basic(basic_type_real_basic_context);
     }
     if (const auto take_context =
             dynamic_cast<TsilParser::TakeContext*>(context)) {

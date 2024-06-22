@@ -283,15 +283,23 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitFull_type_nested(TsilParser::Full_type_nestedContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitSimple_function_type(TsilParser::Simple_function_typeContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitComplex_function_type(TsilParser::Complex_function_typeContext *ctx) override {
+  virtual std::any visitBasic_type_real_basic(TsilParser::Basic_type_real_basicContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitFull_type_basic_type(TsilParser::Full_type_basic_typeContext *ctx) override {
+  virtual std::any visitVariation_type(TsilParser::Variation_typeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitComplex_function_type(TsilParser::Complex_function_typeContext *ctx) override {
     return visitChildren(ctx);
   }
 

@@ -158,7 +158,6 @@ public:
     DefineContext *define();
     SectionContext *section();
     StructureContext *structure();
-    VariationContext *variation();
     Diia_declarationContext *diia_declaration();
     DiiaContext *diia();
 
@@ -356,7 +355,6 @@ public:
     DefineContext *define();
     SectionContext *section();
     StructureContext *structure();
-    VariationContext *variation();
     Diia_declarationContext *diia_declaration();
     DiiaContext *diia();
 
@@ -1432,6 +1430,19 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  Full_type_nestedContext : public Basic_typeContext {
+  public:
+    Full_type_nestedContext(Basic_typeContext *ctx);
+
+    antlr4::tree::TerminalNode *PAREN_OPEN();
+    Full_typeContext *full_type();
+    antlr4::tree::TerminalNode *PAREN_CLOSE();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   Basic_typeContext* basic_type();
   Basic_typeContext* basic_type(int precedence);
   class  Full_typeContext : public antlr4::ParserRuleContext {
@@ -1463,6 +1474,31 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  Basic_type_real_basicContext : public Full_typeContext {
+  public:
+    Basic_type_real_basicContext(Full_typeContext *ctx);
+
+    Basic_typeContext *basic_type();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Variation_typeContext : public Full_typeContext {
+  public:
+    Variation_typeContext(Full_typeContext *ctx);
+
+    std::vector<Basic_typeContext *> basic_type();
+    Basic_typeContext* basic_type(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> OR();
+    antlr4::tree::TerminalNode* OR(size_t i);
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  Complex_function_typeContext : public Full_typeContext {
   public:
     Complex_function_typeContext(Full_typeContext *ctx);
@@ -1475,17 +1511,6 @@ public:
     antlr4::tree::TerminalNode *GREATER();
     Full_typeContext *full_type();
     Complex_function_type_argsContext *complex_function_type_args();
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  Full_type_basic_typeContext : public Full_typeContext {
-  public:
-    Full_type_basic_typeContext(Full_typeContext *ctx);
-
-    Basic_typeContext *basic_type();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 

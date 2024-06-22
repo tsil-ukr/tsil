@@ -174,9 +174,7 @@ namespace tsil::tk {
       return (result + 7) / 8 * 8;
     }
     if (this->type == TypeTypeVariationInstance) {
-      // todo: get largest size
-      return this->variationInstanceFields.begin()->second.type->getBytesSize(
-          scope);
+      return this->largestVariationType->getBytesSize(scope);
     }
     return 0;
   }

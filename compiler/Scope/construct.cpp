@@ -53,14 +53,9 @@ namespace tsil::tk {
       }
       auto fieldType = field.type;
       if (fieldType->type == TypeTypeVariationInstance) {
-        if (fieldType->variationInstanceFields.empty()) {
-          return {nullptr, nullptr,
-                  CompilerError::fromASTValue(argAstValue, "Аййй")};
-        }
-        for (const auto& [id, variationField] :
-             fieldType->variationInstanceFields) {
-          if (variationField.type == argValueResult.type) {
-            fieldType = variationField.type;
+        for (const auto& variationType : fieldType->variationTypes) {
+          if (variationType == argValueResult.type) {
+            fieldType = variationType;
             break;
           }
         }

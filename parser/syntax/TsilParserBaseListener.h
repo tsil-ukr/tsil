@@ -217,14 +217,20 @@ public:
   virtual void enterArray_type(TsilParser::Array_typeContext * /*ctx*/) override { }
   virtual void exitArray_type(TsilParser::Array_typeContext * /*ctx*/) override { }
 
+  virtual void enterFull_type_nested(TsilParser::Full_type_nestedContext * /*ctx*/) override { }
+  virtual void exitFull_type_nested(TsilParser::Full_type_nestedContext * /*ctx*/) override { }
+
   virtual void enterSimple_function_type(TsilParser::Simple_function_typeContext * /*ctx*/) override { }
   virtual void exitSimple_function_type(TsilParser::Simple_function_typeContext * /*ctx*/) override { }
 
+  virtual void enterBasic_type_real_basic(TsilParser::Basic_type_real_basicContext * /*ctx*/) override { }
+  virtual void exitBasic_type_real_basic(TsilParser::Basic_type_real_basicContext * /*ctx*/) override { }
+
+  virtual void enterVariation_type(TsilParser::Variation_typeContext * /*ctx*/) override { }
+  virtual void exitVariation_type(TsilParser::Variation_typeContext * /*ctx*/) override { }
+
   virtual void enterComplex_function_type(TsilParser::Complex_function_typeContext * /*ctx*/) override { }
   virtual void exitComplex_function_type(TsilParser::Complex_function_typeContext * /*ctx*/) override { }
-
-  virtual void enterFull_type_basic_type(TsilParser::Full_type_basic_typeContext * /*ctx*/) override { }
-  virtual void exitFull_type_basic_type(TsilParser::Full_type_basic_typeContext * /*ctx*/) override { }
 
   virtual void enterComplex_function_type_args(TsilParser::Complex_function_type_argsContext * /*ctx*/) override { }
   virtual void exitComplex_function_type_args(TsilParser::Complex_function_type_argsContext * /*ctx*/) override { }

@@ -241,7 +241,8 @@ namespace tsil::tk {
         genericValues, BakedDiia{diiaType, functionXValue, xFunction});
     if (!this->isDeclaration) {
       xFunction->alloca_block =
-          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "alloca");
+          diiaScope->compiler->xModule->defineFunctionBlock(xFunction,
+                                                            "alloca");
       xFunction->entry_block =
           diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "entry");
       if (xFunction->result_type) {
@@ -296,7 +297,8 @@ namespace tsil::tk {
       const auto xFunction = bakedDiia.xFunction;
       const auto diiaScope = diiaType->scopeWithGenerics;
       xFunction->alloca_block =
-          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "alloca");
+          diiaScope->compiler->xModule->defineFunctionBlock(xFunction,
+                                                            "alloca");
       xFunction->entry_block =
           diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "entry");
       if (xFunction->result_type) {
@@ -395,7 +397,7 @@ namespace tsil::tk {
       return {leftResult.type, loadXValue, nullptr};
     }
     if (astValue->kind == ast::KindAsNode) {
-      return this->compileAs(xFunction, xBlock, astValue);
+      return this->compileAs(xFunction, xBlock, astValue, true);
     }
     if (astValue->kind == ast::KindBinaryNode) {
       return this->compileBinary(xFunction, xBlock, astValue);
@@ -443,7 +445,7 @@ namespace tsil::tk {
     if (result.type->type == TypeTypeVariationInstance) {
       return {nullptr, nullptr,
               CompilerError::fromASTValue(
-                  astValue, "Неможливо отримати варіацію як значення")};
+                  astValue, "Неможливо використовувати варіацію як значення")};
     }
     return result;
   }
@@ -508,6 +510,8 @@ namespace tsil::tk {
       return accessResult;
     } else if (astValue->kind == ast::KindConstructorNode) {
       return this->compileConstructor(xFunction, xBlock, astValue, false);
+    } else if (astValue->kind == ast::KindAsNode) {
+      return this->compileAs(xFunction, xBlock, astValue, false);
     }
     return {nullptr, nullptr,
             CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED LEFT")};

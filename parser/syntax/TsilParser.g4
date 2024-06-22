@@ -7,7 +7,7 @@ options {
 file: f_program=program EOF;
 
 program: program_element*;
-program_element: (take ';') | (synonym ';') | (declare ';') | (define ';') | section | structure | variation | diia_declaration | diia | ';';
+program_element: (take ';') | (synonym ';') | (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
 
 identifier: ID;
 section_access: identifier (':' ':' identifier)* #real_section_access;
@@ -21,7 +21,7 @@ synonym: 'синонім' s_name=ID '=' s_value=synonym_value;
 synonym_value: full_type | number | string;
 
 section: 'секція' s_name=ID '{' section_element* '}';
-section_element: (synonym ';') | (declare ';') | (define ';') | section | structure | variation | diia_declaration | diia | ';';
+section_element: (synonym ';') | (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
 
 structure: 'структура' s_name=ID ('<' s_generics=structure_generics '>')? ('{' (s_params=structure_params)? '}' | ';');
 structure_generics: structure_generic (',' structure_generic)*;
@@ -92,8 +92,10 @@ construct_args: construct_arg (',' construct_arg)* ','?;
 construct_arg: (ca_name=ID '=')? ca_value=expr;
 
 basic_type: section_access ('<' t_first_generic_type=full_type (',' full_type)* '>')? #simple_type
-          | at_type=basic_type '[' at_size=NUMBER ']' #array_type;
-full_type: basic_type #full_type_basic_type
+          | at_type=basic_type '[' at_size=NUMBER ']' #array_type
+          | ('(' full_type ')') #full_type_nested;
+full_type: basic_type ('|' basic_type)+ #variation_type
+         | basic_type #basic_type_real_basic
          | '(' (cft_args=complex_function_type_args)? ')' '-' '>' cft_ret=full_type #complex_function_type
          | sft_arg=full_type '-' '>' sft_ret=full_type #simple_function_type;
 complex_function_type_args: full_type (',' full_type)*;

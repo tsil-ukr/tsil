@@ -323,7 +323,8 @@ namespace tsil::tk {
                                        ast::ASTValue* astValue);
     CompilerValueResult compileAs(tsil::x::Function* xFunction,
                                   tsil::x::FunctionBlock* xBlock,
-                                  ast::ASTValue* astValue);
+                                  ast::ASTValue* astValue,
+                                  bool load);
     CompilerValueResult compileBinary(tsil::x::Function* xFunction,
                                       tsil::x::FunctionBlock* xBlock,
                                       ast::ASTValue* astValue);
@@ -417,10 +418,10 @@ namespace tsil::tk {
     // structure
     std::unordered_map<std::string, TypeStructureField> structureInstanceFields;
     // variation
-    Type* variationType = nullptr;
+    Type* largestVariationType = nullptr;
     size_t shortTermVariationIndex = -1; // very bad hack
     Type* shortTermVariationLeftType = nullptr; // very bad hack
-    std::unordered_map<std::string, TypeVariationField> variationInstanceFields;
+    std::vector<Type*> variationTypes;
     // diia
     ast::DiiaLinkage linkage;
     std::vector<TypeDiiaParameter> diiaParameters;

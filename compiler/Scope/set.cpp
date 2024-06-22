@@ -112,13 +112,9 @@ namespace tsil::tk {
           return {valueResult.error};
         }
         if (fieldType->type == TypeTypeVariationInstance) {
-          if (fieldType->variationInstanceFields.empty()) {
-            return {CompilerError::fromASTValue(astValue, "Аййй")};
-          }
-          for (const auto& [id, variationField] :
-               fieldType->variationInstanceFields) {
-            if (variationField.type == valueResult.type) {
-              fieldType = variationField.type;
+          for (const auto& variationType : fieldType->variationTypes) {
+            if (variationType == valueResult.type) {
+              fieldType = variationType;
               break;
             }
           }

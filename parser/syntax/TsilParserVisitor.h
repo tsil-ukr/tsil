@@ -153,11 +153,15 @@ public:
 
     virtual std::any visitArray_type(TsilParser::Array_typeContext *context) = 0;
 
+    virtual std::any visitFull_type_nested(TsilParser::Full_type_nestedContext *context) = 0;
+
     virtual std::any visitSimple_function_type(TsilParser::Simple_function_typeContext *context) = 0;
 
-    virtual std::any visitComplex_function_type(TsilParser::Complex_function_typeContext *context) = 0;
+    virtual std::any visitBasic_type_real_basic(TsilParser::Basic_type_real_basicContext *context) = 0;
 
-    virtual std::any visitFull_type_basic_type(TsilParser::Full_type_basic_typeContext *context) = 0;
+    virtual std::any visitVariation_type(TsilParser::Variation_typeContext *context) = 0;
+
+    virtual std::any visitComplex_function_type(TsilParser::Complex_function_typeContext *context) = 0;
 
     virtual std::any visitComplex_function_type_args(TsilParser::Complex_function_type_argsContext *context) = 0;
 

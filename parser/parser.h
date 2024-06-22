@@ -110,6 +110,15 @@ namespace tsil::parser {
     std::any visitSimple_function_type(
         TsilParser::Simple_function_typeContext* ctx) override;
 
+    std::any visitVariation_type(
+        TsilParser::Variation_typeContext* ctx) override;
+
+    std::any visitFull_type_nested(
+        TsilParser::Full_type_nestedContext* ctx) override;
+
+    std::any visitBasic_type_real_basic(
+        TsilParser::Basic_type_real_basicContext* ctx) override;
+
     std::any visitTake(TsilParser::TakeContext* context) override;
 
     std::any visitReal_section_access(

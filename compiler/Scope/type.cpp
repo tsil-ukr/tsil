@@ -102,6 +102,39 @@ namespace tsil::tk {
       }
       return {elementTypeResult.type->getArrayType(this, arraySize), ""};
     }
+    if (astValue->kind == ast::KindVariationTypeNode) {
+      const auto variationNode = astValue->data.VariationTypeNode;
+      const auto type = new Type();
+      type->type = TypeTypeVariationInstance;
+      type->name = "";
+      int paramIndex = 0;
+      for (const auto& variationTypeTypeAstValue : variationNode->types) {
+        const auto variationTypeTypeResult =
+            this->bakeType(variationTypeTypeAstValue);
+        if (!variationTypeTypeResult.type) {
+          return {nullptr, variationTypeTypeResult.error};
+        }
+        if (variationTypeTypeResult.type->type == TypeTypeStructureInstance &&
+            variationTypeTypeResult.type->structureInstanceFields.empty()) {
+          return {nullptr, "Виявлено неповний тип"};
+        }
+        if (variationTypeTypeResult.type->type == TypeTypeVariationInstance) {
+          return {nullptr, "Виявлено вкладену варіацію"};
+        }
+        type->variationTypes.push_back(variationTypeTypeResult.type);
+        paramIndex++;
+      }
+      Type* largestVariationType = type->variationTypes[0];
+      for (const auto& variationType : type->variationTypes) {
+        if (variationType->getBytesSize(this) >
+            largestVariationType->getBytesSize(this)) {
+          largestVariationType = variationType;
+        }
+      }
+      type->largestVariationType = largestVariationType;
+      type->xType = largestVariationType->xType;
+      return {type, ""};
+    }
     return {nullptr, "NOT IMPLEMENTED BAKED TYPE"};
   }
 } // namespace tsil::tk

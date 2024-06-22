@@ -43,4 +43,23 @@ namespace tsil::parser {
     function_type_node->return_type = AAV(visitContext(context->sft_ret));
     return AV(context, ast::KindFunctionTypeNode, function_type_node);
   }
+
+  std::any TsilASTVisitor::visitVariation_type(
+      TsilParser::Variation_typeContext* context) {
+    const auto variation_type_node = new ast::VariationTypeNode();
+    for (const auto type : context->basic_type()) {
+      variation_type_node->types.push_back(AAV(visitContext(type)));
+    }
+    return AV(context, ast::KindVariationTypeNode, variation_type_node);
+  }
+
+  std::any TsilASTVisitor::visitFull_type_nested(
+      TsilParser::Full_type_nestedContext* context) {
+    return visitContext(context->full_type());
+  }
+
+  std::any TsilASTVisitor::visitBasic_type_real_basic(
+      TsilParser::Basic_type_real_basicContext* context) {
+    return visitContext(context->basic_type());
+  }
 } // namespace tsil::parser

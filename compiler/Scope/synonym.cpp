@@ -133,7 +133,8 @@ namespace tsil::tk {
         return {CompilerError::subjectNotDefined(synonymNode->value)};
       }
     } else if (synonymNode->value->kind == ast::KindArrayTypeNode ||
-               synonymNode->value->kind == ast::KindFunctionTypeNode) {
+               synonymNode->value->kind == ast::KindFunctionTypeNode ||
+               synonymNode->value->kind == ast::KindVariationTypeNode) {
       const auto bakedTypeResult = this->bakeType(synonymNode->value);
       if (!bakedTypeResult.type) {
         return {CompilerError::fromASTValue(synonymNode->value,

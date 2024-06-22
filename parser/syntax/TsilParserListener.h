@@ -215,14 +215,20 @@ public:
   virtual void enterArray_type(TsilParser::Array_typeContext *ctx) = 0;
   virtual void exitArray_type(TsilParser::Array_typeContext *ctx) = 0;
 
+  virtual void enterFull_type_nested(TsilParser::Full_type_nestedContext *ctx) = 0;
+  virtual void exitFull_type_nested(TsilParser::Full_type_nestedContext *ctx) = 0;
+
   virtual void enterSimple_function_type(TsilParser::Simple_function_typeContext *ctx) = 0;
   virtual void exitSimple_function_type(TsilParser::Simple_function_typeContext *ctx) = 0;
 
+  virtual void enterBasic_type_real_basic(TsilParser::Basic_type_real_basicContext *ctx) = 0;
+  virtual void exitBasic_type_real_basic(TsilParser::Basic_type_real_basicContext *ctx) = 0;
+
+  virtual void enterVariation_type(TsilParser::Variation_typeContext *ctx) = 0;
+  virtual void exitVariation_type(TsilParser::Variation_typeContext *ctx) = 0;
+
   virtual void enterComplex_function_type(TsilParser::Complex_function_typeContext *ctx) = 0;
   virtual void exitComplex_function_type(TsilParser::Complex_function_typeContext *ctx) = 0;
-
-  virtual void enterFull_type_basic_type(TsilParser::Full_type_basic_typeContext *ctx) = 0;
-  virtual void exitFull_type_basic_type(TsilParser::Full_type_basic_typeContext *ctx) = 0;
 
   virtual void enterComplex_function_type_args(TsilParser::Complex_function_type_argsContext *ctx) = 0;
   virtual void exitComplex_function_type_args(TsilParser::Complex_function_type_argsContext *ctx) = 0;

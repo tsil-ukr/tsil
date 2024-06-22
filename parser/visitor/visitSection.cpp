@@ -25,10 +25,6 @@ namespace tsil::parser {
         section_node->body.push_back(
             AAV(visitStructure(section_element->structure())));
       }
-      if (section_element->variation()) {
-        section_node->body.push_back(
-            AAV(visitVariation(section_element->variation())));
-      }
       if (section_element->diia_declaration()) {
         section_node->body.push_back(
             AAV(visitDiia_declaration(section_element->diia_declaration())));
