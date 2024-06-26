@@ -135,6 +135,9 @@ namespace tsil::tk {
     if (this == scope->compiler->int8Type) {
       return 1;
     }
+    if (this == scope->compiler->int16Type) {
+      return 4;
+    }
     if (this == scope->compiler->int32Type) {
       return 4;
     }
@@ -148,6 +151,9 @@ namespace tsil::tk {
       return 1;
     }
     if (this == scope->compiler->uint32Type) {
+      return 4;
+    }
+    if (this == scope->compiler->uint16Type) {
       return 4;
     }
     if (this == scope->compiler->uint64Type) {
@@ -183,10 +189,12 @@ namespace tsil::tk {
     return this == scope->compiler->int1Type ||
            this == scope->compiler->logicalType ||
            this == scope->compiler->int8Type ||
+           this == scope->compiler->int16Type ||
            this == scope->compiler->int32Type ||
            this == scope->compiler->int64Type ||
            this == scope->compiler->integerType ||
            this == scope->compiler->uint8Type ||
+           this == scope->compiler->uint16Type ||
            this == scope->compiler->uint32Type ||
            this == scope->compiler->uint64Type ||
            this == scope->compiler->positiveType ||
@@ -197,6 +205,7 @@ namespace tsil::tk {
 
   bool Type::isUnsigned(tsil::tk::Scope* scope) {
     return this == scope->compiler->uint8Type ||
+           this == scope->compiler->uint16Type ||
            this == scope->compiler->uint32Type ||
            this == scope->compiler->uint64Type ||
            this == scope->compiler->positiveType ||
@@ -216,10 +225,12 @@ namespace tsil::tk {
   bool Type::isBitwisible(tsil::tk::Scope* scope) {
     return this == scope->compiler->logicalType ||
            this == scope->compiler->int8Type ||
+           this == scope->compiler->int16Type ||
            this == scope->compiler->int32Type ||
            this == scope->compiler->int64Type ||
            this == scope->compiler->integerType ||
            this == scope->compiler->uint8Type ||
+           this == scope->compiler->uint16Type ||
            this == scope->compiler->uint32Type ||
            this == scope->compiler->uint64Type ||
            this == scope->compiler->positiveType ||

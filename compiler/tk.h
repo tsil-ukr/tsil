@@ -45,6 +45,7 @@ namespace tsil::tk {
 
     Type* logicalType = nullptr;
     Type* int8Type = nullptr;
+    Type* int16Type = nullptr;
     Type* int32Type = nullptr;
     Type* int64Type = nullptr;
     Type* integerType = nullptr;
@@ -54,6 +55,7 @@ namespace tsil::tk {
     Type* doubleType = nullptr;
 
     Type* uint8Type = nullptr;
+    Type* uint16Type = nullptr;
     Type* uint32Type = nullptr;
     Type* uint64Type = nullptr;
     Type* positiveType = nullptr;

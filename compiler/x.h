@@ -66,6 +66,7 @@ namespace tsil::x {
 
     Type* int1Type;
     Type* int8Type;
+    Type* int16Type;
     Type* int32Type;
     Type* int64Type;
     Type* floatType;
@@ -73,7 +74,7 @@ namespace tsil::x {
     Type* pointerType;
     Type* voidType;
 
-    std::string targetTriple = "x86_64-pc-linux-gnu";
+    std::string targetTriple = "";
 
     std::string computeNextName(const std::string& prefix);
     std::string computeNextVarName(const std::string& prefix);

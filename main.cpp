@@ -205,6 +205,14 @@ int compile(const CompileCommand& compileCommand) {
         "ц8", tsil::tk::Subject{tsil::tk::SubjectKindType, int8Type});
     compiler->int8Type = int8Type;
 
+    const auto int16Type = new tsil::tk::Type();
+    int16Type->type = tsil::tk::TypeTypeNative;
+    int16Type->name = "ц16";
+    int16Type->xType = compiler->xModule->int16Type;
+    compiler->globalScope->setSubject(
+        "ц16", tsil::tk::Subject{tsil::tk::SubjectKindType, int16Type});
+    compiler->int16Type = int16Type;
+
     const auto int32Type = new tsil::tk::Type();
     int32Type->type = tsil::tk::TypeTypeNative;
     int32Type->name = "ц32";
@@ -260,6 +268,14 @@ int compile(const CompileCommand& compileCommand) {
     compiler->globalScope->setSubject(
         "п8", tsil::tk::Subject{tsil::tk::SubjectKindType, uint8Type});
     compiler->uint8Type = uint8Type;
+
+    const auto uint16Type = new tsil::tk::Type();
+    uint16Type->type = tsil::tk::TypeTypeNative;
+    uint16Type->name = "п16";
+    uint16Type->xType = compiler->xModule->int16Type;
+    compiler->globalScope->setSubject(
+        "п16", tsil::tk::Subject{tsil::tk::SubjectKindType, uint16Type});
+    compiler->uint16Type = uint16Type;
 
     const auto uint32Type = new tsil::tk::Type();
     uint32Type->type = tsil::tk::TypeTypeNative;
