@@ -25,7 +25,7 @@ namespace tsil::tk {
           this->compiler->xModule->putStringConstant("private", stringValue);
       Type* type = nullptr;
       if (stringNode->prefix == "ю8") {
-        type = this->compiler->int8Type->getPointerType(this);
+        type = this->compiler->uint8Type->getPointerType(this);
       } else {
         return {CompilerError::fromASTValue(
             synonymNode->value, "Текст тимчасово не підтримується.")};

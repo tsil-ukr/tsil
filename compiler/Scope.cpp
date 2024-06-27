@@ -533,14 +533,6 @@ namespace tsil::tk {
         (targetType->isPointer() && targetType->pointerTo == nullptr)) {
       return xValue;
     }
-    if (type == this->compiler->uint1Type &&
-        targetType == this->compiler->uint1Type) {
-      return xValue;
-    }
-    if ((targetType == this->compiler->uint8Type) ||
-        (type == this->compiler->uint8Type)) {
-      return xValue;
-    }
     if ((type == this->compiler->int8Type &&
          targetType == this->compiler->uint8Type) ||
         (type == this->compiler->uint8Type &&
