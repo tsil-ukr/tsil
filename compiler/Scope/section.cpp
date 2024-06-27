@@ -53,8 +53,8 @@ namespace tsil::tk {
           if (defineNode->value->kind == ast::KindNumberNode) {
             const auto numberNode = defineNode->value->data.NumberNode;
             const auto type = str_contains(numberNode->value, ".")
-                                  ? this->compiler->doubleType
-                                  : this->compiler->integerType;
+                                  ? this->compiler->f64Type
+                                  : this->compiler->int64Type;
             const auto xValue = new x::Value(
                 type->xType, tsilNumberToLLVMNumber(numberNode->value));
             const auto globalXValue = this->compiler->xModule->putGlobal(

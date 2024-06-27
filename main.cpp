@@ -153,6 +153,7 @@ int compile(const CompileCommand& compileCommand) {
 
     compiler->xModule->int1Type = compiler->xModule->defineNativeType("i1");
     compiler->xModule->int8Type = compiler->xModule->defineNativeType("i8");
+    compiler->xModule->int16Type = compiler->xModule->defineNativeType("i16");
     compiler->xModule->int32Type = compiler->xModule->defineNativeType("i32");
     compiler->xModule->int64Type = compiler->xModule->defineNativeType("i64");
     compiler->xModule->floatType = compiler->xModule->defineNativeType("float");
@@ -181,21 +182,13 @@ int compile(const CompileCommand& compileCommand) {
         tsil::tk::Subject{tsil::tk::SubjectKindType, pointerType});
     compiler->pointerType = pointerType;
 
-    const auto int1Type = new tsil::tk::Type();
-    int1Type->type = tsil::tk::TypeTypeNative;
-    int1Type->name = "ц1";
-    int1Type->xType = compiler->xModule->int1Type;
+    const auto uint1Type = new tsil::tk::Type();
+    uint1Type->type = tsil::tk::TypeTypeNative;
+    uint1Type->name = "ц1";
+    uint1Type->xType = compiler->xModule->int1Type;
     compiler->globalScope->setSubject(
-        "ц1", tsil::tk::Subject{tsil::tk::SubjectKindType, int1Type});
-    compiler->int1Type = int1Type;
-
-    const auto logicalType = new tsil::tk::Type();
-    logicalType->type = tsil::tk::TypeTypeNative;
-    logicalType->name = "логічне";
-    logicalType->xType = compiler->xModule->int8Type;
-    compiler->globalScope->setSubject(
-        "логічне", tsil::tk::Subject{tsil::tk::SubjectKindType, logicalType});
-    compiler->logicalType = logicalType;
+        "ц1", tsil::tk::Subject{tsil::tk::SubjectKindType, uint1Type});
+    compiler->uint1Type = uint1Type;
 
     const auto int8Type = new tsil::tk::Type();
     int8Type->type = tsil::tk::TypeTypeNative;
@@ -229,13 +222,8 @@ int compile(const CompileCommand& compileCommand) {
         "ц64", tsil::tk::Subject{tsil::tk::SubjectKindType, int64Type});
     compiler->int64Type = int64Type;
 
-    const auto integerType = new tsil::tk::Type();
-    integerType->type = tsil::tk::TypeTypeNative;
-    integerType->name = "ціле";
-    integerType->xType = compiler->xModule->int64Type;
     compiler->globalScope->setSubject(
-        "ціле", tsil::tk::Subject{tsil::tk::SubjectKindType, integerType});
-    compiler->integerType = integerType;
+        "ціле", tsil::tk::Subject{tsil::tk::SubjectKindType, int64Type});
 
     const auto floatType = new tsil::tk::Type();
     floatType->type = tsil::tk::TypeTypeNative;
@@ -243,7 +231,7 @@ int compile(const CompileCommand& compileCommand) {
     floatType->xType = compiler->xModule->floatType;
     compiler->globalScope->setSubject(
         "д32", tsil::tk::Subject{tsil::tk::SubjectKindType, floatType});
-    compiler->d32Type = floatType;
+    compiler->f32Type = floatType;
 
     const auto d64Type = new tsil::tk::Type();
     d64Type->type = tsil::tk::TypeTypeNative;
@@ -251,15 +239,10 @@ int compile(const CompileCommand& compileCommand) {
     d64Type->xType = compiler->xModule->doubleType;
     compiler->globalScope->setSubject(
         "д64", tsil::tk::Subject{tsil::tk::SubjectKindType, d64Type});
-    compiler->d64Type = d64Type;
+    compiler->f64Type = d64Type;
 
-    const auto doubleType = new tsil::tk::Type();
-    doubleType->type = tsil::tk::TypeTypeNative;
-    doubleType->name = "дійсне";
-    doubleType->xType = compiler->xModule->doubleType;
     compiler->globalScope->setSubject(
-        "дійсне", tsil::tk::Subject{tsil::tk::SubjectKindType, doubleType});
-    compiler->doubleType = doubleType;
+        "дійсне", tsil::tk::Subject{tsil::tk::SubjectKindType, d64Type});
 
     const auto uint8Type = new tsil::tk::Type();
     uint8Type->type = tsil::tk::TypeTypeNative;
@@ -268,6 +251,9 @@ int compile(const CompileCommand& compileCommand) {
     compiler->globalScope->setSubject(
         "п8", tsil::tk::Subject{tsil::tk::SubjectKindType, uint8Type});
     compiler->uint8Type = uint8Type;
+
+    compiler->globalScope->setSubject(
+        "логічне", tsil::tk::Subject{tsil::tk::SubjectKindType, uint8Type});
 
     const auto uint16Type = new tsil::tk::Type();
     uint16Type->type = tsil::tk::TypeTypeNative;
@@ -293,14 +279,8 @@ int compile(const CompileCommand& compileCommand) {
         "п64", tsil::tk::Subject{tsil::tk::SubjectKindType, uint64Type});
     compiler->uint64Type = uint64Type;
 
-    const auto positiveType = new tsil::tk::Type();
-    positiveType->type = tsil::tk::TypeTypeNative;
-    positiveType->name = "позитивне";
-    positiveType->xType = compiler->xModule->int64Type;
     compiler->globalScope->setSubject(
-        "позитивне",
-        tsil::tk::Subject{tsil::tk::SubjectKindType, positiveType});
-    compiler->positiveType = positiveType;
+        "позитивне", tsil::tk::Subject{tsil::tk::SubjectKindType, uint64Type});
 
     compiler->nullConstant = new tsil::tk::Constant(
         pointerType,
@@ -310,12 +290,12 @@ int compile(const CompileCommand& compileCommand) {
                   .data = {.constant = compiler->nullConstant}});
 
     compiler->yesConstant = new tsil::tk::Constant(
-        logicalType, new tsil::x::Value(compiler->xModule->int8Type, "1"));
+        uint8Type, new tsil::x::Value(compiler->xModule->int8Type, "1"));
     compiler->globalScope->setSubject(
         "так", {.kind = tsil::tk::SubjectKindConstant,
                 .data = {.constant = compiler->yesConstant}});
     compiler->noConstant = new tsil::tk::Constant(
-        logicalType, new tsil::x::Value(compiler->xModule->int8Type, "0"));
+        uint8Type, new tsil::x::Value(compiler->xModule->int8Type, "0"));
     compiler->globalScope->setSubject(
         "ні", {.kind = tsil::tk::SubjectKindConstant,
                .data = {.constant = compiler->noConstant}});

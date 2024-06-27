@@ -457,11 +457,11 @@ namespace tsil::tk {
     for (size_t i = 0; i < sectionAccessNode->parts.size() - 1; i++) {
       partsWithoutLast.push_back(sectionAccessNode->parts[i]);
     }
-    Scope* scope;
+    Scope* scope = this;
     for (const auto& partAstValue : partsWithoutLast) {
       const auto partName = partAstValue->data.IdentifierNode->name;
-      if (this->hasSubject(partName)) {
-        const auto subject = this->getSubject(partName);
+      if (scope->hasSubject(partName)) {
+        const auto subject = scope->getSubject(partName);
         if (subject.kind == SubjectKindSection) {
           scope = subject.data.section;
         } else {
@@ -533,30 +533,12 @@ namespace tsil::tk {
         (targetType->isPointer() && targetType->pointerTo == nullptr)) {
       return xValue;
     }
-    if (type == this->compiler->uint64Type &&
-        targetType == this->compiler->positiveType) {
+    if (type == this->compiler->uint1Type &&
+        targetType == this->compiler->uint1Type) {
       return xValue;
     }
-    if (type == this->compiler->positiveType &&
-        targetType == this->compiler->uint64Type) {
-      return xValue;
-    }
-    if (type == this->compiler->int64Type &&
-        targetType == this->compiler->integerType) {
-      return xValue;
-    }
-    if (type == this->compiler->integerType &&
-        targetType == this->compiler->int64Type) {
-      return xValue;
-    }
-    if (type == this->compiler->int1Type &&
-        targetType == this->compiler->int1Type) {
-      return xValue;
-    }
-    if ((type == this->compiler->logicalType &&
-         targetType == this->compiler->uint8Type) ||
-        (type == this->compiler->uint8Type &&
-         targetType == this->compiler->logicalType)) {
+    if ((targetType == this->compiler->uint8Type) ||
+        (type == this->compiler->uint8Type)) {
       return xValue;
     }
     if ((type == this->compiler->int8Type &&
@@ -565,157 +547,175 @@ namespace tsil::tk {
          targetType == this->compiler->int8Type)) {
       return xValue;
     }
+    if ((type == this->compiler->int16Type &&
+         targetType == this->compiler->uint16Type) ||
+        (type == this->compiler->uint16Type &&
+         targetType == this->compiler->int16Type)) {
+      return xValue;
+    }
     if ((type == this->compiler->int32Type &&
          targetType == this->compiler->uint32Type) ||
         (type == this->compiler->uint32Type &&
          targetType == this->compiler->int32Type)) {
       return xValue;
     }
-    if (((type == this->compiler->int64Type ||
-          type == this->compiler->integerType) &&
-         (targetType == this->compiler->uint64Type ||
-          targetType == this->compiler->positiveType)) ||
-        ((type == this->compiler->uint64Type ||
-          type == this->compiler->positiveType) &&
-         (targetType == this->compiler->int64Type ||
-          targetType == this->compiler->integerType))) {
+    if (((type == this->compiler->int64Type) &&
+         (targetType == this->compiler->uint64Type)) ||
+        ((type == this->compiler->uint64Type) &&
+         (targetType == this->compiler->int64Type))) {
       return xValue;
     }
-    // (char -> int/long/uint/ulong) | (int -> long/ulong) = sext
-    if ((((type == this->compiler->logicalType ||
-           type == this->compiler->int8Type)) &&
+    // (int8 -> int16/int32/int64/uint16/uint32/uint64) |
+    // (int16 -> int32/int64/uint32/uint64) |
+    // (int32 -> int64/uint64) =
+    // sext
+    if ((((type == this->compiler->int8Type)) &&
+         (targetType == this->compiler->int16Type ||
+          targetType == this->compiler->int32Type ||
+          targetType == this->compiler->int64Type ||
+          targetType == this->compiler->uint16Type ||
+          targetType == this->compiler->uint32Type ||
+          targetType == this->compiler->uint64Type)) ||
+        ((type == this->compiler->int16Type) &&
          (targetType == this->compiler->int32Type ||
           targetType == this->compiler->int64Type ||
-          targetType == this->compiler->integerType ||
           targetType == this->compiler->uint32Type ||
-          targetType == this->compiler->uint64Type ||
-          targetType == this->compiler->positiveType)) ||
+          targetType == this->compiler->uint64Type)) ||
         ((type == this->compiler->int32Type) &&
          (targetType == this->compiler->int64Type ||
-          targetType == this->compiler->integerType ||
-          targetType == this->compiler->uint64Type ||
-          targetType == this->compiler->positiveType))) {
+          targetType == this->compiler->uint64Type))) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockSextInstruction(
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (i1/uchar -> int/long/uint/ulong) | (uint -> long/ulong) = zext
-    if (((type == this->compiler->int1Type ||
-          type == this->compiler->uint8Type) &&
+    // (uint1 -> int8/int16/int32/int64/uint8/uint16/uint32/uint64) |
+    // (uint8 -> int16/int32/int64/uint16/uint32/uint64) |
+    // (uint16 -> int32/int64/uint32/uint64) |
+    // (uint32 -> int64/uint64) =
+    // zext
+    if (((type == this->compiler->uint1Type) &&
+         (targetType == this->compiler->int8Type ||
+          targetType == this->compiler->int16Type ||
+          targetType == this->compiler->int32Type ||
+          targetType == this->compiler->int64Type ||
+          targetType == this->compiler->uint8Type ||
+          targetType == this->compiler->uint16Type ||
+          targetType == this->compiler->uint32Type ||
+          targetType == this->compiler->uint64Type)) ||
+        ((type == this->compiler->uint8Type) &&
+         (targetType == this->compiler->int16Type ||
+          targetType == this->compiler->int32Type ||
+          targetType == this->compiler->int64Type ||
+          targetType == this->compiler->uint16Type ||
+          targetType == this->compiler->uint32Type ||
+          targetType == this->compiler->uint64Type)) ||
+        ((type == this->compiler->uint16Type) &&
          (targetType == this->compiler->int32Type ||
           targetType == this->compiler->int64Type ||
-          targetType == this->compiler->integerType ||
           targetType == this->compiler->uint32Type ||
-          targetType == this->compiler->uint64Type ||
-          targetType == this->compiler->positiveType)) ||
+          targetType == this->compiler->uint64Type)) ||
         ((type == this->compiler->uint32Type) &&
          (targetType == this->compiler->int64Type ||
-          targetType == this->compiler->integerType ||
-          targetType == this->compiler->uint64Type ||
-          targetType == this->compiler->positiveType))) {
+          targetType == this->compiler->uint64Type))) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockZextInstruction(
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (int/long -> i1/char/uchar) | (uint/ulong -> i1/char/uchar) | (long|ulong -> int|uint)) | (char|uchar -> i1) = trunc
-    if (((type == this->compiler->int32Type ||
-          type == this->compiler->int64Type ||
-          type == this->compiler->integerType) &&
-         (targetType == this->compiler->int1Type ||
-          (targetType == this->compiler->logicalType ||
-           targetType == this->compiler->int8Type) ||
-          targetType == this->compiler->uint8Type)) ||
-        ((type == this->compiler->uint32Type ||
-          type == this->compiler->uint64Type ||
-          type == this->compiler->positiveType) &&
-         (targetType == this->compiler->int1Type ||
-          (targetType == this->compiler->logicalType ||
-           targetType == this->compiler->int8Type) ||
-          targetType == this->compiler->uint8Type)) ||
-        ((type == this->compiler->int64Type ||
-          type == this->compiler->uint64Type ||
-          type == this->compiler->integerType ||
-          type == this->compiler->positiveType) &&
-         (targetType == this->compiler->int32Type ||
+    // (int64/uint64 -> int8/int16/int32/uint1/uint8/uint16/uint32) |
+    // (int32/uint32 -> int8/int16/uint1/uint8/uint16) |
+    // (int16/uint16 -> int8/uint1/uint8) |
+    // (int8/uint8 -> uint1) =
+    // trunc
+    if (((type == this->compiler->int64Type ||
+          type == this->compiler->uint64Type) &&
+         (targetType == this->compiler->int8Type ||
+          targetType == this->compiler->int16Type ||
+          targetType == this->compiler->int32Type ||
+          targetType == this->compiler->uint1Type ||
+          targetType == this->compiler->uint8Type ||
+          targetType == this->compiler->uint16Type ||
           targetType == this->compiler->uint32Type)) ||
-        ((type == this->compiler->logicalType ||
-          type == this->compiler->int8Type ||
+        ((type == this->compiler->int32Type ||
+          type == this->compiler->uint32Type) &&
+         (targetType == this->compiler->int8Type ||
+          targetType == this->compiler->int16Type ||
+          targetType == this->compiler->uint1Type ||
+          targetType == this->compiler->uint8Type ||
+          targetType == this->compiler->uint16Type)) ||
+        ((type == this->compiler->int16Type ||
+          type == this->compiler->uint16Type) &&
+         (targetType == this->compiler->int8Type ||
+          targetType == this->compiler->uint1Type ||
+          targetType == this->compiler->uint8Type)) ||
+        ((type == this->compiler->int8Type ||
           type == this->compiler->uint8Type) &&
-         (targetType == this->compiler->int1Type))) {
+         (targetType == this->compiler->uint1Type))) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockTruncInstruction(
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (float -> double) = fpext
-    if (type == this->compiler->d32Type &&
-        (targetType == this->compiler->d64Type ||
-         targetType == this->compiler->doubleType)) {
+    // (f32 -> f64) = fpext
+    if (type == this->compiler->f32Type &&
+        targetType == this->compiler->f64Type) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockFpextInstruction(
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (float/double -> char/int/long) = fptosi
-    if ((type == this->compiler->d32Type || type == this->compiler->d64Type ||
-         type == this->compiler->doubleType) &&
-        ((targetType == this->compiler->logicalType ||
-          targetType == this->compiler->int8Type) ||
+    // (f32/f64 -> int8/int16/int32/int64) = fptosi
+    if ((type == this->compiler->f32Type || type == this->compiler->f64Type) &&
+        (targetType == this->compiler->int8Type ||
+         targetType == this->compiler->int16Type ||
          targetType == this->compiler->int32Type ||
-         targetType == this->compiler->int64Type ||
-         targetType == this->compiler->integerType)) {
+         targetType == this->compiler->int64Type)) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockFptosiInstruction(
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (float/double -> i1/uchar/uint/ulong) = fptoui
-    if ((type == this->compiler->d32Type || type == this->compiler->d64Type ||
-         type == this->compiler->doubleType) &&
-        (targetType == this->compiler->int1Type ||
+    // (f32/f64 -> uint1/uint8/uint16/uint32/uint64) = fptoui
+    if ((type == this->compiler->f32Type || type == this->compiler->f64Type) &&
+        (targetType == this->compiler->uint1Type ||
          targetType == this->compiler->uint8Type ||
+         targetType == this->compiler->uint16Type ||
          targetType == this->compiler->uint32Type ||
-         targetType == this->compiler->uint64Type ||
-         targetType == this->compiler->positiveType)) {
+         targetType == this->compiler->uint64Type)) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockFptouiInstruction(
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (double -> float) = fptrunc
-    if ((type == this->compiler->d64Type ||
-         type == this->compiler->doubleType) &&
-        targetType == this->compiler->d32Type) {
+    // (f64 -> f32) = fptrunc
+    if (type == this->compiler->f64Type &&
+        targetType == this->compiler->f32Type) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockFptruncInstruction(
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (char/int/long -> float/double) = sitofp
-    if (((type == this->compiler->logicalType ||
-          type == this->compiler->int8Type) ||
+    // (int8/int16/int32/int64 -> f32/f64) = sitofp
+    if ((type == this->compiler->int8Type ||
+         type == this->compiler->int16Type ||
          type == this->compiler->int32Type ||
-         type == this->compiler->int64Type ||
-         type == this->compiler->integerType) &&
-        (targetType == this->compiler->d32Type ||
-         targetType == this->compiler->d64Type ||
-         targetType == this->compiler->doubleType)) {
+         type == this->compiler->int64Type) &&
+        (targetType == this->compiler->f32Type ||
+         targetType == this->compiler->f64Type)) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockSitofpInstruction(
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
-    // (i1/uchar/uint/ulong -> float/double) = uitofp
-    if ((type == this->compiler->int1Type ||
+    // (uint1/uint8/uint16/uint32/uint64 -> f32/f64) = uitofp
+    if ((type == this->compiler->uint1Type ||
          type == this->compiler->uint8Type ||
+         type == this->compiler->uint16Type ||
          type == this->compiler->uint32Type ||
-         type == this->compiler->uint64Type ||
-         type == this->compiler->positiveType) &&
-        (targetType == this->compiler->d32Type ||
-         targetType == this->compiler->d64Type ||
-         targetType == this->compiler->doubleType)) {
+         type == this->compiler->uint64Type) &&
+        (targetType == this->compiler->f32Type ||
+         targetType == this->compiler->f64Type)) {
       const auto newXValue =
           this->compiler->xModule->pushFunctionBlockUitofpInstruction(
               xBlock, type->xType, xValue, targetType->xType);

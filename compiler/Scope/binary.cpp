@@ -183,7 +183,7 @@ namespace tsil::tk {
               xBlock, "eq", leftResult.type->xType, leftResult.xValue,
               rightResult.xValue);
         }
-        return {this->compiler->int1Type, xValue, nullptr};
+        return {this->compiler->uint1Type, xValue, nullptr};
       }
       case tsil::ast::COMPARISON_NE: {
         if (!leftResult.type->isComparable(this)) {
@@ -200,7 +200,7 @@ namespace tsil::tk {
               xBlock, "ne", leftResult.type->xType, leftResult.xValue,
               rightResult.xValue);
         }
-        return {this->compiler->int1Type, xValue, nullptr};
+        return {this->compiler->uint1Type, xValue, nullptr};
       }
       case tsil::ast::COMPARISON_LT: {
         if (!leftResult.type->isComparable(this)) {
@@ -221,7 +221,7 @@ namespace tsil::tk {
               xBlock, "slt", leftResult.type->xType, leftResult.xValue,
               rightResult.xValue);
         }
-        return {this->compiler->int1Type, xValue, nullptr};
+        return {this->compiler->uint1Type, xValue, nullptr};
       }
       case tsil::ast::COMPARISON_GT: {
         if (!leftResult.type->isComparable(this)) {
@@ -242,7 +242,7 @@ namespace tsil::tk {
               xBlock, "sgt", leftResult.type->xType, leftResult.xValue,
               rightResult.xValue);
         }
-        return {this->compiler->int1Type, xValue, nullptr};
+        return {this->compiler->uint1Type, xValue, nullptr};
       }
       case tsil::ast::COMPARISON_LE: {
         if (!leftResult.type->isComparable(this)) {
@@ -263,7 +263,7 @@ namespace tsil::tk {
               xBlock, "sle", leftResult.type->xType, leftResult.xValue,
               rightResult.xValue);
         }
-        return {this->compiler->int1Type, xValue, nullptr};
+        return {this->compiler->uint1Type, xValue, nullptr};
       }
       case tsil::ast::COMPARISON_GE: {
         if (!leftResult.type->isComparable(this)) {
@@ -284,7 +284,7 @@ namespace tsil::tk {
               xBlock, "sge", leftResult.type->xType, leftResult.xValue,
               rightResult.xValue);
         }
-        return {this->compiler->int1Type, xValue, nullptr};
+        return {this->compiler->uint1Type, xValue, nullptr};
       }
     }
     return {leftResult.type, xValue, nullptr};

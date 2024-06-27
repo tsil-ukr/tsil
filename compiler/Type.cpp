@@ -126,10 +126,7 @@ namespace tsil::tk {
     if (this->type == TypeTypeDiia) {
       return 8;
     }
-    if (this == scope->compiler->int1Type) {
-      return 1;
-    }
-    if (this == scope->compiler->logicalType) {
+    if (this == scope->compiler->uint1Type) {
       return 1;
     }
     if (this == scope->compiler->int8Type) {
@@ -144,9 +141,6 @@ namespace tsil::tk {
     if (this == scope->compiler->int64Type) {
       return 8;
     }
-    if (this == scope->compiler->integerType) {
-      return 8;
-    }
     if (this == scope->compiler->uint8Type) {
       return 1;
     }
@@ -159,16 +153,10 @@ namespace tsil::tk {
     if (this == scope->compiler->uint64Type) {
       return 8;
     }
-    if (this == scope->compiler->positiveType) {
-      return 8;
-    }
-    if (this == scope->compiler->d32Type) {
+    if (this == scope->compiler->f32Type) {
       return 4;
     }
-    if (this == scope->compiler->d64Type) {
-      return 8;
-    }
-    if (this == scope->compiler->doubleType) {
+    if (this == scope->compiler->f64Type) {
       return 8;
     }
     if (this->type == TypeTypeStructureInstance) {
@@ -186,36 +174,28 @@ namespace tsil::tk {
   }
 
   bool Type::isComparable(Scope* scope) {
-    return this == scope->compiler->int1Type ||
-           this == scope->compiler->logicalType ||
+    return this == scope->compiler->uint1Type ||
            this == scope->compiler->int8Type ||
            this == scope->compiler->int16Type ||
            this == scope->compiler->int32Type ||
            this == scope->compiler->int64Type ||
-           this == scope->compiler->integerType ||
            this == scope->compiler->uint8Type ||
            this == scope->compiler->uint16Type ||
            this == scope->compiler->uint32Type ||
            this == scope->compiler->uint64Type ||
-           this == scope->compiler->positiveType ||
-           this == scope->compiler->d32Type ||
-           this == scope->compiler->d64Type ||
-           this == scope->compiler->doubleType || this->type == TypeTypePointer;
+           this == scope->compiler->f32Type ||
+           this == scope->compiler->f64Type || this->type == TypeTypePointer;
   }
 
   bool Type::isUnsigned(tsil::tk::Scope* scope) {
     return this == scope->compiler->uint8Type ||
            this == scope->compiler->uint16Type ||
            this == scope->compiler->uint32Type ||
-           this == scope->compiler->uint64Type ||
-           this == scope->compiler->positiveType ||
-           this->type == TypeTypePointer;
+           this == scope->compiler->uint64Type || this->type == TypeTypePointer;
   }
 
   bool Type::isFloating(tsil::tk::Scope* scope) {
-    return this == scope->compiler->d32Type ||
-           this == scope->compiler->d64Type ||
-           this == scope->compiler->doubleType;
+    return this == scope->compiler->f32Type || this == scope->compiler->f64Type;
   }
 
   bool Type::isArithmetical(tsil::tk::Scope* scope) {
@@ -223,17 +203,13 @@ namespace tsil::tk {
   }
 
   bool Type::isBitwisible(tsil::tk::Scope* scope) {
-    return this == scope->compiler->logicalType ||
-           this == scope->compiler->int8Type ||
+    return this == scope->compiler->int8Type ||
            this == scope->compiler->int16Type ||
            this == scope->compiler->int32Type ||
            this == scope->compiler->int64Type ||
-           this == scope->compiler->integerType ||
            this == scope->compiler->uint8Type ||
            this == scope->compiler->uint16Type ||
            this == scope->compiler->uint32Type ||
-           this == scope->compiler->uint64Type ||
-           this == scope->compiler->positiveType ||
-           this->type == TypeTypePointer;
+           this == scope->compiler->uint64Type || this->type == TypeTypePointer;
   }
 } // namespace tsil::tk

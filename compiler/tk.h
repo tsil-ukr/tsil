@@ -41,24 +41,19 @@ namespace tsil::tk {
     Type* voidType = nullptr;
     Type* pointerType = nullptr;
 
-    Type* int1Type = nullptr;
-
-    Type* logicalType = nullptr;
     Type* int8Type = nullptr;
     Type* int16Type = nullptr;
     Type* int32Type = nullptr;
     Type* int64Type = nullptr;
-    Type* integerType = nullptr;
 
-    Type* d32Type = nullptr;
-    Type* d64Type = nullptr;
-    Type* doubleType = nullptr;
-
+    Type* uint1Type = nullptr;
     Type* uint8Type = nullptr;
     Type* uint16Type = nullptr;
     Type* uint32Type = nullptr;
     Type* uint64Type = nullptr;
-    Type* positiveType = nullptr;
+
+    Type* f32Type = nullptr;
+    Type* f64Type = nullptr;
 
     Constant* nullConstant = nullptr;
     Constant* yesConstant = nullptr;

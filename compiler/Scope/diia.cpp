@@ -161,15 +161,15 @@ namespace tsil::tk {
         }
         const auto castedXValue =
             this->compileSoftCast(xFunction, xWhileBlock, valueResult.type,
-                                  valueResult.xValue, this->compiler->int1Type);
+                                  valueResult.xValue, this->compiler->uint1Type);
         if (castedXValue) {
-          valueResult.type = this->compiler->int1Type;
+          valueResult.type = this->compiler->uint1Type;
           valueResult.xValue = castedXValue;
         } else {
           return {nullptr, nullptr,
                   CompilerError::typesAreNotCompatible(
                       childAstValue->data.WhileNode->condition,
-                      valueResult.type, this->compiler->int1Type)};
+                      valueResult.type, this->compiler->uint1Type)};
         }
         this->compiler->xModule->pushFunctionBlockBrIfInstruction(
             xWhileBlock, valueResult.xValue, xWhileBodyBlock, xWhileExitBlock);
@@ -199,15 +199,15 @@ namespace tsil::tk {
         }
         const auto castedXValue =
             this->compileSoftCast(xFunction, xIfBlock, valueResult.type,
-                                  valueResult.xValue, this->compiler->int1Type);
+                                  valueResult.xValue, this->compiler->uint1Type);
         if (castedXValue) {
-          valueResult.type = this->compiler->int1Type;
+          valueResult.type = this->compiler->uint1Type;
           valueResult.xValue = castedXValue;
         } else {
           return {nullptr, nullptr,
                   CompilerError::typesAreNotCompatible(
                       childAstValue->data.WhileNode->condition,
-                      valueResult.type, this->compiler->int1Type)};
+                      valueResult.type, this->compiler->uint1Type)};
         }
         this->compiler->xModule->pushFunctionBlockBrIfInstruction(
             xIfBlock, valueResult.xValue, xIfThenBlock, xIfElseBlock);

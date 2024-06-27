@@ -5,7 +5,7 @@ extern "C" void друк_ю8(char* value) {
 }
 
 extern "C" void друк_п8(unsigned char value) {
-  std::cout << value << std::endl;
+  std::cout << (unsigned int)value << std::endl;
 }
 
 extern "C" void друк_п32(unsigned int value) {
@@ -21,7 +21,7 @@ extern "C" void друк_позитивне(unsigned long value) {
 }
 
 extern "C" void друк_ц8(char value) {
-  std::cout << value << std::endl;
+  std::cout << (int)value << std::endl;
 }
 
 extern "C" void друк_ц32(int value) {
@@ -53,7 +53,7 @@ extern "C" void вивести_ю8(char* value) {
 }
 
 extern "C" void вивести_п8(unsigned char value) {
-  std::cout << value;
+  std::cout << (unsigned int)value;
 }
 
 extern "C" void вивести_п32(unsigned int value) {
@@ -69,7 +69,7 @@ extern "C" void вивести_позитивне(unsigned long value) {
 }
 
 extern "C" void вивести_ц8(char value) {
-  std::cout << value;
+  std::cout << (int)value;
 }
 
 extern "C" void вивести_ц32(int value) {
