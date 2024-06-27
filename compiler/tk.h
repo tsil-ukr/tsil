@@ -1,7 +1,7 @@
+#include <filesystem>
 #include <map>
 #include "parser.h"
 #include "x.h"
-#include <filesystem>
 
 #define BUG()                                                       \
   std::cout << "BUG: " << __FILE__ << ":" << __LINE__ << std::endl; \
@@ -307,6 +307,11 @@ namespace tsil::tk {
     CompilerValueResult compileCall_Sizeof(tsil::x::Function* xFunction,
                                            tsil::x::FunctionBlock* xBlock,
                                            ast::ASTValue* astValue);
+
+    CompilerValueResult compileCallCast(tsil::x::Function* xFunction,
+                                        tsil::x::FunctionBlock* xBlock,
+                                        const std::string& name,
+                                        ast::ASTValue* astValue);
 
     CompilerValueResult compileNumber(tsil::x::Function* xFunction,
                                       tsil::x::FunctionBlock* xBlock,

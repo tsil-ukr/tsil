@@ -187,10 +187,10 @@ int compile(const CompileCommand& compileCommand) {
 
     const auto uint1Type = new tsil::tk::Type();
     uint1Type->type = tsil::tk::TypeTypeNative;
-    uint1Type->name = "ц1";
+    uint1Type->name = "п1";
     uint1Type->xType = compiler->xModule->int1Type;
     compiler->globalScope->setSubject(
-        "ц1", tsil::tk::Subject{tsil::tk::SubjectKindType, uint1Type});
+        "п1", tsil::tk::Subject{tsil::tk::SubjectKindType, uint1Type});
     compiler->uint1Type = uint1Type;
 
     const auto int8Type = new tsil::tk::Type();

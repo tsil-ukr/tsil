@@ -26,6 +26,18 @@ namespace tsil::tk {
       if (identifierNode->name == "розмір") {
         return this->compileCall_Sizeof(xFunction, xBlock, astValue);
       }
+      if (identifierNode->name == "ц8" || identifierNode->name == "ц16" ||
+          identifierNode->name == "ц32" || identifierNode->name == "ц64" ||
+          identifierNode->name == "п1" || identifierNode->name == "п8" ||
+          identifierNode->name == "п16" || identifierNode->name == "п32" ||
+          identifierNode->name == "п64" || identifierNode->name == "д32" ||
+          identifierNode->name == "д64" || identifierNode->name == "логічне" ||
+          identifierNode->name == "ціле" ||
+          identifierNode->name == "позитивне" ||
+          identifierNode->name == "дійсне") {
+        return this->compileCallCast(xFunction, xBlock, identifierNode->name,
+                                     astValue);
+      }
     } else if (callNode->value->kind == ast::KindGenericNode) {
       const auto genericNode = callNode->value->data.GenericNode;
       if (genericNode->left->kind == ast::KindIdentifierNode) {
@@ -482,5 +494,70 @@ namespace tsil::tk {
         new x::Value(this->compiler->uint64Type->xType,
                      std::to_string(firstGenericValue->getBytesSize(this)));
     return {this->compiler->uint64Type, sizeOfXValue, nullptr};
+  }
+
+  CompilerValueResult Scope::compileCallCast(tsil::x::Function* xFunction,
+                                             tsil::x::FunctionBlock* xBlock,
+                                             const std::string& name,
+                                             ast::ASTValue* astValue) {
+    const auto callNode = astValue->data.CallNode;
+    if (callNode->args.size() < 1) {
+      return {nullptr, nullptr,
+              CompilerError::notEnoughCallArguments(astValue)};
+    }
+    if (callNode->args.size() > 1) {
+      return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
+    }
+    Type* type = nullptr;
+    if (name == "ц8") {
+      type = this->compiler->int8Type;
+    } else if (name == "ц16") {
+      type = this->compiler->int16Type;
+    } else if (name == "ц32") {
+      type = this->compiler->int32Type;
+    } else if (name == "ц64") {
+      type = this->compiler->int64Type;
+    } else if (name == "п1") {
+      type = this->compiler->uint1Type;
+    } else if (name == "п8") {
+      type = this->compiler->uint8Type;
+    } else if (name == "п16") {
+      type = this->compiler->uint16Type;
+    } else if (name == "п32") {
+      type = this->compiler->uint32Type;
+    } else if (name == "п64") {
+      type = this->compiler->uint64Type;
+    } else if (name == "д32") {
+      type = this->compiler->f32Type;
+    } else if (name == "д64") {
+      type = this->compiler->f64Type;
+    } else if (name == "логічне") {
+      type = this->compiler->uint8Type;
+    } else if (name == "ціле") {
+      type = this->compiler->int64Type;
+    } else if (name == "позитивне") {
+      type = this->compiler->uint64Type;
+    } else if (name == "дійсне") {
+      type = this->compiler->f64Type;
+    } else {
+      return {nullptr, nullptr,
+              CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED")};
+    }
+    const auto valueResult =
+        this->compileValueNoVariation(xFunction, xBlock, callNode->args[0]);
+    if (valueResult.error) {
+      return valueResult;
+    }
+    auto newXValue = this->compileSoftCast(xFunction, xBlock, valueResult.type,
+                                           valueResult.xValue, type);
+    if (newXValue == nullptr) {
+      newXValue = this->compileHardCast(xFunction, xBlock, valueResult.type,
+                                        valueResult.xValue, type);
+      if (newXValue == nullptr) {
+        return {nullptr, nullptr,
+                CompilerError::cannotCast(astValue, valueResult.type, type)};
+      }
+    }
+    return {type, newXValue, nullptr};
   }
 } // namespace tsil::tk
