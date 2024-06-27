@@ -11,7 +11,7 @@ program_element: (take ';') | (synonym ';') | (declare ';') | (define ';') | sec
 
 identifier: ID;
 section_access: identifier (':' ':' identifier)* #real_section_access;
-number: NUMBER (id=identifier)?;
+number: NUMBER (':' id=identifier)?;
 string: (s_prefix=ID)? STRING;
 
 take: 'взяти' t_type=ID (t_string=STRING | t_parts=take_parts);
