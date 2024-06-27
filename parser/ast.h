@@ -272,6 +272,7 @@ namespace tsil::ast {
 
   struct NumberNode {
     std::string value;
+    std::string type;
   };
 
   struct ParamNode {
