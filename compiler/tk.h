@@ -1,6 +1,7 @@
 #include <map>
 #include "parser.h"
 #include "x.h"
+#include <filesystem>
 
 #define BUG()                                                       \
   std::cout << "BUG: " << __FILE__ << ":" << __LINE__ << std::endl; \
@@ -35,6 +36,7 @@ namespace tsil::tk {
   };
 
   struct Compiler {
+    std::string libraryPath = "/usr/local/lib/ціль/бібліотека/";
     x::Module* xModule = nullptr;
     Scope* globalScope = nullptr;
 

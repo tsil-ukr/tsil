@@ -47,6 +47,7 @@ std::string strgetline(const std::string& code, size_t line) {
 struct CompileCommand {
   std::string inputPath;
   std::string outputPath;
+  std::string libraryPath = "/usr/local/lib/ціль/бібліотека/";
 };
 
 enum FuseCommandOutputType {
@@ -66,6 +67,7 @@ struct FuseCommand {
   std::string clang = "clang++";
   std::string clangOverride = "";
   std::string clangAppend = "";
+  std::string libraryPath = "/usr/local/lib/ціль/бібліотека/";
 };
 
 void printCompilerError(const std::string& path,
@@ -148,6 +150,7 @@ int compile(const CompileCommand& compileCommand) {
   const auto parserResult = tsil::parser::parse(code);
   if (parserResult.program_node) {
     const auto compiler = new tsil::tk::Compiler();
+    compiler->libraryPath = compileCommand.libraryPath;
 
     compiler->xModule = new tsil::x::Module();
 
@@ -307,6 +310,17 @@ int compile(const CompileCommand& compileCommand) {
       return 1;
     }
 
+    const auto outputDirname =
+        std::filesystem::path(compileCommand.outputPath).parent_path();
+    if (!std::filesystem::is_directory(outputDirname) ||
+        !std::filesystem::exists(outputDirname)) {
+      if (!std::filesystem::create_directories(outputDirname)) {
+        std::cerr << "помилка: Не вдалося створити директорію \"" +
+                         std::string(outputDirname.c_str()) + "\""
+                  << std::endl;
+        return 1;
+      }
+    }
     std::ofstream outFile(compileCommand.outputPath);
     if (!outFile.is_open()) {
       std::cerr << "помилка: Не вдалося відкрити файл \"" +
@@ -331,16 +345,18 @@ void printHelp() {
   std::cout << std::endl;
   std::cout << "  ціль версія" << std::endl;
   std::cout << "  ціль допомога" << std::endl;
-  std::cout << "  ціль перебудувати-бібліотеку" << std::endl;
   std::cout << "  ціль <команда> допомога" << std::endl;
   std::cout << std::endl;
   std::cout << "Команди:" << std::endl;
-  std::cout << "  <вихід> скомпілювати <вхід>" << std::endl;
+  std::cout << "  <вихід> скомпілювати [опції...] <вхід>" << std::endl;
   std::cout
       << "    Опис: скомпілювати вхідний файл в зрозумілий для LLVM формат"
       << std::endl;
   std::cout << "    Вихід: .ll .bc" << std::endl;
   std::cout << "    Вхід: .ц" << std::endl;
+  std::cout << "    Опції:" << std::endl;
+  std::cout << "      --режим=<розробка|випуск>" << std::endl;
+  std::cout << "      --бібліотека=\"власний шлях до бібліотеки\"" << std::endl;
   std::cout << std::endl;
   std::cout << "  <вихід> сплавити [опції...]  <вхід...>" << std::endl;
   std::cout << "    Опис: сплавити через CLang" << std::endl;
@@ -348,6 +364,7 @@ void printHelp() {
   std::cout << "    Вхід: .ц .c .cpp .ll .bc" << std::endl;
   std::cout << "    Опції:" << std::endl;
   std::cout << "      --режим=<розробка|випуск>" << std::endl;
+  std::cout << "      --бібліотека=\"власний шлях до бібліотеки\"" << std::endl;
   std::cout << "      --кеш=<ні|ccache>" << std::endl;
   std::cout << "      --clang=\"path to clang\"" << std::endl;
   std::cout << "      --clang-override=\"custom clang options\"" << std::endl;
@@ -372,8 +389,11 @@ std::pair<FuseCommand, std::string> parseFuseCommand(
       } else if (argument.starts_with("--clang-append=")) {
         fuseCommand.clangAppend =
             argument.substr(std::string("--clang-append=").size());
+      } else if (argument.starts_with("--бібліотека=")) {
+        fuseCommand.libraryPath =
+            argument.substr(std::string("--бібліотека=").size());
       } else {
-        //        return {{}, "помилка: Невідома опція \"" + argument + "\""};
+        return {{}, "помилка: Невідома опція \"" + argument + "\""};
       }
     } else {
       fuseCommand.inputPaths.push_back(argument);
@@ -459,105 +479,6 @@ int main(int argc, char** argv) {
     std::cout << TSIL_VERSION << std::endl;
     return 0;
   }
-  if (args[1] == "перебудувати-бібліотеку") {
-    const auto build_path =
-        std::filesystem::path(std::filesystem::temp_directory_path().string())
-            .append("будова_бібліотеки_цілі");
-    const auto build_lib_path =
-        std::filesystem::path(build_path.string()).append("біб.a");
-    const auto build_fuse_path =
-        std::filesystem::path(build_path.string()).append(".плавлення");
-    std::vector<std::string> objectFiles;
-    for (const auto& p : std::filesystem::recursive_directory_iterator(
-             "/usr/local/lib/ціль/бібліотека/біб")) {
-      if (!std::filesystem::is_directory(p)) {
-        const auto ps = p.path().string();
-        const auto rps =
-            std::filesystem::path(ps)
-                .lexically_relative("/usr/local/lib/ціль/бібліотека/біб")
-                .string();
-        //        std::cout << ps << " " << rps << std::endl;
-        if (ps.ends_with(".ц")) {
-          const auto outputLLPath =
-              std::filesystem::path(build_fuse_path.string())
-                  .append(rps + ".ll");
-          const auto inputPathOutputDirname =
-              std::filesystem::path(outputLLPath).parent_path();
-          if (!std::filesystem::is_directory(inputPathOutputDirname) ||
-              !std::filesystem::exists(inputPathOutputDirname)) {
-            if (!std::filesystem::create_directories(inputPathOutputDirname)) {
-              std::cerr << "помилка: Не вдалося створити директорію \"" +
-                               std::string(inputPathOutputDirname.c_str()) +
-                               "\""
-                        << std::endl;
-              return 1;
-            }
-          }
-          std::cout << "> ціль " << outputLLPath.string() << " скомпілювати "
-                    << ps << std::endl;
-          auto compilationResult = compile({ps, outputLLPath.string()});
-          if (compilationResult != 0) {
-            return compilationResult;
-          }
-          const auto outputOPath =
-              std::filesystem::path(build_fuse_path.string())
-                  .append(rps + ".o");
-          const auto fuseCommandResult = parseFuseCommand(
-              outputOPath.string(),
-              std::vector<std::string>(args.begin() + 2, args.end()));
-          if (!fuseCommandResult.second.empty()) {
-            std::cerr << fuseCommandResult.second << std::endl;
-            return 1;
-          }
-          auto fuseCommand = fuseCommandResult.first;
-          auto cmd = buildFuseCmd(fuseCommand);
-          cmd.push_back(outputLLPath.string());
-          std::string cmdStr;
-          tsil::x::implode(cmd, " ", cmdStr);
-          std::cout << "> " << cmdStr << std::endl;
-          if (system(cmdStr.c_str()) != 0) {
-            return 1;
-          }
-          objectFiles.push_back(outputOPath.string());
-        } else if (ps.ends_with(".c")) {
-          //
-        } else if (ps.ends_with(".cpp")) {
-          const auto outputOPath =
-              std::filesystem::path(build_fuse_path.string())
-                  .append(rps + ".o");
-          const auto fuseCommandResult = parseFuseCommand(
-              outputOPath.string(),
-              std::vector<std::string>(args.begin() + 2, args.end()));
-          if (!fuseCommandResult.second.empty()) {
-            std::cerr << fuseCommandResult.second << std::endl;
-            return 1;
-          }
-          auto fuseCommand = fuseCommandResult.first;
-          auto cmd = buildFuseCmd(fuseCommand);
-          cmd.push_back(ps);
-          std::string cmdStr;
-          tsil::x::implode(cmd, " ", cmdStr);
-          std::cout << "> " << cmdStr << std::endl;
-          if (system(cmdStr.c_str()) != 0) {
-            return 1;
-          }
-          objectFiles.push_back(outputOPath.string());
-        }
-      }
-    }
-    std::string ar = "llvm-ar";
-    for (const auto& argument : args) {
-      if (argument.starts_with("--ar=")) {
-        ar = argument.substr(std::string("--ar=").size());
-      }
-    }
-    std::string arCmd = ar + " rcs " + build_lib_path.string();
-    for (const auto& objectFile : objectFiles) {
-      arCmd += " " + objectFile;
-    }
-    std::cout << "> " << arCmd << std::endl;
-    return system(arCmd.c_str());
-  }
   const auto& target = args[1];
   const auto& command = args[2];
 
@@ -566,7 +487,24 @@ int main(int argc, char** argv) {
       std::cerr << "помилка: Не вказано вхід" << std::endl;
       return 1;
     }
-    return compile({args[3], target});
+    CompileCommand compileCommand;
+    for (const auto& argument :
+         std::vector<std::string>(args.begin() + 3, args.end())) {
+      if (argument.starts_with("--")) {
+        if (argument.starts_with("--бібліотека=")) {
+          compileCommand.libraryPath =
+              argument.substr(std::string("--бібліотека=").size());
+        } else {
+          std::cerr << "помилка: Невідома опція \"" + argument + "\""
+                    << std::endl;
+          return 1;
+        }
+      } else {
+        compileCommand.inputPath = argument;
+      }
+    }
+    compileCommand.outputPath = target;
+    return compile(compileCommand);
   } else if (command == "сплавити") {
     if (args.size() < 4) {
       std::cerr << "помилка: Не вказано вхід" << std::endl;
@@ -602,8 +540,13 @@ int main(int argc, char** argv) {
           }
         }
         std::cout << "> ціль " << inputPathOutput << " скомпілювати "
+                  << "--бібліотека=" << fuseCommand.libraryPath << " "
                   << inputPath << std::endl;
-        int compilationStatus = compile({inputPath, inputPathOutput});
+        CompileCommand compileCommand;
+        compileCommand.inputPath = inputPath;
+        compileCommand.outputPath = inputPathOutput;
+        compileCommand.libraryPath = fuseCommand.libraryPath;
+        int compilationStatus = compile(compileCommand);
         if (compilationStatus != 0) {
           return compilationStatus;
         }
@@ -612,7 +555,7 @@ int main(int argc, char** argv) {
         cmd.push_back(inputPath);
       }
     }
-    cmd.push_back("/usr/local/lib/ціль/бібліотека/біб.a");
+    cmd.push_back(fuseCommand.libraryPath + "/біб.a");
     std::string cmdStr;
     tsil::x::implode(cmd, " ", cmdStr);
     std::cout << "> " << cmdStr << std::endl;

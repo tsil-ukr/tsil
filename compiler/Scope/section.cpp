@@ -33,8 +33,15 @@ namespace tsil::tk {
                                                           takeResult.error)};
           }
         } else if (takeNode->repo == "біб") {
-          path = "/usr/local/lib/ціль/бібліотека/біб/визначення/" + path;
-          folderPath = "/usr/local/lib/ціль/бібліотека/біб/визначення/" + folderPath;
+          path = std::filesystem::weakly_canonical(
+                     std::filesystem::path(this->compiler->libraryPath +
+                                           "/біб/" + path))
+                     .string();
+          folderPath =
+              std::filesystem::weakly_canonical(
+                  std::filesystem::path(this->compiler->libraryPath +
+                                        "/біб/" + folderPath))
+                  .string();
           if (this->compiler->fileExist(path)) {
             //
           } else if (this->compiler->fileExist(folderPath)) {
