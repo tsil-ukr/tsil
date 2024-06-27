@@ -15,7 +15,7 @@ number: NUMBER (id=identifier)?;
 string: (s_prefix=ID)? STRING;
 
 take: 'взяти' t_type=ID (t_string=STRING | t_parts=take_parts);
-take_parts: (tp_relative='.')? ID ('/' ID)*;
+take_parts: (tp_relative='.' '/')? ID ('/' ID)*;
 
 synonym: 'синонім' s_name=ID '=' s_value=synonym_value;
 synonym_value: full_type | number | string;

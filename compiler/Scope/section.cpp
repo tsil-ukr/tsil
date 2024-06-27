@@ -13,22 +13,47 @@ namespace tsil::tk {
         const auto takeNode = childAstValue->data.TakeNode;
         std::string parts = tsil::parser::tools::implode(takeNode->parts, "/");
         std::string path = parts + ".в";
-        std::string folderPath = parts + "/" + path;
-        if (this->compiler->fileExist(path)) {
-          //
-        } else if (this->compiler->fileExist(folderPath)) {
-          path = folderPath;
+        std::string filename = takeNode->parts.back() + ".в";
+        std::string folderPath = parts + "/" + filename;
+        if (takeNode->repo == "визначення") {
+          if (this->compiler->fileExist(path)) {
+            //
+          } else if (this->compiler->fileExist(folderPath)) {
+            path = folderPath;
+          } else {
+            return {tsil::tk::CompilerError::fromASTValue(
+                childAstValue, "Файл \"" + path + "\" не знайдено")};
+          }
+          const auto takeResult = this->compiler->takeDefinitions(path);
+          if (takeResult.compilerError) {
+            return {takeResult.compilerError};
+          }
+          if (!takeResult.error.empty()) {
+            return {tsil::tk::CompilerError::fromASTValue(childAstValue,
+                                                          takeResult.error)};
+          }
+        } else if (takeNode->repo == "біб") {
+          path = "/usr/local/lib/ціль/бібліотека/біб/визначення/" + path;
+          folderPath = "/usr/local/lib/ціль/бібліотека/біб/визначення/" + folderPath;
+          if (this->compiler->fileExist(path)) {
+            //
+          } else if (this->compiler->fileExist(folderPath)) {
+            path = folderPath;
+          } else {
+            return {tsil::tk::CompilerError::fromASTValue(
+                childAstValue, "Файл \"" + path + "\" не знайдено")};
+          }
+          const auto takeResult = this->compiler->takeDefinitions(path);
+          if (takeResult.compilerError) {
+            return {takeResult.compilerError};
+          }
+          if (!takeResult.error.empty()) {
+            return {tsil::tk::CompilerError::fromASTValue(childAstValue,
+                                                          takeResult.error)};
+          }
         } else {
-          return {tsil::tk::CompilerError::fromASTValue(
-              childAstValue, "Файл \"" + path + "\" не знайдено")};
-        }
-        const auto takeResult = this->compiler->takeDefinitions(path);
-        if (takeResult.compilerError) {
-          return {takeResult.compilerError};
-        }
-        if (!takeResult.error.empty()) {
           return {tsil::tk::CompilerError::fromASTValue(childAstValue,
-                                                        takeResult.error)};
+                                                        "NOT IMPLEMENTED")};
         }
       } else if (childAstValue->kind == tsil::ast::KindSynonymNode) {
         const auto result = this->compileSynonym(childAstValue);

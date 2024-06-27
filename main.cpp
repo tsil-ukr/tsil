@@ -1,3 +1,4 @@
+#include <dirent.h>
 #include <filesystem>
 #include <functional>
 #include <iostream>
@@ -50,7 +51,6 @@ struct CompileCommand {
 
 enum FuseCommandOutputType {
   FuseCommandOutputTypeObject,
-  FuseCommandOutputTypeStaticLibrary,
   FuseCommandOutputTypeSharedLibrary,
   FuseCommandOutputTypeStaticExecutable,
   FuseCommandOutputTypeExecutable,
@@ -331,6 +331,7 @@ void printHelp() {
   std::cout << std::endl;
   std::cout << "  ціль версія" << std::endl;
   std::cout << "  ціль допомога" << std::endl;
+  std::cout << "  ціль перебудувати-бібліотеку" << std::endl;
   std::cout << "  ціль <команда> допомога" << std::endl;
   std::cout << std::endl;
   std::cout << "Команди:" << std::endl;
@@ -353,6 +354,97 @@ void printHelp() {
   std::cout << "      --clang-append=\"additional clang options\"" << std::endl;
 }
 
+std::pair<FuseCommand, std::string> parseFuseCommand(
+    const std::string& outputPath,
+    const std::vector<std::string>& arguments) {
+  FuseCommand fuseCommand;
+  for (const auto& argument : arguments) {
+    if (argument.starts_with("--")) {
+      if (argument == "--режим=випуск") {
+        fuseCommand.releaseMode = true;
+      } else if (argument == "--кеш=ccache") {
+        fuseCommand.useCCache = true;
+      } else if (argument.starts_with("--clang=")) {
+        fuseCommand.clang = argument.substr(std::string("--clang=").size());
+      } else if (argument.starts_with("--clang-override=")) {
+        fuseCommand.clangOverride =
+            argument.substr(std::string("--clang-override=").size());
+      } else if (argument.starts_with("--clang-append=")) {
+        fuseCommand.clangAppend =
+            argument.substr(std::string("--clang-append=").size());
+      } else {
+        //        return {{}, "помилка: Невідома опція \"" + argument + "\""};
+      }
+    } else {
+      fuseCommand.inputPaths.push_back(argument);
+    }
+  }
+  fuseCommand.outputPath = outputPath;
+  std::string targetFileName =
+      std::filesystem::path(fuseCommand.outputPath).filename();
+  if (targetFileName.ends_with(".обʼєкт") || targetFileName.ends_with(".o")) {
+    fuseCommand.outputType = FuseCommandOutputTypeObject;
+  } else if (targetFileName.ends_with(".динаміт") ||
+             targetFileName.ends_with(".so")) {
+    fuseCommand.outputType = FuseCommandOutputTypeSharedLibrary;
+  } else if (targetFileName.ends_with(".васм") ||
+             targetFileName.ends_with(".wasm")) {
+    fuseCommand.outputType = FuseCommandOutputTypeWasm;
+  } else if (targetFileName.ends_with(".сплав") ||
+             std::count(targetFileName.begin(), targetFileName.end(), '.') ==
+                 0) {
+    fuseCommand.outputType = FuseCommandOutputTypeExecutable;
+  } else {
+    return {{},
+            "помилка: Вихідний файл повинен мати розширення .o, .so або .wasm"};
+  }
+  return {fuseCommand, ""};
+}
+
+std::vector<std::string> buildFuseCmd(const FuseCommand& fuseCommand) {
+  std::vector<std::string> cmd;
+  if (fuseCommand.useCCache) {
+    cmd.emplace_back("ccache");
+  }
+  cmd.emplace_back(fuseCommand.clang);
+  if (fuseCommand.clangOverride.empty()) {
+    if (fuseCommand.outputType == FuseCommandOutputTypeObject) {
+      cmd.emplace_back("-c");
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-O3");
+      }
+    } else if (fuseCommand.outputType == FuseCommandOutputTypeSharedLibrary) {
+      cmd.emplace_back("-shared");
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-O3");
+      }
+    } else if (fuseCommand.outputType == FuseCommandOutputTypeExecutable) {
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-O3");
+      }
+    } else if (fuseCommand.outputType == FuseCommandOutputTypeWasm) {
+      cmd.emplace_back("--target=wasm32");
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-O3");
+      }
+      cmd.emplace_back("-nostdlib");
+      cmd.emplace_back("-Wl,--no-entry");
+      cmd.emplace_back("-Wl,--export-all");
+      if (fuseCommand.releaseMode) {
+        cmd.emplace_back("-Wl,--lto-O3");
+      }
+    }
+  } else {
+    cmd.push_back(fuseCommand.clangOverride);
+  }
+  if (!fuseCommand.clangAppend.empty()) {
+    cmd.push_back(fuseCommand.clangAppend);
+  }
+  cmd.emplace_back("-o");
+  cmd.push_back(fuseCommand.outputPath);
+  return cmd;
+}
+
 int main(int argc, char** argv) {
   auto args = std::vector<std::string>(argv, argv + argc);
   if (args.size() < 2) {
@@ -366,6 +458,105 @@ int main(int argc, char** argv) {
   if (args[1] == "версія") {
     std::cout << TSIL_VERSION << std::endl;
     return 0;
+  }
+  if (args[1] == "перебудувати-бібліотеку") {
+    const auto build_path =
+        std::filesystem::path(std::filesystem::temp_directory_path().string())
+            .append("будова_бібліотеки_цілі");
+    const auto build_lib_path =
+        std::filesystem::path(build_path.string()).append("біб.a");
+    const auto build_fuse_path =
+        std::filesystem::path(build_path.string()).append(".плавлення");
+    std::vector<std::string> objectFiles;
+    for (const auto& p : std::filesystem::recursive_directory_iterator(
+             "/usr/local/lib/ціль/бібліотека/біб")) {
+      if (!std::filesystem::is_directory(p)) {
+        const auto ps = p.path().string();
+        const auto rps =
+            std::filesystem::path(ps)
+                .lexically_relative("/usr/local/lib/ціль/бібліотека/біб")
+                .string();
+        //        std::cout << ps << " " << rps << std::endl;
+        if (ps.ends_with(".ц")) {
+          const auto outputLLPath =
+              std::filesystem::path(build_fuse_path.string())
+                  .append(rps + ".ll");
+          const auto inputPathOutputDirname =
+              std::filesystem::path(outputLLPath).parent_path();
+          if (!std::filesystem::is_directory(inputPathOutputDirname) ||
+              !std::filesystem::exists(inputPathOutputDirname)) {
+            if (!std::filesystem::create_directories(inputPathOutputDirname)) {
+              std::cerr << "помилка: Не вдалося створити директорію \"" +
+                               std::string(inputPathOutputDirname.c_str()) +
+                               "\""
+                        << std::endl;
+              return 1;
+            }
+          }
+          std::cout << "> ціль " << outputLLPath.string() << " скомпілювати "
+                    << ps << std::endl;
+          auto compilationResult = compile({ps, outputLLPath.string()});
+          if (compilationResult != 0) {
+            return compilationResult;
+          }
+          const auto outputOPath =
+              std::filesystem::path(build_fuse_path.string())
+                  .append(rps + ".o");
+          const auto fuseCommandResult = parseFuseCommand(
+              outputOPath.string(),
+              std::vector<std::string>(args.begin() + 2, args.end()));
+          if (!fuseCommandResult.second.empty()) {
+            std::cerr << fuseCommandResult.second << std::endl;
+            return 1;
+          }
+          auto fuseCommand = fuseCommandResult.first;
+          auto cmd = buildFuseCmd(fuseCommand);
+          cmd.push_back(outputLLPath.string());
+          std::string cmdStr;
+          tsil::x::implode(cmd, " ", cmdStr);
+          std::cout << "> " << cmdStr << std::endl;
+          if (system(cmdStr.c_str()) != 0) {
+            return 1;
+          }
+          objectFiles.push_back(outputOPath.string());
+        } else if (ps.ends_with(".c")) {
+          //
+        } else if (ps.ends_with(".cpp")) {
+          const auto outputOPath =
+              std::filesystem::path(build_fuse_path.string())
+                  .append(rps + ".o");
+          const auto fuseCommandResult = parseFuseCommand(
+              outputOPath.string(),
+              std::vector<std::string>(args.begin() + 2, args.end()));
+          if (!fuseCommandResult.second.empty()) {
+            std::cerr << fuseCommandResult.second << std::endl;
+            return 1;
+          }
+          auto fuseCommand = fuseCommandResult.first;
+          auto cmd = buildFuseCmd(fuseCommand);
+          cmd.push_back(ps);
+          std::string cmdStr;
+          tsil::x::implode(cmd, " ", cmdStr);
+          std::cout << "> " << cmdStr << std::endl;
+          if (system(cmdStr.c_str()) != 0) {
+            return 1;
+          }
+          objectFiles.push_back(outputOPath.string());
+        }
+      }
+    }
+    std::string ar = "llvm-ar";
+    for (const auto& argument : args) {
+      if (argument.starts_with("--ar=")) {
+        ar = argument.substr(std::string("--ar=").size());
+      }
+    }
+    std::string arCmd = ar + " rcs " + build_lib_path.string();
+    for (const auto& objectFile : objectFiles) {
+      arCmd += " " + objectFile;
+    }
+    std::cout << "> " << arCmd << std::endl;
+    return system(arCmd.c_str());
   }
   const auto& target = args[1];
   const auto& command = args[2];
@@ -381,92 +572,14 @@ int main(int argc, char** argv) {
       std::cerr << "помилка: Не вказано вхід" << std::endl;
       return 1;
     }
-
-    FuseCommand fuseCommand;
-    for (const auto& inputPath :
-         std::vector<std::string>(args.begin() + 3, args.end())) {
-      if (inputPath.starts_with("--")) {
-        if (inputPath == "--режим=випуск") {
-          fuseCommand.releaseMode = true;
-        } else if (inputPath == "--кеш=ccache") {
-          fuseCommand.useCCache = true;
-        } else if (inputPath.starts_with("--clang=")) {
-          fuseCommand.clang = inputPath.substr(std::string("--clang=").size());
-        } else if (inputPath.starts_with("--clang-override=")) {
-          fuseCommand.clangOverride =
-              inputPath.substr(std::string("--clang-override=").size());
-        } else if (inputPath.starts_with("--clang-append=")) {
-          fuseCommand.clangAppend =
-              inputPath.substr(std::string("--clang-append=").size());
-        } else {
-          std::cerr << "помилка: Невідома опція " << inputPath << std::endl;
-          return 1;
-        }
-      } else {
-        fuseCommand.inputPaths.push_back(inputPath);
-      }
-    }
-    fuseCommand.outputPath = target;
-    std::string targetFileName = std::filesystem::path(target).filename();
-    if (targetFileName.ends_with(".обʼєкт") || targetFileName.ends_with(".o")) {
-      fuseCommand.outputType = FuseCommandOutputTypeObject;
-    } else if (targetFileName.ends_with(".динаміт") ||
-               targetFileName.ends_with(".so")) {
-      fuseCommand.outputType = FuseCommandOutputTypeSharedLibrary;
-    } else if (targetFileName.ends_with(".васм") ||
-               targetFileName.ends_with(".wasm")) {
-      fuseCommand.outputType = FuseCommandOutputTypeWasm;
-    } else if (targetFileName.ends_with(".сплав") ||
-               std::count(targetFileName.begin(), targetFileName.end(), '.') ==
-                   0) {
-      fuseCommand.outputType = FuseCommandOutputTypeExecutable;
-    } else {
-      std::cerr << "помилка: Вихідний файл повинен мати розширення .o, "
-                   ".so або .wasm"
-                << std::endl;
+    const auto fuseCommandResult = parseFuseCommand(
+        target, std::vector<std::string>(args.begin() + 3, args.end()));
+    if (!fuseCommandResult.second.empty()) {
+      std::cerr << fuseCommandResult.second << std::endl;
       return 1;
     }
-
-    std::vector<std::string> cmd;
-    if (fuseCommand.useCCache) {
-      cmd.emplace_back("ccache");
-    }
-    cmd.emplace_back(fuseCommand.clang);
-    if (fuseCommand.clangOverride.empty()) {
-      if (fuseCommand.outputType == FuseCommandOutputTypeObject) {
-        cmd.emplace_back("-c");
-        if (fuseCommand.releaseMode) {
-          cmd.emplace_back("-O3");
-        }
-      } else if (fuseCommand.outputType == FuseCommandOutputTypeSharedLibrary) {
-        cmd.emplace_back("-shared");
-        if (fuseCommand.releaseMode) {
-          cmd.emplace_back("-O3");
-        }
-      } else if (fuseCommand.outputType == FuseCommandOutputTypeExecutable) {
-        if (fuseCommand.releaseMode) {
-          cmd.emplace_back("-O3");
-        }
-      } else if (fuseCommand.outputType == FuseCommandOutputTypeWasm) {
-        cmd.emplace_back("--target=wasm32");
-        if (fuseCommand.releaseMode) {
-          cmd.emplace_back("-O3");
-        }
-        cmd.emplace_back("-nostdlib");
-        cmd.emplace_back("-Wl,--no-entry");
-        cmd.emplace_back("-Wl,--export-all");
-        if (fuseCommand.releaseMode) {
-          cmd.emplace_back("-Wl,--lto-O3");
-        }
-      }
-    } else {
-      cmd.push_back(fuseCommand.clangOverride);
-    }
-    if (!fuseCommand.clangAppend.empty()) {
-      cmd.push_back(fuseCommand.clangAppend);
-    }
-    cmd.emplace_back("-o");
-    cmd.push_back(fuseCommand.outputPath);
+    auto fuseCommand = fuseCommandResult.first;
+    auto cmd = buildFuseCmd(fuseCommand);
     for (const auto& inputPath : fuseCommand.inputPaths) {
       if (inputPath.ends_with(".ц")) {
         std::string fsSeparator;
@@ -499,6 +612,7 @@ int main(int argc, char** argv) {
         cmd.push_back(inputPath);
       }
     }
+    cmd.push_back("/usr/local/lib/ціль/бібліотека/біб.a");
     std::string cmdStr;
     tsil::x::implode(cmd, " ", cmdStr);
     std::cout << "> " << cmdStr << std::endl;
