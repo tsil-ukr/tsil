@@ -12,6 +12,12 @@ extern "C" void друк_ю16(unsigned short int* value) {
   std::cout << mbs << std::endl;
 }
 
+extern "C" void друк_ю32(unsigned int* value) {
+  std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> convert;
+  std::string mbs = convert.to_bytes((char32_t*)value);
+  std::cout << mbs << std::endl;
+}
+
 extern "C" void друк_п8(unsigned char value) {
   std::cout << (unsigned int)value << std::endl;
 }

@@ -133,7 +133,7 @@ namespace tsil::tk {
       return 1;
     }
     if (this == scope->compiler->int16Type) {
-      return 4;
+      return 2;
     }
     if (this == scope->compiler->int32Type) {
       return 4;
@@ -148,7 +148,7 @@ namespace tsil::tk {
       return 4;
     }
     if (this == scope->compiler->uint16Type) {
-      return 4;
+      return 2;
     }
     if (this == scope->compiler->uint64Type) {
       return 8;

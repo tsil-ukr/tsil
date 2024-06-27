@@ -89,8 +89,12 @@ namespace tsil::tk {
           xValue = this->compiler->xModule->pushFunctionBlockFDivInstruction(
               xBlock, leftResult.type->xType, leftResult.xValue,
               rightResult.xValue);
+        } else if (leftResult.type->isUnsigned(this)) {
+          xValue = this->compiler->xModule->pushFunctionBlockUDivInstruction(
+              xBlock, leftResult.type->xType, leftResult.xValue,
+              rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockDivInstruction(
+          xValue = this->compiler->xModule->pushFunctionBlockSDivInstruction(
               xBlock, leftResult.type->xType, leftResult.xValue,
               rightResult.xValue);
         }

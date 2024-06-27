@@ -388,17 +388,32 @@ namespace tsil::x {
     return new Value(type, instruction->name);
   }
 
-  Value* Module::pushFunctionBlockDivInstruction(FunctionBlock* block,
-                                                 Type* type,
-                                                 Value* left,
-                                                 Value* right) {
+  Value* Module::pushFunctionBlockUDivInstruction(FunctionBlock* block,
+                                                  Type* type,
+                                                  Value* left,
+                                                  Value* right) {
     const auto instruction = new FunctionInstruction();
-    const auto div = new FunctionInstructionDiv();
-    div->type = type;
-    div->left = left;
-    div->right = right;
-    instruction->name = this->computeNextVarName("div");
-    instruction->div = div;
+    const auto udiv = new FunctionInstructionUDiv();
+    udiv->type = type;
+    udiv->left = left;
+    udiv->right = right;
+    instruction->name = this->computeNextVarName("udiv");
+    instruction->udiv = udiv;
+    block->instructions.push_back(instruction);
+    return new Value(type, instruction->name);
+  }
+
+  Value* Module::pushFunctionBlockSDivInstruction(FunctionBlock* block,
+                                                  Type* type,
+                                                  Value* left,
+                                                  Value* right) {
+    const auto instruction = new FunctionInstruction();
+    const auto sdiv = new FunctionInstructionSDiv();
+    sdiv->type = type;
+    sdiv->left = left;
+    sdiv->right = right;
+    instruction->name = this->computeNextVarName("sdiv");
+    instruction->sdiv = sdiv;
     block->instructions.push_back(instruction);
     return new Value(type, instruction->name);
   }
@@ -992,9 +1007,13 @@ namespace tsil::x {
       return this->name + " = fmul " + this->fmul->type->name + " " +
              this->fmul->left->name + ", " + this->fmul->right->name;
     }
-    if (this->div) {
-      return this->name + " = div " + this->div->type->name + " " +
-             this->div->left->name + ", " + this->div->right->name;
+    if (this->udiv) {
+      return this->name + " = udiv " + this->udiv->type->name + " " +
+             this->udiv->left->name + ", " + this->udiv->right->name;
+    }
+    if (this->sdiv) {
+      return this->name + " = sdiv " + this->sdiv->type->name + " " +
+             this->sdiv->left->name + ", " + this->sdiv->right->name;
     }
     if (this->fdiv) {
       return this->name + " = fdiv " + this->fdiv->type->name + " " +

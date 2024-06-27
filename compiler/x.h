@@ -27,7 +27,8 @@ namespace tsil::x {
   struct FunctionInstructionFSub;
   struct FunctionInstructionMul;
   struct FunctionInstructionFMul;
-  struct FunctionInstructionDiv;
+  struct FunctionInstructionUDiv;
+  struct FunctionInstructionSDiv;
   struct FunctionInstructionFDiv;
   struct FunctionInstructionMod;
   struct FunctionInstructionFMod;
@@ -162,10 +163,14 @@ namespace tsil::x {
                                             Type* type,
                                             Value* left,
                                             Value* right);
-    Value* pushFunctionBlockDivInstruction(FunctionBlock* block,
-                                           Type* type,
-                                           Value* left,
-                                           Value* right);
+    Value* pushFunctionBlockUDivInstruction(FunctionBlock* block,
+                                            Type* type,
+                                            Value* left,
+                                            Value* right);
+    Value* pushFunctionBlockSDivInstruction(FunctionBlock* block,
+                                            Type* type,
+                                            Value* left,
+                                            Value* right);
     Value* pushFunctionBlockFDivInstruction(FunctionBlock* block,
                                             Type* type,
                                             Value* left,
@@ -346,7 +351,8 @@ namespace tsil::x {
     FunctionInstructionFSub* fsub;
     FunctionInstructionMul* mul;
     FunctionInstructionFMul* fmul;
-    FunctionInstructionDiv* div;
+    FunctionInstructionUDiv* udiv;
+    FunctionInstructionSDiv* sdiv;
     FunctionInstructionFDiv* fdiv;
     FunctionInstructionMod* mod;
     FunctionInstructionFMod* fmod;
@@ -464,7 +470,13 @@ namespace tsil::x {
     Value* right;
   };
 
-  struct FunctionInstructionDiv {
+  struct FunctionInstructionUDiv {
+    Type* type;
+    Value* left;
+    Value* right;
+  };
+
+  struct FunctionInstructionSDiv {
     Type* type;
     Value* left;
     Value* right;
