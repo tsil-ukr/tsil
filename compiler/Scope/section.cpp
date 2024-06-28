@@ -35,12 +35,12 @@ namespace tsil::tk {
         } else if (takeNode->repo == "біб") {
           path = std::filesystem::weakly_canonical(
                      std::filesystem::path(this->compiler->libraryPath +
-                                           "/біб/" + path))
+                                           "/визначення/біб/" + path))
                      .string();
           folderPath =
               std::filesystem::weakly_canonical(
                   std::filesystem::path(this->compiler->libraryPath +
-                                        "/біб/" + folderPath))
+                                        "/визначення/біб/" + folderPath))
                   .string();
           if (this->compiler->fileExist(path)) {
             //
