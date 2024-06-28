@@ -21,7 +21,7 @@ mkdir -p release
 cd release
 mkdir -p "$DIRNAME"
 cp ../build-Obin/ціль_випуск "$DIRNAME"/ціль
-cp ../Право "$DIRNAME"/Право
+cp ../Ліцензія "$DIRNAME"/Ліцензія
 cp -a ../.плавлення-бібліотеки/бібліотека "$DIRNAME"
 echo -en "Документація тут: https://ціль.укр" >"$DIRNAME"/Прочитайка
 zip -r -9 "$ZIPNAME" "$DIRNAME"
