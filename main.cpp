@@ -47,7 +47,7 @@ std::string strgetline(const std::string& code, size_t line) {
 struct CompileCommand {
   std::string inputPath;
   std::string outputPath;
-  std::string libraryPath = "/usr/local/lib/ціль/бібліотека/";
+  std::string libraryPath = "/usr/local/lib/ціль/бібліотека";
 };
 
 enum FuseCommandOutputType {
@@ -67,7 +67,7 @@ struct FuseCommand {
   std::string clang = "clang++";
   std::string clangOverride = "";
   std::string clangAppend = "";
-  std::string libraryPath = "/usr/local/lib/ціль/бібліотека/";
+  std::string libraryPath = "/usr/local/lib/ціль/бібліотека";
 };
 
 void printCompilerError(const std::string& path,
