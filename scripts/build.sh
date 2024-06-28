@@ -2,8 +2,12 @@
 
 set -e
 
+export CXX="clang++"
+export CC="clang"
+export AR="llvm-ar"
+export RANLIB="llvm-ranlib"
+
 TARGET=$1
-#PLATFORM=$2
 
 if [ "$TARGET" = "" ]; then
     echo "Usage: build.sh <bin|Obin>"
