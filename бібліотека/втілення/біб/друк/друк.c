@@ -29,12 +29,16 @@
 #endif
 
 #ifdef _WIN32
-extern wchar_t *___біб__юнікод__ю8_в_ю16___(unsigned char *value, long size);
+extern long ___біб__юнікод__ю8_в_ю16___(unsigned char *input, long input_size,
+                                        unsigned short int *output);
 #endif
 
 extern void ___біб__друк_ю8___(unsigned char *value) {
 #ifdef _WIN32
-  wchar_t *value16 = ___біб__юнікод__ю8_в_ю16___(value, strlen((char *)value));
+  long len = strlen((char *)value);
+  unsigned short int *value16 = (unsigned short int *)malloc((len + 1) * 2);
+  long outlen = ___біб__юнікод__ю8_в_ю16___(value, len, value16);
+  value16[outlen] = 0;
   WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), value16, wcslen(value16), NULL,
                 NULL);
   WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), L"\n", 1, NULL, NULL);
@@ -75,7 +79,7 @@ extern void ___біб__друк_п64___(unsigned long value) {
 }
 
 extern void ___біб__друк_позитивне___(unsigned long value) {
-  //
+  printf("%lu\n", value);
 }
 
 extern void ___біб__друк_ц8___(char value) {
@@ -106,13 +110,14 @@ extern void ___біб__друк_дійсне___(double value) {
   //
 }
 
-extern void ___біб__друк_комірка___(void *value) {
-  //
-}
+extern void ___біб__друк_комірку___(void *value) { printf("%p\n", value); }
 
 extern void ___біб__вивести_ю8___(unsigned char *value) {
 #ifdef _WIN32
-  wchar_t *value16 = ___біб__юнікод__ю8_в_ю16___(value, strlen((char *)value));
+  long len = strlen((char *)value);
+  unsigned short int *value16 = (unsigned short int *)malloc((len + 1) * 2);
+  long outlen = ___біб__юнікод__ю8_в_ю16___(value, len, value16);
+  value16[outlen] = 0;
   WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), value16, wcslen(value16), NULL,
                 NULL);
   free(value16);
@@ -174,6 +179,4 @@ extern void ___біб__вивести_дійсне___(double value) {
   //
 }
 
-extern void ___біб__вивести_комірка___(void *value) {
-  //
-}
+extern void ___біб__вивести_комірку___(void *value) { printf("%p", value); }

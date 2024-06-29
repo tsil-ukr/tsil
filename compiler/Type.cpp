@@ -165,7 +165,7 @@ namespace tsil::tk {
         result += field.type->getBytesSize(scope);
       }
       // align
-      return (result + 7) / 8 * 8;
+      return result;
     }
     if (this->type == TypeTypeVariationInstance) {
       return this->largestVariationType->getBytesSize(scope);
