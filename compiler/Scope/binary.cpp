@@ -15,6 +15,27 @@ namespace tsil::tk {
     if (rightResult.error) {
       return rightResult;
     }
+    if (leftResult.type->isPointer()) {
+      if (binaryNode->op == ast::ARITHMETIC_ADD) {
+        const auto castedRightXValue = this->compileSoftCast(
+            xFunction, xBlock, rightResult.type, rightResult.xValue,
+            this->compiler->int64Type);
+        if (castedRightXValue) {
+          rightResult.type = this->compiler->int64Type;
+          rightResult.xValue = castedRightXValue;
+          const auto gepXValue =
+              this->compiler->xModule
+                  ->pushFunctionBlockGetElementPtrInstruction(
+                      xBlock, leftResult.type->xType, leftResult.xValue,
+                      {rightResult.xValue});
+          return {leftResult.type, gepXValue, nullptr};
+        } else {
+          return {nullptr, nullptr,
+                  CompilerError::typesOfInstructionDifferent(
+                      astValue, leftResult.type, rightResult.type)};
+        }
+      }
+    }
     const auto castedXValue =
         this->compileSoftCast(xFunction, xBlock, leftResult.type,
                               leftResult.xValue, rightResult.type);
