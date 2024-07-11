@@ -23,7 +23,7 @@ namespace tsil::tk {
       if (identifierNode->name == "звільнити") {
         return this->compileCall_Free(xFunction, xBlock, astValue);
       }
-      if (identifierNode->name == "розмір") {
+      if (identifierNode->name == "дізнатись_розмір") {
         return this->compileCall_Sizeof(xFunction, xBlock, astValue);
       }
       if (identifierNode->name == "ц8" || identifierNode->name == "ц16" ||
@@ -58,7 +58,7 @@ namespace tsil::tk {
         if (identifierNode->name == "звільнити") {
           return this->compileCall_Free(xFunction, xBlock, astValue);
         }
-        if (identifierNode->name == "розмір") {
+        if (identifierNode->name == "дізнатись_розмір") {
           return this->compileCall_Sizeof(xFunction, xBlock, astValue);
         }
       }

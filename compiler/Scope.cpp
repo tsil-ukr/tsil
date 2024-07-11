@@ -730,6 +730,10 @@ namespace tsil::tk {
     if (type->type == TypeTypeDiia && targetType->type == TypeTypeDiia) {
       return new x::Value(targetType->xType, xValue->name);
     }
+    if (type == this->compiler->int64Type && targetType->isPointer()) {
+      return this->compiler->xModule->pushFunctionBlockInttoptrInstruction(
+          xBlock, type->xType, xValue, targetType->xType);
+    }
     return nullptr;
   }
 } // namespace tsil::tk
