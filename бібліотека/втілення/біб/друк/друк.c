@@ -95,7 +95,7 @@ extern void ___біб__друк_ц64___(long value) {
 }
 
 extern void ___біб__друк_ціле___(long value) {
-  //
+  printf("%ld\n", value);
 }
 
 extern void ___біб__друк_д32___(float value) {
@@ -107,7 +107,7 @@ extern void ___біб__друк_д64___(double value) {
 }
 
 extern void ___біб__друк_дійсне___(double value) {
-  //
+  printf("%lf\n", value);
 }
 
 extern void ___біб__друк_комірку___(void *value) { printf("%p\n", value); }
@@ -148,7 +148,7 @@ extern void ___біб__вивести_п64___(unsigned long value) {
 }
 
 extern void ___біб__вивести_позитивне___(unsigned long value) {
-  //
+  printf("%lu", value);
 }
 
 extern void ___біб__вивести_ц8___(char value) {
@@ -176,7 +176,7 @@ extern void ___біб__вивести_д64___(double value) {
 }
 
 extern void ___біб__вивести_дійсне___(double value) {
-  //
+  printf("%lf", value);
 }
 
 extern void ___біб__вивести_комірку___(void *value) { printf("%p", value); }

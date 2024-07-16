@@ -79,6 +79,7 @@ namespace tsil::x {
 
     std::string computeNextName(const std::string& prefix);
     std::string computeNextVarName(const std::string& prefix);
+    std::string computeNextStructName(const std::string& prefix);
     std::string computeNextGlobalName(const std::string& prefix);
 
     Value* putGlobal(const std::string& attributes, Type* type, Value* value);

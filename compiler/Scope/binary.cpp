@@ -26,8 +26,11 @@ namespace tsil::tk {
           const auto gepXValue =
               this->compiler->xModule
                   ->pushFunctionBlockGetElementPtrInstruction(
-                      xBlock, leftResult.type->xType, leftResult.xValue,
-                      {rightResult.xValue});
+                      xBlock,
+                      leftResult.type->pointerTo
+                          ? leftResult.type->pointerTo->xType
+                          : this->compiler->voidType->xType,
+                      leftResult.xValue, {rightResult.xValue});
           return {leftResult.type, gepXValue, nullptr};
         } else {
           return {nullptr, nullptr,
@@ -37,15 +40,15 @@ namespace tsil::tk {
       }
     }
     const auto castedXValue =
-        this->compileSoftCast(xFunction, xBlock, leftResult.type,
-                              leftResult.xValue, rightResult.type);
+        this->compileSoftCast(xFunction, xBlock, rightResult.type,
+                              rightResult.xValue, leftResult.type);
     if (castedXValue) {
-      leftResult.type = rightResult.type;
-      leftResult.xValue = castedXValue;
+      rightResult.type = leftResult.type;
+      rightResult.xValue = castedXValue;
     } else {
       return {nullptr, nullptr,
               CompilerError::typesOfInstructionDifferent(
-                  astValue, leftResult.type, rightResult.type)};
+                  astValue, rightResult.type, leftResult.type)};
     }
     x::Value* xValue = nullptr;
     switch (binaryNode->op) {

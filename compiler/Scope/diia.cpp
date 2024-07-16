@@ -111,8 +111,8 @@ namespace tsil::tk {
             const auto variable = subject.data.variable;
             const auto variableType = variable->type;
             const auto variableXValue = variable->xValue;
-            const auto valueResult = this->compileValueNoVariation(
-                xFunction, xBlock, assignNode->value);
+            auto valueResult = this->compileValueNoVariation(xFunction, xBlock,
+                                                             assignNode->value);
             if (valueResult.error) {
               return {nullptr, nullptr, valueResult.error};
             }
@@ -120,6 +120,17 @@ namespace tsil::tk {
               return {nullptr, nullptr,
                       CompilerError::typesAreNotCompatible(
                           childAstValue, variableType, valueResult.type)};
+            }
+            const auto castedXValue =
+                this->compileSoftCast(xFunction, xBlock, valueResult.type,
+                                      valueResult.xValue, variableType);
+            if (castedXValue) {
+              valueResult.type = variableType;
+              valueResult.xValue = castedXValue;
+            } else {
+              return {nullptr, nullptr,
+                      CompilerError::typesAreNotCompatible(
+                          childAstValue, valueResult.type, variableType)};
             }
             this->compiler->xModule->pushFunctionBlockStoreInstruction(
                 xBlock, valueResult.type->xType, valueResult.xValue,
@@ -159,9 +170,9 @@ namespace tsil::tk {
         if (valueResult.error) {
           return {nullptr, nullptr, valueResult.error};
         }
-        const auto castedXValue =
-            this->compileSoftCast(xFunction, xWhileBlock, valueResult.type,
-                                  valueResult.xValue, this->compiler->uint1Type);
+        const auto castedXValue = this->compileSoftCast(
+            xFunction, xWhileBlock, valueResult.type, valueResult.xValue,
+            this->compiler->uint1Type);
         if (castedXValue) {
           valueResult.type = this->compiler->uint1Type;
           valueResult.xValue = castedXValue;
@@ -197,9 +208,9 @@ namespace tsil::tk {
         if (valueResult.error) {
           return {nullptr, nullptr, valueResult.error};
         }
-        const auto castedXValue =
-            this->compileSoftCast(xFunction, xIfBlock, valueResult.type,
-                                  valueResult.xValue, this->compiler->uint1Type);
+        const auto castedXValue = this->compileSoftCast(
+            xFunction, xIfBlock, valueResult.type, valueResult.xValue,
+            this->compiler->uint1Type);
         if (castedXValue) {
           valueResult.type = this->compiler->uint1Type;
           valueResult.xValue = castedXValue;

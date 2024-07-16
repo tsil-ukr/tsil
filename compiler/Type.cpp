@@ -161,10 +161,35 @@ namespace tsil::tk {
     }
     if (this->type == TypeTypeStructureInstance) {
       size_t result = 0;
-      for (const auto& [fieldName, field] : this->structureInstanceFields) {
-        result += field.type->getBytesSize(scope);
+      size_t maxalign = 0;
+      std::vector<Type*> flattenTypes;
+      auto processType = [&flattenTypes](Type* type) {
+        if (type->type == TypeTypeStructureInstance) {
+          for (const auto& [name, field] : type->structureInstanceFields) {
+            flattenTypes.push_back(field.type);
+          }
+        } else {
+          flattenTypes.push_back(type);
+        }
+      };
+      for (const auto& [name, field] : this->structureInstanceFields) {
+        processType(field.type);
       }
-      // align
+      for (const auto& type : flattenTypes) {
+        const auto align = type->getBytesSize(scope);
+        const auto offset = result;
+        if (offset) {
+          const auto padding = (align - (offset % align)) % align;
+          const auto aligned = align + padding;
+          result += aligned;
+        } else {
+          result += align;
+        }
+        maxalign = std::max(maxalign, align);
+      }
+      while (result % maxalign != 0) {
+        result++;
+      }
       return result;
     }
     if (this->type == TypeTypeVariationInstance) {
@@ -184,7 +209,8 @@ namespace tsil::tk {
            this == scope->compiler->uint32Type ||
            this == scope->compiler->uint64Type ||
            this == scope->compiler->f32Type ||
-           this == scope->compiler->f64Type || this->type == TypeTypePointer;
+           this == scope->compiler->f64Type || this->type == TypeTypePointer ||
+           this->type == TypeTypeDiia;
   }
 
   bool Type::isUnsigned(tsil::tk::Scope* scope) {

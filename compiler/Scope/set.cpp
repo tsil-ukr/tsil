@@ -15,10 +15,21 @@ namespace tsil::tk {
     leftXValue = leftResult.xValue;
     if (setNode->access) {
       if (leftType->type == TypeTypeArray) {
-        const auto indexResult =
+        auto indexResult =
             this->compileValueNoVariation(xFunction, xBlock, setNode->access);
         if (indexResult.error) {
           return {indexResult.error};
+        }
+        const auto castedIndexXValue = this->compileSoftCast(
+            xFunction, xBlock, indexResult.type, indexResult.xValue,
+            this->compiler->uint64Type);
+        if (castedIndexXValue) {
+          indexResult.type = this->compiler->uint64Type;
+          indexResult.xValue = castedIndexXValue;
+        } else {
+          return {CompilerError::invalidArgumentType(
+              setNode->value, "значення", indexResult.type,
+              this->compiler->uint64Type)};
         }
         auto valueResult =
             this->compileValueNoVariation(xFunction, xBlock, setNode->value);
@@ -46,10 +57,21 @@ namespace tsil::tk {
                 gepXValue);
         return {nullptr};
       } else if (leftType->type == TypeTypePointer) {
-        const auto indexResult =
+        auto indexResult =
             this->compileValueNoVariation(xFunction, xBlock, setNode->access);
         if (indexResult.error) {
           return {indexResult.error};
+        }
+        const auto castedIndexXValue = this->compileSoftCast(
+            xFunction, xBlock, indexResult.type, indexResult.xValue,
+            this->compiler->uint64Type);
+        if (castedIndexXValue) {
+          indexResult.type = this->compiler->uint64Type;
+          indexResult.xValue = castedIndexXValue;
+        } else {
+          return {CompilerError::invalidArgumentType(
+              setNode->value, "значення", indexResult.type,
+              this->compiler->uint64Type)};
         }
         auto valueResult =
             this->compileValueNoVariation(xFunction, xBlock, setNode->value);

@@ -43,9 +43,9 @@ namespace tsil::x {
 
   std::string Module::computeNextName(const std::string& prefix) {
     if (TSIL_X_EXPANDED_NAMES == "1") {
-      return "" + prefix + "." + std::to_string(this->variable_counter++) + "";
+      return "" + prefix + "." + std::to_string(this->variable_counter++) + "x";
     }
-    return "n." + std::to_string(this->variable_counter++);
+    return "n." + std::to_string(this->variable_counter++) + "x";
   }
 
   std::string Module::computeNextVarName(const std::string& prefix) {
@@ -53,7 +53,15 @@ namespace tsil::x {
       return "%\"" + prefix + "." + std::to_string(this->variable_counter++) +
              "\"";
     }
-    return "%v." + std::to_string(this->variable_counter++);
+    return "%v." + std::to_string(this->variable_counter++) + "x";
+  }
+
+  std::string Module::computeNextStructName(const std::string& prefix) {
+    if (TSIL_X_EXPANDED_NAMES == "1") {
+      return "%\"" + prefix + "." + std::to_string(this->variable_counter++) +
+             "\"";
+    }
+    return "%s." + std::to_string(this->variable_counter++) + "x";
   }
 
   std::string Module::computeNextGlobalName(const std::string& prefix) {
@@ -61,7 +69,7 @@ namespace tsil::x {
       return "@\"" + prefix + "." + std::to_string(this->variable_counter++) +
              "\"";
     }
-    return "@v." + std::to_string(this->variable_counter++);
+    return "@g." + std::to_string(this->variable_counter++) + "x";
   }
 
   Value* Module::putGlobal(const std::string& attributes,
@@ -99,7 +107,7 @@ namespace tsil::x {
                                  std::vector<Type*> fields) {
     auto type = new Type();
     type->type = TypeTypeType;
-    type->name = this->computeNextVarName(name);
+    type->name = this->computeNextStructName(name);
     type->fields = fields;
     this->types[type->name] = type;
     return type;
@@ -125,7 +133,7 @@ namespace tsil::x {
     if (TSIL_X_EXPANDED_NAMES == "1") {
       block->name = name + "." + std::to_string(function->blocks.size());
     } else {
-      block->name = "b." + std::to_string(this->variable_counter++);
+      block->name = "b." + std::to_string(this->variable_counter++) + "x";
     }
     return block;
   }
@@ -136,7 +144,7 @@ namespace tsil::x {
     if (TSIL_X_EXPANDED_NAMES == "1") {
       block->name = name + "." + std::to_string(function->blocks.size());
     } else {
-      block->name = "b." + std::to_string(this->variable_counter++);
+      block->name = "b." + std::to_string(this->variable_counter++) + "x";
     }
     function->blocks.push_back(block);
     return block;
