@@ -713,6 +713,16 @@ namespace tsil::tk {
               xBlock, type->xType, xValue, targetType->xType);
       return newXValue;
     }
+    // (ptr -> uint64) = ptrtoint
+    if (type->isPointer() && targetType == this->compiler->uint64Type) {
+      return this->compiler->xModule->pushFunctionBlockPtrtointInstruction(
+          xBlock, type->xType, xValue, targetType->xType);
+    }
+    // (uint64 -> ptr) = inttoptr
+    if (type == this->compiler->uint64Type && targetType->isPointer()) {
+      return this->compiler->xModule->pushFunctionBlockInttoptrInstruction(
+          xBlock, type->xType, xValue, targetType->xType);
+    }
     return nullptr;
   }
 
