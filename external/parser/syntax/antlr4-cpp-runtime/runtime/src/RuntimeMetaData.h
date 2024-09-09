@@ -16,7 +16,7 @@ namespace antlr4 {
   /// where a version mismatch is detected.
   ///
   /// <para>
-  /// The runtime version information is provided by <seealso cref="#VERSION"/> and
+  /// The runtime version information is provided by <seealso cref="#ВЕРСІЯ"/> and
   /// <seealso cref="#getRuntimeVersion()"/>. Detailed information about these values is
   /// provided in the documentation for each member.</para>
   ///
@@ -75,7 +75,7 @@ namespace antlr4 {
     /// Gets the currently executing version of the ANTLR 4 runtime library.
     ///
     /// <para>
-    /// This method provides runtime access to the <seealso cref="#VERSION"/> field, as
+    /// This method provides runtime access to the <seealso cref="#ВЕРСІЯ"/> field, as
     /// opposed to directly referencing the field as a compile-time constant.</para>
     /// </summary>
     /// <returns> The currently executing version of the ANTLR 4 library </returns>
@@ -103,7 +103,7 @@ namespace antlr4 {
     /// Starting with ANTLR 4.3, the code generator emits a call to this method
     /// using two constants in each generated lexer and parser: a hard-coded
     /// constant indicating the version of the tool used to generate the parser
-    /// and a reference to the compile-time constant <seealso cref="#VERSION"/>. At
+    /// and a reference to the compile-time constant <seealso cref="#ВЕРСІЯ"/>. At
     /// runtime, this method is called during the initialization of the generated
     /// parser to detect mismatched versions, and notify the registered listeners
     /// prior to creating instances of the parser.</para>
@@ -138,7 +138,7 @@ namespace antlr4 {
     /// by, and does not reference, the ANTLR 4 Tool itself. </param>
     /// <param name="compileTimeVersion"> The version of the runtime the parser was
     /// compiled against. This should always be passed using a direct reference
-    /// to <seealso cref="#VERSION"/>. </param>
+    /// to <seealso cref="#ВЕРСІЯ"/>. </param>
     static void checkVersion(const std::string &generatingToolVersion, const std::string &compileTimeVersion);
 
     /// <summary>

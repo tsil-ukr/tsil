@@ -1,4 +1,4 @@
-<img src="./assets/logo.png" width="70" height="70" />
+<img src="ресурси/лого.png" width="70" height="70" />
 
 # Ціль
 
@@ -47,11 +47,11 @@ extern "C" void друк_ю8(unsigned char* val) {
 Побудова локального проекту:
 
 ```shell
-bash scripts/build.sh bin
+bash скрипти/збудувати.sh bin
 ```
 
 Побудова випуску:
 
 ```shell
-bash scripts/release.sh
+bash скрипти/випуск.sh
 ```

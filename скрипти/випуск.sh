@@ -1,6 +1,6 @@
 set -e
 
-VERSION=$(cat VERSION)
+VERSION=$(cat ВЕРСІЯ)
 PLATFORM="x86_64-linux-gnu"
 DIRNAME="ціль-$VERSION-$PLATFORM"
 ZIPNAME="tsil-$VERSION-$PLATFORM.zip"
@@ -13,7 +13,7 @@ export TSIL="ціль"
 
 echo "Пакуємо Ціль $VERSION для $PLATFORM"
 
-bash scripts/build.sh Obin "$PLATFORM"
+bash скрипти/збудувати.sh Obin "$PLATFORM"
 bash бібліотека/збудувати.sh ./бібліотека ./.плавлення-бібліотеки
 
 rm -rf release
@@ -27,7 +27,7 @@ echo -en "Документація тут: https://ціль.укр" >"$DIRNAME"/
 zip -r -9 "$ZIPNAME" "$DIRNAME"
 cd ..
 
-if [ "$1" = "install" ]; then
+if [ "$1" = "встановити" ]; then
     echo "Встановлюємо Ціль $VERSION"
     sudo cp -r release/"$DIRNAME"/ціль /usr/local/bin/ціль
     echo "Ціль $VERSION встановлено в /usr/local/bin/ціль"
