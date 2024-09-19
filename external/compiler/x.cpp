@@ -41,6 +41,20 @@ namespace tsil::x {
     return stringValue;
   }
 
+  std::string cStringToLLVMByteArray(const std::string& value) {
+    std::string result = "[";
+    for (size_t i = 0; i < value.size(); i++) {
+      if (i > 0) {
+        result += ", ";
+      }
+      result += "i8 ";
+      result += std::to_string((int)value[i]);
+    }
+    result += ", i8 0";
+    result += "]";
+    return result;
+  }
+
   std::string Module::computeNextName(const std::string& prefix) {
     if (TSIL_X_EXPANDED_NAMES == "1") {
       return "" + prefix + "." + std::to_string(this->variable_counter++) + "x";
@@ -785,7 +799,7 @@ namespace tsil::x {
       result += "constant " + this->type->name + " " + this->value;
     } else {
       result += "constant [" + std::to_string(this->value.size() + 1) +
-                " x i8] c\"" + cStringToLLVMString(this->value) + "\\00\"";
+                " x i8] " + cStringToLLVMByteArray(this->value) + "";
     }
     return result;
   }
