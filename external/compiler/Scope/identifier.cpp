@@ -1,8 +1,8 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileLoad(x2::FunctionX2* xFunction,
-                                         x2::FunctionX2Block* xBlock,
+  CompilerValueResult Scope::compileLoad(XLFunction* xFunction,
+                                         XLBasicBlock* xBlock,
                                          ast::ASTValue* astValue) {
     const auto identifierNode = astValue->data.IdentifierNode;
     if (this->hasSubject(identifierNode->name)) {
@@ -10,8 +10,8 @@ namespace tsil::tk {
       if (subject.kind == SubjectKindVariable) {
         const auto variable = subject.data.variable;
         const auto loadXValue =
-            this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, variable->type->xType, variable->xValue);
+            tsil_xl_inst_load(this->compiler->xModule, xBlock,
+                              variable->type->xType, variable->xValue);
         return {variable->type, loadXValue, nullptr};
       }
       if (subject.kind == SubjectKindDiia) {
@@ -33,8 +33,8 @@ namespace tsil::tk {
     }
   }
 
-  CompilerValueResult Scope::compileGeneric(x2::FunctionX2* xFunction,
-                                            x2::FunctionX2Block* xBlock,
+  CompilerValueResult Scope::compileGeneric(XLFunction* xFunction,
+                                            XLBasicBlock* xBlock,
                                             ast::ASTValue* astValue) {
     const auto genericNode = astValue->data.GenericNode;
     std::vector<Type*> genericValues;
@@ -63,8 +63,8 @@ namespace tsil::tk {
         if (subject.kind == SubjectKindVariable) {
           const auto variable = subject.data.variable;
           const auto loadXValue =
-              scope->compiler->xModule->pushFunctionBlockLoadInstruction(
-                  xBlock, variable->type->xType, variable->xValue);
+              tsil_xl_inst_load(scope->compiler->xModule, xBlock,
+                                variable->type->xType, variable->xValue);
           return {variable->type, loadXValue, nullptr};
         }
         if (subject.kind == SubjectKindDiia) {

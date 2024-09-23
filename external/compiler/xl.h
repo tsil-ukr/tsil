@@ -11,9 +11,6 @@ extern "C" {
 #ifndef XL_VALUE_TYPE
 #define XL_VALUE_TYPE void
 #endif
-#ifndef XL_FUNCTION_TYPE
-#define XL_FUNCTION_TYPE void
-#endif
 #ifndef XL_BASIC_BLOCK_TYPE
 #define XL_BASIC_BLOCK_TYPE void
 #endif
@@ -22,8 +19,15 @@ typedef XL_MODULE_TYPE XLModule;
 typedef XL_TYPE_TYPE XLType;
 typedef XL_FUNCTION_TYPE_TYPE XLFunctionType;
 typedef XL_VALUE_TYPE XLValue;
-typedef XL_FUNCTION_TYPE XLFunction;
 typedef XL_BASIC_BLOCK_TYPE XLBasicBlock;
+typedef struct XLFunction {
+  void* llvm_function;
+  XLBasicBlock* alloca_block;
+  XLBasicBlock* entry_block;
+  XLBasicBlock* exit_block;
+  XLValue* return_alloca;
+  XLType* result_type;
+} XLFunction;
 
 XLModule* tsil_xl_create_module(char* name);
 
@@ -204,4 +208,19 @@ XLValue* tsil_xl_inst_bitcast(XLModule* m,
                               XLBasicBlock* block,
                               XLValue* value,
                               XLType* toType);
+
+XLType* tsil_xl_type_get_pointer_to(XLModule* m, XLType* type);
+XLType* tsil_xl_type_get_array_of(XLModule* m, XLType* type, int size);
+
+XLType* tsil_xl_get_void_type(XLModule* m);
+XLType* tsil_xl_get_pointer_type(XLModule* m);
+
+XLValue* tsil_xl_create_int32(XLModule* m, int value);
+XLValue* tsil_xl_create_int64(XLModule* m, long value);
+XLValue* tsil_xl_create_double(XLModule* m, double value);
+XLValue* tsil_xl_create_string(XLModule* m, char* value);
+
+XLFunctionType* tsil_xl_get_as_function_type(XLModule* m, XLValue* value);
+
+char* dumpLL(XLModule* m);
 }

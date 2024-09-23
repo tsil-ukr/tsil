@@ -1,8 +1,8 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileConstructor(x2::FunctionX2* xFunction,
-                                                x2::FunctionX2Block* xBlock,
+  CompilerValueResult Scope::compileConstructor(XLFunction* xFunction,
+                                                XLBasicBlock* xBlock,
                                                 ast::ASTValue* astValue,
                                                 bool load) {
     const auto constructorNode = astValue->data.ConstructorNode;
@@ -18,8 +18,8 @@ namespace tsil::tk {
                                                     typeResult.type)};
     }
     const auto xAllocValue =
-        this->compiler->xModule->pushFunctionBlockAllocaInstruction(
-            xFunction->alloca_block, "construct", typeResult.type->xType);
+        tsil_xl_inst_alloca(this->compiler->xModule, xFunction->alloca_block,
+                            "construct", typeResult.type->xType);
     int argIndex = 0;
     for (const auto argAstValue : constructorNode->args) {
       const auto constructorArgNode = argAstValue->data.ConstructorArgNode;
@@ -72,19 +72,20 @@ namespace tsil::tk {
                                                    field.name, fieldType,
                                                    argValueResult.type)};
       }
-      const auto xGepValue =
-          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-              xBlock, typeResult.type->xType, xAllocValue,
-              {x2::CreateInt32(this->compiler->xModule, 0),
-               x2::CreateInt32(this->compiler->xModule, field.index)});
-      this->compiler->xModule->pushFunctionBlockStoreInstruction(
-          xBlock, argValueResult.type->xType, argValueResult.xValue, xGepValue);
+      const auto xGepValue = tsil_xl_inst_getelementptr(
+          this->compiler->xModule, xBlock, typeResult.type->xType, xAllocValue,
+          2,
+          std::vector(
+              {tsil_xl_create_int32(this->compiler->xModule, 0),
+               tsil_xl_create_int32(this->compiler->xModule, field.index)})
+              .data());
+      tsil_xl_inst_store(this->compiler->xModule, xBlock, argValueResult.xValue,
+                         xGepValue);
       argIndex++;
     }
     if (load) {
-      x2::ValueX2* xLoadValue =
-          this->compiler->xModule->pushFunctionBlockLoadInstruction(
-              xBlock, typeResult.type->xType, xAllocValue);
+      XLValue* xLoadValue = tsil_xl_inst_load(
+          this->compiler->xModule, xBlock, typeResult.type->xType, xAllocValue);
       return {typeResult.type, xLoadValue, nullptr};
     } else {
       return {typeResult.type, xAllocValue, nullptr};

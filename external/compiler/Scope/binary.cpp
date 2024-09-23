@@ -1,8 +1,8 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileBinary(x2::FunctionX2* xFunction,
-                                           x2::FunctionX2Block* xBlock,
+  CompilerValueResult Scope::compileBinary(XLFunction* xFunction,
+                                           XLBasicBlock* xBlock,
                                            ast::ASTValue* astValue) {
     const auto binaryNode = astValue->data.BinaryNode;
     CompilerValueResult leftResult =
@@ -23,14 +23,11 @@ namespace tsil::tk {
         if (castedRightXValue) {
           rightResult.type = this->compiler->int64Type;
           rightResult.xValue = castedRightXValue;
-          const auto gepXValue =
-              this->compiler->xModule
-                  ->pushFunctionBlockGetElementPtrInstruction(
-                      xBlock,
-                      leftResult.type->pointerTo
-                          ? leftResult.type->pointerTo->xType
-                          : this->compiler->voidType->xType,
-                      leftResult.xValue, {rightResult.xValue});
+          const auto gepXValue = tsil_xl_inst_getelementptr(
+              this->compiler->xModule, xBlock,
+              leftResult.type->pointerTo ? leftResult.type->pointerTo->xType
+                                         : this->compiler->voidType->xType,
+              leftResult.xValue, 1, std::vector({rightResult.xValue}).data());
           return {leftResult.type, gepXValue, nullptr};
         } else {
           return {nullptr, nullptr,
@@ -50,7 +47,7 @@ namespace tsil::tk {
               CompilerError::typesOfInstructionDifferent(
                   astValue, rightResult.type, leftResult.type)};
     }
-    x2::ValueX2* xValue = nullptr;
+    XLValue* xValue = nullptr;
     switch (binaryNode->op) {
       case tsil::ast::ARITHMETIC_ADD: {
         if (!leftResult.type->isArithmetical(this)) {
@@ -59,13 +56,11 @@ namespace tsil::tk {
               CompilerError::typeIsNotArithmetical(astValue, leftResult.type)};
         }
         if (leftResult.type->isFloating(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockFAddInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_fadd(this->compiler->xModule, xBlock,
+                                     leftResult.xValue, rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockAddInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_add(this->compiler->xModule, xBlock,
+                                    leftResult.xValue, rightResult.xValue);
         }
         return {leftResult.type, xValue, nullptr};
       }
@@ -76,13 +71,11 @@ namespace tsil::tk {
               CompilerError::typeIsNotArithmetical(astValue, leftResult.type)};
         }
         if (leftResult.type->isFloating(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockFSubInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_fsub(this->compiler->xModule, xBlock,
+                                     leftResult.xValue, rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockSubInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_sub(this->compiler->xModule, xBlock,
+                                    leftResult.xValue, rightResult.xValue);
         }
         return {leftResult.type, xValue, nullptr};
       }
@@ -93,13 +86,11 @@ namespace tsil::tk {
               CompilerError::typeIsNotArithmetical(astValue, leftResult.type)};
         }
         if (leftResult.type->isFloating(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockFMulInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_fmul(this->compiler->xModule, xBlock,
+                                     leftResult.xValue, rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockMulInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_mul(this->compiler->xModule, xBlock,
+                                    leftResult.xValue, rightResult.xValue);
         }
         return {leftResult.type, xValue, nullptr};
       }
@@ -110,17 +101,14 @@ namespace tsil::tk {
               CompilerError::typeIsNotArithmetical(astValue, leftResult.type)};
         }
         if (leftResult.type->isFloating(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockFDivInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_fdiv(this->compiler->xModule, xBlock,
+                                     leftResult.xValue, rightResult.xValue);
         } else if (leftResult.type->isUnsigned(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockUDivInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_udiv(this->compiler->xModule, xBlock,
+                                     leftResult.xValue, rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockSDivInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_sdiv(this->compiler->xModule, xBlock,
+                                     leftResult.xValue, rightResult.xValue);
         }
         return {leftResult.type, xValue, nullptr};
       }
@@ -131,13 +119,11 @@ namespace tsil::tk {
               CompilerError::typeIsNotArithmetical(astValue, leftResult.type)};
         }
         if (leftResult.type->isFloating(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockFModInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_fmod(this->compiler->xModule, xBlock,
+                                     leftResult.xValue, rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockModInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_mod(this->compiler->xModule, xBlock,
+                                    leftResult.xValue, rightResult.xValue);
         }
         return {leftResult.type, xValue, nullptr};
       }
@@ -147,9 +133,8 @@ namespace tsil::tk {
               nullptr, nullptr,
               CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
         }
-        xValue = this->compiler->xModule->pushFunctionBlockAndInstruction(
-            xBlock, leftResult.type->xType, leftResult.xValue,
-            rightResult.xValue);
+        xValue = tsil_xl_inst_and(this->compiler->xModule, xBlock,
+                                  leftResult.xValue, rightResult.xValue);
         return {leftResult.type, xValue, nullptr};
       }
       case tsil::ast::BITWISE_OR: {
@@ -158,9 +143,8 @@ namespace tsil::tk {
               nullptr, nullptr,
               CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
         }
-        xValue = this->compiler->xModule->pushFunctionBlockOrInstruction(
-            xBlock, leftResult.type->xType, leftResult.xValue,
-            rightResult.xValue);
+        xValue = tsil_xl_inst_or(this->compiler->xModule, xBlock,
+                                 leftResult.xValue, rightResult.xValue);
         return {leftResult.type, xValue, nullptr};
       }
       case tsil::ast::BITWISE_XOR: {
@@ -169,9 +153,8 @@ namespace tsil::tk {
               nullptr, nullptr,
               CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
         }
-        xValue = this->compiler->xModule->pushFunctionBlockXorInstruction(
-            xBlock, leftResult.type->xType, leftResult.xValue,
-            rightResult.xValue);
+        xValue = tsil_xl_inst_xor(this->compiler->xModule, xBlock,
+                                  leftResult.xValue, rightResult.xValue);
         return {leftResult.type, xValue, nullptr};
       }
       case tsil::ast::BITWISE_SHIFT_LEFT: {
@@ -180,9 +163,8 @@ namespace tsil::tk {
               nullptr, nullptr,
               CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
         }
-        xValue = this->compiler->xModule->pushFunctionBlockShlInstruction(
-            xBlock, leftResult.type->xType, leftResult.xValue,
-            rightResult.xValue);
+        xValue = tsil_xl_inst_shl(this->compiler->xModule, xBlock,
+                                  leftResult.xValue, rightResult.xValue);
         return {leftResult.type, xValue, nullptr};
       }
       case tsil::ast::BITWISE_SHIFT_RIGHT: {
@@ -191,9 +173,8 @@ namespace tsil::tk {
               nullptr, nullptr,
               CompilerError::typeIsNotBitwisible(astValue, leftResult.type)};
         }
-        xValue = this->compiler->xModule->pushFunctionBlockLShrInstruction(
-            xBlock, leftResult.type->xType, leftResult.xValue,
-            rightResult.xValue);
+        xValue = tsil_xl_inst_lshr(this->compiler->xModule, xBlock,
+                                   leftResult.xValue, rightResult.xValue);
         return {leftResult.type, xValue, nullptr};
       }
       case tsil::ast::COMPARISON_EQ: {
@@ -203,13 +184,11 @@ namespace tsil::tk {
               CompilerError::typeIsNotComparable(astValue, leftResult.type)};
         }
         if (leftResult.type->isFloating(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-              xBlock, "ueq", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_fcmp(this->compiler->xModule, xBlock, "ueq",
+                                     leftResult.xValue, rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-              xBlock, "eq", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_icmp(this->compiler->xModule, xBlock, "eq",
+                                     leftResult.xValue, rightResult.xValue);
         }
         return {this->compiler->uint1Type, xValue, nullptr};
       }
@@ -220,13 +199,11 @@ namespace tsil::tk {
               CompilerError::typeIsNotComparable(astValue, leftResult.type)};
         }
         if (leftResult.type->isFloating(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-              xBlock, "une", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_fcmp(this->compiler->xModule, xBlock, "une",
+                                     leftResult.xValue, rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-              xBlock, "ne", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_icmp(this->compiler->xModule, xBlock, "ne",
+                                     leftResult.xValue, rightResult.xValue);
         }
         return {this->compiler->uint1Type, xValue, nullptr};
       }
@@ -237,17 +214,14 @@ namespace tsil::tk {
               CompilerError::typeIsNotComparable(astValue, leftResult.type)};
         }
         if (leftResult.type->isUnsigned(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-              xBlock, "ult", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_icmp(this->compiler->xModule, xBlock, "ult",
+                                     leftResult.xValue, rightResult.xValue);
         } else if (leftResult.type->isFloating(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-              xBlock, "ult", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_fcmp(this->compiler->xModule, xBlock, "ult",
+                                     leftResult.xValue, rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-              xBlock, "slt", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_icmp(this->compiler->xModule, xBlock, "slt",
+                                     leftResult.xValue, rightResult.xValue);
         }
         return {this->compiler->uint1Type, xValue, nullptr};
       }
@@ -258,17 +232,14 @@ namespace tsil::tk {
               CompilerError::typeIsNotComparable(astValue, leftResult.type)};
         }
         if (leftResult.type->isUnsigned(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-              xBlock, "ugt", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_icmp(this->compiler->xModule, xBlock, "ugt",
+                                     leftResult.xValue, rightResult.xValue);
         } else if (leftResult.type->isFloating(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-              xBlock, "ugt", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_fcmp(this->compiler->xModule, xBlock, "ugt",
+                                     leftResult.xValue, rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-              xBlock, "sgt", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_icmp(this->compiler->xModule, xBlock, "sgt",
+                                     leftResult.xValue, rightResult.xValue);
         }
         return {this->compiler->uint1Type, xValue, nullptr};
       }
@@ -279,17 +250,14 @@ namespace tsil::tk {
               CompilerError::typeIsNotComparable(astValue, leftResult.type)};
         }
         if (leftResult.type->isUnsigned(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-              xBlock, "ule", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_icmp(this->compiler->xModule, xBlock, "ule",
+                                     leftResult.xValue, rightResult.xValue);
         } else if (leftResult.type->isFloating(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-              xBlock, "ule", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_fcmp(this->compiler->xModule, xBlock, "ule",
+                                     leftResult.xValue, rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-              xBlock, "sle", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_icmp(this->compiler->xModule, xBlock, "sle",
+                                     leftResult.xValue, rightResult.xValue);
         }
         return {this->compiler->uint1Type, xValue, nullptr};
       }
@@ -300,17 +268,14 @@ namespace tsil::tk {
               CompilerError::typeIsNotComparable(astValue, leftResult.type)};
         }
         if (leftResult.type->isUnsigned(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-              xBlock, "uge", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_icmp(this->compiler->xModule, xBlock, "uge",
+                                     leftResult.xValue, rightResult.xValue);
         } else if (leftResult.type->isFloating(this)) {
-          xValue = this->compiler->xModule->pushFunctionBlockFCmpInstruction(
-              xBlock, "uge", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_fcmp(this->compiler->xModule, xBlock, "uge",
+                                     leftResult.xValue, rightResult.xValue);
         } else {
-          xValue = this->compiler->xModule->pushFunctionBlockICmpInstruction(
-              xBlock, "sge", leftResult.type->xType, leftResult.xValue,
-              rightResult.xValue);
+          xValue = tsil_xl_inst_icmp(this->compiler->xModule, xBlock, "sge",
+                                     leftResult.xValue, rightResult.xValue);
         }
         return {this->compiler->uint1Type, xValue, nullptr};
       }

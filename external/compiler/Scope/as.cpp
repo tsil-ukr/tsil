@@ -1,8 +1,8 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileAs(x2::FunctionX2* xFunction,
-                                       x2::FunctionX2Block* xBlock,
+  CompilerValueResult Scope::compileAs(XLFunction* xFunction,
+                                       XLBasicBlock* xBlock,
                                        ast::ASTValue* astValue,
                                        bool load) {
     const auto asNode = astValue->data.AsNode;
@@ -28,22 +28,21 @@ namespace tsil::tk {
       size_t index = 0;
       for (const auto variationType : valueResult.type->variationTypes) {
         if (variationType == typeResult.type) {
-          const auto gepXValue =
-              this->compiler->xModule
-                  ->pushFunctionBlockGetElementPtrInstruction(
-                      xBlock,
-                      valueResult.type->shortTermVariationLeftType->xType,
-                      valueResult.xValue,
-                      {x2::CreateInt32(this->compiler->xModule, 0),
-                       x2::CreateInt32(
-                           this->compiler->xModule,
-                           valueResult.type->shortTermVariationIndex)});
+          const auto gepXValue = tsil_xl_inst_getelementptr(
+              this->compiler->xModule, xBlock,
+              valueResult.type->shortTermVariationLeftType->xType,
+              valueResult.xValue, 2,
+              std::vector({tsil_xl_create_int32(this->compiler->xModule, 0),
+                           tsil_xl_create_int32(
+                               this->compiler->xModule,
+                               valueResult.type->shortTermVariationIndex)})
+                  .data());
           valueResult.type->shortTermVariationIndex = -1;
           valueResult.type->shortTermVariationLeftType = nullptr;
           if (load) {
             const auto loadXValue =
-                this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                    xBlock, variationType->xType, gepXValue);
+                tsil_xl_inst_load(this->compiler->xModule, xBlock,
+                                  variationType->xType, gepXValue);
             return {variationType, loadXValue, nullptr};
           }
           return {variationType, gepXValue, nullptr};

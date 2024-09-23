@@ -1,12 +1,12 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileGetGep(x2::FunctionX2* xFunction,
-                                           x2::FunctionX2Block* xBlock,
+  CompilerValueResult Scope::compileGetGep(XLFunction* xFunction,
+                                           XLBasicBlock* xBlock,
                                            ast::ASTValue* astValue) {
     const auto getNode = astValue->data.GetNode;
     Type* leftType = nullptr;
-    x2::ValueX2* leftXValue = nullptr;
+    XLValue* leftXValue = nullptr;
     const auto leftResult = this->compileLeft(xFunction, xBlock, getNode->left);
     if (leftResult.error) {
       return leftResult;
@@ -19,9 +19,8 @@ namespace tsil::tk {
                 CompilerError::typeHasNoProperty(astValue, leftType->pointerTo,
                                                  getNode->id)};
       }
-      const auto loadPtrXValue =
-          this->compiler->xModule->pushFunctionBlockLoadInstruction(
-              xBlock, leftType->xType, leftXValue);
+      const auto loadPtrXValue = tsil_xl_inst_load(
+          this->compiler->xModule, xBlock, leftType->xType, leftXValue);
       leftType = leftType->pointerTo;
       leftXValue = loadPtrXValue;
     }
@@ -38,11 +37,12 @@ namespace tsil::tk {
         fieldType->shortTermVariationLeftType = leftType;
         return {fieldType, leftXValue, nullptr};
       }
-      const auto gepXValue =
-          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-              xBlock, leftType->xType, leftXValue,
-              {x2::CreateInt32(this->compiler->xModule, 0),
-               x2::CreateInt32(this->compiler->xModule, field.index)});
+      const auto gepXValue = tsil_xl_inst_getelementptr(
+          this->compiler->xModule, xBlock, leftType->xType, leftXValue, 2,
+          std::vector(
+              {tsil_xl_create_int32(this->compiler->xModule, 0),
+               tsil_xl_create_int32(this->compiler->xModule, field.index)})
+              .data());
       return {fieldType, gepXValue, nullptr};
     }
     if (leftType->type == TypeTypeVariationInstance) {

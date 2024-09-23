@@ -22,8 +22,8 @@ namespace tsil::tk {
     } else if (synonymNode->value->kind == ast::KindStringNode) {
       const auto stringNode = synonymNode->value->data.StringNode;
       const auto stringValue = tsilStringToCString(stringNode->value);
-      const auto xStringConstant =
-          x2::CreateGlobalStringPtr(this->compiler->xModule, stringValue);
+      const auto xStringConstant = tsil_xl_create_string(
+          this->compiler->xModule, (char*)stringValue.c_str());
       Type* type = nullptr;
       if (stringNode->prefix == "ю8") {
         type = this->compiler->uint8Type->getPointerType(this);

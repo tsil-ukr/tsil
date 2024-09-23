@@ -3,17 +3,16 @@
 namespace tsil::tk {
   BodyCompilerResult Scope::compileDiiaBody(
       Type* diiaType,
-      x2::FunctionX2* xFunction,
-      x2::FunctionX2Block* xBlock,
-      x2::FunctionX2Block* xExitBlock,
+      XLFunction* xFunction,
+      XLBasicBlock* xBlock,
+      XLBasicBlock* xExitBlock,
       const std::vector<ast::ASTValue*>& body) {
     if (body.empty()) {
-      this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock,
-                                                              xExitBlock);
+      tsil_xl_inst_br(this->compiler->xModule, xBlock, xExitBlock);
       return {nullptr};
     }
-    const auto deferXBlock = this->compiler->xModule->createFunctionBlock(
-        xFunction, "exitWithDefer");
+    const auto deferXBlock = tsil_xl_create_function_block(
+        this->compiler->xModule, xFunction, "exitWithDefer");
     int childIndex = 0;
     for (const auto& childAstValue : body) {
       if (childAstValue == nullptr) {
@@ -23,12 +22,10 @@ namespace tsil::tk {
         continue;
       }
       if (childAstValue->kind == tsil::ast::KindBlockNode) {
-        const auto xBlockBodyBlock =
-            this->compiler->xModule->defineFunctionBlock(xFunction,
-                                                         "block_body");
-        const auto xBlockExitBlock =
-            this->compiler->xModule->defineFunctionBlock(xFunction,
-                                                         "block_exit");
+        const auto xBlockBodyBlock = tsil_xl_create_function_block(
+            this->compiler->xModule, xFunction, "block_body");
+        const auto xBlockExitBlock = tsil_xl_create_function_block(
+            this->compiler->xModule, xFunction, "block_exit");
         const auto blockScope = new Scope(this->compiler, this);
         const auto blockResult = blockScope->compileDiiaBody(
             diiaType, xFunction, xBlockBodyBlock, xBlockExitBlock,
@@ -36,10 +33,9 @@ namespace tsil::tk {
         if (blockResult.error) {
           return {nullptr, nullptr, blockResult.error};
         }
-        this->compiler->xModule->pushFunctionBlockBrInstruction(
-            xBlockBodyBlock, xBlockExitBlock);
-        this->compiler->xModule->pushFunctionBlockBrInstruction(
-            xBlock, xBlockBodyBlock);
+        tsil_xl_inst_br(this->compiler->xModule, xBlockBodyBlock,
+                        xBlockExitBlock);
+        tsil_xl_inst_br(this->compiler->xModule, xBlock, xBlockBodyBlock);
         xBlock = xBlockExitBlock;
       } else if (childAstValue->kind == tsil::ast::KindSynonymNode) {
         const auto result = this->compileSynonym(childAstValue);
@@ -82,21 +78,20 @@ namespace tsil::tk {
           } else {
             type = valueResult.type;
           }
-          const auto allocaXValue =
-              this->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                  xFunction->alloca_block, defineNode->id, type->xType);
-          this->compiler->xModule->pushFunctionBlockStoreInstruction(
-              xBlock, valueResult.type->xType, valueResult.xValue,
-              allocaXValue);
+          const auto allocaXValue = tsil_xl_inst_alloca(
+              this->compiler->xModule, xFunction->alloca_block,
+              (char*)defineNode->id.c_str(), type->xType);
+          tsil_xl_inst_store(this->compiler->xModule, xBlock,
+                             valueResult.xValue, allocaXValue);
           const auto variable = new Variable();
           variable->type = type;
           variable->xValue = allocaXValue;
           this->setSubject(defineNode->id, Subject{SubjectKindVariable,
                                                    {.variable = variable}});
         } else {
-          const auto allocaXValue =
-              this->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                  xFunction->alloca_block, defineNode->id, type->xType);
+          const auto allocaXValue = tsil_xl_inst_alloca(
+              this->compiler->xModule, xFunction->alloca_block,
+              (char*)defineNode->id.c_str(), type->xType);
           const auto variable = new Variable();
           variable->type = type;
           variable->xValue = allocaXValue;
@@ -132,9 +127,8 @@ namespace tsil::tk {
                       CompilerError::typesAreNotCompatible(
                           childAstValue, valueResult.type, variableType)};
             }
-            this->compiler->xModule->pushFunctionBlockStoreInstruction(
-                xBlock, valueResult.type->xType, valueResult.xValue,
-                variableXValue);
+            tsil_xl_inst_store(this->compiler->xModule, xBlock,
+                               valueResult.xValue, variableXValue);
           } else {
             return {nullptr, nullptr,
                     CompilerError::cannotRedefineSubject(childAstValue,
@@ -157,14 +151,12 @@ namespace tsil::tk {
           return {nullptr, nullptr, valueResult.error};
         }
       } else if (childAstValue->kind == ast::KindWhileNode) {
-        const auto xWhileBlock =
-            this->compiler->xModule->defineFunctionBlock(xFunction, "while");
-        const auto xWhileBodyBlock =
-            this->compiler->xModule->defineFunctionBlock(xFunction,
-                                                         "while_body");
-        const auto xWhileExitBlock =
-            this->compiler->xModule->defineFunctionBlock(xFunction,
-                                                         "while_exit");
+        const auto xWhileBlock = tsil_xl_create_function_block(
+            this->compiler->xModule, xFunction, "while");
+        const auto xWhileBodyBlock = tsil_xl_create_function_block(
+            this->compiler->xModule, xFunction, "while_body");
+        const auto xWhileExitBlock = tsil_xl_create_function_block(
+            this->compiler->xModule, xFunction, "while_exit");
         auto valueResult = this->compileValueNoVariation(
             xFunction, xWhileBlock, childAstValue->data.WhileNode->condition);
         if (valueResult.error) {
@@ -182,8 +174,9 @@ namespace tsil::tk {
                       childAstValue->data.WhileNode->condition,
                       valueResult.type, this->compiler->uint1Type)};
         }
-        this->compiler->xModule->pushFunctionBlockBrIfInstruction(
-            xWhileBlock, valueResult.xValue, xWhileBodyBlock, xWhileExitBlock);
+        tsil_xl_inst_br_if(this->compiler->xModule, xWhileBlock,
+                           valueResult.xValue, xWhileBodyBlock,
+                           xWhileExitBlock);
         const auto whileScope = new Scope(this->compiler, this);
         const auto whileBodyResult = whileScope->compileDiiaBody(
             diiaType, xFunction, xWhileBodyBlock, xWhileBlock,
@@ -191,18 +184,17 @@ namespace tsil::tk {
         if (whileBodyResult.error) {
           return {nullptr, nullptr, whileBodyResult.error};
         }
-        this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock,
-                                                                xWhileBlock);
+        tsil_xl_inst_br(this->compiler->xModule, xBlock, xWhileBlock);
         xBlock = xWhileExitBlock;
       } else if (childAstValue->kind == ast::KindIfNode) {
-        const auto xIfBlock =
-            this->compiler->xModule->defineFunctionBlock(xFunction, "if");
-        const auto xIfThenBlock =
-            this->compiler->xModule->defineFunctionBlock(xFunction, "if_then");
-        const auto xIfElseBlock =
-            this->compiler->xModule->defineFunctionBlock(xFunction, "if_else");
-        const auto xIfExitBlock =
-            this->compiler->xModule->defineFunctionBlock(xFunction, "if_exit");
+        const auto xIfBlock = tsil_xl_create_function_block(
+            this->compiler->xModule, xFunction, "if");
+        const auto xIfThenBlock = tsil_xl_create_function_block(
+            this->compiler->xModule, xFunction, "if_then");
+        const auto xIfElseBlock = tsil_xl_create_function_block(
+            this->compiler->xModule, xFunction, "if_else");
+        const auto xIfExitBlock = tsil_xl_create_function_block(
+            this->compiler->xModule, xFunction, "if_exit");
         auto valueResult = this->compileValueNoVariation(
             xFunction, xIfBlock, childAstValue->data.IfNode->condition);
         if (valueResult.error) {
@@ -220,8 +212,8 @@ namespace tsil::tk {
                       childAstValue->data.WhileNode->condition,
                       valueResult.type, this->compiler->uint1Type)};
         }
-        this->compiler->xModule->pushFunctionBlockBrIfInstruction(
-            xIfBlock, valueResult.xValue, xIfThenBlock, xIfElseBlock);
+        tsil_xl_inst_br_if(this->compiler->xModule, xIfBlock,
+                           valueResult.xValue, xIfThenBlock, xIfElseBlock);
         const auto thenScope = new Scope(this->compiler, this);
         const auto thenBodyResult = thenScope->compileDiiaBody(
             diiaType, xFunction, xIfThenBlock, xIfExitBlock,
@@ -236,12 +228,11 @@ namespace tsil::tk {
         if (elseBodyResult.error) {
           return {nullptr, nullptr, elseBodyResult.error};
         }
-        this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock,
-                                                                xIfBlock);
+        tsil_xl_inst_br(this->compiler->xModule, xBlock, xIfBlock);
         xBlock = xIfExitBlock;
       } else if (childAstValue->kind == tsil::ast::KindReturnNode) {
         Type* type = nullptr;
-        x2::ValueX2* xValue = nullptr;
+        XLValue* xValue = nullptr;
         if (childAstValue->data.ReturnNode->value) {
           const auto valueResult = this->compileValueNoVariation(
               xFunction, xBlock, childAstValue->data.ReturnNode->value);
@@ -265,11 +256,10 @@ namespace tsil::tk {
                       diiaType->diiaReturnType)};
         }
         if (!type->equals(this->compiler->voidType) && xValue) {
-          this->compiler->xModule->pushFunctionBlockStoreInstruction(
-              xBlock, type->xType, xValue, xFunction->return_alloca);
+          tsil_xl_inst_store(this->compiler->xModule, xBlock, xValue,
+                             xFunction->return_alloca);
         }
-        this->compiler->xModule->pushFunctionBlockBrInstruction(
-            xBlock, xFunction->exit_block);
+        tsil_xl_inst_br(this->compiler->xModule, xBlock, xFunction->exit_block);
       } else if (childAstValue->kind == tsil::ast::KindDeferNode) {
         const auto deferNode = childAstValue->data.DeferNode;
         const auto valueResult = this->compileValueNoVariation(
@@ -284,15 +274,15 @@ namespace tsil::tk {
       }
       childIndex++;
     }
-//    std::vector<x2::FunctionX2Instruction*> newExitBlockInstructions;
-//    for (const auto deferInstruction : deferXBlock->instructions) {
-//      newExitBlockInstructions.push_back(deferInstruction);
-//    }
-//    for (const auto exitBlockInstruction : xExitBlock->instructions) {
-//      newExitBlockInstructions.push_back(exitBlockInstruction);
-//    }
-//    xExitBlock->instructions = newExitBlockInstructions;
-    this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock, xExitBlock);
+    //    std::vector<x2::FunctionX2Instruction*> newExitBlockInstructions;
+    //    for (const auto deferInstruction : deferXBlock->instructions) {
+    //      newExitBlockInstructions.push_back(deferInstruction);
+    //    }
+    //    for (const auto exitBlockInstruction : xExitBlock->instructions) {
+    //      newExitBlockInstructions.push_back(exitBlockInstruction);
+    //    }
+    //    xExitBlock->instructions = newExitBlockInstructions;
+    tsil_xl_inst_br(this->compiler->xModule, xBlock, xExitBlock);
     return {xBlock, nullptr};
   }
 } // namespace tsil::tk

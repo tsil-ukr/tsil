@@ -104,7 +104,8 @@ namespace tsil::tk {
     type->name = "комірка";
     type->pointerTo = this;
     type->genericValues.push_back(this);
-    type->xType = this->xType->getPointerTo();
+    type->xType =
+        tsil_xl_type_get_pointer_to(scope->compiler->xModule, this->xType);
     this->cachedPointerType = type;
     return type;
   }
@@ -115,7 +116,8 @@ namespace tsil::tk {
     type->name = "";
     type->arraySize = size;
     type->arrayOf = this;
-//    type->xType = this->xType->getArrayType(scope->compiler->xModule, size);
+    type->xType =
+        tsil_xl_type_get_array_of(scope->compiler->xModule, this->xType, size);
     return type;
   }
 

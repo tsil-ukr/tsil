@@ -1,12 +1,12 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileAccessGep(x2::FunctionX2* xFunction,
-                                              x2::FunctionX2Block* xBlock,
+  CompilerValueResult Scope::compileAccessGep(XLFunction* xFunction,
+                                              XLBasicBlock* xBlock,
                                               ast::ASTValue* astValue) {
     const auto accessNode = astValue->data.AccessNode;
     Type* leftType = nullptr;
-    x2::ValueX2* leftXValue = nullptr;
+    XLValue* leftXValue = nullptr;
     const auto leftResult =
         this->compileLeft(xFunction, xBlock, accessNode->value);
     if (leftResult.error) {
@@ -32,21 +32,19 @@ namespace tsil::tk {
                                                  indexResult.type)};
     }
     if (leftType->type == TypeTypePointer) {
-      const auto loadPtrXValue =
-          this->compiler->xModule->pushFunctionBlockLoadInstruction(
-              xBlock, leftType->xType, leftXValue);
-      const auto xGepValue =
-          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-              xBlock, leftType->pointerTo->xType, loadPtrXValue,
-              {indexResult.xValue});
+      const auto loadPtrXValue = tsil_xl_inst_load(
+          this->compiler->xModule, xBlock, leftType->xType, leftXValue);
+      const auto xGepValue = tsil_xl_inst_getelementptr(
+          this->compiler->xModule, xBlock, leftType->pointerTo->xType,
+          loadPtrXValue, 1, std::vector({indexResult.xValue}).data());
       return {leftType->pointerTo, xGepValue, nullptr};
     }
     if (leftType->type == TypeTypeArray) {
-      const auto xGepValue =
-          this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-              xBlock, leftType->xType, leftXValue,
-              {x2::CreateInt32(this->compiler->xModule, 0),
-               indexResult.xValue});
+      const auto xGepValue = tsil_xl_inst_getelementptr(
+          this->compiler->xModule, xBlock, leftType->xType, leftXValue, 2,
+          std::vector({tsil_xl_create_int32(this->compiler->xModule, 0),
+                       indexResult.xValue})
+              .data());
       return {leftType->arrayOf, xGepValue, nullptr};
     }
     return {nullptr, nullptr,

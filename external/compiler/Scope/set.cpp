@@ -1,12 +1,12 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerResult Scope::compileSet(x2::FunctionX2* xFunction,
-                                   x2::FunctionX2Block* xBlock,
+  CompilerResult Scope::compileSet(XLFunction* xFunction,
+                                   XLBasicBlock* xBlock,
                                    ast::ASTValue* astValue) {
     const auto setNode = astValue->data.SetNode;
     Type* leftType = nullptr;
-    x2::ValueX2* leftXValue = nullptr;
+    XLValue* leftXValue = nullptr;
     const auto leftResult = this->compileLeft(xFunction, xBlock, setNode->left);
     if (leftResult.error) {
       return {leftResult.error};
@@ -46,11 +46,11 @@ namespace tsil::tk {
           return {CompilerError::invalidArgumentType(
               setNode->value, "значення", leftType->arrayOf, valueResult.type)};
         }
-        const auto gepXValue =
-            this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-                xBlock, leftType->xType, leftXValue,
-                {x2::CreateInt32(this->compiler->xModule, 0),
-                 indexResult.xValue});
+        const auto gepXValue = tsil_xl_inst_getelementptr(
+            this->compiler->xModule, xBlock, leftType->xType, leftXValue, 2,
+            std::vector({tsil_xl_create_int32(this->compiler->xModule, 0),
+                         indexResult.xValue})
+                .data());
         // todo: uncomment
         //        this->compiler->xModule->pushFunctionBlockStoreInstruction(
         //            xBlock, leftType->xType->arrayOf, valueResult.xValue, gepXValue);
@@ -88,16 +88,13 @@ namespace tsil::tk {
                                                      leftType->pointerTo,
                                                      valueResult.type)};
         }
-        const auto loadPtrXValue =
-            this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, leftType->xType, leftXValue);
-        const auto gepXValue =
-            this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-                xBlock, leftType->pointerTo->xType, loadPtrXValue,
-                {indexResult.xValue});
-        this->compiler->xModule->pushFunctionBlockStoreInstruction(
-            xBlock, leftType->xType->getPointerTo(), valueResult.xValue,
-            gepXValue);
+        const auto loadPtrXValue = tsil_xl_inst_load(
+            this->compiler->xModule, xBlock, leftType->xType, leftXValue);
+        const auto gepXValue = tsil_xl_inst_getelementptr(
+            this->compiler->xModule, xBlock, leftType->pointerTo->xType,
+            loadPtrXValue, 1, std::vector({indexResult.xValue}).data());
+        tsil_xl_inst_store(this->compiler->xModule, xBlock, valueResult.xValue,
+                           gepXValue);
         return {nullptr};
       }
     } else {
@@ -107,9 +104,8 @@ namespace tsil::tk {
           return {CompilerError::typeHasNoProperty(
               astValue, leftType->pointerTo, setNode->id)};
         }
-        const auto loadPtrXValue =
-            this->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xBlock, leftType->xType, leftXValue);
+        const auto loadPtrXValue = tsil_xl_inst_load(
+            this->compiler->xModule, xBlock, leftType->xType, leftXValue);
         leftType = leftType->pointerTo;
         leftXValue = loadPtrXValue;
       }
@@ -120,11 +116,12 @@ namespace tsil::tk {
         }
         const auto field = leftType->structureInstanceFields[setNode->id];
         auto fieldType = field.type;
-        const auto gepXValue =
-            this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-                xBlock, leftType->xType, leftXValue,
-                {x2::CreateInt32(this->compiler->xModule, 0),
-                 x2::CreateInt32(this->compiler->xModule, field.index)});
+        const auto gepXValue = tsil_xl_inst_getelementptr(
+            this->compiler->xModule, xBlock, leftType->xType, leftXValue, 2,
+            std::vector(
+                {tsil_xl_create_int32(this->compiler->xModule, 0),
+                 tsil_xl_create_int32(this->compiler->xModule, field.index)})
+                .data());
         auto valueResult =
             this->compileValueNoVariation(xFunction, xBlock, setNode->value);
         if (valueResult.error) {
@@ -147,8 +144,8 @@ namespace tsil::tk {
           return {CompilerError::invalidArgumentType(
               setNode->value, field.name, fieldType, valueResult.type)};
         }
-        this->compiler->xModule->pushFunctionBlockStoreInstruction(
-            xBlock, fieldType->xType, valueResult.xValue, gepXValue);
+        tsil_xl_inst_store(this->compiler->xModule, xBlock, valueResult.xValue,
+                           gepXValue);
         return {nullptr};
       }
     }

@@ -89,10 +89,10 @@ namespace tsil::tk {
     type->name = this->name;
     type->genericValues = genericValues;
     type->scopeWithGenerics = scopeWithGenerics;
-    type->xType =
-        scopeWithGenerics->compiler->xModule->defineStructType(this->name, {});
+    type->xType = tsil_xl_create_struct(scopeWithGenerics->compiler->xModule,
+                                        (char*)this->name.c_str());
     this->bakedTypes.insert_or_assign(genericValues, type);
-    std::vector<x2::TypeX2*> fields;
+    std::vector<XLType*> fields;
     fields.resize(this->fields.size());
     int paramIndex = 0;
     for (const auto& structureField : this->fields) {
@@ -114,13 +114,14 @@ namespace tsil::tk {
       fields[paramIndex] = field.type->xType;
       paramIndex++;
     }
-    scope->compiler->xModule->setStructTypeFields(type->xType, fields);
+    tsil_xl_set_struct_fields(scope->compiler->xModule, type->xType,
+                              fields.size(), fields.data());
     return {type, ""};
   }
 
   std::string Structure::fillBakedTypesWithFields() {
     for (const auto& [bakedTypeGenerics, bakedType] : this->bakedTypes) {
-      std::vector<x2::TypeX2*> fields;
+      std::vector<XLType*> fields;
       fields.resize(this->fields.size());
       int paramIndex = 0;
       for (const auto& structureField : this->fields) {
@@ -142,8 +143,8 @@ namespace tsil::tk {
         fields[paramIndex] = field.type->xType;
         paramIndex++;
       }
-      bakedType->scopeWithGenerics->compiler->xModule->setStructTypeFields(
-          bakedType->xType, fields);
+      tsil_xl_set_struct_fields(bakedType->scopeWithGenerics->compiler->xModule,
+                                bakedType->xType, fields.size(), fields.data());
     }
     return "";
   }
@@ -173,7 +174,7 @@ namespace tsil::tk {
       const auto diiaType = new Type();
       diiaType->type = TypeTypeDiia;
       diiaType->name = this->name;
-      diiaType->xType = diiaScope->compiler->xModule->pointerType;
+      diiaType->xType = tsil_xl_get_pointer_type(diiaScope->compiler->xModule);
       diiaType->linkage = this->linkage;
       diiaType->diiaIsVariadic = this->isVariadic;
       diiaType->diiaReturnType = diiaScope->compiler->voidType;
@@ -220,11 +221,11 @@ namespace tsil::tk {
     if (diiaHeadError) {
       return {nullptr, nullptr, diiaHeadError};
     }
-    std::vector<x2::TypeX2*> xParamTypes;
+    std::vector<XLType*> xParamTypes;
     for (const auto& diiaParameter : diiaType->diiaParameters) {
       xParamTypes.push_back(diiaParameter.type->xType);
     }
-    x2::TypeX2* xReturnType = diiaScope->compiler->xModule->voidType;
+    XLType* xReturnType = tsil_xl_get_void_type(diiaScope->compiler->xModule);
     if (diiaType->diiaReturnType) {
       xReturnType = diiaType->diiaReturnType->xType;
     }
@@ -239,46 +240,42 @@ namespace tsil::tk {
     } else {
       xFunctionAttributes = "dso_local";
     }
-    const auto& [xFunction, functionXValue] =
-        diiaScope->compiler->xModule->declareFunction(
-            xFunctionAttributes, xFunctionName, xReturnType, xParamTypes);
+    const auto& xFunction = tsil_xl_declare_function(
+        diiaScope->compiler->xModule, (char*)xFunctionName.c_str(), xReturnType,
+        xParamTypes.size(), xParamTypes.data());
     this->bakedDiias.insert_or_assign(
-        genericValues, BakedDiia{diiaType, functionXValue, xFunction});
+        genericValues, BakedDiia{diiaType, xFunction, xFunction});
     if (!this->isDeclaration) {
-      xFunction->alloca_block =
-          diiaScope->compiler->xModule->defineFunctionBlock(xFunction,
-                                                            "alloca");
-      xFunction->entry_block =
-          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "entry");
+      xFunction->alloca_block = tsil_xl_create_function_block(
+          diiaScope->compiler->xModule, xFunction, "alloca");
+      xFunction->entry_block = tsil_xl_create_function_block(
+          diiaScope->compiler->xModule, xFunction, "entry");
       if (xFunction->result_type) {
-        if (xFunction->result_type != diiaScope->compiler->xModule->voidType) {
-          xFunction->return_alloca =
-              diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                  xFunction->alloca_block, "return", xFunction->result_type);
+        if (xFunction->result_type !=
+            tsil_xl_get_void_type(diiaScope->compiler->xModule)) {
+          xFunction->return_alloca = tsil_xl_inst_alloca(
+              diiaScope->compiler->xModule, xFunction->alloca_block, "return",
+              xFunction->result_type);
         }
       }
-      xFunction->exit_block =
-          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "exit");
+      xFunction->exit_block = tsil_xl_create_function_block(
+          diiaScope->compiler->xModule, xFunction, "exit");
       if (xFunction->return_alloca) {
-        const auto returnLoadXValue =
-            diiaScope->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xFunction->exit_block, xFunction->result_type,
-                xFunction->return_alloca);
-        diiaScope->compiler->xModule->pushFunctionBlockRetInstruction(
-            xFunction->exit_block, xFunction->result_type, returnLoadXValue);
+        const auto returnLoadXValue = tsil_xl_inst_load(
+            diiaScope->compiler->xModule, xFunction->exit_block,
+            xFunction->result_type, xFunction->return_alloca);
+        tsil_xl_inst_ret(diiaScope->compiler->xModule, xFunction->exit_block,
+                         returnLoadXValue);
       } else {
-        diiaScope->compiler->xModule->pushFunctionBlockRetInstruction(
-            xFunction->exit_block, diiaScope->compiler->xModule->voidType,
-            nullptr);
+        tsil_xl_inst_ret(diiaScope->compiler->xModule, xFunction->exit_block,
+                         nullptr);
       }
       for (const auto& diiaParameter : diiaType->diiaParameters) {
-        const auto allocXValue =
-            diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                xFunction->alloca_block, diiaParameter.name,
-                diiaParameter.type->xType);
-        diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
-            xFunction->entry_block, diiaParameter.type->xType,
-            diiaParameter.xValue, allocXValue);
+        const auto allocXValue = tsil_xl_inst_alloca(
+            diiaScope->compiler->xModule, xFunction->alloca_block,
+            (char*)diiaParameter.name.c_str(), diiaParameter.type->xType);
+        tsil_xl_inst_store(diiaScope->compiler->xModule, xFunction->entry_block,
+                           diiaParameter.xValue, allocXValue);
         const auto variable = new Variable();
         variable->type = diiaParameter.type;
         variable->xValue = allocXValue;
@@ -292,51 +289,47 @@ namespace tsil::tk {
       if (bodyResult.error) {
         return {nullptr, nullptr, bodyResult.error};
       }
-      scope->compiler->xModule->pushFunctionBlockBrInstruction(
-          xFunction->alloca_block, xFunction->entry_block);
+      tsil_xl_inst_br(scope->compiler->xModule, xFunction->alloca_block,
+                      xFunction->entry_block);
     }
-    return {diiaType, functionXValue, nullptr};
+    return {diiaType, xFunction, nullptr};
   }
 
-  CompilerError* Diia::fillBakedDiiasWithBodies(x2::ModuleX2* xModule) {
+  CompilerError* Diia::fillBakedDiiasWithBodies(XLModule* xModule) {
     for (const auto& [genericValues, bakedDiia] : this->bakedDiias) {
       const auto diiaType = bakedDiia.type;
       const auto xFunction = bakedDiia.xFunction;
       const auto diiaScope = diiaType->scopeWithGenerics;
-      xFunction->alloca_block =
-          diiaScope->compiler->xModule->defineFunctionBlock(xFunction,
-                                                            "alloca");
-      xFunction->entry_block =
-          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "entry");
+      xFunction->alloca_block = tsil_xl_create_function_block(
+          diiaScope->compiler->xModule, xFunction, "alloca");
+      xFunction->entry_block = tsil_xl_create_function_block(
+          diiaScope->compiler->xModule, xFunction, "entry");
       if (xFunction->result_type) {
-        if (xFunction->result_type != diiaScope->compiler->xModule->voidType) {
-          xFunction->return_alloca =
-              diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                  xFunction->alloca_block, "return", xFunction->result_type);
+        if (xFunction->result_type !=
+            tsil_xl_get_void_type(diiaScope->compiler->xModule)) {
+          xFunction->return_alloca = tsil_xl_inst_alloca(
+              diiaScope->compiler->xModule, xFunction->alloca_block, "return",
+              xFunction->result_type);
         }
       }
-      xFunction->exit_block =
-          diiaScope->compiler->xModule->defineFunctionBlock(xFunction, "exit");
+      xFunction->exit_block = tsil_xl_create_function_block(
+          diiaScope->compiler->xModule, xFunction, "exit");
       if (xFunction->return_alloca) {
-        const auto returnLoadXValue =
-            diiaScope->compiler->xModule->pushFunctionBlockLoadInstruction(
-                xFunction->exit_block, xFunction->result_type,
-                xFunction->return_alloca);
-        diiaScope->compiler->xModule->pushFunctionBlockRetInstruction(
-            xFunction->exit_block, xFunction->result_type, returnLoadXValue);
+        const auto returnLoadXValue = tsil_xl_inst_load(
+            diiaScope->compiler->xModule, xFunction->exit_block,
+            xFunction->result_type, xFunction->return_alloca);
+        tsil_xl_inst_ret(diiaScope->compiler->xModule, xFunction->exit_block,
+                         returnLoadXValue);
       } else {
-        diiaScope->compiler->xModule->pushFunctionBlockRetInstruction(
-            xFunction->exit_block, diiaScope->compiler->xModule->voidType,
-            nullptr);
+        tsil_xl_inst_ret(diiaScope->compiler->xModule, xFunction->exit_block,
+                         nullptr);
       }
       for (const auto& diiaParameter : diiaType->diiaParameters) {
-        const auto allocXValue =
-            diiaScope->compiler->xModule->pushFunctionBlockAllocaInstruction(
-                xFunction->alloca_block, diiaParameter.name,
-                diiaParameter.type->xType);
-        diiaScope->compiler->xModule->pushFunctionBlockStoreInstruction(
-            xFunction->entry_block, diiaParameter.type->xType,
-            diiaParameter.xValue, allocXValue);
+        const auto allocXValue = tsil_xl_inst_alloca(
+            diiaScope->compiler->xModule, xFunction->alloca_block,
+            (char*)diiaParameter.name.c_str(), diiaParameter.type->xType);
+        tsil_xl_inst_store(diiaScope->compiler->xModule, xFunction->entry_block,
+                           diiaParameter.xValue, allocXValue);
         const auto variable = new Variable();
         variable->type = diiaParameter.type;
         variable->xValue = allocXValue;
@@ -350,8 +343,7 @@ namespace tsil::tk {
       if (bodyResult.error) {
         return bodyResult.error;
       }
-      xModule->pushFunctionBlockBrInstruction(xFunction->alloca_block,
-                                              xFunction->entry_block);
+      tsil_xl_inst_br(xModule, xFunction->alloca_block, xFunction->entry_block);
     }
     return nullptr;
   }
@@ -380,8 +372,8 @@ namespace tsil::tk {
     }
   }
 
-  CompilerValueResult Scope::compileValue(x2::FunctionX2* xFunction,
-                                          x2::FunctionX2Block* xBlock,
+  CompilerValueResult Scope::compileValue(XLFunction* xFunction,
+                                          XLBasicBlock* xBlock,
                                           ast::ASTValue* astValue) {
     if (astValue->kind == ast::KindNumberNode) {
       return this->compileNumber(xFunction, xBlock, astValue);
@@ -401,8 +393,8 @@ namespace tsil::tk {
         return {leftResult.type, leftResult.xValue, nullptr};
       }
       const auto loadXValue =
-          this->compiler->xModule->pushFunctionBlockLoadInstruction(
-              xBlock, leftResult.type->xType, leftResult.xValue);
+          tsil_xl_inst_load(this->compiler->xModule, xBlock,
+                            leftResult.type->xType, leftResult.xValue);
       return {leftResult.type, loadXValue, nullptr};
     }
     if (astValue->kind == ast::KindAsNode) {
@@ -424,8 +416,8 @@ namespace tsil::tk {
         return accessResult;
       }
       const auto loadXValue =
-          this->compiler->xModule->pushFunctionBlockLoadInstruction(
-              xBlock, accessResult.type->xType, accessResult.xValue);
+          tsil_xl_inst_load(this->compiler->xModule, xBlock,
+                            accessResult.type->xType, accessResult.xValue);
       return {accessResult.type, loadXValue, nullptr};
     }
     if (astValue->kind == ast::KindGenericNode) {
@@ -443,10 +435,9 @@ namespace tsil::tk {
             CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED VALUE")};
   }
 
-  CompilerValueResult Scope::compileValueNoVariation(
-      x2::FunctionX2* xFunction,
-      x2::FunctionX2Block* xBlock,
-      ast::ASTValue* astValue) {
+  CompilerValueResult Scope::compileValueNoVariation(XLFunction* xFunction,
+                                                     XLBasicBlock* xBlock,
+                                                     ast::ASTValue* astValue) {
     const auto result = this->compileValue(xFunction, xBlock, astValue);
     if (result.error) {
       return result;
@@ -487,8 +478,8 @@ namespace tsil::tk {
     return {scope, lastPart, nullptr};
   }
 
-  CompilerValueResult Scope::compileLeft(x2::FunctionX2* xFunction,
-                                         x2::FunctionX2Block* xBlock,
+  CompilerValueResult Scope::compileLeft(XLFunction* xFunction,
+                                         XLBasicBlock* xBlock,
                                          ast::ASTValue* astValue) {
     if (astValue->kind == ast::KindIdentifierNode) {
       const auto subjectResult =
@@ -526,11 +517,11 @@ namespace tsil::tk {
             CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED LEFT")};
   }
 
-  x2::ValueX2* Scope::compileSoftCast(x2::FunctionX2* xFunction,
-                                      x2::FunctionX2Block* xBlock,
-                                      Type* type,
-                                      x2::ValueX2* xValue,
-                                      Type* targetType) {
+  XLValue* Scope::compileSoftCast(XLFunction* xFunction,
+                                  XLBasicBlock* xBlock,
+                                  Type* type,
+                                  XLValue* xValue,
+                                  Type* targetType) {
     if (type->equals(targetType)) {
       return xValue;
     }
@@ -585,9 +576,8 @@ namespace tsil::tk {
         ((type == this->compiler->int32Type) &&
          (targetType == this->compiler->int64Type ||
           targetType == this->compiler->uint64Type))) {
-      const auto newXValue =
-          this->compiler->xModule->pushFunctionBlockSextInstruction(
-              xBlock, type->xType, xValue, targetType->xType);
+      const auto newXValue = tsil_xl_inst_sext(this->compiler->xModule, xBlock,
+                                               xValue, targetType->xType);
       return newXValue;
     }
     // (uint1 -> int8/int16/int32/int64/uint8/uint16/uint32/uint64) |
@@ -619,9 +609,8 @@ namespace tsil::tk {
         ((type == this->compiler->uint32Type) &&
          (targetType == this->compiler->int64Type ||
           targetType == this->compiler->uint64Type))) {
-      const auto newXValue =
-          this->compiler->xModule->pushFunctionBlockZextInstruction(
-              xBlock, type->xType, xValue, targetType->xType);
+      const auto newXValue = tsil_xl_inst_zext(this->compiler->xModule, xBlock,
+                                               xValue, targetType->xType);
       return newXValue;
     }
     // (int64/uint64 -> int8/int16/int32/uint1/uint8/uint16/uint32) |
@@ -653,17 +642,15 @@ namespace tsil::tk {
         ((type == this->compiler->int8Type ||
           type == this->compiler->uint8Type) &&
          (targetType == this->compiler->uint1Type))) {
-      const auto newXValue =
-          this->compiler->xModule->pushFunctionBlockTruncInstruction(
-              xBlock, type->xType, xValue, targetType->xType);
+      const auto newXValue = tsil_xl_inst_trunc(this->compiler->xModule, xBlock,
+                                                xValue, targetType->xType);
       return newXValue;
     }
     // (f32 -> f64) = fpext
     if (type == this->compiler->f32Type &&
         targetType == this->compiler->f64Type) {
-      const auto newXValue =
-          this->compiler->xModule->pushFunctionBlockFpextInstruction(
-              xBlock, type->xType, xValue, targetType->xType);
+      const auto newXValue = tsil_xl_inst_fpext(this->compiler->xModule, xBlock,
+                                                xValue, targetType->xType);
       return newXValue;
     }
     // (f32/f64 -> int8/int16/int32/int64) = fptosi
@@ -672,9 +659,8 @@ namespace tsil::tk {
          targetType == this->compiler->int16Type ||
          targetType == this->compiler->int32Type ||
          targetType == this->compiler->int64Type)) {
-      const auto newXValue =
-          this->compiler->xModule->pushFunctionBlockFptosiInstruction(
-              xBlock, type->xType, xValue, targetType->xType);
+      const auto newXValue = tsil_xl_inst_fptosi(
+          this->compiler->xModule, xBlock, xValue, targetType->xType);
       return newXValue;
     }
     // (f32/f64 -> uint1/uint8/uint16/uint32/uint64) = fptoui
@@ -684,17 +670,15 @@ namespace tsil::tk {
          targetType == this->compiler->uint16Type ||
          targetType == this->compiler->uint32Type ||
          targetType == this->compiler->uint64Type)) {
-      const auto newXValue =
-          this->compiler->xModule->pushFunctionBlockFptouiInstruction(
-              xBlock, type->xType, xValue, targetType->xType);
+      const auto newXValue = tsil_xl_inst_fptoui(
+          this->compiler->xModule, xBlock, xValue, targetType->xType);
       return newXValue;
     }
     // (f64 -> f32) = fptrunc
     if (type == this->compiler->f64Type &&
         targetType == this->compiler->f32Type) {
-      const auto newXValue =
-          this->compiler->xModule->pushFunctionBlockFptruncInstruction(
-              xBlock, type->xType, xValue, targetType->xType);
+      const auto newXValue = tsil_xl_inst_fptrunc(
+          this->compiler->xModule, xBlock, xValue, targetType->xType);
       return newXValue;
     }
     // (int8/int16/int32/int64 -> f32/f64) = sitofp
@@ -704,9 +688,8 @@ namespace tsil::tk {
          type == this->compiler->int64Type) &&
         (targetType == this->compiler->f32Type ||
          targetType == this->compiler->f64Type)) {
-      const auto newXValue =
-          this->compiler->xModule->pushFunctionBlockSitofpInstruction(
-              xBlock, type->xType, xValue, targetType->xType);
+      const auto newXValue = tsil_xl_inst_sitofp(
+          this->compiler->xModule, xBlock, xValue, targetType->xType);
       return newXValue;
     }
     // (uint1/uint8/uint16/uint32/uint64 -> f32/f64) = uitofp
@@ -717,29 +700,28 @@ namespace tsil::tk {
          type == this->compiler->uint64Type) &&
         (targetType == this->compiler->f32Type ||
          targetType == this->compiler->f64Type)) {
-      const auto newXValue =
-          this->compiler->xModule->pushFunctionBlockUitofpInstruction(
-              xBlock, type->xType, xValue, targetType->xType);
+      const auto newXValue = tsil_xl_inst_uitofp(
+          this->compiler->xModule, xBlock, xValue, targetType->xType);
       return newXValue;
     }
     // (ptr -> uint64) = ptrtoint
     if (type->isPointer() && targetType == this->compiler->uint64Type) {
-      return this->compiler->xModule->pushFunctionBlockPtrtointInstruction(
-          xBlock, type->xType, xValue, targetType->xType);
+      return tsil_xl_inst_ptrtoint(this->compiler->xModule, xBlock, xValue,
+                                   targetType->xType);
     }
     // (uint64 -> ptr) = inttoptr
     if (type == this->compiler->uint64Type && targetType->isPointer()) {
-      return this->compiler->xModule->pushFunctionBlockInttoptrInstruction(
-          xBlock, type->xType, xValue, targetType->xType);
+      return tsil_xl_inst_inttoptr(this->compiler->xModule, xBlock, xValue,
+                                   targetType->xType);
     }
     return nullptr;
   }
 
-  x2::ValueX2* Scope::compileHardCast(x2::FunctionX2* xFunction,
-                                      x2::FunctionX2Block* xBlock,
-                                      Type* type,
-                                      x2::ValueX2* xValue,
-                                      Type* targetType) {
+  XLValue* Scope::compileHardCast(XLFunction* xFunction,
+                                  XLBasicBlock* xBlock,
+                                  Type* type,
+                                  XLValue* xValue,
+                                  Type* targetType) {
     //    if (type->isPointer() && targetType->isPointer()) {
     //      return new x::Value(targetType->xType, xValue->name);
     //    }

@@ -1,40 +1,44 @@
 #include "tk.h"
 
 namespace tsil::tk {
-  x2::ValueX2* Compiler::ensureCallocConnected() {
+  XLValue* Compiler::ensureCallocConnected() {
     if (this->callocXValue == nullptr) {
-      const auto& [xFunction, xValue] = this->xModule->declareFunction(
-          "", "calloc", this->pointerType->xType,
-          {this->uint64Type->xType, this->uint64Type->xType});
-      this->callocXValue = xValue;
+      const auto& xFunction = tsil_xl_declare_function(
+          this->xModule, "calloc", this->pointerType->xType, 2,
+          std::vector({this->uint64Type->xType, this->uint64Type->xType})
+              .data());
+      this->callocXValue = xFunction->llvm_function;
     }
     return this->callocXValue;
   }
 
-  x2::ValueX2* Compiler::ensureMallocConnected() {
+  XLValue* Compiler::ensureMallocConnected() {
     if (this->mallocXValue == nullptr) {
-      const auto& [xFunction, xValue] = this->xModule->declareFunction(
-          "", "malloc", this->pointerType->xType, {this->uint64Type->xType});
-      this->mallocXValue = xValue;
+      const auto& xFunction = tsil_xl_declare_function(
+          this->xModule, "malloc", this->pointerType->xType, 1,
+          std::vector({this->uint64Type->xType}).data());
+      this->mallocXValue = xFunction->llvm_function;
     }
     return this->mallocXValue;
   }
 
-  x2::ValueX2* Compiler::ensureReallocConnected() {
+  XLValue* Compiler::ensureReallocConnected() {
     if (this->reallocXValue == nullptr) {
-      const auto& [xFunction, xValue] = this->xModule->declareFunction(
-          "", "realloc", this->pointerType->xType,
-          {this->pointerType->xType, this->uint64Type->xType});
-      this->reallocXValue = xValue;
+      const auto& xFunction = tsil_xl_declare_function(
+          this->xModule, "realloc", this->pointerType->xType, 2,
+          std::vector({this->pointerType->xType, this->uint64Type->xType})
+              .data());
+      this->reallocXValue = xFunction->llvm_function;
     }
     return this->reallocXValue;
   }
 
-  x2::ValueX2* Compiler::ensureFreeConnected() {
+  XLValue* Compiler::ensureFreeConnected() {
     if (this->freeXValue == nullptr) {
-      const auto& [xFunction, xValue] = this->xModule->declareFunction(
-          "", "free", this->voidType->xType, {this->pointerType->xType});
-      this->freeXValue = xValue;
+      const auto& xFunction = tsil_xl_declare_function(
+          this->xModule, "free", this->voidType->xType, 1,
+          std::vector({this->pointerType->xType}).data());
+      this->freeXValue = xFunction->llvm_function;
     }
     return this->freeXValue;
   }

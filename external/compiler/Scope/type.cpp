@@ -56,7 +56,7 @@ namespace tsil::tk {
       const auto type = new Type();
       type->type = TypeTypeDiia;
       type->name = "";
-      type->xType = this->compiler->xModule->pointerType;
+      type->xType = tsil_xl_get_pointer_type(this->compiler->xModule);
       int argIndex = 0;
       // todo: uncomment
       //      for (const auto& paramAstValue : functionTypeNode->args) {

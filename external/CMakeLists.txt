@@ -3,9 +3,9 @@ project(tsil)
 
 set(CMAKE_CXX_STANDARD 20)
 
-include_directories(./llvm/include)
+include_directories(../.llvm-source-and-build/llvm-project-19.1.0.build/llvm/include)
 
-find_package(LLVM REQUIRED CONFIG PATHS ./llvm NO_DEFAULT_PATH)
+find_package(LLVM REQUIRED CONFIG PATHS ../.llvm-source-and-build/llvm-project-19.1.0.build/llvm NO_DEFAULT_PATH)
 
 include_directories(${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
@@ -38,8 +38,6 @@ set(TSIL_SRC
         compiler/Scope.cpp
         compiler/tk.cpp
         compiler/Type.cpp
-        compiler/x.cpp
-        compiler/x2.cpp
         compiler/xl.cpp
         main.cpp
 )
