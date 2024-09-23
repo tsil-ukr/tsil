@@ -87,8 +87,9 @@ namespace tsil::tk {
                                                      leftType->pointerTo,
                                                      valueResult.type)};
         }
-        const auto loadPtrXValue = tsil_xl_inst_load(
-            this->compiler->xModule, xBlock, leftType->xType, leftXValue);
+        const auto loadPtrXValue =
+            tsil_xl_inst_load(this->compiler->xModule, xBlock,
+                              leftType->getAllocaXLType(this), leftXValue);
         const auto gepXValue = tsil_xl_inst_getelementptr(
             this->compiler->xModule, xBlock, leftType->pointerTo->xType,
             loadPtrXValue, 1, std::vector({indexResult.xValue}).data());
@@ -103,8 +104,9 @@ namespace tsil::tk {
           return {CompilerError::typeHasNoProperty(
               astValue, leftType->pointerTo, setNode->id)};
         }
-        const auto loadPtrXValue = tsil_xl_inst_load(
-            this->compiler->xModule, xBlock, leftType->xType, leftXValue);
+        const auto loadPtrXValue =
+            tsil_xl_inst_load(this->compiler->xModule, xBlock,
+                              leftType->getAllocaXLType(this), leftXValue);
         leftType = leftType->pointerTo;
         leftXValue = loadPtrXValue;
       }

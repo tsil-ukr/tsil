@@ -77,6 +77,13 @@ namespace tsil::tk {
       } else {
         type->diiaReturnType = this->compiler->voidType;
       }
+      std::vector<XLType*> xParamTypes;
+      for (const auto& diiaParameter : type->diiaParameters) {
+        xParamTypes.push_back(diiaParameter.type->xType);
+      }
+      type->xType = tsil_xl_create_function_type(
+          this->compiler->xModule, type->diiaReturnType->xType,
+          xParamTypes.size(), xParamTypes.data(), false);
       return {type, ""};
     }
     if (astValue->kind == ast::KindArrayTypeNode) {

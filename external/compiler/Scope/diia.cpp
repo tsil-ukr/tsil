@@ -11,8 +11,8 @@ namespace tsil::tk {
       tsil_xl_inst_br(this->compiler->xModule, xBlock, xExitBlock);
       return {nullptr};
     }
-//    const auto deferXBlock = tsil_xl_create_function_block(
-//        this->compiler->xModule, xFunction, "exitWithDefer");
+    //    const auto deferXBlock = tsil_xl_create_function_block(
+    //        this->compiler->xModule, xFunction, "exitWithDefer");
     int childIndex = 0;
     for (const auto& childAstValue : body) {
       if (childAstValue == nullptr) {
@@ -80,7 +80,7 @@ namespace tsil::tk {
           }
           const auto allocaXValue = tsil_xl_inst_alloca(
               this->compiler->xModule, xFunction->alloca_block,
-              (char*)defineNode->id.c_str(), type->xType);
+              (char*)defineNode->id.c_str(), type->getAllocaXLType(this));
           tsil_xl_inst_store(this->compiler->xModule, xBlock,
                              valueResult.xValue, allocaXValue);
           const auto variable = new Variable();
@@ -91,7 +91,7 @@ namespace tsil::tk {
         } else {
           const auto allocaXValue = tsil_xl_inst_alloca(
               this->compiler->xModule, xFunction->alloca_block,
-              (char*)defineNode->id.c_str(), type->xType);
+              (char*)defineNode->id.c_str(), type->getAllocaXLType(this));
           const auto variable = new Variable();
           variable->type = type;
           variable->xValue = allocaXValue;
@@ -261,12 +261,12 @@ namespace tsil::tk {
         }
         tsil_xl_inst_br(this->compiler->xModule, xBlock, xFunction->exit_block);
       } else if (childAstValue->kind == tsil::ast::KindDeferNode) {
-//        const auto deferNode = childAstValue->data.DeferNode;
-//        const auto valueResult = this->compileValueNoVariation(
-//            xFunction, deferXBlock, deferNode->value);
-//        if (valueResult.error) {
-//          return {nullptr, nullptr, valueResult.error};
-//        }
+        //        const auto deferNode = childAstValue->data.DeferNode;
+        //        const auto valueResult = this->compileValueNoVariation(
+        //            xFunction, deferXBlock, deferNode->value);
+        //        if (valueResult.error) {
+        //          return {nullptr, nullptr, valueResult.error};
+        //        }
       } else {
         return {nullptr, nullptr,
                 CompilerError::fromASTValue(childAstValue,

@@ -34,4 +34,5 @@ raylib-5.0_linux_amd64/
 .плавлення-бібліотеки/
 release/
 build-antlr/
+build-neo/
 .llvm-source-and-build/

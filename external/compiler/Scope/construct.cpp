@@ -17,9 +17,9 @@ namespace tsil::tk {
               CompilerError::typeIsNotConstructable(constructorNode->type,
                                                     typeResult.type)};
     }
-    const auto xAllocValue =
-        tsil_xl_inst_alloca(this->compiler->xModule, xFunction->alloca_block,
-                            "construct", typeResult.type->xType);
+    const auto xAllocValue = tsil_xl_inst_alloca(
+        this->compiler->xModule, xFunction->alloca_block, "construct",
+        typeResult.type->getAllocaXLType(this));
     int argIndex = 0;
     for (const auto argAstValue : constructorNode->args) {
       const auto constructorArgNode = argAstValue->data.ConstructorArgNode;
@@ -85,7 +85,8 @@ namespace tsil::tk {
     }
     if (load) {
       XLValue* xLoadValue = tsil_xl_inst_load(
-          this->compiler->xModule, xBlock, typeResult.type->xType, xAllocValue);
+          this->compiler->xModule, xBlock,
+          typeResult.type->getAllocaXLType(this), xAllocValue);
       return {typeResult.type, xLoadValue, nullptr};
     } else {
       return {typeResult.type, xAllocValue, nullptr};

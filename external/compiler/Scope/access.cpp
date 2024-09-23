@@ -33,7 +33,7 @@ namespace tsil::tk {
     }
     if (leftType->type == TypeTypePointer) {
       const auto loadPtrXValue = tsil_xl_inst_load(
-          this->compiler->xModule, xBlock, leftType->xType, leftXValue);
+          this->compiler->xModule, xBlock, leftType->getAllocaXLType(this), leftXValue);
       const auto xGepValue = tsil_xl_inst_getelementptr(
           this->compiler->xModule, xBlock, leftType->pointerTo->xType,
           loadPtrXValue, 1, std::vector({indexResult.xValue}).data());

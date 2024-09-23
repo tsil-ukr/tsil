@@ -40,9 +40,9 @@ namespace tsil::tk {
           valueResult.type->shortTermVariationIndex = -1;
           valueResult.type->shortTermVariationLeftType = nullptr;
           if (load) {
-            const auto loadXValue =
-                tsil_xl_inst_load(this->compiler->xModule, xBlock,
-                                  variationType->xType, gepXValue);
+            const auto loadXValue = tsil_xl_inst_load(
+                this->compiler->xModule, xBlock,
+                variationType->getAllocaXLType(this), gepXValue);
             return {variationType, loadXValue, nullptr};
           }
           return {variationType, gepXValue, nullptr};

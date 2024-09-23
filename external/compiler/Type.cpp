@@ -240,4 +240,12 @@ namespace tsil::tk {
            this == scope->compiler->uint32Type ||
            this == scope->compiler->uint64Type || this->type == TypeTypePointer;
   }
+
+  XLType* Type::getAllocaXLType(tsil::tk::Scope* scope) {
+    if (this->type == TypeTypeDiia) {
+      return tsil_xl_type_get_pointer_to(scope->compiler->xModule, this->xType);
+    } else {
+      return this->xType;
+    }
+  }
 } // namespace tsil::tk

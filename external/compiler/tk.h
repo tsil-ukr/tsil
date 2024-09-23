@@ -445,5 +445,6 @@ namespace tsil::tk {
     bool isFloating(Scope* scope);
     bool isArithmetical(Scope* scope);
     bool isBitwisible(Scope* scope);
+    XLType* getAllocaXLType(Scope* scope);
   };
 } // namespace tsil::tk

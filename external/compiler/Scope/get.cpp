@@ -19,8 +19,9 @@ namespace tsil::tk {
                 CompilerError::typeHasNoProperty(astValue, leftType->pointerTo,
                                                  getNode->id)};
       }
-      const auto loadPtrXValue = tsil_xl_inst_load(
-          this->compiler->xModule, xBlock, leftType->xType, leftXValue);
+      const auto loadPtrXValue =
+          tsil_xl_inst_load(this->compiler->xModule, xBlock,
+                            leftType->getAllocaXLType(this), leftXValue);
       leftType = leftType->pointerTo;
       leftXValue = loadPtrXValue;
     }

@@ -9,9 +9,9 @@ namespace tsil::tk {
       const auto subject = this->getSubject(identifierNode->name);
       if (subject.kind == SubjectKindVariable) {
         const auto variable = subject.data.variable;
-        const auto loadXValue =
-            tsil_xl_inst_load(this->compiler->xModule, xBlock,
-                              variable->type->xType, variable->xValue);
+        const auto loadXValue = tsil_xl_inst_load(
+            this->compiler->xModule, xBlock,
+            variable->type->getAllocaXLType(this), variable->xValue);
         return {variable->type, loadXValue, nullptr};
       }
       if (subject.kind == SubjectKindDiia) {
@@ -62,9 +62,9 @@ namespace tsil::tk {
         const auto subject = scope->getSubject(identifierNode->name);
         if (subject.kind == SubjectKindVariable) {
           const auto variable = subject.data.variable;
-          const auto loadXValue =
-              tsil_xl_inst_load(scope->compiler->xModule, xBlock,
-                                variable->type->xType, variable->xValue);
+          const auto loadXValue = tsil_xl_inst_load(
+              scope->compiler->xModule, xBlock,
+              variable->type->getAllocaXLType(this), variable->xValue);
           return {variable->type, loadXValue, nullptr};
         }
         if (subject.kind == SubjectKindDiia) {

@@ -282,7 +282,8 @@ namespace tsil::tk {
       for (const auto& diiaParameter : diiaType->diiaParameters) {
         const auto allocXValue = tsil_xl_inst_alloca(
             diiaScope->compiler->xModule, xFunction->alloca_block,
-            (char*)diiaParameter.name.c_str(), diiaParameter.type->xType);
+            (char*)diiaParameter.name.c_str(),
+            diiaParameter.type->getAllocaXLType(diiaScope));
         tsil_xl_inst_store(
             diiaScope->compiler->xModule, xFunction->entry_block,
             tsil_xl_get_function_arg_value(diiaScope->compiler->xModule,
@@ -341,7 +342,8 @@ namespace tsil::tk {
       for (const auto& diiaParameter : diiaType->diiaParameters) {
         const auto allocXValue = tsil_xl_inst_alloca(
             diiaScope->compiler->xModule, xFunction->alloca_block,
-            (char*)diiaParameter.name.c_str(), diiaParameter.type->xType);
+            (char*)diiaParameter.name.c_str(),
+            diiaParameter.type->getAllocaXLType(diiaScope));
         tsil_xl_inst_store(
             diiaScope->compiler->xModule, xFunction->entry_block,
             tsil_xl_get_function_arg_value(diiaScope->compiler->xModule,
@@ -410,9 +412,9 @@ namespace tsil::tk {
       if (leftResult.type->type == TypeTypeVariationInstance) {
         return {leftResult.type, leftResult.xValue, nullptr};
       }
-      const auto loadXValue =
-          tsil_xl_inst_load(this->compiler->xModule, xBlock,
-                            leftResult.type->xType, leftResult.xValue);
+      const auto loadXValue = tsil_xl_inst_load(
+          this->compiler->xModule, xBlock,
+          leftResult.type->getAllocaXLType(this), leftResult.xValue);
       return {leftResult.type, loadXValue, nullptr};
     }
     if (astValue->kind == ast::KindAsNode) {
@@ -433,9 +435,9 @@ namespace tsil::tk {
       if (accessResult.error) {
         return accessResult;
       }
-      const auto loadXValue =
-          tsil_xl_inst_load(this->compiler->xModule, xBlock,
-                            accessResult.type->xType, accessResult.xValue);
+      const auto loadXValue = tsil_xl_inst_load(
+          this->compiler->xModule, xBlock,
+          accessResult.type->getAllocaXLType(this), accessResult.xValue);
       return {accessResult.type, loadXValue, nullptr};
     }
     if (astValue->kind == ast::KindGenericNode) {

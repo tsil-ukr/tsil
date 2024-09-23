@@ -247,7 +247,8 @@ namespace tsil::tk {
     if (genericValues.empty()) {
       const auto loadXValue = tsil_xl_inst_load(
           this->compiler->xModule, xBlock,
-          firstArgResult.type->pointerTo->xType, firstArgResult.xValue);
+          firstArgResult.type->pointerTo->getAllocaXLType(this),
+          firstArgResult.xValue);
       return {firstArgResult.type->pointerTo, loadXValue, nullptr};
     }
     const auto genericValue = genericValues[0];
@@ -263,9 +264,10 @@ namespace tsil::tk {
           CompilerError::invalidArgumentType(
               firstArgAstValue, "значення", genericValue, firstArgResult.type)};
     }
-    const auto loadXValue = tsil_xl_inst_load(
-        this->compiler->xModule, xBlock, firstArgResult.type->pointerTo->xType,
-        firstArgResult.xValue);
+    const auto loadXValue =
+        tsil_xl_inst_load(this->compiler->xModule, xBlock,
+                          firstArgResult.type->pointerTo->getAllocaXLType(this),
+                          firstArgResult.xValue);
     return {firstArgResult.type->pointerTo, loadXValue, nullptr};
   }
 
