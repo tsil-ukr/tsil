@@ -58,21 +58,15 @@ namespace tsil::tk {
       type->name = "";
       type->xType = tsil_xl_get_pointer_type(this->compiler->xModule);
       int argIndex = 0;
-      // todo: uncomment
-      //      for (const auto& paramAstValue : functionTypeNode->args) {
-      //        const auto typeResult = this->bakeType(paramAstValue);
-      //        if (!typeResult.type) {
-      //          return {nullptr, typeResult.error};
-      //        }
-      //        const auto paramXValue =
-      //            new x::Value(typeResult.type->xType,
-      //                         this->compiler->xModule->computeNextVarName("arg"));
-      //        type->diiaParameters.push_back(
-      //            TypeDiiaParameter{.name = std::to_string(argIndex),
-      //                              .type = typeResult.type,
-      //                              .xValue = paramXValue});
-      //        argIndex++;
-      //      }
+      for (const auto& paramAstValue : functionTypeNode->args) {
+        const auto typeResult = this->bakeType(paramAstValue);
+        if (!typeResult.type) {
+          return {nullptr, typeResult.error};
+        }
+        type->diiaParameters.push_back(TypeDiiaParameter{
+            .name = std::to_string(argIndex), .type = typeResult.type});
+        argIndex++;
+      }
       if (functionTypeNode->return_type) {
         const auto returnTypeResult =
             this->bakeType(functionTypeNode->return_type);

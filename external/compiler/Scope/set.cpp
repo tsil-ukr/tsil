@@ -51,9 +51,8 @@ namespace tsil::tk {
             std::vector({tsil_xl_create_int32(this->compiler->xModule, 0),
                          indexResult.xValue})
                 .data());
-        // todo: uncomment
-        //        this->compiler->xModule->pushFunctionBlockStoreInstruction(
-        //            xBlock, leftType->xType->arrayOf, valueResult.xValue, gepXValue);
+        tsil_xl_inst_store(this->compiler->xModule, xBlock, valueResult.xValue,
+                           gepXValue);
         return {nullptr};
       } else if (leftType->type == TypeTypePointer) {
         auto indexResult =

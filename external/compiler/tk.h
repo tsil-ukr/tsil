@@ -405,7 +405,6 @@ namespace tsil::tk {
   struct TypeDiiaParameter {
     std::string name;
     Type* type;
-    XLValue* xValue;
   };
 
   struct Type {

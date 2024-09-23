@@ -1,9 +1,12 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Module.h"
 
+#include <iostream>
+
 struct XLModuleStruct {
   llvm::LLVMContext* llvmContext;
   llvm::Module* llvmModule;
+  llvm::IRBuilder<>* llvmBuilder;
 };
 #define XL_MODULE_TYPE XLModuleStruct
 #define XL_FUNCTION_TYPE_TYPE llvm::FunctionType
@@ -19,6 +22,9 @@ XLModule* tsil_xl_create_module(char* name) {
   const auto xlModule = new XLModule();
   xlModule->llvmContext = llvmContext;
   xlModule->llvmModule = llvmModule;
+  const auto entry =
+      llvm::BasicBlock::Create(*xlModule->llvmContext, "entrypoint");
+  xlModule->llvmBuilder = new llvm::IRBuilder(entry);
   return xlModule;
 }
 
@@ -42,13 +48,14 @@ XLFunction* tsil_xl_declare_function(XLModule* m,
                                      char* name,
                                      XLType* ret_type,
                                      int params_size,
-                                     XLType** params) {
+                                     XLType** params,
+                                     bool isVarArg) {
   std::vector<llvm::Type*> llvmParams(params_size);
   for (int i = 0; i < params_size; i++) {
     llvmParams[i] = params[i];
   }
   auto llvmFunction = llvm::Function::Create(
-      llvm::FunctionType::get(ret_type, llvmParams, false),
+      llvm::FunctionType::get(ret_type, llvmParams, isVarArg),
       llvm::Function::ExternalLinkage, name, m->llvmModule);
   auto xlFunction = new XLFunction();
   xlFunction->llvm_function = llvmFunction;
@@ -93,12 +100,16 @@ void tsil_xl_inst_store(XLModule* m,
   builder.CreateStore(value, pointer);
 }
 
+size_t loadIndex = 0;
+
 XLValue* tsil_xl_inst_load(XLModule* m,
                            XLBasicBlock* block,
                            XLType* type,
                            XLValue* pointer) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateLoad(type, pointer);
+  loadIndex++;
+  auto name = "load" + std::to_string(loadIndex);
+  return builder.CreateLoad(type, pointer, name);
 }
 
 XLValue* tsil_xl_inst_ret(XLModule* m, XLBasicBlock* block, XLValue* value) {
@@ -414,6 +425,34 @@ XLType* tsil_xl_get_pointer_type(XLModule* m) {
   return tsil_xl_type_get_pointer_to(m, tsil_xl_get_void_type(m));
 }
 
+XLType* tsil_xl_get_int1_type(XLModule* m) {
+  return llvm::Type::getInt1Ty(*m->llvmContext);
+}
+
+XLType* tsil_xl_get_int8_type(XLModule* m) {
+  return llvm::Type::getInt8Ty(*m->llvmContext);
+}
+
+XLType* tsil_xl_get_int16_type(XLModule* m) {
+  return llvm::Type::getInt8Ty(*m->llvmContext);
+}
+
+XLType* tsil_xl_get_int32_type(XLModule* m) {
+  return llvm::Type::getInt32Ty(*m->llvmContext);
+}
+
+XLType* tsil_xl_get_int64_type(XLModule* m) {
+  return llvm::Type::getInt64Ty(*m->llvmContext);
+}
+
+XLType* tsil_xl_get_float32_type(XLModule* m) {
+  return llvm::Type::getFloatTy(*m->llvmContext);
+}
+
+XLType* tsil_xl_get_float64_type(XLModule* m) {
+  return llvm::Type::getDoubleTy(*m->llvmContext);
+}
+
 XLValue* tsil_xl_create_int32(XLModule* m, int value) {
   return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(32, value));
 }
@@ -427,11 +466,36 @@ XLValue* tsil_xl_create_double(XLModule* m, double value) {
 }
 
 XLValue* tsil_xl_create_string(XLModule* m, char* value) {
-  return llvm::ConstantDataArray::getString(*m->llvmContext, value);
+  return new llvm::GlobalVariable(
+      *m->llvmModule,
+      llvm::ArrayType::get(llvm::Type::getInt8Ty(*m->llvmContext),
+                           strlen(value) + 1),
+      true, llvm::GlobalValue::LinkageTypes::PrivateLinkage,
+      llvm::ConstantDataArray::getString(*m->llvmContext, value));
+}
+
+XLType* tsil_xl_get_type(XLModule* m, XLValue* value) {
+  return value->getType();
 }
 
 XLFunctionType* tsil_xl_get_as_function_type(XLModule* m, XLValue* value) {
   return static_cast<llvm::FunctionType*>(value->getType());
+}
+
+XLValue* tsil_xl_get_function_arg_value(XLModule* m, XLFunction* f, int index) {
+  return static_cast<llvm::Function*>(f->llvm_function)->getArg(index);
+}
+
+XLType* tsil_xl_create_function_type(XLModule* m,
+                                     XLType* ret_type,
+                                     int params_size,
+                                     XLType** params,
+                                     bool isVarArg) {
+  std::vector<llvm::Type*> llvmParams(params_size);
+  for (int i = 0; i < params_size; i++) {
+    llvmParams[i] = params[i];
+  }
+  return llvm::FunctionType::get(ret_type, llvmParams, isVarArg);
 }
 
 char* dumpLL(XLModule* m) {

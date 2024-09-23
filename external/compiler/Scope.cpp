@@ -174,32 +174,21 @@ namespace tsil::tk {
       const auto diiaType = new Type();
       diiaType->type = TypeTypeDiia;
       diiaType->name = this->name;
-      diiaType->xType = tsil_xl_get_pointer_type(diiaScope->compiler->xModule);
+      diiaType->xType = nullptr; // ...
       diiaType->linkage = this->linkage;
       diiaType->diiaIsVariadic = this->isVariadic;
       diiaType->diiaReturnType = diiaScope->compiler->voidType;
       diiaType->scopeWithGenerics = diiaScope;
-      // todo: uncomment
-      //      for (const auto& parameter : this->parameters) {
-      //        const auto paramTypeResult = diiaScope->bakeType(parameter.type);
-      //        if (!paramTypeResult.type) {
-      //          const auto compilerError = CompilerError::fromASTValue(
-      //              parameter.type, paramTypeResult.error);
-      //          return {nullptr, compilerError};
-      //        }
-      //        const auto paramXValue = new x::Value(
-      //            paramTypeResult.type->xType,
-      //            diiaScope->compiler->xModule->computeNextVarName("arg"));
-      //        diiaType->diiaParameters.push_back(
-      //            TypeDiiaParameter{.name = parameter.name,
-      //                              .type = paramTypeResult.type,
-      //                              .xValue = paramXValue});
-      //        const auto variable = new Variable();
-      //        variable->type = paramTypeResult.type;
-      //        variable->xValue = paramXValue;
-      //        diiaScope->setSubject(parameter.name, Subject{SubjectKindVariable,
-      //                                                      {.variable = variable}});
-      //      }
+      for (const auto& parameter : this->parameters) {
+        const auto paramTypeResult = diiaScope->bakeType(parameter.type);
+        if (!paramTypeResult.type) {
+          const auto compilerError = CompilerError::fromASTValue(
+              parameter.type, paramTypeResult.error);
+          return {nullptr, compilerError};
+        }
+        diiaType->diiaParameters.push_back(TypeDiiaParameter{
+            .name = parameter.name, .type = paramTypeResult.type});
+      }
       if (this->returnType) {
         const auto diiaResultTypeResult = diiaScope->bakeType(this->returnType);
         if (!diiaResultTypeResult.type) {
@@ -208,7 +197,16 @@ namespace tsil::tk {
           return {nullptr, compilerError};
         }
         diiaType->diiaReturnType = diiaResultTypeResult.type;
+      } else {
+        diiaType->diiaReturnType = diiaScope->compiler->voidType;
       }
+      std::vector<XLType*> xParamTypes;
+      for (const auto& diiaParameter : diiaType->diiaParameters) {
+        xParamTypes.push_back(diiaParameter.type->xType);
+      }
+      diiaType->xType = tsil_xl_create_function_type(
+          diiaScope->compiler->xModule, diiaType->diiaReturnType->xType,
+          xParamTypes.size(), xParamTypes.data(), this->isVariadic);
       return {diiaType, nullptr};
     };
     if (this->name == "main") {
@@ -242,9 +240,19 @@ namespace tsil::tk {
     }
     const auto& xFunction = tsil_xl_declare_function(
         diiaScope->compiler->xModule, (char*)xFunctionName.c_str(), xReturnType,
-        xParamTypes.size(), xParamTypes.data());
+        xParamTypes.size(), xParamTypes.data(), this->isVariadic);
+    for (size_t i = 0; i < xParamTypes.size(); i++) {
+      const auto variable = new Variable();
+      variable->type = diiaType->diiaParameters[i].type;
+      variable->xValue = tsil_xl_get_function_arg_value(
+          diiaScope->compiler->xModule, xFunction, i);
+      diiaScope->setSubject(
+          diiaType->diiaParameters[i].name,
+          Subject{SubjectKindVariable, {.variable = variable}});
+    }
     this->bakedDiias.insert_or_assign(
-        genericValues, BakedDiia{diiaType, xFunction, xFunction});
+        genericValues,
+        BakedDiia{diiaType, xFunction->llvm_function, xFunction});
     if (!this->isDeclaration) {
       xFunction->alloca_block = tsil_xl_create_function_block(
           diiaScope->compiler->xModule, xFunction, "alloca");
@@ -270,18 +278,23 @@ namespace tsil::tk {
         tsil_xl_inst_ret(diiaScope->compiler->xModule, xFunction->exit_block,
                          nullptr);
       }
+      size_t diiaParameterIdx = 0;
       for (const auto& diiaParameter : diiaType->diiaParameters) {
         const auto allocXValue = tsil_xl_inst_alloca(
             diiaScope->compiler->xModule, xFunction->alloca_block,
             (char*)diiaParameter.name.c_str(), diiaParameter.type->xType);
-        tsil_xl_inst_store(diiaScope->compiler->xModule, xFunction->entry_block,
-                           diiaParameter.xValue, allocXValue);
+        tsil_xl_inst_store(
+            diiaScope->compiler->xModule, xFunction->entry_block,
+            tsil_xl_get_function_arg_value(diiaScope->compiler->xModule,
+                                           xFunction, diiaParameterIdx),
+            allocXValue);
         const auto variable = new Variable();
         variable->type = diiaParameter.type;
         variable->xValue = allocXValue;
         diiaScope->setSubject(
             diiaParameter.name,
             Subject{SubjectKindVariable, {.variable = variable}});
+        diiaParameterIdx++;
       }
       const auto bodyResult = diiaScope->compileDiiaBody(
           diiaType, xFunction, xFunction->entry_block, xFunction->exit_block,
@@ -292,7 +305,7 @@ namespace tsil::tk {
       tsil_xl_inst_br(scope->compiler->xModule, xFunction->alloca_block,
                       xFunction->entry_block);
     }
-    return {diiaType, xFunction, nullptr};
+    return {diiaType, xFunction->llvm_function, nullptr};
   }
 
   CompilerError* Diia::fillBakedDiiasWithBodies(XLModule* xModule) {
@@ -324,18 +337,23 @@ namespace tsil::tk {
         tsil_xl_inst_ret(diiaScope->compiler->xModule, xFunction->exit_block,
                          nullptr);
       }
+      size_t diiaParameterIdx = 0;
       for (const auto& diiaParameter : diiaType->diiaParameters) {
         const auto allocXValue = tsil_xl_inst_alloca(
             diiaScope->compiler->xModule, xFunction->alloca_block,
             (char*)diiaParameter.name.c_str(), diiaParameter.type->xType);
-        tsil_xl_inst_store(diiaScope->compiler->xModule, xFunction->entry_block,
-                           diiaParameter.xValue, allocXValue);
+        tsil_xl_inst_store(
+            diiaScope->compiler->xModule, xFunction->entry_block,
+            tsil_xl_get_function_arg_value(diiaScope->compiler->xModule,
+                                           xFunction, diiaParameterIdx),
+            allocXValue);
         const auto variable = new Variable();
         variable->type = diiaParameter.type;
         variable->xValue = allocXValue;
         diiaScope->setSubject(
             diiaParameter.name,
             Subject{SubjectKindVariable, {.variable = variable}});
+        diiaParameterIdx++;
       }
       const auto bodyResult = diiaScope->compileDiiaBody(
           diiaType, xFunction, xFunction->entry_block, xFunction->exit_block,

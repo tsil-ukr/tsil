@@ -108,10 +108,9 @@ namespace tsil::tk {
       xArgs[argIndex] = argResult.xValue;
       argIndex++;
     }
-    const auto xValue = tsil_xl_inst_call_value(
-        this->compiler->xModule, xBlock,
-        tsil_xl_get_as_function_type(this->compiler->xModule, diiaXValue),
-        diiaXValue, xArgs.size(), xArgs.data());
+    const auto xValue = tsil_xl_inst_call_value(this->compiler->xModule, xBlock,
+                                                diiaType->xType, diiaXValue,
+                                                xArgs.size(), xArgs.data());
     return {diiaType->diiaReturnType, xValue, nullptr};
   }
 

@@ -6,7 +6,8 @@ namespace tsil::tk {
       const auto& xFunction = tsil_xl_declare_function(
           this->xModule, "calloc", this->pointerType->xType, 2,
           std::vector({this->uint64Type->xType, this->uint64Type->xType})
-              .data());
+              .data(),
+          false);
       this->callocXValue = xFunction->llvm_function;
     }
     return this->callocXValue;
@@ -16,7 +17,7 @@ namespace tsil::tk {
     if (this->mallocXValue == nullptr) {
       const auto& xFunction = tsil_xl_declare_function(
           this->xModule, "malloc", this->pointerType->xType, 1,
-          std::vector({this->uint64Type->xType}).data());
+          std::vector({this->uint64Type->xType}).data(), false);
       this->mallocXValue = xFunction->llvm_function;
     }
     return this->mallocXValue;
@@ -27,7 +28,8 @@ namespace tsil::tk {
       const auto& xFunction = tsil_xl_declare_function(
           this->xModule, "realloc", this->pointerType->xType, 2,
           std::vector({this->pointerType->xType, this->uint64Type->xType})
-              .data());
+              .data(),
+          false);
       this->reallocXValue = xFunction->llvm_function;
     }
     return this->reallocXValue;
@@ -37,7 +39,7 @@ namespace tsil::tk {
     if (this->freeXValue == nullptr) {
       const auto& xFunction = tsil_xl_declare_function(
           this->xModule, "free", this->voidType->xType, 1,
-          std::vector({this->pointerType->xType}).data());
+          std::vector({this->pointerType->xType}).data(), false);
       this->freeXValue = xFunction->llvm_function;
     }
     return this->freeXValue;

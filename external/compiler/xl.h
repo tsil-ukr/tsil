@@ -41,7 +41,8 @@ XLFunction* tsil_xl_declare_function(XLModule* m,
                                      char* name,
                                      XLType* ret_type,
                                      int params_size,
-                                     XLType** params);
+                                     XLType** params,
+                                     bool isVarArg);
 XLBasicBlock* tsil_xl_create_function_block(XLModule* m,
                                             XLFunction* f,
                                             char* name);
@@ -214,13 +215,29 @@ XLType* tsil_xl_type_get_array_of(XLModule* m, XLType* type, int size);
 
 XLType* tsil_xl_get_void_type(XLModule* m);
 XLType* tsil_xl_get_pointer_type(XLModule* m);
+XLType* tsil_xl_get_int1_type(XLModule* m);
+XLType* tsil_xl_get_int8_type(XLModule* m);
+XLType* tsil_xl_get_int16_type(XLModule* m);
+XLType* tsil_xl_get_int32_type(XLModule* m);
+XLType* tsil_xl_get_int64_type(XLModule* m);
+XLType* tsil_xl_get_float32_type(XLModule* m);
+XLType* tsil_xl_get_float64_type(XLModule* m);
 
 XLValue* tsil_xl_create_int32(XLModule* m, int value);
 XLValue* tsil_xl_create_int64(XLModule* m, long value);
 XLValue* tsil_xl_create_double(XLModule* m, double value);
 XLValue* tsil_xl_create_string(XLModule* m, char* value);
 
+XLType* tsil_xl_get_type(XLModule* m, XLValue* value);
 XLFunctionType* tsil_xl_get_as_function_type(XLModule* m, XLValue* value);
+
+XLValue* tsil_xl_get_function_arg_value(XLModule* m, XLFunction* f, int index);
+
+XLType* tsil_xl_create_function_type(XLModule* m,
+                                     XLType* ret_type,
+                                     int params_size,
+                                     XLType** params,
+                                     bool isVarArg);
 
 char* dumpLL(XLModule* m);
 }
