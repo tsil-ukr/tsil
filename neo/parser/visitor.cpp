@@ -10,12 +10,4 @@ namespace tsil::parser {
     }
     return nullptr;
   }
-
-  std::any TsilASTVisitor::visitFile(TsilParser::FileContext* ctx) {
-      return visitpro
-  }
-
-  std::any TsilASTVisitor::visitProgram(TsilParser::ProgramContext* ctx) {
-    //
-  }
 } // namespace tsil::parser
