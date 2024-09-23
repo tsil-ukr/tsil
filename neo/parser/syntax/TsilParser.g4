@@ -58,8 +58,8 @@ section_declare: 'секція' ID;
 section_define: 'секція' ID body;
 
 set: atom '.' ID '=' expr ';';
-section_set: atom ':' ':' ID '=' expr ';';
 position_set: atom '[' expr ']' '=' expr ';';
+section_set: atom ':' ':' ID '=' expr ';';
 
 if: 'якщо' operation body ('інакше' (body | if))?;
 while: 'поки' operation body;
