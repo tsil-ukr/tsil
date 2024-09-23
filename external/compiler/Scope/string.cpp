@@ -8,7 +8,6 @@ namespace tsil::tk {
     const auto stringValue = tsilStringToCString(stringNode->value);
     const auto xStringConstant = tsil_xl_create_string(
         this->compiler->xModule, strdup(stringValue.c_str()));
-    std::cout << "String: " << stringValue << std::endl;
     if (stringNode->prefix == "ю8") {
       return {this->compiler->uint8Type->getPointerType(this), xStringConstant,
               nullptr};
