@@ -82,26 +82,31 @@ namespace tsil::tk {
         //          type = typeResult.type;
         //        }
         if (defineNode->value) {
-          // todo: uncomment
-          //          if (defineNode->value->kind == ast::KindNumberNode) {
-          //            const auto numberNode = defineNode->value->data.NumberNode;
-          //            const auto type = str_contains(numberNode->value, ".")
-          //                                  ? this->compiler->f64Type
-          //                                  : this->compiler->int64Type;
-          //            const auto xValue = new x::Value(
-          //                type->xType, tsilNumberToLLVMNumber(numberNode->value));
-          //            const auto globalXValue = this->compiler->xModule->putGlobal(
-          //                "private", type->xType, xValue);
-          //            const auto variable = new Variable();
-          //            variable->type = type;
-          //            variable->xValue = globalXValue;
-          //            this->setSubject(defineNode->id, Subject{SubjectKindVariable,
-          //                                                     {.variable = variable}});
-          //          } else {
-          //            return {CompilerError::fromASTValue(
-          //                defineNode->value,
-          //                "Глобальні цілі та змінні можуть мати лише числові значення.")};
-          //          }
+          if (defineNode->value->kind == ast::KindNumberNode) {
+            const auto numberNode = defineNode->value->data.NumberNode;
+            const auto type = str_contains(numberNode->value, ".")
+                                  ? this->compiler->f64Type
+                                  : this->compiler->int64Type;
+            const auto variable = new Variable();
+            variable->type = type;
+            if (type == this->compiler->f64Type) {
+              const auto globalXValue = tsil_xl_create_double(
+                  type->xType,
+                  atof(tsilNumberToLLVMNumber(numberNode->value).c_str()));
+              variable->xValue = globalXValue;
+            } else {
+              const auto globalXValue = tsil_xl_create_int64(
+                  type->xType,
+                  atoll(tsilNumberToLLVMNumber(numberNode->value).c_str()));
+              variable->xValue = globalXValue;
+            }
+            this->setSubject(defineNode->id, Subject{SubjectKindVariable,
+                                                     {.variable = variable}});
+          } else {
+            return {CompilerError::fromASTValue(
+                defineNode->value,
+                "Глобальні цілі та змінні можуть мати лише числові значення.")};
+          }
         } else {
           return {CompilerError::fromASTValue(defineNode->value,
                                               "NOT IMPLEMENTED")};

@@ -7,18 +7,26 @@ namespace tsil::tk {
       return {CompilerError::subjectAlreadyDefined(astValue)};
     }
     if (synonymNode->value->kind == ast::KindNumberNode) {
-      // todo: uncomment
-      //      const auto numberNode = synonymNode->value->data.NumberNode;
-      //      const auto type = str_contains(numberNode->value, ".")
-      //                            ? this->compiler->f64Type
-      //                            : this->compiler->int64Type;
-      //      const auto xValue =
-      //          new x::Value(type->xType, tsilNumberToLLVMNumber(numberNode->value));
-      //      const auto constant = new Constant();
-      //      constant->type = type;
-      //      constant->xValue = xValue;
-      //      this->setSubject(synonymNode->id,
-      //                       Subject{SubjectKindConstant, {.constant = constant}});
+      const auto numberNode = synonymNode->value->data.NumberNode;
+      const auto type = str_contains(numberNode->value, ".")
+                            ? this->compiler->f64Type
+                            : this->compiler->int64Type;
+      const auto constant = new Constant();
+      if (type == this->compiler->f64Type) {
+        const auto xValue = tsil_xl_create_double(
+            type->xType,
+            atof(tsilNumberToLLVMNumber(numberNode->value).c_str()));
+        constant->type = type;
+        constant->xValue = xValue;
+      } else {
+        const auto xValue = tsil_xl_create_int64(
+            type->xType,
+            atoll(tsilNumberToLLVMNumber(numberNode->value).c_str()));
+        constant->type = type;
+        constant->xValue = xValue;
+      }
+      this->setSubject(synonymNode->id,
+                       Subject{SubjectKindConstant, {.constant = constant}});
     } else if (synonymNode->value->kind == ast::KindStringNode) {
       const auto stringNode = synonymNode->value->data.StringNode;
       const auto stringValue = tsilStringToCString(stringNode->value);

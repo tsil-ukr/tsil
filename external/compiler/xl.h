@@ -239,5 +239,7 @@ XLType* tsil_xl_create_function_type(XLModule* m,
                                      XLType** params,
                                      bool isVarArg);
 
+XLValue* tsil_xl_get_null(XLModule* m);
+
 char* dumpLL(XLModule* m);
 }

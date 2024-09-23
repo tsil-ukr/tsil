@@ -479,7 +479,7 @@ XLType* tsil_xl_get_type(XLModule* m, XLValue* value) {
 }
 
 XLFunctionType* tsil_xl_get_as_function_type(XLModule* m, XLValue* value) {
-  return static_cast<llvm::FunctionType*>(value->getType());
+  return static_cast<llvm::Function*>(value)->getFunctionType();
 }
 
 XLValue* tsil_xl_get_function_arg_value(XLModule* m, XLFunction* f, int index) {
@@ -496,6 +496,11 @@ XLType* tsil_xl_create_function_type(XLModule* m,
     llvmParams[i] = params[i];
   }
   return llvm::FunctionType::get(ret_type, llvmParams, isVarArg);
+}
+
+XLValue* tsil_xl_get_null(XLModule* m) {
+  return llvm::ConstantPointerNull::get(
+      llvm::PointerType::get(llvm::Type::getInt8Ty(*m->llvmContext), 0));
 }
 
 char* dumpLL(XLModule* m) {

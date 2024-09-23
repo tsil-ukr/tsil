@@ -322,11 +322,11 @@ int compile(const CompileCommand& compileCommand) {
     compiler->globalScope->setSubject(
         "позитивне", tsil::tk::Subject{tsil::tk::SubjectKindType, uint64Type});
 
-    //    compiler->nullConstant = new tsil::tk::Constant(
-    //        pointerType, tsil::x2::GetConstantPointerNull(compiler->xModule));
-    //    compiler->globalScope->setSubject(
-    //        "пусто", {.kind = tsil::tk::SubjectKindConstant,
-    //                  .data = {.constant = compiler->nullConstant}});
+    compiler->nullConstant = new tsil::tk::Constant(
+        pointerType, tsil_xl_get_null(compiler->xModule));
+    compiler->globalScope->setSubject(
+        "пусто", {.kind = tsil::tk::SubjectKindConstant,
+                  .data = {.constant = compiler->nullConstant}});
     //
     //    compiler->yesConstant = new tsil::tk::Constant(
     //        uint8Type, tsil::x2::CreateInt8(compiler->xModule, 1));
