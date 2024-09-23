@@ -82,25 +82,26 @@ namespace tsil::tk {
         //          type = typeResult.type;
         //        }
         if (defineNode->value) {
-          if (defineNode->value->kind == ast::KindNumberNode) {
-            const auto numberNode = defineNode->value->data.NumberNode;
-            const auto type = str_contains(numberNode->value, ".")
-                                  ? this->compiler->f64Type
-                                  : this->compiler->int64Type;
-            const auto xValue = new x::Value(
-                type->xType, tsilNumberToLLVMNumber(numberNode->value));
-            const auto globalXValue = this->compiler->xModule->putGlobal(
-                "private", type->xType, xValue);
-            const auto variable = new Variable();
-            variable->type = type;
-            variable->xValue = globalXValue;
-            this->setSubject(defineNode->id, Subject{SubjectKindVariable,
-                                                     {.variable = variable}});
-          } else {
-            return {CompilerError::fromASTValue(
-                defineNode->value,
-                "Глобальні цілі та змінні можуть мати лише числові значення.")};
-          }
+          // todo: uncomment
+          //          if (defineNode->value->kind == ast::KindNumberNode) {
+          //            const auto numberNode = defineNode->value->data.NumberNode;
+          //            const auto type = str_contains(numberNode->value, ".")
+          //                                  ? this->compiler->f64Type
+          //                                  : this->compiler->int64Type;
+          //            const auto xValue = new x::Value(
+          //                type->xType, tsilNumberToLLVMNumber(numberNode->value));
+          //            const auto globalXValue = this->compiler->xModule->putGlobal(
+          //                "private", type->xType, xValue);
+          //            const auto variable = new Variable();
+          //            variable->type = type;
+          //            variable->xValue = globalXValue;
+          //            this->setSubject(defineNode->id, Subject{SubjectKindVariable,
+          //                                                     {.variable = variable}});
+          //          } else {
+          //            return {CompilerError::fromASTValue(
+          //                defineNode->value,
+          //                "Глобальні цілі та змінні можуть мати лише числові значення.")};
+          //          }
         } else {
           return {CompilerError::fromASTValue(defineNode->value,
                                               "NOT IMPLEMENTED")};
@@ -217,7 +218,7 @@ namespace tsil::tk {
             if (diia->isDeclaration) {
               diia->body = diiaNode->body;
               diia->isDeclaration = false;
-              diia->fillBakedDiiasWithBodies();
+              diia->fillBakedDiiasWithBodies(this->compiler->xModule);
               if (diia->genericDefinitions.empty()) {
                 const auto bakedDiiaResult = diia->bakeDiia(this, {});
                 if (bakedDiiaResult.error) {

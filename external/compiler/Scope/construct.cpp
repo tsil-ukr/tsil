@@ -1,8 +1,8 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileConstructor(tsil::x::Function* xFunction,
-                                                tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileConstructor(x2::FunctionX2* xFunction,
+                                                x2::FunctionX2Block* xBlock,
                                                 ast::ASTValue* astValue,
                                                 bool load) {
     const auto constructorNode = astValue->data.ConstructorNode;
@@ -75,15 +75,14 @@ namespace tsil::tk {
       const auto xGepValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
               xBlock, typeResult.type->xType, xAllocValue,
-              {new x::Value(this->compiler->int32Type->xType, "0"),
-               new x::Value(this->compiler->int32Type->xType,
-                            std::to_string(field.index))});
+              {x2::CreateInt32(this->compiler->xModule, 0),
+               x2::CreateInt32(this->compiler->xModule, field.index)});
       this->compiler->xModule->pushFunctionBlockStoreInstruction(
           xBlock, argValueResult.type->xType, argValueResult.xValue, xGepValue);
       argIndex++;
     }
     if (load) {
-      x::Value* xLoadValue =
+      x2::ValueX2* xLoadValue =
           this->compiler->xModule->pushFunctionBlockLoadInstruction(
               xBlock, typeResult.type->xType, xAllocValue);
       return {typeResult.type, xLoadValue, nullptr};

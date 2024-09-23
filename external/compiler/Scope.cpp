@@ -92,7 +92,8 @@ namespace tsil::tk {
     type->xType =
         scopeWithGenerics->compiler->xModule->defineStructType(this->name, {});
     this->bakedTypes.insert_or_assign(genericValues, type);
-    type->xType->fields.resize(this->fields.size());
+    std::vector<x2::TypeX2*> fields;
+    fields.resize(this->fields.size());
     int paramIndex = 0;
     for (const auto& structureField : this->fields) {
       const auto paramTypeResult =
@@ -110,15 +111,17 @@ namespace tsil::tk {
           .name = structureField.name,
       };
       type->structureInstanceFields[structureField.name] = field;
-      type->xType->fields[paramIndex] = field.type->xType;
+      fields[paramIndex] = field.type->xType;
       paramIndex++;
     }
+    scope->compiler->xModule->setStructTypeFields(type->xType, fields);
     return {type, ""};
   }
 
   std::string Structure::fillBakedTypesWithFields() {
     for (const auto& [bakedTypeGenerics, bakedType] : this->bakedTypes) {
-      bakedType->xType->fields.resize(this->fields.size());
+      std::vector<x2::TypeX2*> fields;
+      fields.resize(this->fields.size());
       int paramIndex = 0;
       for (const auto& structureField : this->fields) {
         const auto paramTypeResult =
@@ -136,9 +139,11 @@ namespace tsil::tk {
             .name = structureField.name,
         };
         bakedType->structureInstanceFields[structureField.name] = field;
-        bakedType->xType->fields[paramIndex] = field.type->xType;
+        fields[paramIndex] = field.type->xType;
         paramIndex++;
       }
+      bakedType->scopeWithGenerics->compiler->xModule->setStructTypeFields(
+          bakedType->xType, fields);
     }
     return "";
   }
@@ -173,26 +178,27 @@ namespace tsil::tk {
       diiaType->diiaIsVariadic = this->isVariadic;
       diiaType->diiaReturnType = diiaScope->compiler->voidType;
       diiaType->scopeWithGenerics = diiaScope;
-      for (const auto& parameter : this->parameters) {
-        const auto paramTypeResult = diiaScope->bakeType(parameter.type);
-        if (!paramTypeResult.type) {
-          const auto compilerError = CompilerError::fromASTValue(
-              parameter.type, paramTypeResult.error);
-          return {nullptr, compilerError};
-        }
-        const auto paramXValue = new x::Value(
-            paramTypeResult.type->xType,
-            diiaScope->compiler->xModule->computeNextVarName("arg"));
-        diiaType->diiaParameters.push_back(
-            TypeDiiaParameter{.name = parameter.name,
-                              .type = paramTypeResult.type,
-                              .xValue = paramXValue});
-        const auto variable = new Variable();
-        variable->type = paramTypeResult.type;
-        variable->xValue = paramXValue;
-        diiaScope->setSubject(parameter.name, Subject{SubjectKindVariable,
-                                                      {.variable = variable}});
-      }
+      // todo: uncomment
+      //      for (const auto& parameter : this->parameters) {
+      //        const auto paramTypeResult = diiaScope->bakeType(parameter.type);
+      //        if (!paramTypeResult.type) {
+      //          const auto compilerError = CompilerError::fromASTValue(
+      //              parameter.type, paramTypeResult.error);
+      //          return {nullptr, compilerError};
+      //        }
+      //        const auto paramXValue = new x::Value(
+      //            paramTypeResult.type->xType,
+      //            diiaScope->compiler->xModule->computeNextVarName("arg"));
+      //        diiaType->diiaParameters.push_back(
+      //            TypeDiiaParameter{.name = parameter.name,
+      //                              .type = paramTypeResult.type,
+      //                              .xValue = paramXValue});
+      //        const auto variable = new Variable();
+      //        variable->type = paramTypeResult.type;
+      //        variable->xValue = paramXValue;
+      //        diiaScope->setSubject(parameter.name, Subject{SubjectKindVariable,
+      //                                                      {.variable = variable}});
+      //      }
       if (this->returnType) {
         const auto diiaResultTypeResult = diiaScope->bakeType(this->returnType);
         if (!diiaResultTypeResult.type) {
@@ -214,11 +220,11 @@ namespace tsil::tk {
     if (diiaHeadError) {
       return {nullptr, nullptr, diiaHeadError};
     }
-    std::vector<x::Value*> xParamTypes;
+    std::vector<x2::TypeX2*> xParamTypes;
     for (const auto& diiaParameter : diiaType->diiaParameters) {
-      xParamTypes.push_back(diiaParameter.xValue);
+      xParamTypes.push_back(diiaParameter.type->xType);
     }
-    x::Type* xReturnType = diiaScope->compiler->xModule->voidType;
+    x2::TypeX2* xReturnType = diiaScope->compiler->xModule->voidType;
     if (diiaType->diiaReturnType) {
       xReturnType = diiaType->diiaReturnType->xType;
     }
@@ -228,8 +234,7 @@ namespace tsil::tk {
         xFunctionName == "main") {
       xFunctionAttributes = "";
     } else if (diiaType->linkage == ast::DiiaLinkageStatic) {
-      xFunctionName =
-          diiaScope->compiler->xModule->computeNextName(diiaType->name);
+      xFunctionName = diiaType->name;
       xFunctionAttributes = "internal";
     } else {
       xFunctionAttributes = "dso_local";
@@ -287,11 +292,13 @@ namespace tsil::tk {
       if (bodyResult.error) {
         return {nullptr, nullptr, bodyResult.error};
       }
+      scope->compiler->xModule->pushFunctionBlockBrInstruction(
+          xFunction->alloca_block, xFunction->entry_block);
     }
     return {diiaType, functionXValue, nullptr};
   }
 
-  CompilerError* Diia::fillBakedDiiasWithBodies() {
+  CompilerError* Diia::fillBakedDiiasWithBodies(x2::ModuleX2* xModule) {
     for (const auto& [genericValues, bakedDiia] : this->bakedDiias) {
       const auto diiaType = bakedDiia.type;
       const auto xFunction = bakedDiia.xFunction;
@@ -343,6 +350,8 @@ namespace tsil::tk {
       if (bodyResult.error) {
         return bodyResult.error;
       }
+      xModule->pushFunctionBlockBrInstruction(xFunction->alloca_block,
+                                              xFunction->entry_block);
     }
     return nullptr;
   }
@@ -371,8 +380,8 @@ namespace tsil::tk {
     }
   }
 
-  CompilerValueResult Scope::compileValue(tsil::x::Function* xFunction,
-                                          tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileValue(x2::FunctionX2* xFunction,
+                                          x2::FunctionX2Block* xBlock,
                                           ast::ASTValue* astValue) {
     if (astValue->kind == ast::KindNumberNode) {
       return this->compileNumber(xFunction, xBlock, astValue);
@@ -435,8 +444,8 @@ namespace tsil::tk {
   }
 
   CompilerValueResult Scope::compileValueNoVariation(
-      tsil::x::Function* xFunction,
-      tsil::x::FunctionBlock* xBlock,
+      x2::FunctionX2* xFunction,
+      x2::FunctionX2Block* xBlock,
       ast::ASTValue* astValue) {
     const auto result = this->compileValue(xFunction, xBlock, astValue);
     if (result.error) {
@@ -478,8 +487,8 @@ namespace tsil::tk {
     return {scope, lastPart, nullptr};
   }
 
-  CompilerValueResult Scope::compileLeft(x::Function* xFunction,
-                                         tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileLeft(x2::FunctionX2* xFunction,
+                                         x2::FunctionX2Block* xBlock,
                                          ast::ASTValue* astValue) {
     if (astValue->kind == ast::KindIdentifierNode) {
       const auto subjectResult =
@@ -517,11 +526,11 @@ namespace tsil::tk {
             CompilerError::fromASTValue(astValue, "NOT IMPLEMENTED LEFT")};
   }
 
-  x::Value* Scope::compileSoftCast(tsil::x::Function* xFunction,
-                                   tsil::x::FunctionBlock* xBlock,
-                                   Type* type,
-                                   x::Value* xValue,
-                                   Type* targetType) {
+  x2::ValueX2* Scope::compileSoftCast(x2::FunctionX2* xFunction,
+                                      x2::FunctionX2Block* xBlock,
+                                      Type* type,
+                                      x2::ValueX2* xValue,
+                                      Type* targetType) {
     if (type->equals(targetType)) {
       return xValue;
     }
@@ -726,33 +735,33 @@ namespace tsil::tk {
     return nullptr;
   }
 
-  x::Value* Scope::compileHardCast(tsil::x::Function* xFunction,
-                                   tsil::x::FunctionBlock* xBlock,
-                                   Type* type,
-                                   x::Value* xValue,
-                                   Type* targetType) {
-    if (type->isPointer() && targetType->isPointer()) {
-      return new x::Value(targetType->xType, xValue->name);
-    }
-    if (type->isPointer() && targetType->type == TypeTypeDiia) {
-      return new x::Value(targetType->xType, xValue->name);
-    }
-    if (type->type == TypeTypeDiia && targetType->type == TypeTypeDiia) {
-      return new x::Value(targetType->xType, xValue->name);
-    }
-    if (type->isArray() && targetType->isPointer()) {
-      return this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
-          xBlock,
-          targetType->xType->pointerTo ? targetType->xType->pointerTo
-                                       : this->compiler->voidType->xType,
-          xValue,
-          {new x::Value(this->compiler->int32Type->xType, "0"),
-           new x::Value(this->compiler->int64Type->xType, "0")});
-    }
-    if (type == this->compiler->int64Type && targetType->isPointer()) {
-      return this->compiler->xModule->pushFunctionBlockInttoptrInstruction(
-          xBlock, type->xType, xValue, targetType->xType);
-    }
+  x2::ValueX2* Scope::compileHardCast(x2::FunctionX2* xFunction,
+                                      x2::FunctionX2Block* xBlock,
+                                      Type* type,
+                                      x2::ValueX2* xValue,
+                                      Type* targetType) {
+    //    if (type->isPointer() && targetType->isPointer()) {
+    //      return new x::Value(targetType->xType, xValue->name);
+    //    }
+    //    if (type->isPointer() && targetType->type == TypeTypeDiia) {
+    //      return new x::Value(targetType->xType, xValue->name);
+    //    }
+    //    if (type->type == TypeTypeDiia && targetType->type == TypeTypeDiia) {
+    //      return new x::Value(targetType->xType, xValue->name);
+    //    }
+    //    if (type->isArray() && targetType->isPointer()) {
+    //      return this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
+    //          xBlock,
+    //          targetType->xType->pointerTo ? targetType->xType->pointerTo
+    //                                       : this->compiler->voidType->xType,
+    //          xValue,
+    //          {new x::Value(this->compiler->int32Type->xType, "0"),
+    //           new x::Value(this->compiler->int64Type->xType, "0")});
+    //    }
+    //    if (type == this->compiler->int64Type && targetType->isPointer()) {
+    //      return this->compiler->xModule->pushFunctionBlockInttoptrInstruction(
+    //          xBlock, type->xType, xValue, targetType->xType);
+    //    }
     return nullptr;
   }
 } // namespace tsil::tk

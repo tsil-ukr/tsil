@@ -1,12 +1,12 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileGetGep(tsil::x::Function* xFunction,
-                                           tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileGetGep(x2::FunctionX2* xFunction,
+                                           x2::FunctionX2Block* xBlock,
                                            ast::ASTValue* astValue) {
     const auto getNode = astValue->data.GetNode;
     Type* leftType = nullptr;
-    x::Value* leftXValue = nullptr;
+    x2::ValueX2* leftXValue = nullptr;
     const auto leftResult = this->compileLeft(xFunction, xBlock, getNode->left);
     if (leftResult.error) {
       return leftResult;
@@ -41,9 +41,8 @@ namespace tsil::tk {
       const auto gepXValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
               xBlock, leftType->xType, leftXValue,
-              {new x::Value(this->compiler->int32Type->xType, "0"),
-               new x::Value(this->compiler->int32Type->xType,
-                            std::to_string(field.index))});
+              {x2::CreateInt32(this->compiler->xModule, 0),
+               x2::CreateInt32(this->compiler->xModule, field.index)});
       return {fieldType, gepXValue, nullptr};
     }
     if (leftType->type == TypeTypeVariationInstance) {

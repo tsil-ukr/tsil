@@ -1,8 +1,8 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileLoad(tsil::x::Function* xFunction,
-                                         tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileLoad(x2::FunctionX2* xFunction,
+                                         x2::FunctionX2Block* xBlock,
                                          ast::ASTValue* astValue) {
     const auto identifierNode = astValue->data.IdentifierNode;
     if (this->hasSubject(identifierNode->name)) {
@@ -33,8 +33,8 @@ namespace tsil::tk {
     }
   }
 
-  CompilerValueResult Scope::compileGeneric(tsil::x::Function* xFunction,
-                                            tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileGeneric(x2::FunctionX2* xFunction,
+                                            x2::FunctionX2Block* xBlock,
                                             ast::ASTValue* astValue) {
     const auto genericNode = astValue->data.GenericNode;
     std::vector<Type*> genericValues;

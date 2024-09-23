@@ -3,9 +3,9 @@
 namespace tsil::tk {
   BodyCompilerResult Scope::compileDiiaBody(
       Type* diiaType,
-      tsil::x::Function* xFunction,
-      tsil::x::FunctionBlock* xBlock,
-      tsil::x::FunctionBlock* xExitBlock,
+      x2::FunctionX2* xFunction,
+      x2::FunctionX2Block* xBlock,
+      x2::FunctionX2Block* xExitBlock,
       const std::vector<ast::ASTValue*>& body) {
     if (body.empty()) {
       this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock,
@@ -241,7 +241,7 @@ namespace tsil::tk {
         xBlock = xIfExitBlock;
       } else if (childAstValue->kind == tsil::ast::KindReturnNode) {
         Type* type = nullptr;
-        x::Value* xValue = nullptr;
+        x2::ValueX2* xValue = nullptr;
         if (childAstValue->data.ReturnNode->value) {
           const auto valueResult = this->compileValueNoVariation(
               xFunction, xBlock, childAstValue->data.ReturnNode->value);
@@ -284,14 +284,14 @@ namespace tsil::tk {
       }
       childIndex++;
     }
-    std::vector<x::FunctionInstruction*> newExitBlockInstructions;
-    for (const auto deferInstruction : deferXBlock->instructions) {
-      newExitBlockInstructions.push_back(deferInstruction);
-    }
-    for (const auto exitBlockInstruction : xExitBlock->instructions) {
-      newExitBlockInstructions.push_back(exitBlockInstruction);
-    }
-    xExitBlock->instructions = newExitBlockInstructions;
+//    std::vector<x2::FunctionX2Instruction*> newExitBlockInstructions;
+//    for (const auto deferInstruction : deferXBlock->instructions) {
+//      newExitBlockInstructions.push_back(deferInstruction);
+//    }
+//    for (const auto exitBlockInstruction : xExitBlock->instructions) {
+//      newExitBlockInstructions.push_back(exitBlockInstruction);
+//    }
+//    xExitBlock->instructions = newExitBlockInstructions;
     this->compiler->xModule->pushFunctionBlockBrInstruction(xBlock, xExitBlock);
     return {xBlock, nullptr};
   }

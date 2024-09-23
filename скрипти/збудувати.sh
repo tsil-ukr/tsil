@@ -17,8 +17,8 @@ fi
 if [ "$TARGET" = "bin" ] || [ "$TARGET" = "all" ]; then
     mkdir -p build-bin
     cd build-bin
-    cmake -DTSIL_X_EXPANDED_NAMES=1 ../external/
-    make -j4 tsil
+    cmake -DTSIL_X_EXPANDED_NAMES=1 ../external/ -G Ninja
+    ninja tsil
     cd ..
 fi
 

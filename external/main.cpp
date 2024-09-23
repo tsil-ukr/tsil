@@ -6,6 +6,26 @@
 #include <string>
 #include <vector>
 #include "compiler/tk.h"
+#include "llvm/ADT/APFloat.h"
+#include "llvm/ADT/STLExtras.h"
+#include "llvm/IR/BasicBlock.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Type.h"
+#include "llvm/IR/Verifier.h"
+#include "llvm/MC/TargetRegistry.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Support/raw_ostream.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Target/TargetOptions.h"
+#include "llvm/TargetParser/Host.h"
 
 std::pair<size_t, std::string> strtrim(const std::string& str) {
   size_t start = 0;
@@ -152,18 +172,35 @@ int compile(const CompileCommand& compileCommand) {
     const auto compiler = new tsil::tk::Compiler();
     compiler->libraryPath = compileCommand.libraryPath;
 
-    compiler->xModule = new tsil::x::Module();
+    compiler->xModule = tsil::x2::create_module_x2();
 
-    compiler->xModule->int1Type = compiler->xModule->defineNativeType("i1");
-    compiler->xModule->int8Type = compiler->xModule->defineNativeType("i8");
-    compiler->xModule->int16Type = compiler->xModule->defineNativeType("i16");
-    compiler->xModule->int32Type = compiler->xModule->defineNativeType("i32");
-    compiler->xModule->int64Type = compiler->xModule->defineNativeType("i64");
-    compiler->xModule->floatType = compiler->xModule->defineNativeType("float");
-    compiler->xModule->doubleType =
-        compiler->xModule->defineNativeType("double");
-    compiler->xModule->pointerType = compiler->xModule->defineNativeType("ptr");
-    compiler->xModule->voidType = compiler->xModule->defineNativeType("void");
+    llvm::InitializeAllTargetInfos();
+    llvm::InitializeAllTargets();
+    llvm::InitializeAllTargetMCs();
+    llvm::InitializeAllAsmParsers();
+    llvm::InitializeAllAsmPrinters();
+    auto TargetTriple = llvm::sys::getDefaultTargetTriple();
+    compiler->xModule->LLVMModule->setTargetTriple(TargetTriple);
+
+    std::string Error;
+    auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
+
+    // Print an error and exit if we couldn't find the requested target.
+    // This generally occurs if we've forgotten to initialise the
+    // TargetRegistry or we have a bogus target triple.
+    if (!Target) {
+      llvm::errs() << Error;
+      return 1;
+    }
+    auto CPU = "generic";
+    auto Features = "";
+
+    llvm::TargetOptions opt;
+    auto TheTargetMachine = Target->createTargetMachine(
+        TargetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
+
+    compiler->xModule->LLVMModule->setDataLayout(
+        TheTargetMachine->createDataLayout());
 
     compiler->globalScope = new tsil::tk::Scope();
     compiler->globalScope->compiler = compiler;
@@ -286,19 +323,18 @@ int compile(const CompileCommand& compileCommand) {
         "позитивне", tsil::tk::Subject{tsil::tk::SubjectKindType, uint64Type});
 
     compiler->nullConstant = new tsil::tk::Constant(
-        pointerType,
-        new tsil::x::Value(compiler->xModule->pointerType, "null"));
+        pointerType, tsil::x2::GetConstantPointerNull(compiler->xModule));
     compiler->globalScope->setSubject(
         "пусто", {.kind = tsil::tk::SubjectKindConstant,
                   .data = {.constant = compiler->nullConstant}});
 
     compiler->yesConstant = new tsil::tk::Constant(
-        uint8Type, new tsil::x::Value(compiler->xModule->int8Type, "1"));
+        uint8Type, tsil::x2::CreateInt8(compiler->xModule, 1));
     compiler->globalScope->setSubject(
         "так", {.kind = tsil::tk::SubjectKindConstant,
                 .data = {.constant = compiler->yesConstant}});
     compiler->noConstant = new tsil::tk::Constant(
-        uint8Type, new tsil::x::Value(compiler->xModule->int8Type, "0"));
+        uint8Type, tsil::x2::CreateInt8(compiler->xModule, 0));
     compiler->globalScope->setSubject(
         "ні", {.kind = tsil::tk::SubjectKindConstant,
                .data = {.constant = compiler->noConstant}});
@@ -328,7 +364,7 @@ int compile(const CompileCommand& compileCommand) {
                 << std::endl;
       return 1;
     }
-    outFile << compiler->xModule->dumpLL();
+    outFile << tsil::x2::dumpLL(compiler->xModule);
     outFile.close();
     return 0;
   } else {
@@ -465,6 +501,17 @@ std::vector<std::string> buildFuseCmd(const FuseCommand& fuseCommand) {
   return cmd;
 }
 
+void implode(std::vector<std::string>& v,
+             const std::string& sep,
+             std::string& result) {
+  for (size_t i = 0; i < v.size(); i++) {
+    result += v[i];
+    if (i < v.size() - 1) {
+      result += sep;
+    }
+  }
+}
+
 int main(int argc, char** argv) {
   auto args = std::vector<std::string>(argv, argv + argc);
   if (args.size() < 2) {
@@ -557,7 +604,7 @@ int main(int argc, char** argv) {
     }
     cmd.push_back(fuseCommand.libraryPath + "/біб.a");
     std::string cmdStr;
-    tsil::x::implode(cmd, " ", cmdStr);
+    implode(cmd, " ", cmdStr);
     std::cout << "> " << cmdStr << std::endl;
     return system(cmdStr.c_str());
   } else if (command == "допомога") {

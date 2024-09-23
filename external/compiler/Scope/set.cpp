@@ -1,12 +1,12 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerResult Scope::compileSet(tsil::x::Function* xFunction,
-                                   tsil::x::FunctionBlock* xBlock,
+  CompilerResult Scope::compileSet(x2::FunctionX2* xFunction,
+                                   x2::FunctionX2Block* xBlock,
                                    ast::ASTValue* astValue) {
     const auto setNode = astValue->data.SetNode;
     Type* leftType = nullptr;
-    x::Value* leftXValue = nullptr;
+    x2::ValueX2* leftXValue = nullptr;
     const auto leftResult = this->compileLeft(xFunction, xBlock, setNode->left);
     if (leftResult.error) {
       return {leftResult.error};
@@ -49,12 +49,11 @@ namespace tsil::tk {
         const auto gepXValue =
             this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
                 xBlock, leftType->xType, leftXValue,
-                {new x::Value(this->compiler->int32Type->xType, "0"),
+                {x2::CreateInt32(this->compiler->xModule, 0),
                  indexResult.xValue});
-        const auto storeXValue =
-            this->compiler->xModule->pushFunctionBlockStoreInstruction(
-                xBlock, leftType->xType->arrayOf, valueResult.xValue,
-                gepXValue);
+        // todo: uncomment
+        //        this->compiler->xModule->pushFunctionBlockStoreInstruction(
+        //            xBlock, leftType->xType->arrayOf, valueResult.xValue, gepXValue);
         return {nullptr};
       } else if (leftType->type == TypeTypePointer) {
         auto indexResult =
@@ -96,10 +95,9 @@ namespace tsil::tk {
             this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
                 xBlock, leftType->pointerTo->xType, loadPtrXValue,
                 {indexResult.xValue});
-        const auto storeXValue =
-            this->compiler->xModule->pushFunctionBlockStoreInstruction(
-                xBlock, leftType->xType->pointerTo, valueResult.xValue,
-                gepXValue);
+        this->compiler->xModule->pushFunctionBlockStoreInstruction(
+            xBlock, leftType->xType->getPointerTo(), valueResult.xValue,
+            gepXValue);
         return {nullptr};
       }
     } else {
@@ -125,9 +123,8 @@ namespace tsil::tk {
         const auto gepXValue =
             this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
                 xBlock, leftType->xType, leftXValue,
-                {new x::Value(this->compiler->int32Type->xType, "0"),
-                 new x::Value(this->compiler->int32Type->xType,
-                              std::to_string(field.index))});
+                {x2::CreateInt32(this->compiler->xModule, 0),
+                 x2::CreateInt32(this->compiler->xModule, field.index)});
         auto valueResult =
             this->compileValueNoVariation(xFunction, xBlock, setNode->value);
         if (valueResult.error) {
@@ -150,9 +147,8 @@ namespace tsil::tk {
           return {CompilerError::invalidArgumentType(
               setNode->value, field.name, fieldType, valueResult.type)};
         }
-        const auto storeXValue =
-            this->compiler->xModule->pushFunctionBlockStoreInstruction(
-                xBlock, fieldType->xType, valueResult.xValue, gepXValue);
+        this->compiler->xModule->pushFunctionBlockStoreInstruction(
+            xBlock, fieldType->xType, valueResult.xValue, gepXValue);
         return {nullptr};
       }
     }

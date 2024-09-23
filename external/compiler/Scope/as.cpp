@@ -1,8 +1,8 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileAs(tsil::x::Function* xFunction,
-                                       tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileAs(x2::FunctionX2* xFunction,
+                                       x2::FunctionX2Block* xBlock,
                                        ast::ASTValue* astValue,
                                        bool load) {
     const auto asNode = astValue->data.AsNode;
@@ -34,11 +34,10 @@ namespace tsil::tk {
                       xBlock,
                       valueResult.type->shortTermVariationLeftType->xType,
                       valueResult.xValue,
-                      {new x::Value(this->compiler->int32Type->xType, "0"),
-                       new x::Value(
-                           this->compiler->int32Type->xType,
-                           std::to_string(
-                               valueResult.type->shortTermVariationIndex))});
+                      {x2::CreateInt32(this->compiler->xModule, 0),
+                       x2::CreateInt32(
+                           this->compiler->xModule,
+                           valueResult.type->shortTermVariationIndex)});
           valueResult.type->shortTermVariationIndex = -1;
           valueResult.type->shortTermVariationLeftType = nullptr;
           if (load) {

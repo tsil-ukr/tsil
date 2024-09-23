@@ -7,22 +7,23 @@ namespace tsil::tk {
       return {CompilerError::subjectAlreadyDefined(astValue)};
     }
     if (synonymNode->value->kind == ast::KindNumberNode) {
-      const auto numberNode = synonymNode->value->data.NumberNode;
-      const auto type = str_contains(numberNode->value, ".")
-                            ? this->compiler->f64Type
-                            : this->compiler->int64Type;
-      const auto xValue =
-          new x::Value(type->xType, tsilNumberToLLVMNumber(numberNode->value));
-      const auto constant = new Constant();
-      constant->type = type;
-      constant->xValue = xValue;
-      this->setSubject(synonymNode->id,
-                       Subject{SubjectKindConstant, {.constant = constant}});
+      // todo: uncomment
+      //      const auto numberNode = synonymNode->value->data.NumberNode;
+      //      const auto type = str_contains(numberNode->value, ".")
+      //                            ? this->compiler->f64Type
+      //                            : this->compiler->int64Type;
+      //      const auto xValue =
+      //          new x::Value(type->xType, tsilNumberToLLVMNumber(numberNode->value));
+      //      const auto constant = new Constant();
+      //      constant->type = type;
+      //      constant->xValue = xValue;
+      //      this->setSubject(synonymNode->id,
+      //                       Subject{SubjectKindConstant, {.constant = constant}});
     } else if (synonymNode->value->kind == ast::KindStringNode) {
       const auto stringNode = synonymNode->value->data.StringNode;
       const auto stringValue = tsilStringToCString(stringNode->value);
       const auto xStringConstant =
-          this->compiler->xModule->putStringConstant("private", stringValue);
+          x2::CreateGlobalStringPtr(this->compiler->xModule, stringValue);
       Type* type = nullptr;
       if (stringNode->prefix == "ю8") {
         type = this->compiler->uint8Type->getPointerType(this);

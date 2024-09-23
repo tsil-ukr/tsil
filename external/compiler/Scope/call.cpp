@@ -1,8 +1,8 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileCall(tsil::x::Function* xFunction,
-                                         tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileCall(x2::FunctionX2* xFunction,
+                                         x2::FunctionX2Block* xBlock,
                                          ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     if (callNode->value->kind == ast::KindIdentifierNode) {
@@ -64,7 +64,7 @@ namespace tsil::tk {
       }
     }
     Type* diiaType;
-    x::Value* diiaXValue;
+    x2::ValueX2* diiaXValue;
     const auto valueResult =
         this->compileValueNoVariation(xFunction, xBlock, callNode->value);
     if (valueResult.error) {
@@ -79,7 +79,7 @@ namespace tsil::tk {
     if (callNode->args.size() > diiaType->diiaParameters.size()) {
       return {nullptr, nullptr, CompilerError::tooManyCallArguments(astValue)};
     }
-    std::vector<x::Value*> xArgs;
+    std::vector<x2::ValueX2*> xArgs;
     int argIndex = 0;
     size_t xArgsVecSize = 0;
     for (const auto& argAstValue : callNode->args) {
@@ -114,8 +114,8 @@ namespace tsil::tk {
     return {diiaType->diiaReturnType, xValue, nullptr};
   }
 
-  CompilerValueResult Scope::compileCall_Pointer(tsil::x::Function* xFunction,
-                                                 tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileCall_Pointer(x2::FunctionX2* xFunction,
+                                                 x2::FunctionX2Block* xBlock,
                                                  ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     std::vector<Type*> genericValues;
@@ -204,8 +204,8 @@ namespace tsil::tk {
             nullptr};
   }
 
-  CompilerValueResult Scope::compileCall_Value(tsil::x::Function* xFunction,
-                                               tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileCall_Value(x2::FunctionX2* xFunction,
+                                               x2::FunctionX2Block* xBlock,
                                                ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     std::vector<Type*> genericValues;
@@ -271,10 +271,9 @@ namespace tsil::tk {
     return {firstArgResult.type->pointerTo, loadXValue, nullptr};
   }
 
-  CompilerValueResult Scope::compileCall_Allocate(
-      tsil::x::Function* xFunction,
-      tsil::x::FunctionBlock* xBlock,
-      ast::ASTValue* astValue) {
+  CompilerValueResult Scope::compileCall_Allocate(x2::FunctionX2* xFunction,
+                                                  x2::FunctionX2Block* xBlock,
+                                                  ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     std::vector<Type*> genericValues;
     if (callNode->value->kind == ast::KindGenericNode) {
@@ -303,8 +302,7 @@ namespace tsil::tk {
     CompilerValueResult firstArgResult{nullptr, nullptr, nullptr};
     if (callNode->args.empty()) {
       firstArgResult.type = this->compiler->uint64Type;
-      firstArgResult.xValue =
-          new tsil::x::Value(compiler->xModule->int64Type, "1");
+      firstArgResult.xValue = x2::CreateInt64(this->compiler->xModule, 1);
     } else {
       const auto firstArgAstValue = callNode->args[0];
       firstArgResult =
@@ -326,9 +324,8 @@ namespace tsil::tk {
       }
     }
     const auto firstGenericValue = genericValues[0];
-    const auto typeSizeXValue =
-        new x::Value(this->compiler->uint64Type->xType,
-                     std::to_string(firstGenericValue->getBytesSize(this)));
+    const auto typeSizeXValue = x2::CreateInt64(
+        this->compiler->xModule, firstGenericValue->getBytesSize(this));
     const auto addXValue =
         this->compiler->xModule->pushFunctionBlockMulInstruction(
             xBlock, this->compiler->uint64Type->xType, firstArgResult.xValue,
@@ -340,10 +337,9 @@ namespace tsil::tk {
     return {firstGenericValue->getPointerType(this), xValue, nullptr};
   }
 
-  CompilerValueResult Scope::compileCall_Reallocate(
-      tsil::x::Function* xFunction,
-      tsil::x::FunctionBlock* xBlock,
-      ast::ASTValue* astValue) {
+  CompilerValueResult Scope::compileCall_Reallocate(x2::FunctionX2* xFunction,
+                                                    x2::FunctionX2Block* xBlock,
+                                                    ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     std::vector<Type*> genericValues;
     if (callNode->value->kind == ast::KindGenericNode) {
@@ -411,9 +407,8 @@ namespace tsil::tk {
                                                  this->compiler->uint64Type,
                                                  secondArgResult.type)};
     }
-    const auto typeSizeXValue =
-        new x::Value(this->compiler->uint64Type->xType,
-                     std::to_string(firstGenericValue->getBytesSize(this)));
+    const auto typeSizeXValue = x2::CreateInt64(
+        this->compiler->xModule, firstGenericValue->getBytesSize(this));
     const auto addXValue =
         this->compiler->xModule->pushFunctionBlockMulInstruction(
             xBlock, this->compiler->uint64Type->xType, secondArgResult.xValue,
@@ -426,8 +421,8 @@ namespace tsil::tk {
     return {firstGenericValue->getPointerType(this), xValue, nullptr};
   }
 
-  CompilerValueResult Scope::compileCall_Free(tsil::x::Function* xFunction,
-                                              tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileCall_Free(x2::FunctionX2* xFunction,
+                                              x2::FunctionX2Block* xBlock,
                                               ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     if (callNode->args.size() < 1) {
@@ -461,8 +456,8 @@ namespace tsil::tk {
     return {this->compiler->voidType, nullptr, nullptr};
   }
 
-  CompilerValueResult Scope::compileCall_Sizeof(tsil::x::Function* xFunction,
-                                                tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileCall_Sizeof(x2::FunctionX2* xFunction,
+                                                x2::FunctionX2Block* xBlock,
                                                 ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;
     std::vector<Type*> genericValues;
@@ -490,14 +485,13 @@ namespace tsil::tk {
               CompilerError::tooManyCallTemplateArguments(astValue)};
     }
     const auto firstGenericValue = genericValues[0];
-    const auto sizeOfXValue =
-        new x::Value(this->compiler->uint64Type->xType,
-                     std::to_string(firstGenericValue->getBytesSize(this)));
+    const auto sizeOfXValue = x2::CreateInt64(
+        this->compiler->xModule, firstGenericValue->getBytesSize(this));
     return {this->compiler->uint64Type, sizeOfXValue, nullptr};
   }
 
-  CompilerValueResult Scope::compileCallCast(tsil::x::Function* xFunction,
-                                             tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileCallCast(x2::FunctionX2* xFunction,
+                                             x2::FunctionX2Block* xBlock,
                                              const std::string& name,
                                              ast::ASTValue* astValue) {
     const auto callNode = astValue->data.CallNode;

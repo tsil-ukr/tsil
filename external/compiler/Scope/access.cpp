@@ -1,12 +1,12 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileAccessGep(tsil::x::Function* xFunction,
-                                              tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileAccessGep(x2::FunctionX2* xFunction,
+                                              x2::FunctionX2Block* xBlock,
                                               ast::ASTValue* astValue) {
     const auto accessNode = astValue->data.AccessNode;
     Type* leftType = nullptr;
-    x::Value* leftXValue = nullptr;
+    x2::ValueX2* leftXValue = nullptr;
     const auto leftResult =
         this->compileLeft(xFunction, xBlock, accessNode->value);
     if (leftResult.error) {
@@ -45,7 +45,7 @@ namespace tsil::tk {
       const auto xGepValue =
           this->compiler->xModule->pushFunctionBlockGetElementPtrInstruction(
               xBlock, leftType->xType, leftXValue,
-              {new x::Value(this->compiler->int32Type->xType, "0"),
+              {x2::CreateInt32(this->compiler->xModule, 0),
                indexResult.xValue});
       return {leftType->arrayOf, xGepValue, nullptr};
     }

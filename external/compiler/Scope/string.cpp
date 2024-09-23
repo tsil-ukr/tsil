@@ -1,13 +1,13 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileString(tsil::x::Function* xFunction,
-                                           tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileString(x2::FunctionX2* xFunction,
+                                           x2::FunctionX2Block* xBlock,
                                            ast::ASTValue* astValue) {
     const auto stringNode = astValue->data.StringNode;
     const auto stringValue = tsilStringToCString(stringNode->value);
     const auto xStringConstant =
-        this->compiler->xModule->putStringConstant("private", stringValue);
+        x2::CreateGlobalStringPtr(this->compiler->xModule, stringValue);
     if (stringNode->prefix == "ю8") {
       return {this->compiler->uint8Type->getPointerType(this), xStringConstant,
               nullptr};

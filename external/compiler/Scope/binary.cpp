@@ -1,8 +1,8 @@
 #include "../tk.h"
 
 namespace tsil::tk {
-  CompilerValueResult Scope::compileBinary(tsil::x::Function* xFunction,
-                                           tsil::x::FunctionBlock* xBlock,
+  CompilerValueResult Scope::compileBinary(x2::FunctionX2* xFunction,
+                                           x2::FunctionX2Block* xBlock,
                                            ast::ASTValue* astValue) {
     const auto binaryNode = astValue->data.BinaryNode;
     CompilerValueResult leftResult =
@@ -50,7 +50,7 @@ namespace tsil::tk {
               CompilerError::typesOfInstructionDifferent(
                   astValue, rightResult.type, leftResult.type)};
     }
-    x::Value* xValue = nullptr;
+    x2::ValueX2* xValue = nullptr;
     switch (binaryNode->op) {
       case tsil::ast::ARITHMETIC_ADD: {
         if (!leftResult.type->isArithmetical(this)) {

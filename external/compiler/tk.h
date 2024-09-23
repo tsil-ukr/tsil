@@ -1,7 +1,7 @@
 #include <filesystem>
 #include <map>
 #include "parser.h"
-#include "x.h"
+#include "x2.h"
 
 #define BUG()                                                       \
   std::cout << "BUG: " << __FILE__ << ":" << __LINE__ << std::endl; \
@@ -37,7 +37,7 @@ namespace tsil::tk {
 
   struct Compiler {
     std::string libraryPath = "/usr/local/lib/ціль/бібліотека/";
-    x::Module* xModule = nullptr;
+    x2::ModuleX2* xModule = nullptr;
     Scope* globalScope = nullptr;
 
     Type* voidType = nullptr;
@@ -61,17 +61,17 @@ namespace tsil::tk {
     Constant* yesConstant = nullptr;
     Constant* noConstant = nullptr;
 
-    x::Value* callocXValue = nullptr;
-    x::Value* mallocXValue = nullptr;
-    x::Value* reallocXValue = nullptr;
-    x::Value* freeXValue = nullptr;
+    x2::ValueX2* callocXValue = nullptr;
+    x2::ValueX2* mallocXValue = nullptr;
+    x2::ValueX2* reallocXValue = nullptr;
+    x2::ValueX2* freeXValue = nullptr;
 
     std::set<std::string> tookDefinitions;
 
-    x::Value* ensureCallocConnected();
-    x::Value* ensureMallocConnected();
-    x::Value* ensureReallocConnected();
-    x::Value* ensureFreeConnected();
+    x2::ValueX2* ensureCallocConnected();
+    x2::ValueX2* ensureMallocConnected();
+    x2::ValueX2* ensureReallocConnected();
+    x2::ValueX2* ensureFreeConnected();
 
     std::pair<std::string, bool> readFile(const std::string& path);
     bool fileExist(const std::string& path);
@@ -155,20 +155,20 @@ namespace tsil::tk {
   };
 
   struct BodyCompilerResult {
-    x::FunctionBlock* xBlock;
-    x::FunctionBlock* xExitBlock;
+    x2::FunctionX2Block* xBlock;
+    x2::FunctionX2Block* xExitBlock;
     CompilerError* error;
   };
 
   struct CompilerValueResult {
     Type* type;
-    x::Value* xValue;
+    x2::ValueX2* xValue;
     CompilerError* error;
   };
 
   struct BakedDiiaResult {
     Type* type;
-    x::Value* xValue;
+    x2::ValueX2* xValue;
     CompilerError* error;
   };
 
@@ -179,7 +179,7 @@ namespace tsil::tk {
 
   struct CompilerRuntimeSubjectResult {
     Type* type;
-    x::Value* xValue;
+    x2::ValueX2* xValue;
     CompilerError* error;
   };
 
@@ -207,8 +207,8 @@ namespace tsil::tk {
 
   struct BakedDiia {
     Type* type;
-    x::Value* xValue;
-    x::Function* xFunction;
+    x2::ValueX2* xValue;
+    x2::FunctionX2* xFunction;
   };
 
   struct Diia {
@@ -226,12 +226,12 @@ namespace tsil::tk {
 
     BakedDiiaResult bakeDiia(Scope* scope,
                              const std::vector<Type*>& genericValues);
-    CompilerError* fillBakedDiiasWithBodies();
+    CompilerError* fillBakedDiiasWithBodies(x2::ModuleX2* xModule);
   };
 
   struct Variable {
     Type* type;
-    x::Value* xValue;
+    x2::ValueX2* xValue;
   };
 
   enum SubjectKind {
@@ -246,7 +246,7 @@ namespace tsil::tk {
 
   struct Constant {
     Type* type;
-    x::Value* xValue;
+    x2::ValueX2* xValue;
   };
 
   struct Subject {
@@ -286,96 +286,96 @@ namespace tsil::tk {
     CompilerRuntimeSubjectResult getRuntimeSubjectByIdentifierNodeAstValue(
         ast::ASTValue* astValue);
 
-    CompilerValueResult compileCall(tsil::x::Function* xFunction,
-                                    tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileCall(x2::FunctionX2* xFunction,
+                                    x2::FunctionX2Block* xBlock,
                                     ast::ASTValue* astValue);
-    CompilerValueResult compileCall_Pointer(tsil::x::Function* xFunction,
-                                            tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileCall_Pointer(x2::FunctionX2* xFunction,
+                                            x2::FunctionX2Block* xBlock,
                                             ast::ASTValue* astValue);
-    CompilerValueResult compileCall_Value(tsil::x::Function* xFunction,
-                                          tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileCall_Value(x2::FunctionX2* xFunction,
+                                          x2::FunctionX2Block* xBlock,
                                           ast::ASTValue* astValue);
-    CompilerValueResult compileCall_Allocate(tsil::x::Function* xFunction,
-                                             tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileCall_Allocate(x2::FunctionX2* xFunction,
+                                             x2::FunctionX2Block* xBlock,
                                              ast::ASTValue* astValue);
-    CompilerValueResult compileCall_Reallocate(tsil::x::Function* xFunction,
-                                               tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileCall_Reallocate(x2::FunctionX2* xFunction,
+                                               x2::FunctionX2Block* xBlock,
                                                ast::ASTValue* astValue);
-    CompilerValueResult compileCall_Free(tsil::x::Function* xFunction,
-                                         tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileCall_Free(x2::FunctionX2* xFunction,
+                                         x2::FunctionX2Block* xBlock,
                                          ast::ASTValue* astValue);
-    CompilerValueResult compileCall_Sizeof(tsil::x::Function* xFunction,
-                                           tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileCall_Sizeof(x2::FunctionX2* xFunction,
+                                           x2::FunctionX2Block* xBlock,
                                            ast::ASTValue* astValue);
 
-    CompilerValueResult compileCallCast(tsil::x::Function* xFunction,
-                                        tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileCallCast(x2::FunctionX2* xFunction,
+                                        x2::FunctionX2Block* xBlock,
                                         const std::string& name,
                                         ast::ASTValue* astValue);
 
-    CompilerValueResult compileNumber(tsil::x::Function* xFunction,
-                                      tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileNumber(x2::FunctionX2* xFunction,
+                                      x2::FunctionX2Block* xBlock,
                                       ast::ASTValue* astValue);
-    CompilerValueResult compileString(tsil::x::Function* xFunction,
-                                      tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileString(x2::FunctionX2* xFunction,
+                                      x2::FunctionX2Block* xBlock,
                                       ast::ASTValue* astValue);
-    CompilerValueResult compileLoad(tsil::x::Function* xFunction,
-                                    tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileLoad(x2::FunctionX2* xFunction,
+                                    x2::FunctionX2Block* xBlock,
                                     ast::ASTValue* astValue);
-    CompilerValueResult compileGeneric(tsil::x::Function* xFunction,
-                                       tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileGeneric(x2::FunctionX2* xFunction,
+                                       x2::FunctionX2Block* xBlock,
                                        ast::ASTValue* astValue);
-    CompilerValueResult compileAs(tsil::x::Function* xFunction,
-                                  tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileAs(x2::FunctionX2* xFunction,
+                                  x2::FunctionX2Block* xBlock,
                                   ast::ASTValue* astValue,
                                   bool load);
-    CompilerValueResult compileBinary(tsil::x::Function* xFunction,
-                                      tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileBinary(x2::FunctionX2* xFunction,
+                                      x2::FunctionX2Block* xBlock,
                                       ast::ASTValue* astValue);
-    CompilerValueResult compileConstructor(tsil::x::Function* xFunction,
-                                           tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileConstructor(x2::FunctionX2* xFunction,
+                                           x2::FunctionX2Block* xBlock,
                                            ast::ASTValue* astValue,
                                            bool load);
-    CompilerValueResult compileAccessGep(tsil::x::Function* xFunction,
-                                         tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileAccessGep(x2::FunctionX2* xFunction,
+                                         x2::FunctionX2Block* xBlock,
                                          ast::ASTValue* astValue);
-    CompilerResult compileSet(tsil::x::Function* xFunction,
-                              tsil::x::FunctionBlock* xBlock,
+    CompilerResult compileSet(x2::FunctionX2* xFunction,
+                              x2::FunctionX2Block* xBlock,
                               ast::ASTValue* astValue);
     CompilerResult compileSection(ast::ASTValue* astValue);
     CompilerResult compileBody(const std::vector<ast::ASTValue*>& body);
 
     SectionAccessResult resolveSectionAccess(ast::ASTValue* astValue);
 
-    CompilerValueResult compileGetGep(tsil::x::Function* xFunction,
-                                      tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileGetGep(x2::FunctionX2* xFunction,
+                                      x2::FunctionX2Block* xBlock,
                                       ast::ASTValue* astValue);
-    CompilerValueResult compileValue(x::Function* xFunction,
-                                     tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileValue(x2::FunctionX2* xFunction,
+                                     x2::FunctionX2Block* xBlock,
                                      ast::ASTValue* astValue);
-    CompilerValueResult compileValueNoVariation(x::Function* xFunction,
-                                                tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileValueNoVariation(x2::FunctionX2* xFunction,
+                                                x2::FunctionX2Block* xBlock,
                                                 ast::ASTValue* astValue);
-    CompilerValueResult compileLeft(x::Function* xFunction,
-                                    tsil::x::FunctionBlock* xBlock,
+    CompilerValueResult compileLeft(x2::FunctionX2* xFunction,
+                                    x2::FunctionX2Block* xBlock,
                                     ast::ASTValue* astValue);
     CompilerResult compileSynonym(ast::ASTValue* astValue);
 
-    x::Value* compileSoftCast(tsil::x::Function* xFunction,
-                              tsil::x::FunctionBlock* xBlock,
-                              Type* type,
-                              x::Value* xValue,
-                              Type* targetType);
-    x::Value* compileHardCast(tsil::x::Function* xFunction,
-                              tsil::x::FunctionBlock* xBlock,
-                              Type* type,
-                              x::Value* xValue,
-                              Type* targetType);
+    x2::ValueX2* compileSoftCast(x2::FunctionX2* xFunction,
+                                 x2::FunctionX2Block* xBlock,
+                                 Type* type,
+                                 x2::ValueX2* xValue,
+                                 Type* targetType);
+    x2::ValueX2* compileHardCast(x2::FunctionX2* xFunction,
+                                 x2::FunctionX2Block* xBlock,
+                                 Type* type,
+                                 x2::ValueX2* xValue,
+                                 Type* targetType);
 
     BodyCompilerResult compileDiiaBody(Type* diiaType,
-                                       tsil::x::Function* xFunction,
-                                       tsil::x::FunctionBlock* xBlock,
-                                       tsil::x::FunctionBlock* xExitBlock,
+                                       x2::FunctionX2* xFunction,
+                                       x2::FunctionX2Block* xBlock,
+                                       x2::FunctionX2Block* xExitBlock,
                                        const std::vector<ast::ASTValue*>& body);
     BakedTypeResult bakeType(ast::ASTValue* astValue);
   };
@@ -405,7 +405,7 @@ namespace tsil::tk {
   struct TypeDiiaParameter {
     std::string name;
     Type* type;
-    x::Value* xValue;
+    x2::ValueX2* xValue;
   };
 
   struct Type {
@@ -432,7 +432,7 @@ namespace tsil::tk {
     bool diiaIsVariadic;
     Type* diiaReturnType = nullptr;
     // x
-    x::Type* xType = nullptr;
+    x2::TypeX2* xType = nullptr;
 
     bool equals(Type* other);
     bool isPointer();
