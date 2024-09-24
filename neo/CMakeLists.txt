@@ -19,6 +19,7 @@ file(READ "../ВЕРСІЯ" TSIL_VERSION)
 add_subdirectory(parser)
 
 set(TSIL_SRC
+        xl.cpp
         main.cpp
 )
 
