@@ -50,15 +50,17 @@ op_neq: '!' '=';
 op_land: '&' '&';
 op_lor: '|' '|';
 
+gendef: ID;
+
 expr: operation #expr_operation
     | type '{' (arg=expr (',' arg=expr))? '}' #expr_object;
 
-structure_declare: 'структура' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? ';';
-structure_define: 'структура' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '{' (structure_element)* '}';
+structure_declare: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? ';';
+structure_define: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '{' (structure_element)* '}';
 structure_element: param ';';
 
-diia_declare: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? ';';
-diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? body;
+diia_declare: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? ';';
+diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? body;
 
 tsil_declare: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? ';';
 tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? '=' expr ';';
@@ -93,11 +95,12 @@ return: 'вернути' value=expr ';';
 type: '(' type ')' #type_nested
     | id=ID #type_subject
     | object=type ':' ':' id=ID #type_section_get
-    | object=type '<' template_type=type (',' template_type=type)* '>' #type_template_get
+    | object=type '<' type (',' type)* '>' #type_template_get
     | object=type '.' id=ID #type_get
     | left=type '[' size=NUMBER ']' #type_array
+    | '(' ')' '-' '>' restyp=type #type_fn
     | param_type=type '-' '>' restyp=type #type_fn_simple
-    | '(' param_type=type (',' param_type=type)+ ')' '-' '>' restyp=type #type_fn_complex
+    | '(' type (',' type)+ ')' '-' '>' restyp=type #type_fn_complex
     | '(' param (',' param)* ')' '-' '>' restyp=type #type_fn_complex_named;
 
-param: ID ':' type;
+param: id=ID (':' type)?;

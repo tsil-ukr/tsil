@@ -101,6 +101,8 @@ public:
 
     virtual std::any visitOp_lor(TsilParser::Op_lorContext *context) = 0;
 
+    virtual std::any visitGendef(TsilParser::GendefContext *context) = 0;
+
     virtual std::any visitExpr_operation(TsilParser::Expr_operationContext *context) = 0;
 
     virtual std::any visitExpr_object(TsilParser::Expr_objectContext *context) = 0;
@@ -156,6 +158,8 @@ public:
     virtual std::any visitType_fn_complex_named(TsilParser::Type_fn_complex_namedContext *context) = 0;
 
     virtual std::any visitType_fn_simple(TsilParser::Type_fn_simpleContext *context) = 0;
+
+    virtual std::any visitType_fn(TsilParser::Type_fnContext *context) = 0;
 
     virtual std::any visitType_section_get(TsilParser::Type_section_getContext *context) = 0;
 

@@ -179,6 +179,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitGendef(TsilParser::GendefContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitExpr_operation(TsilParser::Expr_operationContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -288,6 +292,10 @@ public:
   }
 
   virtual std::any visitType_fn_simple(TsilParser::Type_fn_simpleContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitType_fn(TsilParser::Type_fnContext *ctx) override {
     return visitChildren(ctx);
   }
 

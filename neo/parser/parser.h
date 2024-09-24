@@ -49,7 +49,7 @@ namespace tsil::parser {
                     antlr4::Token* token,
                     const std::string& значення);
 
-  std::string АСДЗначенняВString(АСДЗначення* асд_значення);
+  std::string АСДЗначенняВString(АСДЗначення* асд_значення, size_t глибина = 0);
 
   template <typename T>
   T* VecToArr(std::vector<T> vec) {
@@ -198,6 +198,8 @@ namespace tsil::parser {
     std::any visitType_get(TsilParser::Type_getContext* ctx) override;
 
     std::any visitType_array(TsilParser::Type_arrayContext* ctx) override;
+
+    std::any visitType_fn(TsilParser::Type_fnContext* ctx) override;
 
     std::any visitType_fn_simple(
         TsilParser::Type_fn_simpleContext* ctx) override;

@@ -216,6 +216,9 @@ namespace tsil::parser {
             dynamic_cast<TsilParser::Type_arrayContext*>(context)) {
       return visitType_array(ctx);
     }
+    if (const auto ctx = dynamic_cast<TsilParser::Type_fnContext*>(context)) {
+      return visitType_fn(ctx);
+    }
     if (const auto ctx =
             dynamic_cast<TsilParser::Type_fn_simpleContext*>(context)) {
       return visitType_fn_simple(ctx);
@@ -271,7 +274,14 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitAtom_template_get(
       TsilParser::Atom_template_getContext* ctx) {
-    // todo: ...
+    const auto асд_дані_виконати_шаблон = new АСДДаніВиконатиШаблон();
+    асд_дані_виконати_шаблон->обʼєкт = AAV(visitContext(ctx->object));
+    std::vector<АСДЗначення*> arguments;
+    for (const auto& argument : ctx->type()) {
+      arguments.push_back(AAV(visitContext(argument)));
+    }
+    асд_дані_виконати_шаблон->аргументи = AAVecToList(arguments);
+    return AV(this, ctx, АСДВидВиконатиШаблон, асд_дані_виконати_шаблон);
   }
 
   std::any TsilASTVisitor::visitAtom_get(TsilParser::Atom_getContext* ctx) {
@@ -509,7 +519,11 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitOperation_ternary(
       TsilParser::Operation_ternaryContext* ctx) {
-    // todo: ...
+    const auto асд_дані_значення_якщо = new АСДДаніЗначенняЯкщо();
+    асд_дані_значення_якщо->умова = AAV(visitContext(ctx->cond));
+    асд_дані_значення_якщо->значення_так = AAV(visitContext(ctx->ifok));
+    асд_дані_значення_якщо->значення_ні = AAV(visitContext(ctx->ifnot));
+    return AV(this, ctx, АСДВидЗначенняЯкщо, асд_дані_значення_якщо);
   }
 
   std::any TsilASTVisitor::visitExpr_operation(
@@ -531,25 +545,32 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitStructure_declare(
       TsilParser::Structure_declareContext* ctx) {
-    if (ctx->generic_id != nullptr) {
-      // todo: handle template
-    }
     const auto асд_дані_створити_структуру = new АСДДаніСтворитиСтруктуру();
     асд_дані_створити_структуру->ідентифікатор =
         ІД(this, ctx->id, ctx->id->getText());
     const auto асд_значення_створити_структуру =
         AV(this, ctx, АСДВидСтворитиСтруктуру, асд_дані_створити_структуру);
     const auto асд_дані_визначити = new АСДДаніВизначити();
-    асд_дані_визначити->обʼєкт = асд_значення_створити_структуру;
+    if (ctx->first_gendef == nullptr) {
+      асд_дані_визначити->обʼєкт = асд_значення_створити_структуру;
+    } else {
+      const auto асд_дані_створити_шаблон = new АСДДаніСтворитиШаблон();
+      асд_дані_створити_шаблон->значення = асд_значення_створити_структуру;
+      std::vector<Ідентифікатор*> params;
+      for (const auto& gendef : ctx->gendef()) {
+        params.push_back(ІД(this, gendef, gendef->getText()));
+      }
+      асд_дані_створити_шаблон->кількість_параметрів = params.size();
+      асд_дані_створити_шаблон->параметри = VecToArr(params);
+      асд_дані_визначити->обʼєкт =
+          AV(this, ctx, АСДВидСтворитиШаблон, асд_дані_створити_шаблон);
+    }
     асд_дані_визначити->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     return AV(this, ctx, АСДВидВизначити, асд_дані_визначити);
   }
 
   std::any TsilASTVisitor::visitStructure_define(
       TsilParser::Structure_defineContext* ctx) {
-    if (ctx->generic_id != nullptr) {
-      // todo: handle template
-    }
     const auto асд_дані_створити_структуру = new АСДДаніСтворитиСтруктуру();
     асд_дані_створити_структуру->ідентифікатор =
         ІД(this, ctx->id, ctx->id->getText());
@@ -563,16 +584,26 @@ namespace tsil::parser {
     const auto асд_значення_створити_структуру =
         AV(this, ctx, АСДВидСтворитиСтруктуру, асд_дані_створити_структуру);
     const auto асд_дані_визначити = new АСДДаніВизначити();
-    асд_дані_визначити->обʼєкт = асд_значення_створити_структуру;
+    if (ctx->first_gendef == nullptr) {
+      асд_дані_визначити->обʼєкт = асд_значення_створити_структуру;
+    } else {
+      const auto асд_дані_створити_шаблон = new АСДДаніСтворитиШаблон();
+      асд_дані_створити_шаблон->значення = асд_значення_створити_структуру;
+      std::vector<Ідентифікатор*> params;
+      for (const auto& gendef : ctx->gendef()) {
+        params.push_back(ІД(this, gendef, gendef->getText()));
+      }
+      асд_дані_створити_шаблон->кількість_параметрів = params.size();
+      асд_дані_створити_шаблон->параметри = VecToArr(params);
+      асд_дані_визначити->обʼєкт =
+          AV(this, ctx, АСДВидСтворитиШаблон, асд_дані_створити_шаблон);
+    }
     асд_дані_визначити->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     return AV(this, ctx, АСДВидВизначити, асд_дані_визначити);
   }
 
   std::any TsilASTVisitor::visitDiia_declare(
       TsilParser::Diia_declareContext* ctx) {
-    if (ctx->generic_id != nullptr) {
-      // todo: handle template
-    }
     const auto асд_дані_створити_дію = new АСДДаніСтворитиДію();
     асд_дані_створити_дію->ідентифікатор =
         ІД(this, ctx->id, ctx->id->getText());
@@ -581,26 +612,39 @@ namespace tsil::parser {
       const auto any_param = visitParam(param);
       params.push_back(std::any_cast<Параметр*>(any_param));
     }
-    асд_дані_створити_дію->кількість_параметрів = params.size();
-    асд_дані_створити_дію->параметри = VecToArr(params);
-    if (ctx->restyp != nullptr) {
-      асд_дані_створити_дію->тип_результату = AAV(visitContext(ctx->restyp));
+    const auto створити_тип_дії = new АСДДаніСтворитиТипДії();
+    створити_тип_дії->кількість_параметрів = params.size();
+    створити_тип_дії->параметри = VecToArr(params);
+    if (ctx->restyp) {
+      створити_тип_дії->тип_результату = AAV(visitContext(ctx->restyp));
     } else {
-      асд_дані_створити_дію->тип_результату = nullptr;
+      створити_тип_дії->тип_результату = nullptr;
     }
+    асд_дані_створити_дію->тип =
+        AV(this, ctx, АСДВидСтворитиТипДії, створити_тип_дії);
     const auto асд_значення_створити_дію =
         AV(this, ctx, АСДВидСтворитиДію, асд_дані_створити_дію);
     const auto асд_дані_визначити = new АСДДаніВизначити();
-    асд_дані_визначити->обʼєкт = асд_значення_створити_дію;
+    if (ctx->first_gendef == nullptr) {
+      асд_дані_визначити->обʼєкт = асд_значення_створити_дію;
+    } else {
+      const auto асд_дані_створити_шаблон = new АСДДаніСтворитиШаблон();
+      асд_дані_створити_шаблон->значення = асд_значення_створити_дію;
+      std::vector<Ідентифікатор*> params;
+      for (const auto& gendef : ctx->gendef()) {
+        params.push_back(ІД(this, gendef, gendef->getText()));
+      }
+      асд_дані_створити_шаблон->кількість_параметрів = params.size();
+      асд_дані_створити_шаблон->параметри = VecToArr(params);
+      асд_дані_визначити->обʼєкт =
+          AV(this, ctx, АСДВидСтворитиШаблон, асд_дані_створити_шаблон);
+    }
     асд_дані_визначити->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     return AV(this, ctx, АСДВидВизначити, асд_дані_визначити);
   }
 
   std::any TsilASTVisitor::visitDiia_define(
       TsilParser::Diia_defineContext* ctx) {
-    if (ctx->generic_id != nullptr) {
-      // todo: handle template
-    }
     const auto асд_дані_створити_дію = new АСДДаніСтворитиДію();
     асд_дані_створити_дію->ідентифікатор =
         ІД(this, ctx->id, ctx->id->getText());
@@ -609,14 +653,34 @@ namespace tsil::parser {
       const auto any_param = visitParam(param);
       params.push_back(std::any_cast<Параметр*>(any_param));
     }
-    асд_дані_створити_дію->кількість_параметрів = params.size();
-    асд_дані_створити_дію->параметри = VecToArr(params);
-    асд_дані_створити_дію->тип_результату = AAV(visitContext(ctx->restyp));
+    const auto створити_тип_дії = new АСДДаніСтворитиТипДії();
+    створити_тип_дії->кількість_параметрів = params.size();
+    створити_тип_дії->параметри = VecToArr(params);
+    if (ctx->restyp) {
+      створити_тип_дії->тип_результату = AAV(visitContext(ctx->restyp));
+    } else {
+      створити_тип_дії->тип_результату = nullptr;
+    }
+    асд_дані_створити_дію->тип =
+        AV(this, ctx, АСДВидСтворитиТипДії, створити_тип_дії);
     асд_дані_створити_дію->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
     const auto асд_значення_створити_дію =
         AV(this, ctx, АСДВидСтворитиДію, асд_дані_створити_дію);
     const auto асд_дані_визначити = new АСДДаніВизначити();
-    асд_дані_визначити->обʼєкт = асд_значення_створити_дію;
+    if (ctx->first_gendef == nullptr) {
+      асд_дані_визначити->обʼєкт = асд_значення_створити_дію;
+    } else {
+      const auto асд_дані_створити_шаблон = new АСДДаніСтворитиШаблон();
+      асд_дані_створити_шаблон->значення = асд_значення_створити_дію;
+      std::vector<Ідентифікатор*> params;
+      for (const auto& gendef : ctx->gendef()) {
+        params.push_back(ІД(this, gendef, gendef->getText()));
+      }
+      асд_дані_створити_шаблон->кількість_параметрів = params.size();
+      асд_дані_створити_шаблон->параметри = VecToArr(params);
+      асд_дані_визначити->обʼєкт =
+          AV(this, ctx, АСДВидСтворитиШаблон, асд_дані_створити_шаблон);
+    }
     асд_дані_визначити->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     return AV(this, ctx, АСДВидВизначити, асд_дані_визначити);
   }
@@ -836,7 +900,16 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitType_template_get(
       TsilParser::Type_template_getContext* ctx) {
-    // todo: ...
+    const auto асд_дані_виконати_шаблон = new АСДДаніВиконатиШаблон();
+    асд_дані_виконати_шаблон->обʼєкт = AAV(visitContext(ctx->object));
+    std::vector<АСДЗначення*> args;
+    for (const auto& argument : ctx->type()) {
+      if (argument != ctx->object) {
+        args.push_back(AAV(visitContext(argument)));
+      }
+    }
+    асд_дані_виконати_шаблон->аргументи = AAVecToList(args);
+    return AV(this, ctx, АСДВидВиконатиШаблон, асд_дані_виконати_шаблон);
   }
 
   std::any TsilASTVisitor::visitType_get(TsilParser::Type_getContext* ctx) {
@@ -847,26 +920,81 @@ namespace tsil::parser {
   }
 
   std::any TsilASTVisitor::visitType_array(TsilParser::Type_arrayContext* ctx) {
-    // todo: ...
+    const auto асд_дані_створити_тип_масиву = new АСДДаніСтворитиТипМасиву();
+    асд_дані_створити_тип_масиву->тип = AAV(visitContext(ctx->type()));
+    const auto асд_дані_значення_число = new АСДДаніЗначенняЧисло();
+    асд_дані_значення_число->значення =
+        strdup(ctx->NUMBER()->getText().c_str());
+    асд_дані_створити_тип_масиву->розмір =
+        AV(this, ctx, АСДВидЗначенняЧисло, асд_дані_значення_число);
+    return AV(this, ctx, АСДВидСтворитиТипМасиву, асд_дані_створити_тип_масиву);
+  }
+
+  std::any TsilASTVisitor::visitType_fn(TsilParser::Type_fnContext* ctx) {
+    const auto створити_тип_дії = new АСДДаніСтворитиТипДії();
+    створити_тип_дії->кількість_параметрів = 0;
+    створити_тип_дії->параметри = nullptr;
+    створити_тип_дії->тип_результату = AAV(visitContext(ctx->restyp));
+    return AV(this, ctx, АСДВидСтворитиТипДії, створити_тип_дії);
   }
 
   std::any TsilASTVisitor::visitType_fn_simple(
       TsilParser::Type_fn_simpleContext* ctx) {
-    // todo: ...
+    const auto створити_тип_дії = new АСДДаніСтворитиТипДії();
+    std::vector<Параметр*> params;
+    const auto t = AAV(visitContext(ctx->param_type));
+    const auto параметр = new Параметр();
+    параметр->ідентифікатор = nullptr;
+    параметр->тип = t;
+    params.push_back(параметр);
+    створити_тип_дії->кількість_параметрів = params.size();
+    створити_тип_дії->параметри = VecToArr(params);
+    створити_тип_дії->тип_результату = AAV(visitContext(ctx->restyp));
+    return AV(this, ctx, АСДВидСтворитиТипДії, створити_тип_дії);
   }
 
   std::any TsilASTVisitor::visitType_fn_complex(
       TsilParser::Type_fn_complexContext* ctx) {
-    // todo: ...
+    const auto створити_тип_дії = new АСДДаніСтворитиТипДії();
+    std::vector<Параметр*> params;
+    for (const auto& param : ctx->type()) {
+      if (param != ctx->restyp) {
+        const auto t = AAV(visitContext(param));
+        const auto параметр = new Параметр();
+        параметр->ідентифікатор = nullptr;
+        параметр->тип = t;
+        params.push_back(параметр);
+      }
+    }
+    створити_тип_дії->кількість_параметрів = params.size();
+    створити_тип_дії->параметри = VecToArr(params);
+    створити_тип_дії->тип_результату = AAV(visitContext(ctx->restyp));
+    return AV(this, ctx, АСДВидСтворитиТипДії, створити_тип_дії);
   }
 
   std::any TsilASTVisitor::visitType_fn_complex_named(
       TsilParser::Type_fn_complex_namedContext* ctx) {
-    // todo: ...
+    const auto створити_тип_дії = new АСДДаніСтворитиТипДії();
+    std::vector<Параметр*> params;
+    for (const auto& param : ctx->param()) {
+      const auto параметр = any_cast<Параметр*>(visitParam(param));
+      params.push_back(параметр);
+    }
+    створити_тип_дії->кількість_параметрів = params.size();
+    створити_тип_дії->параметри = VecToArr(params);
+    створити_тип_дії->тип_результату = AAV(visitContext(ctx->restyp));
+    return AV(this, ctx, АСДВидСтворитиТипДії, створити_тип_дії);
   }
 
   std::any TsilASTVisitor::visitParam(TsilParser::ParamContext* ctx) {
-    // todo: ...
+    const auto параметр = new Параметр();
+    if (ctx->id) {
+      параметр->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    }
+    if (ctx->type()) {
+      параметр->тип = AAV(visitContext(ctx->type()));
+    }
+    return параметр;
   }
 
 } // namespace tsil::parser

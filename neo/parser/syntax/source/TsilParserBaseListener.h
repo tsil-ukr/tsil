@@ -139,6 +139,9 @@ public:
   virtual void enterOp_lor(TsilParser::Op_lorContext * /*ctx*/) override { }
   virtual void exitOp_lor(TsilParser::Op_lorContext * /*ctx*/) override { }
 
+  virtual void enterGendef(TsilParser::GendefContext * /*ctx*/) override { }
+  virtual void exitGendef(TsilParser::GendefContext * /*ctx*/) override { }
+
   virtual void enterExpr_operation(TsilParser::Expr_operationContext * /*ctx*/) override { }
   virtual void exitExpr_operation(TsilParser::Expr_operationContext * /*ctx*/) override { }
 
@@ -222,6 +225,9 @@ public:
 
   virtual void enterType_fn_simple(TsilParser::Type_fn_simpleContext * /*ctx*/) override { }
   virtual void exitType_fn_simple(TsilParser::Type_fn_simpleContext * /*ctx*/) override { }
+
+  virtual void enterType_fn(TsilParser::Type_fnContext * /*ctx*/) override { }
+  virtual void exitType_fn(TsilParser::Type_fnContext * /*ctx*/) override { }
 
   virtual void enterType_section_get(TsilParser::Type_section_getContext * /*ctx*/) override { }
   virtual void exitType_section_get(TsilParser::Type_section_getContext * /*ctx*/) override { }
