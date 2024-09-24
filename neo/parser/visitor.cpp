@@ -186,6 +186,9 @@ namespace tsil::parser {
             dynamic_cast<TsilParser::Body_elementContext*>(context)) {
       return visitBody_element(body_context);
     }
+    if (const auto ctx = dynamic_cast<TsilParser::ReturnContext*>(context)) {
+      return visitReturn(ctx);
+    }
     if (const auto ctx =
             dynamic_cast<TsilParser::Type_nestedContext*>(context)) {
       return visitType_nested(ctx);
@@ -562,7 +565,11 @@ namespace tsil::parser {
     }
     асд_дані_створити_дію->кількість_параметрів = params.size();
     асд_дані_створити_дію->параметри = VecToArr(params);
-    асд_дані_створити_дію->тип_результату = AAV(visitContext(ctx->restyp));
+    if (ctx->restyp != nullptr) {
+      асд_дані_створити_дію->тип_результату = AAV(visitContext(ctx->restyp));
+    } else {
+      асд_дані_створити_дію->тип_результату = nullptr;
+    }
     const auto асд_значення_створити_дію =
         AV(this, ctx, АСДВидСтворитиДію, асд_дані_створити_дію);
     const auto асд_дані_визначити = new АСДДаніВизначити();
@@ -773,7 +780,17 @@ namespace tsil::parser {
     if (ctx->expr() != nullptr) {
       return visitContext(ctx->expr());
     }
+    if (ctx->return_() != nullptr) {
+      return visitReturn(ctx->return_());
+    }
+    std::cout << "Unknown body element" << std::endl;
     return nullptr;
+  }
+
+  std::any TsilASTVisitor::visitReturn(TsilParser::ReturnContext* ctx) {
+    const auto асд_дані_вернути = new АСДДаніВернути();
+    асд_дані_вернути->значення = AAV(visitContext(ctx->value));
+    return AV(this, ctx, АСДВидВернути, асд_дані_вернути);
   }
 
   std::any TsilASTVisitor::visitType_nested(

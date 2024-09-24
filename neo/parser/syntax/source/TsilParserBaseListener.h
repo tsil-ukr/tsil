@@ -193,6 +193,9 @@ public:
   virtual void enterBody_element(TsilParser::Body_elementContext * /*ctx*/) override { }
   virtual void exitBody_element(TsilParser::Body_elementContext * /*ctx*/) override { }
 
+  virtual void enterReturn(TsilParser::ReturnContext * /*ctx*/) override { }
+  virtual void exitReturn(TsilParser::ReturnContext * /*ctx*/) override { }
+
   virtual void enterType_get(TsilParser::Type_getContext * /*ctx*/) override { }
   virtual void exitType_get(TsilParser::Type_getContext * /*ctx*/) override { }
 

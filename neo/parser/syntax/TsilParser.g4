@@ -52,12 +52,12 @@ op_lor: '|' '|';
 
 expr: operation #expr_operation;
 
-structure_declare: 'структура' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')?;
+structure_declare: 'структура' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? ';';
 structure_define: 'структура' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '{' (structure_element)* '}';
 structure_element: param ';';
 
-diia_declare: ('зовнішня' | 'місцева' | 'внутрішня') 'дія' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)?;
-diia_define: ('зовнішня' | 'місцева' | 'внутрішня') 'дія' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? body;
+diia_declare: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? ';';
+diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? body;
 
 tsil_declare: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? ';';
 tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? '=' expr ';';
@@ -85,7 +85,9 @@ body_element: structure_declare | structure_define
             | if
             | while
             | body
+            | return
             | ';';
+return: 'вернути' value=expr ';';
 
 type: '(' type ')' #type_nested
     | id=ID #type_subject

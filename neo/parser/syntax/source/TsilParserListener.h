@@ -191,6 +191,9 @@ public:
   virtual void enterBody_element(TsilParser::Body_elementContext *ctx) = 0;
   virtual void exitBody_element(TsilParser::Body_elementContext *ctx) = 0;
 
+  virtual void enterReturn(TsilParser::ReturnContext *ctx) = 0;
+  virtual void exitReturn(TsilParser::ReturnContext *ctx) = 0;
+
   virtual void enterType_get(TsilParser::Type_getContext *ctx) = 0;
   virtual void exitType_get(TsilParser::Type_getContext *ctx) = 0;
 

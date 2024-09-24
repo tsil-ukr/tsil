@@ -137,6 +137,8 @@ public:
 
     virtual std::any visitBody_element(TsilParser::Body_elementContext *context) = 0;
 
+    virtual std::any visitReturn(TsilParser::ReturnContext *context) = 0;
+
     virtual std::any visitType_get(TsilParser::Type_getContext *context) = 0;
 
     virtual std::any visitType_nested(TsilParser::Type_nestedContext *context) = 0;

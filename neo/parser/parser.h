@@ -181,6 +181,8 @@ namespace tsil::parser {
 
     std::any visitBody_element(TsilParser::Body_elementContext* ctx) override;
 
+    std::any visitReturn(TsilParser::ReturnContext* ctx) override;
+
     std::any visitType_nested(TsilParser::Type_nestedContext* ctx) override;
 
     std::any visitType_subject(TsilParser::Type_subjectContext* ctx) override;
