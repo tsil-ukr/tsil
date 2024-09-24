@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(tsil)
+project(xl)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -14,15 +14,7 @@ add_definitions(${LLVM_DEFINITIONS_LIST})
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 
-file(READ "../ВЕРСІЯ" TSIL_VERSION)
-
 add_subdirectory(parser)
-
-set(TSIL_SRC
-        xl.cpp
-        compiler.cpp
-        main.cpp
-)
 
 llvm_map_components_to_libnames(llvm_libs
         #        aarch64asmparser
@@ -223,8 +215,4 @@ llvm_map_components_to_libnames(llvm_libs
         #        xray
 )
 
-add_executable(tsil ${TSIL_SRC})
-target_link_libraries(tsil PUBLIC tsil_parser ${llvm_libs})
-target_link_options(tsil PUBLIC)
-target_compile_options(tsil PUBLIC -fexceptions -DTSIL_VERSION="${TSIL_VERSION}")
-set_target_properties(tsil PROPERTIES OUTPUT_NAME "ціль")
+add_library(xl STATIC xl/xl.cpp)
