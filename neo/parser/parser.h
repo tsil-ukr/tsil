@@ -42,6 +42,13 @@ namespace tsil::parser {
 
   СписокАСДЗначень AAVecToList(std::vector<АСДЗначення*> vec);
 
+  Ідентифікатор* ІД(TsilASTVisitor* visitor,
+                    antlr4::ParserRuleContext* context,
+                    const std::string& значення);
+  Ідентифікатор* ІД(TsilASTVisitor* visitor,
+                    antlr4::Token* token,
+                    const std::string& значення);
+
   class TsilASTVisitor final : public TsilParserBaseVisitor {
    public:
     antlr4::CommonTokenStream* tokens = nullptr;

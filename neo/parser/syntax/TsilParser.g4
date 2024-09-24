@@ -9,36 +9,46 @@ file: f_program=program EOF;
 program: body_element*;
 
 atom: '(' expr ')' #atom_nested
-    | ID #atom_subject
-    | atom ':' ':' ID #atom_section_get
-    | atom '<' type (',' type)* '>' #atom_template_get
-    | atom '.' ID #atom_get
-    | atom '[' expr ']' #atom_position_get
-    | atom '(' expr (',' expr)* ')' #atom_call;
+    | id=ID #atom_subject
+    | object=atom ':' ':' id=ID #atom_section_get
+    | object=atom '<' type (',' type)* '>' #atom_template_get
+    | object=atom '.' id=ID #atom_get
+    | object=atom '[' position=expr ']' #atom_position_get
+    | object=atom '(' expr (',' expr)* ')' #atom_call;
 
 operation: NUMBER #operation_number
-         | STRING #operation_string
+         | (tt=ID)? STRING #operation_string
          | atom #operation_atom
-         | operation '*' operation #operation_mul
-         | operation '/' operation #operation_div
-         | operation '%' operation #operation_mod
-         | operation '+' operation #operation_add
-         | operation '-' operation #operation_sub
-         | operation '<' '<' operation #operation_lshift
-         | operation '>' '>' operation #operation_rshift
-         | operation '>' '>' '>' operation #operation_urshift
-         | operation '<' operation #operation_lt
-         | operation '<' '=' operation #operation_lte
-         | operation '>' operation #operation_gt
-         | operation '>' '=' operation #operation_gte
-         | operation '=' '=' operation #operation_eq
-         | operation '!' '=' operation #operation_neq
-         | operation '&' operation #operation_and
-         | operation '^' operation #operation_xor
-         | operation '|' operation #operation_or
-         | operation '&' '&' operation #operation_land
-         | operation '|' '|' operation #operation_lor
-         | operation '?' operation ':' operation #operation_ternary;
+         | left=operation op='*' right=operation #operation_mul
+         | left=operation op='/' right=operation #operation_div
+         | left=operation op='%' right=operation #operation_mod
+         | left=operation op='+' right=operation #operation_add
+         | left=operation op='-' right=operation #operation_sub
+         | left=operation op=op_lshift right=operation #operation_lshift
+         | left=operation op=op_rshift right=operation #operation_rshift
+         | left=operation op=op_urshift right=operation #operation_urshift
+         | left=operation op='<' right=operation #operation_lt
+         | left=operation op=op_lte right=operation #operation_lte
+         | left=operation op='>' right=operation #operation_gt
+         | left=operation op=op_gte right=operation #operation_gte
+         | left=operation op=op_eq right=operation #operation_eq
+         | left=operation op=op_neq right=operation #operation_neq
+         | left=operation op='&' right=operation #operation_and
+         | left=operation op='^' right=operation #operation_xor
+         | left=operation op='|' right=operation #operation_or
+         | left=operation op=op_land right=operation #operation_land
+         | left=operation op=op_lor right=operation #operation_lor
+         | cond=operation '?' ifok=operation ':' ifnot=operation #operation_ternary;
+
+op_lshift: '<' '<';
+op_rshift: '>' '>';
+op_urshift: '>' '>' '>';
+op_lte: '<' '=';
+op_gte: '>' '=';
+op_eq: '=' '=';
+op_neq: '!' '=';
+op_land: '&' '&';
+op_lor: '|' '|';
 
 expr: operation #expr_operation;
 

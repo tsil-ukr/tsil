@@ -52,7 +52,7 @@ SEMICOLON: ';';
 QUOTE_OPEN: '{';
 QUOTE_CLOSE: '}';
 
-NUMBER: ('-')? INTEGER | FLOAT | HEX | BIN;
+NUMBER: INTEGER | FLOAT | HEX | BIN;
 INTEGER: DIGIT+;
 FLOAT: DIGIT+ '.' DIGIT+;
 HEX: '0ш' ('А' | 'а' | 'Б' | 'б' | 'В' | 'в' | 'Г' | 'г' | 'Ґ' | 'ґ' | 'Д' | 'д' | DIGIT)+;

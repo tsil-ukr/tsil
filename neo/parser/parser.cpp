@@ -68,6 +68,24 @@ namespace tsil::parser {
     return СписокАСДЗначень{.довжина = vec.size(), .елементи = elements};
   }
 
+  Ідентифікатор* ІД(TsilASTVisitor* visitor,
+                    antlr4::ParserRuleContext* context,
+                    const std::string& значення) {
+    const auto ідентифікатор = new Ідентифікатор();
+    ідентифікатор->значення = strdup(значення.c_str());
+    ідентифікатор->місцезнаходження = LOC(visitor, context);
+    return ідентифікатор;
+  }
+
+  Ідентифікатор* ІД(TsilASTVisitor* visitor,
+                    antlr4::Token* token,
+                    const std::string& значення) {
+    const auto ідентифікатор = new Ідентифікатор();
+    ідентифікатор->значення = strdup(значення.c_str());
+    ідентифікатор->місцезнаходження = LOC(visitor, token);
+    return ідентифікатор;
+  }
+
   void TsilParserErrorListener::syntaxError(antlr4::Recognizer* recognizer,
                                             antlr4::Token* offendingSymbol,
                                             size_t line,

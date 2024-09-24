@@ -83,6 +83,24 @@ public:
 
     virtual std::any visitOperation_and(TsilParser::Operation_andContext *context) = 0;
 
+    virtual std::any visitOp_lshift(TsilParser::Op_lshiftContext *context) = 0;
+
+    virtual std::any visitOp_rshift(TsilParser::Op_rshiftContext *context) = 0;
+
+    virtual std::any visitOp_urshift(TsilParser::Op_urshiftContext *context) = 0;
+
+    virtual std::any visitOp_lte(TsilParser::Op_lteContext *context) = 0;
+
+    virtual std::any visitOp_gte(TsilParser::Op_gteContext *context) = 0;
+
+    virtual std::any visitOp_eq(TsilParser::Op_eqContext *context) = 0;
+
+    virtual std::any visitOp_neq(TsilParser::Op_neqContext *context) = 0;
+
+    virtual std::any visitOp_land(TsilParser::Op_landContext *context) = 0;
+
+    virtual std::any visitOp_lor(TsilParser::Op_lorContext *context) = 0;
+
     virtual std::any visitExpr_operation(TsilParser::Expr_operationContext *context) = 0;
 
     virtual std::any visitStructure_declare(TsilParser::Structure_declareContext *context) = 0;
@@ -107,9 +125,9 @@ public:
 
     virtual std::any visitSet(TsilParser::SetContext *context) = 0;
 
-    virtual std::any visitSection_set(TsilParser::Section_setContext *context) = 0;
-
     virtual std::any visitPosition_set(TsilParser::Position_setContext *context) = 0;
+
+    virtual std::any visitSection_set(TsilParser::Section_setContext *context) = 0;
 
     virtual std::any visitIf(TsilParser::IfContext *context) = 0;
 

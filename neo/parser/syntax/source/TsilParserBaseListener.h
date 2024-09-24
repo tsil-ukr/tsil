@@ -112,6 +112,33 @@ public:
   virtual void enterOperation_and(TsilParser::Operation_andContext * /*ctx*/) override { }
   virtual void exitOperation_and(TsilParser::Operation_andContext * /*ctx*/) override { }
 
+  virtual void enterOp_lshift(TsilParser::Op_lshiftContext * /*ctx*/) override { }
+  virtual void exitOp_lshift(TsilParser::Op_lshiftContext * /*ctx*/) override { }
+
+  virtual void enterOp_rshift(TsilParser::Op_rshiftContext * /*ctx*/) override { }
+  virtual void exitOp_rshift(TsilParser::Op_rshiftContext * /*ctx*/) override { }
+
+  virtual void enterOp_urshift(TsilParser::Op_urshiftContext * /*ctx*/) override { }
+  virtual void exitOp_urshift(TsilParser::Op_urshiftContext * /*ctx*/) override { }
+
+  virtual void enterOp_lte(TsilParser::Op_lteContext * /*ctx*/) override { }
+  virtual void exitOp_lte(TsilParser::Op_lteContext * /*ctx*/) override { }
+
+  virtual void enterOp_gte(TsilParser::Op_gteContext * /*ctx*/) override { }
+  virtual void exitOp_gte(TsilParser::Op_gteContext * /*ctx*/) override { }
+
+  virtual void enterOp_eq(TsilParser::Op_eqContext * /*ctx*/) override { }
+  virtual void exitOp_eq(TsilParser::Op_eqContext * /*ctx*/) override { }
+
+  virtual void enterOp_neq(TsilParser::Op_neqContext * /*ctx*/) override { }
+  virtual void exitOp_neq(TsilParser::Op_neqContext * /*ctx*/) override { }
+
+  virtual void enterOp_land(TsilParser::Op_landContext * /*ctx*/) override { }
+  virtual void exitOp_land(TsilParser::Op_landContext * /*ctx*/) override { }
+
+  virtual void enterOp_lor(TsilParser::Op_lorContext * /*ctx*/) override { }
+  virtual void exitOp_lor(TsilParser::Op_lorContext * /*ctx*/) override { }
+
   virtual void enterExpr_operation(TsilParser::Expr_operationContext * /*ctx*/) override { }
   virtual void exitExpr_operation(TsilParser::Expr_operationContext * /*ctx*/) override { }
 
@@ -148,11 +175,11 @@ public:
   virtual void enterSet(TsilParser::SetContext * /*ctx*/) override { }
   virtual void exitSet(TsilParser::SetContext * /*ctx*/) override { }
 
-  virtual void enterSection_set(TsilParser::Section_setContext * /*ctx*/) override { }
-  virtual void exitSection_set(TsilParser::Section_setContext * /*ctx*/) override { }
-
   virtual void enterPosition_set(TsilParser::Position_setContext * /*ctx*/) override { }
   virtual void exitPosition_set(TsilParser::Position_setContext * /*ctx*/) override { }
+
+  virtual void enterSection_set(TsilParser::Section_setContext * /*ctx*/) override { }
+  virtual void exitSection_set(TsilParser::Section_setContext * /*ctx*/) override { }
 
   virtual void enterIf(TsilParser::IfContext * /*ctx*/) override { }
   virtual void exitIf(TsilParser::IfContext * /*ctx*/) override { }

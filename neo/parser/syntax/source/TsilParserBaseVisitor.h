@@ -143,6 +143,42 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitOp_lshift(TsilParser::Op_lshiftContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_rshift(TsilParser::Op_rshiftContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_urshift(TsilParser::Op_urshiftContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_lte(TsilParser::Op_lteContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_gte(TsilParser::Op_gteContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_eq(TsilParser::Op_eqContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_neq(TsilParser::Op_neqContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_land(TsilParser::Op_landContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOp_lor(TsilParser::Op_lorContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitExpr_operation(TsilParser::Expr_operationContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -191,11 +227,11 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitSection_set(TsilParser::Section_setContext *ctx) override {
+  virtual std::any visitPosition_set(TsilParser::Position_setContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitPosition_set(TsilParser::Position_setContext *ctx) override {
+  virtual std::any visitSection_set(TsilParser::Section_setContext *ctx) override {
     return visitChildren(ctx);
   }
 

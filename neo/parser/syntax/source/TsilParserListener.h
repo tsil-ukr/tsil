@@ -110,6 +110,33 @@ public:
   virtual void enterOperation_and(TsilParser::Operation_andContext *ctx) = 0;
   virtual void exitOperation_and(TsilParser::Operation_andContext *ctx) = 0;
 
+  virtual void enterOp_lshift(TsilParser::Op_lshiftContext *ctx) = 0;
+  virtual void exitOp_lshift(TsilParser::Op_lshiftContext *ctx) = 0;
+
+  virtual void enterOp_rshift(TsilParser::Op_rshiftContext *ctx) = 0;
+  virtual void exitOp_rshift(TsilParser::Op_rshiftContext *ctx) = 0;
+
+  virtual void enterOp_urshift(TsilParser::Op_urshiftContext *ctx) = 0;
+  virtual void exitOp_urshift(TsilParser::Op_urshiftContext *ctx) = 0;
+
+  virtual void enterOp_lte(TsilParser::Op_lteContext *ctx) = 0;
+  virtual void exitOp_lte(TsilParser::Op_lteContext *ctx) = 0;
+
+  virtual void enterOp_gte(TsilParser::Op_gteContext *ctx) = 0;
+  virtual void exitOp_gte(TsilParser::Op_gteContext *ctx) = 0;
+
+  virtual void enterOp_eq(TsilParser::Op_eqContext *ctx) = 0;
+  virtual void exitOp_eq(TsilParser::Op_eqContext *ctx) = 0;
+
+  virtual void enterOp_neq(TsilParser::Op_neqContext *ctx) = 0;
+  virtual void exitOp_neq(TsilParser::Op_neqContext *ctx) = 0;
+
+  virtual void enterOp_land(TsilParser::Op_landContext *ctx) = 0;
+  virtual void exitOp_land(TsilParser::Op_landContext *ctx) = 0;
+
+  virtual void enterOp_lor(TsilParser::Op_lorContext *ctx) = 0;
+  virtual void exitOp_lor(TsilParser::Op_lorContext *ctx) = 0;
+
   virtual void enterExpr_operation(TsilParser::Expr_operationContext *ctx) = 0;
   virtual void exitExpr_operation(TsilParser::Expr_operationContext *ctx) = 0;
 
@@ -146,11 +173,11 @@ public:
   virtual void enterSet(TsilParser::SetContext *ctx) = 0;
   virtual void exitSet(TsilParser::SetContext *ctx) = 0;
 
-  virtual void enterSection_set(TsilParser::Section_setContext *ctx) = 0;
-  virtual void exitSection_set(TsilParser::Section_setContext *ctx) = 0;
-
   virtual void enterPosition_set(TsilParser::Position_setContext *ctx) = 0;
   virtual void exitPosition_set(TsilParser::Position_setContext *ctx) = 0;
+
+  virtual void enterSection_set(TsilParser::Section_setContext *ctx) = 0;
+  virtual void exitSection_set(TsilParser::Section_setContext *ctx) = 0;
 
   virtual void enterIf(TsilParser::IfContext *ctx) = 0;
   virtual void exitIf(TsilParser::IfContext *ctx) = 0;
