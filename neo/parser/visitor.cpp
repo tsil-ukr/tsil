@@ -236,7 +236,7 @@ namespace tsil::parser {
     for (const auto& element : ctx->body_element()) {
       elements.push_back(AAV(visitBody_element(element)));
     }
-    return AAVecToList(elements);
+    return elements;
   }
 
   std::any TsilASTVisitor::visitAtom_nested(
@@ -589,7 +589,11 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitTsil_declare(
       TsilParser::Tsil_declareContext* ctx) {
     const auto асд_дані_створити_ціль = new АСДДаніСтворитиЦіль();
-    асд_дані_створити_ціль->тип = AAV(visitContext(ctx->type()));
+    if (ctx->type() != nullptr) {
+      асд_дані_створити_ціль->тип = AAV(visitContext(ctx->type()));
+    } else {
+      асд_дані_створити_ціль->тип = nullptr;
+    }
     асд_дані_створити_ціль->значення = nullptr;
     const auto асд_значення_створити_ціль =
         AV(this, ctx, АСДВидСтворитиЦіль, асд_дані_створити_ціль);
@@ -602,7 +606,11 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitTsil_define(
       TsilParser::Tsil_defineContext* ctx) {
     const auto асд_дані_створити_ціль = new АСДДаніСтворитиЦіль();
-    асд_дані_створити_ціль->тип = AAV(visitContext(ctx->type()));
+    if (ctx->type() != nullptr) {
+      асд_дані_створити_ціль->тип = AAV(visitContext(ctx->type()));
+    } else {
+      асд_дані_створити_ціль->тип = nullptr;
+    }
     асд_дані_створити_ціль->значення = AAV(visitContext(ctx->expr()));
     const auto асд_значення_створити_ціль =
         AV(this, ctx, АСДВидСтворитиЦіль, асд_дані_створити_ціль);

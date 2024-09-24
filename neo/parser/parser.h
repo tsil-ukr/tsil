@@ -49,6 +49,8 @@ namespace tsil::parser {
                     antlr4::Token* token,
                     const std::string& значення);
 
+  std::string АСДЗначенняВString(АСДЗначення* асд_значення);
+
   template <typename T>
   T* VecToArr(std::vector<T> vec) {
     T* arr = new T[vec.size()];

@@ -1,7 +1,12 @@
 set(TSIL_SYNTAX tsil_syntax CACHE INTERNAL "")
 set(TSIL_SYNTAX_SRC
+        source/TsilLexer.cpp
+        source/TsilParser.cpp
         source/TsilParserBaseListener.cpp
         source/TsilParserListener.cpp
+        source/TsilParserListener.cpp
+        source/TsilParserBaseVisitor.cpp
+        source/TsilParserVisitor.cpp
 )
 
 cmake_minimum_required(VERSION 3.26)
