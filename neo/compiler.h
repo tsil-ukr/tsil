@@ -11,6 +11,7 @@ struct Parameter;
 struct Native;
 struct Structure;
 struct Diia;
+struct Section;
 struct Tsil;
 struct Subject;
 struct Scope;
@@ -57,6 +58,10 @@ struct Diia {
   XLFunction* xlFunction;
 };
 
+struct Section {
+  std::string name;
+};
+
 struct Tsil {
   std::string name;
   Type type;
@@ -66,6 +71,7 @@ enum SubjectKind {
   SubjectKindNative,
   SubjectKindStructure,
   SubjectKindDiia,
+  SubjectKindSection,
   SubjectKindTsil,
 };
 
@@ -75,6 +81,7 @@ struct Subject {
     Native* native;
     Structure* structure;
     Diia* diia;
+    Section* section;
     Tsil* tsil;
   } d;
 };
@@ -85,7 +92,6 @@ struct Scope {
 };
 
 Scope* createScope(Scope* parent);
-
 std::optional<Subject> findSubject(Scope* scope, const std::string& name);
 void setSubject(Scope* scope, const std::string& name, Subject subject);
 
@@ -95,6 +101,14 @@ CompilationResult compile(Compiler* compiler,
 CompilationTypeResult compileAndReturnType(Compiler* compiler,
                                            Scope* scope,
                                            АСДЗначення* astValue);
+CompilationError* compileSectionBody(Compiler* compiler,
+                                     Scope* scope,
+                                     Section* section,
+                                     СписокАСДЗначень тіло);
+CompilationError* compileDiiaBody(Compiler* compiler,
+                                  Scope* scope,
+                                  Diia* diia,
+                                  СписокАСДЗначень тіло);
 
 struct Compiler {
   Scope* globalScope;
