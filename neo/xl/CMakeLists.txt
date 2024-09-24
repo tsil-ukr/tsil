@@ -14,8 +14,6 @@ add_definitions(${LLVM_DEFINITIONS_LIST})
 message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
 message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
 
-add_subdirectory(parser)
-
 llvm_map_components_to_libnames(llvm_libs
         #        aarch64asmparser
         #        aarch64codegen
@@ -215,4 +213,5 @@ llvm_map_components_to_libnames(llvm_libs
         #        xray
 )
 
-add_library(xl STATIC xl/xl.cpp)
+add_library(xl STATIC xl.cpp)
+target_link_libraries(xl PUBLIC ${llvm_libs})

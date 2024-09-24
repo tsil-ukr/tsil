@@ -406,7 +406,7 @@ namespace tsil::parser {
       antlr4::atn::ATNConfigSet* configs) {}
 } // namespace tsil::parser
 
-extern "C" РезультатРозборуЦілі розібрати_ціль(ТекстКоду* текст_коду) {
+extern "C" РезультатРозборуЦілі* розібрати_ціль(ТекстКоду* текст_коду) {
   antlr4::ANTLRInputStream input(текст_коду->значення);
 
   const auto lexer_error_listener = new tsil::parser::TsilParserErrorListener();
@@ -420,7 +420,7 @@ extern "C" РезультатРозборуЦілі розібрати_ціль(
   if (!lexer_error_listener->errors.empty()) {
     const auto error = lexer_error_listener->errors[0];
     delete lexer_error_listener;
-    return РезультатРозборуЦілі{false, {}, error};
+    return new РезультатРозборуЦілі{false, {}, error};
   }
 
   const auto parser_error_listener =
@@ -437,7 +437,7 @@ extern "C" РезультатРозборуЦілі розібрати_ціль(
     const auto error = parser_error_listener->errors[0];
     delete lexer_error_listener;
     delete parser_error_listener;
-    return РезультатРозборуЦілі{false, {}, error};
+    return new РезультатРозборуЦілі{false, {}, error};
   }
 
   const auto visitor = new tsil::parser::TsilASTVisitor();
@@ -454,7 +454,7 @@ extern "C" РезультатРозборуЦілі розібрати_ціль(
   delete parser_error_listener;
   delete visitor;
 
-  return РезультатРозборуЦілі{
+  return new РезультатРозборуЦілі{
       true, new СписокАСДЗначень{.довжина = body.size(), .елементи = elements},
       nullptr};
 

@@ -1,16 +1,18 @@
 #include <fstream>
 #include <iostream>
 
-extern "C" char* скомпілювати_ціль_в_ll(char* value);
+#include "parser/parser.h"
+
+extern "C" char* скомпілювати_ціль_в_ll(ТекстКоду* текст_коду);
 
 int main() {
   std::string filename = "тест.ц";
   std::ifstream file(filename);
   std::string code((std::istreambuf_iterator<char>(file)),
                    std::istreambuf_iterator<char>());
-  const auto result = скомпілювати_ціль_в_ll((char*)code.c_str());
+  auto текстКоду = new ТекстКоду((char*)filename.c_str(), (char*)code.c_str());
+  const auto result = скомпілювати_ціль_в_ll(текстКоду);
   std::cout << result << std::endl;
-  //  auto текстКоду = new ТекстКоду((char*)"...", (char*)code.c_str());
   //  auto parseResult = розібрати_ціль(текстКоду);
   //  if (parseResult.успіх) {
   //    const auto compiler = new Compiler();
