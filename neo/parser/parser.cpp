@@ -60,12 +60,12 @@ namespace tsil::parser {
     return асд_значення;
   }
 
-  СписокАСДЗначень AAVecToList(std::vector<АСДЗначення*> vec) {
+  СписокАСДЗначень* AAVecToList(std::vector<АСДЗначення*> vec) {
     const auto elements = new АСДЗначення*[vec.size()];
     for (size_t i = 0; i < vec.size(); i++) {
       elements[i] = vec[i];
     }
-    return СписокАСДЗначень{.довжина = vec.size(), .елементи = elements};
+    return new СписокАСДЗначень{.довжина = vec.size(), .елементи = elements};
   }
 
   Ідентифікатор* ІД(TsilASTVisitor* visitor,
@@ -176,6 +176,7 @@ extern "C" РезультатРозборуЦілі розібрати_ціль(
   delete visitor;
 
   return РезультатРозборуЦілі{
-      true, {.довжина = body.size(), .елементи = elements}, nullptr};
+      true, new СписокАСДЗначень{.довжина = body.size(), .елементи = elements},
+      nullptr};
 
 } // namespace tsil::parser

@@ -40,7 +40,7 @@ namespace tsil::parser {
                   size_t kind,
                   void* data);
 
-  СписокАСДЗначень AAVecToList(std::vector<АСДЗначення*> vec);
+  СписокАСДЗначень* AAVecToList(std::vector<АСДЗначення*> vec);
 
   Ідентифікатор* ІД(TsilASTVisitor* visitor,
                     antlr4::ParserRuleContext* context,
@@ -48,6 +48,15 @@ namespace tsil::parser {
   Ідентифікатор* ІД(TsilASTVisitor* visitor,
                     antlr4::Token* token,
                     const std::string& значення);
+
+  template <typename T>
+  T* VecToArr(std::vector<T> vec) {
+    T* arr = new T[vec.size()];
+    for (size_t i = 0; i < vec.size(); i++) {
+      arr[i] = vec[i];
+    }
+    return arr;
+  }
 
   class TsilASTVisitor final : public TsilParserBaseVisitor {
    public:

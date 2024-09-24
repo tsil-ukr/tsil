@@ -52,27 +52,27 @@ op_lor: '|' '|';
 
 expr: operation #expr_operation;
 
-structure_declare: 'структура' ID ('<' ID (',' ID)* '>')?;
-structure_define: 'структура' ID ('<' ID (',' ID)* '>')? '{' (structure_element)* '}';
+structure_declare: 'структура' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')?;
+structure_define: 'структура' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '{' (structure_element)* '}';
 structure_element: param ';';
 
-diia_declare: ('зовнішня' | 'місцева' | 'внутрішня') 'дія' ID ('<' ID (',' ID)* '>')? '(' (param (',' param)*)? ')' (':' type)?;
-diia_define: ('зовнішня' | 'місцева' | 'внутрішня') 'дія' ID ('<' ID (',' ID)* '>')? '(' (param (',' param)*)? ')' (':' type)? body;
+diia_declare: ('зовнішня' | 'місцева' | 'внутрішня') 'дія' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)?;
+diia_define: ('зовнішня' | 'місцева' | 'внутрішня') 'дія' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? body;
 
-tsil_declare: (td_var='змінна' | td_immut='стала' | td_const='ціль') ID (':' type)? ';';
-tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') ID (':' type)? '=' expr ';';
+tsil_declare: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? ';';
+tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? '=' expr ';';
 
-synonym: 'синонім' ID '=' expr ';';
+synonym: 'синонім' id=ID '=' expr ';';
 
-section_declare: 'секція' ID;
-section_define: 'секція' ID body;
+section_declare: 'секція' id=ID;
+section_define: 'секція' id=ID body;
 
-set: atom '.' ID '=' expr ';';
-position_set: atom '[' expr ']' '=' expr ';';
-section_set: atom ':' ':' ID '=' expr ';';
+set: object=atom '.' id=ID '=' value=expr ';';
+position_set: object=atom '[' idx=expr ']' '=' value=expr ';';
+section_set: object=atom ':' ':' id=ID '=' value=expr ';';
 
-if: 'якщо' operation body ('інакше' (body | if))?;
-while: 'поки' operation body;
+if: 'якщо' cond=operation ifok=body ('інакше' (ifnot=body | ifnotif=if))?;
+while: 'поки' cond=operation body;
 
 body: '{' (body_element)* '}';
 body_element: structure_declare | structure_define

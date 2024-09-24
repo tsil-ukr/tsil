@@ -2832,7 +2832,7 @@ TsilParser::Structure_declareContext* TsilParser::structure_declare() {
     setState(240);
     match(TsilParser::KW_STRUCT);
     setState(241);
-    match(TsilParser::ID);
+    antlrcpp::downCast<Structure_declareContext *>(_localctx)->id = match(TsilParser::ID);
     setState(252);
     _errHandler->sync(this);
 
@@ -2841,7 +2841,7 @@ TsilParser::Structure_declareContext* TsilParser::structure_declare() {
       setState(242);
       match(TsilParser::LESSER);
       setState(243);
-      match(TsilParser::ID);
+      antlrcpp::downCast<Structure_declareContext *>(_localctx)->generic_id = match(TsilParser::ID);
       setState(248);
       _errHandler->sync(this);
       _la = _input->LA(1);
@@ -2849,7 +2849,7 @@ TsilParser::Structure_declareContext* TsilParser::structure_declare() {
         setState(244);
         match(TsilParser::COMA);
         setState(245);
-        match(TsilParser::ID);
+        antlrcpp::downCast<Structure_declareContext *>(_localctx)->generic_id = match(TsilParser::ID);
         setState(250);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -2878,20 +2878,20 @@ tree::TerminalNode* TsilParser::Structure_defineContext::KW_STRUCT() {
   return getToken(TsilParser::KW_STRUCT, 0);
 }
 
-std::vector<tree::TerminalNode *> TsilParser::Structure_defineContext::ID() {
-  return getTokens(TsilParser::ID);
-}
-
-tree::TerminalNode* TsilParser::Structure_defineContext::ID(size_t i) {
-  return getToken(TsilParser::ID, i);
-}
-
 tree::TerminalNode* TsilParser::Structure_defineContext::QUOTE_OPEN() {
   return getToken(TsilParser::QUOTE_OPEN, 0);
 }
 
 tree::TerminalNode* TsilParser::Structure_defineContext::QUOTE_CLOSE() {
   return getToken(TsilParser::QUOTE_CLOSE, 0);
+}
+
+std::vector<tree::TerminalNode *> TsilParser::Structure_defineContext::ID() {
+  return getTokens(TsilParser::ID);
+}
+
+tree::TerminalNode* TsilParser::Structure_defineContext::ID(size_t i) {
+  return getToken(TsilParser::ID, i);
 }
 
 tree::TerminalNode* TsilParser::Structure_defineContext::LESSER() {
@@ -2960,7 +2960,7 @@ TsilParser::Structure_defineContext* TsilParser::structure_define() {
     setState(254);
     match(TsilParser::KW_STRUCT);
     setState(255);
-    match(TsilParser::ID);
+    antlrcpp::downCast<Structure_defineContext *>(_localctx)->id = match(TsilParser::ID);
     setState(266);
     _errHandler->sync(this);
 
@@ -2969,7 +2969,7 @@ TsilParser::Structure_defineContext* TsilParser::structure_define() {
       setState(256);
       match(TsilParser::LESSER);
       setState(257);
-      match(TsilParser::ID);
+      antlrcpp::downCast<Structure_defineContext *>(_localctx)->generic_id = match(TsilParser::ID);
       setState(262);
       _errHandler->sync(this);
       _la = _input->LA(1);
@@ -2977,7 +2977,7 @@ TsilParser::Structure_defineContext* TsilParser::structure_define() {
         setState(258);
         match(TsilParser::COMA);
         setState(259);
-        match(TsilParser::ID);
+        antlrcpp::downCast<Structure_defineContext *>(_localctx)->generic_id = match(TsilParser::ID);
         setState(264);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -3087,14 +3087,6 @@ tree::TerminalNode* TsilParser::Diia_declareContext::KW_DIIA() {
   return getToken(TsilParser::KW_DIIA, 0);
 }
 
-std::vector<tree::TerminalNode *> TsilParser::Diia_declareContext::ID() {
-  return getTokens(TsilParser::ID);
-}
-
-tree::TerminalNode* TsilParser::Diia_declareContext::ID(size_t i) {
-  return getToken(TsilParser::ID, i);
-}
-
 tree::TerminalNode* TsilParser::Diia_declareContext::PAREN_OPEN() {
   return getToken(TsilParser::PAREN_OPEN, 0);
 }
@@ -3113,6 +3105,14 @@ tree::TerminalNode* TsilParser::Diia_declareContext::KW_LOCAL() {
 
 tree::TerminalNode* TsilParser::Diia_declareContext::KW_PRIVATE() {
   return getToken(TsilParser::KW_PRIVATE, 0);
+}
+
+std::vector<tree::TerminalNode *> TsilParser::Diia_declareContext::ID() {
+  return getTokens(TsilParser::ID);
+}
+
+tree::TerminalNode* TsilParser::Diia_declareContext::ID(size_t i) {
+  return getToken(TsilParser::ID, i);
 }
 
 tree::TerminalNode* TsilParser::Diia_declareContext::LESSER() {
@@ -3199,7 +3199,7 @@ TsilParser::Diia_declareContext* TsilParser::diia_declare() {
     setState(281);
     match(TsilParser::KW_DIIA);
     setState(282);
-    match(TsilParser::ID);
+    antlrcpp::downCast<Diia_declareContext *>(_localctx)->id = match(TsilParser::ID);
     setState(293);
     _errHandler->sync(this);
 
@@ -3208,7 +3208,7 @@ TsilParser::Diia_declareContext* TsilParser::diia_declare() {
       setState(283);
       match(TsilParser::LESSER);
       setState(284);
-      match(TsilParser::ID);
+      antlrcpp::downCast<Diia_declareContext *>(_localctx)->generic_id = match(TsilParser::ID);
       setState(289);
       _errHandler->sync(this);
       _la = _input->LA(1);
@@ -3216,7 +3216,7 @@ TsilParser::Diia_declareContext* TsilParser::diia_declare() {
         setState(285);
         match(TsilParser::COMA);
         setState(286);
-        match(TsilParser::ID);
+        antlrcpp::downCast<Diia_declareContext *>(_localctx)->generic_id = match(TsilParser::ID);
         setState(291);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -3256,7 +3256,7 @@ TsilParser::Diia_declareContext* TsilParser::diia_declare() {
       setState(307);
       match(TsilParser::COLON);
       setState(308);
-      type(0);
+      antlrcpp::downCast<Diia_declareContext *>(_localctx)->restyp = type(0);
     }
    
   }
@@ -3277,14 +3277,6 @@ TsilParser::Diia_defineContext::Diia_defineContext(ParserRuleContext *parent, si
 
 tree::TerminalNode* TsilParser::Diia_defineContext::KW_DIIA() {
   return getToken(TsilParser::KW_DIIA, 0);
-}
-
-std::vector<tree::TerminalNode *> TsilParser::Diia_defineContext::ID() {
-  return getTokens(TsilParser::ID);
-}
-
-tree::TerminalNode* TsilParser::Diia_defineContext::ID(size_t i) {
-  return getToken(TsilParser::ID, i);
 }
 
 tree::TerminalNode* TsilParser::Diia_defineContext::PAREN_OPEN() {
@@ -3309,6 +3301,14 @@ tree::TerminalNode* TsilParser::Diia_defineContext::KW_LOCAL() {
 
 tree::TerminalNode* TsilParser::Diia_defineContext::KW_PRIVATE() {
   return getToken(TsilParser::KW_PRIVATE, 0);
+}
+
+std::vector<tree::TerminalNode *> TsilParser::Diia_defineContext::ID() {
+  return getTokens(TsilParser::ID);
+}
+
+tree::TerminalNode* TsilParser::Diia_defineContext::ID(size_t i) {
+  return getToken(TsilParser::ID, i);
 }
 
 tree::TerminalNode* TsilParser::Diia_defineContext::LESSER() {
@@ -3395,7 +3395,7 @@ TsilParser::Diia_defineContext* TsilParser::diia_define() {
     setState(312);
     match(TsilParser::KW_DIIA);
     setState(313);
-    match(TsilParser::ID);
+    antlrcpp::downCast<Diia_defineContext *>(_localctx)->id = match(TsilParser::ID);
     setState(324);
     _errHandler->sync(this);
 
@@ -3404,7 +3404,7 @@ TsilParser::Diia_defineContext* TsilParser::diia_define() {
       setState(314);
       match(TsilParser::LESSER);
       setState(315);
-      match(TsilParser::ID);
+      antlrcpp::downCast<Diia_defineContext *>(_localctx)->generic_id = match(TsilParser::ID);
       setState(320);
       _errHandler->sync(this);
       _la = _input->LA(1);
@@ -3412,7 +3412,7 @@ TsilParser::Diia_defineContext* TsilParser::diia_define() {
         setState(316);
         match(TsilParser::COMA);
         setState(317);
-        match(TsilParser::ID);
+        antlrcpp::downCast<Diia_defineContext *>(_localctx)->generic_id = match(TsilParser::ID);
         setState(322);
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -3452,7 +3452,7 @@ TsilParser::Diia_defineContext* TsilParser::diia_define() {
       setState(338);
       match(TsilParser::COLON);
       setState(339);
-      type(0);
+      antlrcpp::downCast<Diia_defineContext *>(_localctx)->restyp = type(0);
     }
     setState(342);
     body();
@@ -3473,12 +3473,12 @@ TsilParser::Tsil_declareContext::Tsil_declareContext(ParserRuleContext *parent, 
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* TsilParser::Tsil_declareContext::ID() {
-  return getToken(TsilParser::ID, 0);
-}
-
 tree::TerminalNode* TsilParser::Tsil_declareContext::SEMICOLON() {
   return getToken(TsilParser::SEMICOLON, 0);
+}
+
+tree::TerminalNode* TsilParser::Tsil_declareContext::ID() {
+  return getToken(TsilParser::ID, 0);
 }
 
 tree::TerminalNode* TsilParser::Tsil_declareContext::KW_VAR() {
@@ -3565,7 +3565,7 @@ TsilParser::Tsil_declareContext* TsilParser::tsil_declare() {
       throw NoViableAltException(this);
     }
     setState(349);
-    match(TsilParser::ID);
+    antlrcpp::downCast<Tsil_declareContext *>(_localctx)->id = match(TsilParser::ID);
     setState(352);
     _errHandler->sync(this);
 
@@ -3595,10 +3595,6 @@ TsilParser::Tsil_defineContext::Tsil_defineContext(ParserRuleContext *parent, si
   : ParserRuleContext(parent, invokingState) {
 }
 
-tree::TerminalNode* TsilParser::Tsil_defineContext::ID() {
-  return getToken(TsilParser::ID, 0);
-}
-
 tree::TerminalNode* TsilParser::Tsil_defineContext::EQUAL() {
   return getToken(TsilParser::EQUAL, 0);
 }
@@ -3609,6 +3605,10 @@ TsilParser::ExprContext* TsilParser::Tsil_defineContext::expr() {
 
 tree::TerminalNode* TsilParser::Tsil_defineContext::SEMICOLON() {
   return getToken(TsilParser::SEMICOLON, 0);
+}
+
+tree::TerminalNode* TsilParser::Tsil_defineContext::ID() {
+  return getToken(TsilParser::ID, 0);
 }
 
 tree::TerminalNode* TsilParser::Tsil_defineContext::KW_VAR() {
@@ -3695,7 +3695,7 @@ TsilParser::Tsil_defineContext* TsilParser::tsil_define() {
       throw NoViableAltException(this);
     }
     setState(361);
-    match(TsilParser::ID);
+    antlrcpp::downCast<Tsil_defineContext *>(_localctx)->id = match(TsilParser::ID);
     setState(364);
     _errHandler->sync(this);
 
@@ -3733,10 +3733,6 @@ tree::TerminalNode* TsilParser::SynonymContext::KW_SYNONYM() {
   return getToken(TsilParser::KW_SYNONYM, 0);
 }
 
-tree::TerminalNode* TsilParser::SynonymContext::ID() {
-  return getToken(TsilParser::ID, 0);
-}
-
 tree::TerminalNode* TsilParser::SynonymContext::EQUAL() {
   return getToken(TsilParser::EQUAL, 0);
 }
@@ -3747,6 +3743,10 @@ TsilParser::ExprContext* TsilParser::SynonymContext::expr() {
 
 tree::TerminalNode* TsilParser::SynonymContext::SEMICOLON() {
   return getToken(TsilParser::SEMICOLON, 0);
+}
+
+tree::TerminalNode* TsilParser::SynonymContext::ID() {
+  return getToken(TsilParser::ID, 0);
 }
 
 
@@ -3790,7 +3790,7 @@ TsilParser::SynonymContext* TsilParser::synonym() {
     setState(370);
     match(TsilParser::KW_SYNONYM);
     setState(371);
-    match(TsilParser::ID);
+    antlrcpp::downCast<SynonymContext *>(_localctx)->id = match(TsilParser::ID);
     setState(372);
     match(TsilParser::EQUAL);
     setState(373);
@@ -3863,7 +3863,7 @@ TsilParser::Section_declareContext* TsilParser::section_declare() {
     setState(376);
     match(TsilParser::KW_SECTION);
     setState(377);
-    match(TsilParser::ID);
+    antlrcpp::downCast<Section_declareContext *>(_localctx)->id = match(TsilParser::ID);
    
   }
   catch (RecognitionException &e) {
@@ -3885,12 +3885,12 @@ tree::TerminalNode* TsilParser::Section_defineContext::KW_SECTION() {
   return getToken(TsilParser::KW_SECTION, 0);
 }
 
-tree::TerminalNode* TsilParser::Section_defineContext::ID() {
-  return getToken(TsilParser::ID, 0);
-}
-
 TsilParser::BodyContext* TsilParser::Section_defineContext::body() {
   return getRuleContext<TsilParser::BodyContext>(0);
+}
+
+tree::TerminalNode* TsilParser::Section_defineContext::ID() {
+  return getToken(TsilParser::ID, 0);
 }
 
 
@@ -3934,7 +3934,7 @@ TsilParser::Section_defineContext* TsilParser::section_define() {
     setState(379);
     match(TsilParser::KW_SECTION);
     setState(380);
-    match(TsilParser::ID);
+    antlrcpp::downCast<Section_defineContext *>(_localctx)->id = match(TsilParser::ID);
     setState(381);
     body();
    
@@ -3954,28 +3954,28 @@ TsilParser::SetContext::SetContext(ParserRuleContext *parent, size_t invokingSta
   : ParserRuleContext(parent, invokingState) {
 }
 
-TsilParser::AtomContext* TsilParser::SetContext::atom() {
-  return getRuleContext<TsilParser::AtomContext>(0);
-}
-
 tree::TerminalNode* TsilParser::SetContext::DOT() {
   return getToken(TsilParser::DOT, 0);
-}
-
-tree::TerminalNode* TsilParser::SetContext::ID() {
-  return getToken(TsilParser::ID, 0);
 }
 
 tree::TerminalNode* TsilParser::SetContext::EQUAL() {
   return getToken(TsilParser::EQUAL, 0);
 }
 
-TsilParser::ExprContext* TsilParser::SetContext::expr() {
-  return getRuleContext<TsilParser::ExprContext>(0);
-}
-
 tree::TerminalNode* TsilParser::SetContext::SEMICOLON() {
   return getToken(TsilParser::SEMICOLON, 0);
+}
+
+TsilParser::AtomContext* TsilParser::SetContext::atom() {
+  return getRuleContext<TsilParser::AtomContext>(0);
+}
+
+tree::TerminalNode* TsilParser::SetContext::ID() {
+  return getToken(TsilParser::ID, 0);
+}
+
+TsilParser::ExprContext* TsilParser::SetContext::expr() {
+  return getRuleContext<TsilParser::ExprContext>(0);
 }
 
 
@@ -4017,15 +4017,15 @@ TsilParser::SetContext* TsilParser::set() {
   try {
     enterOuterAlt(_localctx, 1);
     setState(383);
-    atom(0);
+    antlrcpp::downCast<SetContext *>(_localctx)->object = atom(0);
     setState(384);
     match(TsilParser::DOT);
     setState(385);
-    match(TsilParser::ID);
+    antlrcpp::downCast<SetContext *>(_localctx)->id = match(TsilParser::ID);
     setState(386);
     match(TsilParser::EQUAL);
     setState(387);
-    expr();
+    antlrcpp::downCast<SetContext *>(_localctx)->value = expr();
     setState(388);
     match(TsilParser::SEMICOLON);
    
@@ -4045,20 +4045,8 @@ TsilParser::Position_setContext::Position_setContext(ParserRuleContext *parent, 
   : ParserRuleContext(parent, invokingState) {
 }
 
-TsilParser::AtomContext* TsilParser::Position_setContext::atom() {
-  return getRuleContext<TsilParser::AtomContext>(0);
-}
-
 tree::TerminalNode* TsilParser::Position_setContext::BRACKET_OPEN() {
   return getToken(TsilParser::BRACKET_OPEN, 0);
-}
-
-std::vector<TsilParser::ExprContext *> TsilParser::Position_setContext::expr() {
-  return getRuleContexts<TsilParser::ExprContext>();
-}
-
-TsilParser::ExprContext* TsilParser::Position_setContext::expr(size_t i) {
-  return getRuleContext<TsilParser::ExprContext>(i);
 }
 
 tree::TerminalNode* TsilParser::Position_setContext::BRACKET_CLOSE() {
@@ -4071,6 +4059,18 @@ tree::TerminalNode* TsilParser::Position_setContext::EQUAL() {
 
 tree::TerminalNode* TsilParser::Position_setContext::SEMICOLON() {
   return getToken(TsilParser::SEMICOLON, 0);
+}
+
+TsilParser::AtomContext* TsilParser::Position_setContext::atom() {
+  return getRuleContext<TsilParser::AtomContext>(0);
+}
+
+std::vector<TsilParser::ExprContext *> TsilParser::Position_setContext::expr() {
+  return getRuleContexts<TsilParser::ExprContext>();
+}
+
+TsilParser::ExprContext* TsilParser::Position_setContext::expr(size_t i) {
+  return getRuleContext<TsilParser::ExprContext>(i);
 }
 
 
@@ -4112,17 +4112,17 @@ TsilParser::Position_setContext* TsilParser::position_set() {
   try {
     enterOuterAlt(_localctx, 1);
     setState(390);
-    atom(0);
+    antlrcpp::downCast<Position_setContext *>(_localctx)->object = atom(0);
     setState(391);
     match(TsilParser::BRACKET_OPEN);
     setState(392);
-    expr();
+    antlrcpp::downCast<Position_setContext *>(_localctx)->idx = expr();
     setState(393);
     match(TsilParser::BRACKET_CLOSE);
     setState(394);
     match(TsilParser::EQUAL);
     setState(395);
-    expr();
+    antlrcpp::downCast<Position_setContext *>(_localctx)->value = expr();
     setState(396);
     match(TsilParser::SEMICOLON);
    
@@ -4142,10 +4142,6 @@ TsilParser::Section_setContext::Section_setContext(ParserRuleContext *parent, si
   : ParserRuleContext(parent, invokingState) {
 }
 
-TsilParser::AtomContext* TsilParser::Section_setContext::atom() {
-  return getRuleContext<TsilParser::AtomContext>(0);
-}
-
 std::vector<tree::TerminalNode *> TsilParser::Section_setContext::COLON() {
   return getTokens(TsilParser::COLON);
 }
@@ -4154,20 +4150,24 @@ tree::TerminalNode* TsilParser::Section_setContext::COLON(size_t i) {
   return getToken(TsilParser::COLON, i);
 }
 
-tree::TerminalNode* TsilParser::Section_setContext::ID() {
-  return getToken(TsilParser::ID, 0);
-}
-
 tree::TerminalNode* TsilParser::Section_setContext::EQUAL() {
   return getToken(TsilParser::EQUAL, 0);
 }
 
-TsilParser::ExprContext* TsilParser::Section_setContext::expr() {
-  return getRuleContext<TsilParser::ExprContext>(0);
-}
-
 tree::TerminalNode* TsilParser::Section_setContext::SEMICOLON() {
   return getToken(TsilParser::SEMICOLON, 0);
+}
+
+TsilParser::AtomContext* TsilParser::Section_setContext::atom() {
+  return getRuleContext<TsilParser::AtomContext>(0);
+}
+
+tree::TerminalNode* TsilParser::Section_setContext::ID() {
+  return getToken(TsilParser::ID, 0);
+}
+
+TsilParser::ExprContext* TsilParser::Section_setContext::expr() {
+  return getRuleContext<TsilParser::ExprContext>(0);
 }
 
 
@@ -4209,17 +4209,17 @@ TsilParser::Section_setContext* TsilParser::section_set() {
   try {
     enterOuterAlt(_localctx, 1);
     setState(398);
-    atom(0);
+    antlrcpp::downCast<Section_setContext *>(_localctx)->object = atom(0);
     setState(399);
     match(TsilParser::COLON);
     setState(400);
     match(TsilParser::COLON);
     setState(401);
-    match(TsilParser::ID);
+    antlrcpp::downCast<Section_setContext *>(_localctx)->id = match(TsilParser::ID);
     setState(402);
     match(TsilParser::EQUAL);
     setState(403);
-    expr();
+    antlrcpp::downCast<Section_setContext *>(_localctx)->value = expr();
     setState(404);
     match(TsilParser::SEMICOLON);
    
@@ -4305,9 +4305,9 @@ TsilParser::IfContext* TsilParser::if_() {
     setState(406);
     match(TsilParser::KW_IF);
     setState(407);
-    operation(0);
+    antlrcpp::downCast<IfContext *>(_localctx)->cond = operation(0);
     setState(408);
-    body();
+    antlrcpp::downCast<IfContext *>(_localctx)->ifok = body();
     setState(414);
     _errHandler->sync(this);
 
@@ -4320,13 +4320,13 @@ TsilParser::IfContext* TsilParser::if_() {
       switch (_input->LA(1)) {
         case TsilParser::QUOTE_OPEN: {
           setState(410);
-          body();
+          antlrcpp::downCast<IfContext *>(_localctx)->ifnot = body();
           break;
         }
 
         case TsilParser::KW_IF: {
           setState(411);
-          if_();
+          antlrcpp::downCast<IfContext *>(_localctx)->ifnotif = if_();
           break;
         }
 
@@ -4355,12 +4355,12 @@ tree::TerminalNode* TsilParser::WhileContext::KW_WHILE() {
   return getToken(TsilParser::KW_WHILE, 0);
 }
 
-TsilParser::OperationContext* TsilParser::WhileContext::operation() {
-  return getRuleContext<TsilParser::OperationContext>(0);
-}
-
 TsilParser::BodyContext* TsilParser::WhileContext::body() {
   return getRuleContext<TsilParser::BodyContext>(0);
+}
+
+TsilParser::OperationContext* TsilParser::WhileContext::operation() {
+  return getRuleContext<TsilParser::OperationContext>(0);
 }
 
 
@@ -4404,7 +4404,7 @@ TsilParser::WhileContext* TsilParser::while_() {
     setState(416);
     match(TsilParser::KW_WHILE);
     setState(417);
-    operation(0);
+    antlrcpp::downCast<WhileContext *>(_localctx)->cond = operation(0);
     setState(418);
     body();
    
