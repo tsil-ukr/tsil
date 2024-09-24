@@ -4769,12 +4769,12 @@ void TsilParser::TypeContext::copyFrom(TypeContext *ctx) {
 
 //----------------- Type_getContext ------------------------------------------------------------------
 
-TsilParser::TypeContext* TsilParser::Type_getContext::type() {
-  return getRuleContext<TsilParser::TypeContext>(0);
-}
-
 tree::TerminalNode* TsilParser::Type_getContext::DOT() {
   return getToken(TsilParser::DOT, 0);
+}
+
+TsilParser::TypeContext* TsilParser::Type_getContext::type() {
+  return getRuleContext<TsilParser::TypeContext>(0);
 }
 
 tree::TerminalNode* TsilParser::Type_getContext::ID() {
@@ -4860,20 +4860,20 @@ std::any TsilParser::Type_subjectContext::accept(tree::ParseTreeVisitor *visitor
 }
 //----------------- Type_arrayContext ------------------------------------------------------------------
 
-TsilParser::TypeContext* TsilParser::Type_arrayContext::type() {
-  return getRuleContext<TsilParser::TypeContext>(0);
-}
-
 tree::TerminalNode* TsilParser::Type_arrayContext::BRACKET_OPEN() {
   return getToken(TsilParser::BRACKET_OPEN, 0);
 }
 
-tree::TerminalNode* TsilParser::Type_arrayContext::NUMBER() {
-  return getToken(TsilParser::NUMBER, 0);
-}
-
 tree::TerminalNode* TsilParser::Type_arrayContext::BRACKET_CLOSE() {
   return getToken(TsilParser::BRACKET_CLOSE, 0);
+}
+
+TsilParser::TypeContext* TsilParser::Type_arrayContext::type() {
+  return getRuleContext<TsilParser::TypeContext>(0);
+}
+
+tree::TerminalNode* TsilParser::Type_arrayContext::NUMBER() {
+  return getToken(TsilParser::NUMBER, 0);
 }
 
 TsilParser::Type_arrayContext::Type_arrayContext(TypeContext *ctx) { copyFrom(ctx); }
@@ -4901,14 +4901,6 @@ tree::TerminalNode* TsilParser::Type_fn_complexContext::PAREN_OPEN() {
   return getToken(TsilParser::PAREN_OPEN, 0);
 }
 
-std::vector<TsilParser::TypeContext *> TsilParser::Type_fn_complexContext::type() {
-  return getRuleContexts<TsilParser::TypeContext>();
-}
-
-TsilParser::TypeContext* TsilParser::Type_fn_complexContext::type(size_t i) {
-  return getRuleContext<TsilParser::TypeContext>(i);
-}
-
 tree::TerminalNode* TsilParser::Type_fn_complexContext::PAREN_CLOSE() {
   return getToken(TsilParser::PAREN_CLOSE, 0);
 }
@@ -4919,6 +4911,14 @@ tree::TerminalNode* TsilParser::Type_fn_complexContext::MINUS() {
 
 tree::TerminalNode* TsilParser::Type_fn_complexContext::GREATER() {
   return getToken(TsilParser::GREATER, 0);
+}
+
+std::vector<TsilParser::TypeContext *> TsilParser::Type_fn_complexContext::type() {
+  return getRuleContexts<TsilParser::TypeContext>();
+}
+
+TsilParser::TypeContext* TsilParser::Type_fn_complexContext::type(size_t i) {
+  return getRuleContext<TsilParser::TypeContext>(i);
 }
 
 std::vector<tree::TerminalNode *> TsilParser::Type_fn_complexContext::COMA() {
@@ -4950,20 +4950,20 @@ std::any TsilParser::Type_fn_complexContext::accept(tree::ParseTreeVisitor *visi
 }
 //----------------- Type_template_getContext ------------------------------------------------------------------
 
-std::vector<TsilParser::TypeContext *> TsilParser::Type_template_getContext::type() {
-  return getRuleContexts<TsilParser::TypeContext>();
-}
-
-TsilParser::TypeContext* TsilParser::Type_template_getContext::type(size_t i) {
-  return getRuleContext<TsilParser::TypeContext>(i);
-}
-
 tree::TerminalNode* TsilParser::Type_template_getContext::LESSER() {
   return getToken(TsilParser::LESSER, 0);
 }
 
 tree::TerminalNode* TsilParser::Type_template_getContext::GREATER() {
   return getToken(TsilParser::GREATER, 0);
+}
+
+std::vector<TsilParser::TypeContext *> TsilParser::Type_template_getContext::type() {
+  return getRuleContexts<TsilParser::TypeContext>();
+}
+
+TsilParser::TypeContext* TsilParser::Type_template_getContext::type(size_t i) {
+  return getRuleContext<TsilParser::TypeContext>(i);
 }
 
 std::vector<tree::TerminalNode *> TsilParser::Type_template_getContext::COMA() {
@@ -5052,20 +5052,20 @@ std::any TsilParser::Type_fn_complex_namedContext::accept(tree::ParseTreeVisitor
 }
 //----------------- Type_fn_simpleContext ------------------------------------------------------------------
 
-std::vector<TsilParser::TypeContext *> TsilParser::Type_fn_simpleContext::type() {
-  return getRuleContexts<TsilParser::TypeContext>();
-}
-
-TsilParser::TypeContext* TsilParser::Type_fn_simpleContext::type(size_t i) {
-  return getRuleContext<TsilParser::TypeContext>(i);
-}
-
 tree::TerminalNode* TsilParser::Type_fn_simpleContext::MINUS() {
   return getToken(TsilParser::MINUS, 0);
 }
 
 tree::TerminalNode* TsilParser::Type_fn_simpleContext::GREATER() {
   return getToken(TsilParser::GREATER, 0);
+}
+
+std::vector<TsilParser::TypeContext *> TsilParser::Type_fn_simpleContext::type() {
+  return getRuleContexts<TsilParser::TypeContext>();
+}
+
+TsilParser::TypeContext* TsilParser::Type_fn_simpleContext::type(size_t i) {
+  return getRuleContext<TsilParser::TypeContext>(i);
 }
 
 TsilParser::Type_fn_simpleContext::Type_fn_simpleContext(TypeContext *ctx) { copyFrom(ctx); }
@@ -5089,16 +5089,16 @@ std::any TsilParser::Type_fn_simpleContext::accept(tree::ParseTreeVisitor *visit
 }
 //----------------- Type_section_getContext ------------------------------------------------------------------
 
-TsilParser::TypeContext* TsilParser::Type_section_getContext::type() {
-  return getRuleContext<TsilParser::TypeContext>(0);
-}
-
 std::vector<tree::TerminalNode *> TsilParser::Type_section_getContext::COLON() {
   return getTokens(TsilParser::COLON);
 }
 
 tree::TerminalNode* TsilParser::Type_section_getContext::COLON(size_t i) {
   return getToken(TsilParser::COLON, i);
+}
+
+TsilParser::TypeContext* TsilParser::Type_section_getContext::type() {
+  return getRuleContext<TsilParser::TypeContext>(0);
 }
 
 tree::TerminalNode* TsilParser::Type_section_getContext::ID() {
@@ -5172,7 +5172,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
       _ctx = _localctx;
       previousContext = _localctx;
       setState(453);
-      match(TsilParser::ID);
+      antlrcpp::downCast<Type_subjectContext *>(_localctx)->id = match(TsilParser::ID);
       break;
     }
 
@@ -5183,7 +5183,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
       setState(454);
       match(TsilParser::PAREN_OPEN);
       setState(455);
-      type(0);
+      antlrcpp::downCast<Type_fn_complexContext *>(_localctx)->param_type = type(0);
       setState(458); 
       _errHandler->sync(this);
       _la = _input->LA(1);
@@ -5191,7 +5191,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
         setState(456);
         match(TsilParser::COMA);
         setState(457);
-        type(0);
+        antlrcpp::downCast<Type_fn_complexContext *>(_localctx)->param_type = type(0);
         setState(460); 
         _errHandler->sync(this);
         _la = _input->LA(1);
@@ -5203,7 +5203,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
       setState(464);
       match(TsilParser::GREATER);
       setState(465);
-      type(2);
+      antlrcpp::downCast<Type_fn_complexContext *>(_localctx)->restyp = type(2);
       break;
     }
 
@@ -5234,7 +5234,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
       setState(478);
       match(TsilParser::GREATER);
       setState(479);
-      type(1);
+      antlrcpp::downCast<Type_fn_complex_namedContext *>(_localctx)->restyp = type(1);
       break;
     }
 
@@ -5256,6 +5256,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
         case 1: {
           auto newContext = _tracker.createInstance<Type_fn_simpleContext>(_tracker.createInstance<TypeContext>(parentContext, parentState));
           _localctx = newContext;
+          newContext->param_type = previousContext;
           pushNewRecursionContext(newContext, startState, RuleType);
           setState(483);
 
@@ -5265,13 +5266,14 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
           setState(485);
           match(TsilParser::GREATER);
           setState(486);
-          type(4);
+          antlrcpp::downCast<Type_fn_simpleContext *>(_localctx)->restyp = type(4);
           break;
         }
 
         case 2: {
           auto newContext = _tracker.createInstance<Type_section_getContext>(_tracker.createInstance<TypeContext>(parentContext, parentState));
           _localctx = newContext;
+          newContext->object = previousContext;
           pushNewRecursionContext(newContext, startState, RuleType);
           setState(487);
 
@@ -5281,13 +5283,14 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
           setState(489);
           match(TsilParser::COLON);
           setState(490);
-          match(TsilParser::ID);
+          antlrcpp::downCast<Type_section_getContext *>(_localctx)->id = match(TsilParser::ID);
           break;
         }
 
         case 3: {
           auto newContext = _tracker.createInstance<Type_template_getContext>(_tracker.createInstance<TypeContext>(parentContext, parentState));
           _localctx = newContext;
+          newContext->object = previousContext;
           pushNewRecursionContext(newContext, startState, RuleType);
           setState(491);
 
@@ -5295,7 +5298,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
           setState(492);
           match(TsilParser::LESSER);
           setState(493);
-          type(0);
+          antlrcpp::downCast<Type_template_getContext *>(_localctx)->template_type = type(0);
           setState(498);
           _errHandler->sync(this);
           _la = _input->LA(1);
@@ -5303,7 +5306,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
             setState(494);
             match(TsilParser::COMA);
             setState(495);
-            type(0);
+            antlrcpp::downCast<Type_template_getContext *>(_localctx)->template_type = type(0);
             setState(500);
             _errHandler->sync(this);
             _la = _input->LA(1);
@@ -5316,6 +5319,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
         case 4: {
           auto newContext = _tracker.createInstance<Type_getContext>(_tracker.createInstance<TypeContext>(parentContext, parentState));
           _localctx = newContext;
+          newContext->object = previousContext;
           pushNewRecursionContext(newContext, startState, RuleType);
           setState(503);
 
@@ -5323,13 +5327,14 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
           setState(504);
           match(TsilParser::DOT);
           setState(505);
-          match(TsilParser::ID);
+          antlrcpp::downCast<Type_getContext *>(_localctx)->id = match(TsilParser::ID);
           break;
         }
 
         case 5: {
           auto newContext = _tracker.createInstance<Type_arrayContext>(_tracker.createInstance<TypeContext>(parentContext, parentState));
           _localctx = newContext;
+          newContext->left = previousContext;
           pushNewRecursionContext(newContext, startState, RuleType);
           setState(506);
 
@@ -5337,7 +5342,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
           setState(507);
           match(TsilParser::BRACKET_OPEN);
           setState(508);
-          match(TsilParser::NUMBER);
+          antlrcpp::downCast<Type_arrayContext *>(_localctx)->size = match(TsilParser::NUMBER);
           setState(509);
           match(TsilParser::BRACKET_CLOSE);
           break;

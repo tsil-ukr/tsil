@@ -1205,8 +1205,10 @@ public:
   public:
     Type_getContext(TypeContext *ctx);
 
-    TypeContext *type();
+    TsilParser::TypeContext *object = nullptr;
+    antlr4::Token *id = nullptr;
     antlr4::tree::TerminalNode *DOT();
+    TypeContext *type();
     antlr4::tree::TerminalNode *ID();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1231,6 +1233,7 @@ public:
   public:
     Type_subjectContext(TypeContext *ctx);
 
+    antlr4::Token *id = nullptr;
     antlr4::tree::TerminalNode *ID();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1242,10 +1245,12 @@ public:
   public:
     Type_arrayContext(TypeContext *ctx);
 
-    TypeContext *type();
+    TsilParser::TypeContext *left = nullptr;
+    antlr4::Token *size = nullptr;
     antlr4::tree::TerminalNode *BRACKET_OPEN();
-    antlr4::tree::TerminalNode *NUMBER();
     antlr4::tree::TerminalNode *BRACKET_CLOSE();
+    TypeContext *type();
+    antlr4::tree::TerminalNode *NUMBER();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
@@ -1256,12 +1261,14 @@ public:
   public:
     Type_fn_complexContext(TypeContext *ctx);
 
+    TsilParser::TypeContext *param_type = nullptr;
+    TsilParser::TypeContext *restyp = nullptr;
     antlr4::tree::TerminalNode *PAREN_OPEN();
-    std::vector<TypeContext *> type();
-    TypeContext* type(size_t i);
     antlr4::tree::TerminalNode *PAREN_CLOSE();
     antlr4::tree::TerminalNode *MINUS();
     antlr4::tree::TerminalNode *GREATER();
+    std::vector<TypeContext *> type();
+    TypeContext* type(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COMA();
     antlr4::tree::TerminalNode* COMA(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1274,10 +1281,12 @@ public:
   public:
     Type_template_getContext(TypeContext *ctx);
 
-    std::vector<TypeContext *> type();
-    TypeContext* type(size_t i);
+    TsilParser::TypeContext *object = nullptr;
+    TsilParser::TypeContext *template_type = nullptr;
     antlr4::tree::TerminalNode *LESSER();
     antlr4::tree::TerminalNode *GREATER();
+    std::vector<TypeContext *> type();
+    TypeContext* type(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COMA();
     antlr4::tree::TerminalNode* COMA(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1290,6 +1299,7 @@ public:
   public:
     Type_fn_complex_namedContext(TypeContext *ctx);
 
+    TsilParser::TypeContext *restyp = nullptr;
     antlr4::tree::TerminalNode *PAREN_OPEN();
     std::vector<ParamContext *> param();
     ParamContext* param(size_t i);
@@ -1309,10 +1319,12 @@ public:
   public:
     Type_fn_simpleContext(TypeContext *ctx);
 
-    std::vector<TypeContext *> type();
-    TypeContext* type(size_t i);
+    TsilParser::TypeContext *param_type = nullptr;
+    TsilParser::TypeContext *restyp = nullptr;
     antlr4::tree::TerminalNode *MINUS();
     antlr4::tree::TerminalNode *GREATER();
+    std::vector<TypeContext *> type();
+    TypeContext* type(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
@@ -1323,9 +1335,11 @@ public:
   public:
     Type_section_getContext(TypeContext *ctx);
 
-    TypeContext *type();
+    TsilParser::TypeContext *object = nullptr;
+    antlr4::Token *id = nullptr;
     std::vector<antlr4::tree::TerminalNode *> COLON();
     antlr4::tree::TerminalNode* COLON(size_t i);
+    TypeContext *type();
     antlr4::tree::TerminalNode *ID();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

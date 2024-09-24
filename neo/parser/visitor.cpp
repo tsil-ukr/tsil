@@ -759,31 +759,59 @@ namespace tsil::parser {
   }
 
   std::any TsilASTVisitor::visitType_nested(
-      TsilParser::Type_nestedContext* ctx) {}
+      TsilParser::Type_nestedContext* ctx) {
+    return visitContext(ctx->type());
+  }
 
   std::any TsilASTVisitor::visitType_subject(
-      TsilParser::Type_subjectContext* ctx) {}
+      TsilParser::Type_subjectContext* ctx) {
+    const auto асд_дані_звернутись = new АСДДаніЗвернутись();
+    асд_дані_звернутись->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    return AV(this, ctx, АСДВидЗвернутись, асд_дані_звернутись);
+  }
 
   std::any TsilASTVisitor::visitType_section_get(
-      TsilParser::Type_section_getContext* ctx) {}
+      TsilParser::Type_section_getContext* ctx) {
+    const auto асд_дані_отримати_зі_секції = new АСДДаніОтриматиЗіСекції();
+    асд_дані_отримати_зі_секції->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_отримати_зі_секції->ідентифікатор =
+        ІД(this, ctx->id, ctx->id->getText());
+    return AV(this, ctx, АСДВидОтриматиЗіСекції, асд_дані_отримати_зі_секції);
+  }
 
   std::any TsilASTVisitor::visitType_template_get(
-      TsilParser::Type_template_getContext* ctx) {}
+      TsilParser::Type_template_getContext* ctx) {
+    // todo: ...
+  }
 
-  std::any TsilASTVisitor::visitType_get(TsilParser::Type_getContext* ctx) {}
+  std::any TsilASTVisitor::visitType_get(TsilParser::Type_getContext* ctx) {
+    const auto асд_дані_отримати = new АСДДаніОтримати();
+    асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
+    асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    return AV(this, ctx, АСДВидОтримати, асд_дані_отримати);
+  }
 
   std::any TsilASTVisitor::visitType_array(TsilParser::Type_arrayContext* ctx) {
+    // todo: ...
   }
 
   std::any TsilASTVisitor::visitType_fn_simple(
-      TsilParser::Type_fn_simpleContext* ctx) {}
+      TsilParser::Type_fn_simpleContext* ctx) {
+    // todo: ...
+  }
 
   std::any TsilASTVisitor::visitType_fn_complex(
-      TsilParser::Type_fn_complexContext* ctx) {}
+      TsilParser::Type_fn_complexContext* ctx) {
+    // todo: ...
+  }
 
   std::any TsilASTVisitor::visitType_fn_complex_named(
-      TsilParser::Type_fn_complex_namedContext* ctx) {}
+      TsilParser::Type_fn_complex_namedContext* ctx) {
+    // todo: ...
+  }
 
-  std::any TsilASTVisitor::visitParam(TsilParser::ParamContext* ctx) {}
+  std::any TsilASTVisitor::visitParam(TsilParser::ParamContext* ctx) {
+    // todo: ...
+  }
 
 } // namespace tsil::parser

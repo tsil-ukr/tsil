@@ -88,13 +88,13 @@ body_element: structure_declare | structure_define
             | ';';
 
 type: '(' type ')' #type_nested
-    | ID #type_subject
-    | type ':' ':' ID #type_section_get
-    | type '<' type (',' type)* '>' #type_template_get
-    | type '.' ID #type_get
-    | type '[' NUMBER ']' #type_array
-    | type '-' '>' type #type_fn_simple
-    | '(' type (',' type)+ ')' '-' '>' type #type_fn_complex
-    | '(' param (',' param)* ')' '-' '>' type #type_fn_complex_named;
+    | id=ID #type_subject
+    | object=type ':' ':' id=ID #type_section_get
+    | object=type '<' template_type=type (',' template_type=type)* '>' #type_template_get
+    | object=type '.' id=ID #type_get
+    | left=type '[' size=NUMBER ']' #type_array
+    | param_type=type '-' '>' restyp=type #type_fn_simple
+    | '(' param_type=type (',' param_type=type)+ ')' '-' '>' restyp=type #type_fn_complex
+    | '(' param (',' param)* ')' '-' '>' restyp=type #type_fn_complex_named;
 
 param: ID ':' type;
