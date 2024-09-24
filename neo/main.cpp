@@ -1,7 +1,7 @@
 #include "parser.h"
 
 int main() {
-  auto code = "ціль а: ц32 = б;";
+  auto code = "ціль а: ц32 = \"abc\";";
   auto текстКоду = new ТекстКоду((char*)"...", (char*)code);
   auto parseResult = розібрати_ціль(текстКоду);
   if (parseResult.успіх) {
