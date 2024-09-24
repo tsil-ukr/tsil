@@ -135,24 +135,12 @@ namespace tsil::parser {
       return visitExpr_object(ctx);
     }
     if (const auto ctx =
-            dynamic_cast<TsilParser::Structure_declareContext*>(context)) {
-      return visitStructure_declare(ctx);
-    }
-    if (const auto ctx =
             dynamic_cast<TsilParser::Structure_defineContext*>(context)) {
       return visitStructure_define(ctx);
     }
     if (const auto ctx =
-            dynamic_cast<TsilParser::Diia_declareContext*>(context)) {
-      return visitDiia_declare(ctx);
-    }
-    if (const auto ctx =
             dynamic_cast<TsilParser::Diia_defineContext*>(context)) {
       return visitDiia_define(ctx);
-    }
-    if (const auto ctx =
-            dynamic_cast<TsilParser::Tsil_declareContext*>(context)) {
-      return visitTsil_declare(ctx);
     }
     if (const auto ctx =
             dynamic_cast<TsilParser::Tsil_defineContext*>(context)) {
@@ -160,10 +148,6 @@ namespace tsil::parser {
     }
     if (const auto ctx = dynamic_cast<TsilParser::SynonymContext*>(context)) {
       return visitSynonym(ctx);
-    }
-    if (const auto ctx =
-            dynamic_cast<TsilParser::Section_declareContext*>(context)) {
-      return visitSection_declare(ctx);
     }
     if (const auto ctx =
             dynamic_cast<TsilParser::Section_defineContext*>(context)) {
@@ -543,28 +527,6 @@ namespace tsil::parser {
     return AV(this, ctx, АСДВидСтворитиОбʼєкт, асд_дані_створити_обʼєкт);
   }
 
-  std::any TsilASTVisitor::visitStructure_declare(
-      TsilParser::Structure_declareContext* ctx) {
-    const auto асд_дані_створити_структуру = new АСДДаніСтворитиСтруктуру();
-    асд_дані_створити_структуру->ідентифікатор =
-        ІД(this, ctx->id, ctx->id->getText());
-    const auto асд_значення_створити_структуру =
-        AV(this, ctx, АСДВидСтворитиСтруктуру, асд_дані_створити_структуру);
-    if (ctx->first_gendef == nullptr) {
-      return асд_значення_створити_структуру;
-    } else {
-      const auto асд_дані_створити_шаблон = new АСДДаніСтворитиШаблон();
-      асд_дані_створити_шаблон->значення = асд_значення_створити_структуру;
-      std::vector<Ідентифікатор*> params;
-      for (const auto& gendef : ctx->gendef()) {
-        params.push_back(ІД(this, gendef, gendef->getText()));
-      }
-      асд_дані_створити_шаблон->кількість_параметрів = params.size();
-      асд_дані_створити_шаблон->параметри = VecToArr(params);
-      return AV(this, ctx, АСДВидСтворитиШаблон, асд_дані_створити_шаблон);
-    }
-  }
-
   std::any TsilASTVisitor::visitStructure_define(
       TsilParser::Structure_defineContext* ctx) {
     const auto асд_дані_створити_структуру = new АСДДаніСтворитиСтруктуру();
@@ -594,40 +556,6 @@ namespace tsil::parser {
     }
   }
 
-  std::any TsilASTVisitor::visitDiia_declare(
-      TsilParser::Diia_declareContext* ctx) {
-    const auto асд_дані_створити_дію = new АСДДаніСтворитиДію();
-    асд_дані_створити_дію->ідентифікатор =
-        ІД(this, ctx->id, ctx->id->getText());
-    std::vector<Параметр*> params;
-    for (const auto& param : ctx->param()) {
-      const auto any_param = visitParam(param);
-      params.push_back(std::any_cast<Параметр*>(any_param));
-    }
-    асд_дані_створити_дію->кількість_параметрів = params.size();
-    асд_дані_створити_дію->параметри = VecToArr(params);
-    if (ctx->restyp) {
-      асд_дані_створити_дію->тип_результату = AAV(visitContext(ctx->restyp));
-    } else {
-      асд_дані_створити_дію->тип_результату = nullptr;
-    }
-    const auto асд_значення_створити_дію =
-        AV(this, ctx, АСДВидСтворитиДію, асд_дані_створити_дію);
-    if (ctx->first_gendef == nullptr) {
-      return асд_значення_створити_дію;
-    } else {
-      const auto асд_дані_створити_шаблон = new АСДДаніСтворитиШаблон();
-      асд_дані_створити_шаблон->значення = асд_значення_створити_дію;
-      std::vector<Ідентифікатор*> params;
-      for (const auto& gendef : ctx->gendef()) {
-        params.push_back(ІД(this, gendef, gendef->getText()));
-      }
-      асд_дані_створити_шаблон->кількість_параметрів = params.size();
-      асд_дані_створити_шаблон->параметри = VecToArr(params);
-      return AV(this, ctx, АСДВидСтворитиШаблон, асд_дані_створити_шаблон);
-    }
-  }
-
   std::any TsilASTVisitor::visitDiia_define(
       TsilParser::Diia_defineContext* ctx) {
     const auto асд_дані_створити_дію = new АСДДаніСтворитиДію();
@@ -645,7 +573,11 @@ namespace tsil::parser {
     } else {
       асд_дані_створити_дію->тип_результату = nullptr;
     }
-    асд_дані_створити_дію->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+    if (ctx->body()) {
+      асд_дані_створити_дію->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+    } else {
+      асд_дані_створити_дію->тіло = nullptr;
+    }
     const auto асд_значення_створити_дію =
         AV(this, ctx, АСДВидСтворитиДію, асд_дані_створити_дію);
     if (ctx->first_gendef == nullptr) {
@@ -663,18 +595,6 @@ namespace tsil::parser {
     }
   }
 
-  std::any TsilASTVisitor::visitTsil_declare(
-      TsilParser::Tsil_declareContext* ctx) {
-    const auto асд_дані_створити_ціль = new АСДДаніСтворитиЦіль();
-    if (ctx->type() != nullptr) {
-      асд_дані_створити_ціль->тип = AAV(visitContext(ctx->type()));
-    } else {
-      асд_дані_створити_ціль->тип = nullptr;
-    }
-    асд_дані_створити_ціль->значення = nullptr;
-    return AV(this, ctx, АСДВидСтворитиЦіль, асд_дані_створити_ціль);
-  }
-
   std::any TsilASTVisitor::visitTsil_define(
       TsilParser::Tsil_defineContext* ctx) {
     const auto асд_дані_створити_ціль = new АСДДаніСтворитиЦіль();
@@ -683,7 +603,11 @@ namespace tsil::parser {
     } else {
       асд_дані_створити_ціль->тип = nullptr;
     }
-    асд_дані_створити_ціль->значення = AAV(visitContext(ctx->expr()));
+    if (ctx->value) {
+      асд_дані_створити_ціль->значення = AAV(visitContext(ctx->value));
+    } else {
+      асд_дані_створити_ціль->значення = nullptr;
+    }
     return AV(this, ctx, АСДВидСтворитиЦіль, асд_дані_створити_ціль);
   }
 
@@ -693,21 +617,17 @@ namespace tsil::parser {
     return AV(this, ctx, АСДВидСтворитиСинонім, асд_дані_створити_синонім);
   }
 
-  std::any TsilASTVisitor::visitSection_declare(
-      TsilParser::Section_declareContext* ctx) {
-    const auto асд_дані_створити_секцію = new АСДДаніСтворитиСекцію();
-    асд_дані_створити_секцію->ідентифікатор =
-        ІД(this, ctx->id, ctx->id->getText());
-    асд_дані_створити_секцію->тіло = nullptr;
-    return AV(this, ctx, АСДВидСтворитиСекцію, асд_дані_створити_секцію);
-  }
-
   std::any TsilASTVisitor::visitSection_define(
       TsilParser::Section_defineContext* ctx) {
     const auto асд_дані_створити_секцію = new АСДДаніСтворитиСекцію();
     асд_дані_створити_секцію->ідентифікатор =
         ІД(this, ctx->id, ctx->id->getText());
-    асд_дані_створити_секцію->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+    if (ctx->body()) {
+      асд_дані_створити_секцію->тіло =
+          AAVecToList(AAVec(visitBody(ctx->body())));
+    } else {
+      асд_дані_створити_секцію->тіло = nullptr;
+    }
     return AV(this, ctx, АСДВидСтворитиСекцію, асд_дані_створити_секцію);
   }
 
@@ -772,29 +692,17 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitBody_element(
       TsilParser::Body_elementContext* ctx) {
-    if (ctx->structure_declare() != nullptr) {
-      return visitStructure_declare(ctx->structure_declare());
-    }
     if (ctx->structure_define() != nullptr) {
       return visitStructure_define(ctx->structure_define());
     }
-    if (ctx->diia_declare() != nullptr) {
-      return visitDiia_declare(ctx->diia_declare());
-    }
     if (ctx->diia_define() != nullptr) {
       return visitDiia_define(ctx->diia_define());
-    }
-    if (ctx->tsil_declare() != nullptr) {
-      return visitTsil_declare(ctx->tsil_declare());
     }
     if (ctx->tsil_define() != nullptr) {
       return visitTsil_define(ctx->tsil_define());
     }
     if (ctx->synonym() != nullptr) {
       return visitSynonym(ctx->synonym());
-    }
-    if (ctx->section_declare() != nullptr) {
-      return visitSection_declare(ctx->section_declare());
     }
     if (ctx->section_define() != nullptr) {
       return visitSection_define(ctx->section_define());

@@ -148,32 +148,20 @@ public:
   virtual void enterExpr_object(TsilParser::Expr_objectContext * /*ctx*/) override { }
   virtual void exitExpr_object(TsilParser::Expr_objectContext * /*ctx*/) override { }
 
-  virtual void enterStructure_declare(TsilParser::Structure_declareContext * /*ctx*/) override { }
-  virtual void exitStructure_declare(TsilParser::Structure_declareContext * /*ctx*/) override { }
-
   virtual void enterStructure_define(TsilParser::Structure_defineContext * /*ctx*/) override { }
   virtual void exitStructure_define(TsilParser::Structure_defineContext * /*ctx*/) override { }
 
   virtual void enterStructure_element(TsilParser::Structure_elementContext * /*ctx*/) override { }
   virtual void exitStructure_element(TsilParser::Structure_elementContext * /*ctx*/) override { }
 
-  virtual void enterDiia_declare(TsilParser::Diia_declareContext * /*ctx*/) override { }
-  virtual void exitDiia_declare(TsilParser::Diia_declareContext * /*ctx*/) override { }
-
   virtual void enterDiia_define(TsilParser::Diia_defineContext * /*ctx*/) override { }
   virtual void exitDiia_define(TsilParser::Diia_defineContext * /*ctx*/) override { }
-
-  virtual void enterTsil_declare(TsilParser::Tsil_declareContext * /*ctx*/) override { }
-  virtual void exitTsil_declare(TsilParser::Tsil_declareContext * /*ctx*/) override { }
 
   virtual void enterTsil_define(TsilParser::Tsil_defineContext * /*ctx*/) override { }
   virtual void exitTsil_define(TsilParser::Tsil_defineContext * /*ctx*/) override { }
 
   virtual void enterSynonym(TsilParser::SynonymContext * /*ctx*/) override { }
   virtual void exitSynonym(TsilParser::SynonymContext * /*ctx*/) override { }
-
-  virtual void enterSection_declare(TsilParser::Section_declareContext * /*ctx*/) override { }
-  virtual void exitSection_declare(TsilParser::Section_declareContext * /*ctx*/) override { }
 
   virtual void enterSection_define(TsilParser::Section_defineContext * /*ctx*/) override { }
   virtual void exitSection_define(TsilParser::Section_defineContext * /*ctx*/) override { }

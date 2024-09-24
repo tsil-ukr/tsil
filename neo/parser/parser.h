@@ -147,24 +147,14 @@ namespace tsil::parser {
 
     std::any visitExpr_object(TsilParser::Expr_objectContext* ctx) override;
 
-    std::any visitStructure_declare(
-        TsilParser::Structure_declareContext* ctx) override;
-
     std::any visitStructure_define(
         TsilParser::Structure_defineContext* ctx) override;
 
-    std::any visitDiia_declare(TsilParser::Diia_declareContext* ctx) override;
-
     std::any visitDiia_define(TsilParser::Diia_defineContext* ctx) override;
-
-    std::any visitTsil_declare(TsilParser::Tsil_declareContext* ctx) override;
 
     std::any visitTsil_define(TsilParser::Tsil_defineContext* ctx) override;
 
     std::any visitSynonym(TsilParser::SynonymContext* ctx) override;
-
-    std::any visitSection_declare(
-        TsilParser::Section_declareContext* ctx) override;
 
     std::any visitSection_define(
         TsilParser::Section_defineContext* ctx) override;

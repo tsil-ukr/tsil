@@ -191,10 +191,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitStructure_declare(TsilParser::Structure_declareContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitStructure_define(TsilParser::Structure_defineContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -203,15 +199,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitDiia_declare(TsilParser::Diia_declareContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitDiia_define(TsilParser::Diia_defineContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitTsil_declare(TsilParser::Tsil_declareContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -220,10 +208,6 @@ public:
   }
 
   virtual std::any visitSynonym(TsilParser::SynonymContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitSection_declare(TsilParser::Section_declareContext *ctx) override {
     return visitChildren(ctx);
   }
 

@@ -107,23 +107,15 @@ public:
 
     virtual std::any visitExpr_object(TsilParser::Expr_objectContext *context) = 0;
 
-    virtual std::any visitStructure_declare(TsilParser::Structure_declareContext *context) = 0;
-
     virtual std::any visitStructure_define(TsilParser::Structure_defineContext *context) = 0;
 
     virtual std::any visitStructure_element(TsilParser::Structure_elementContext *context) = 0;
 
-    virtual std::any visitDiia_declare(TsilParser::Diia_declareContext *context) = 0;
-
     virtual std::any visitDiia_define(TsilParser::Diia_defineContext *context) = 0;
-
-    virtual std::any visitTsil_declare(TsilParser::Tsil_declareContext *context) = 0;
 
     virtual std::any visitTsil_define(TsilParser::Tsil_defineContext *context) = 0;
 
     virtual std::any visitSynonym(TsilParser::SynonymContext *context) = 0;
-
-    virtual std::any visitSection_declare(TsilParser::Section_declareContext *context) = 0;
 
     virtual std::any visitSection_define(TsilParser::Section_defineContext *context) = 0;
 

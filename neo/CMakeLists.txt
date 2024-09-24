@@ -20,6 +20,7 @@ add_subdirectory(parser)
 
 set(TSIL_SRC
         xl.cpp
+        compiler.cpp
         main.cpp
 )
 

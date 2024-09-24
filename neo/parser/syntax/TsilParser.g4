@@ -55,20 +55,16 @@ gendef: ID;
 expr: operation #expr_operation
     | type '{' (arg=expr (',' arg=expr))? '}' #expr_object;
 
-structure_declare: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? ';';
-structure_define: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '{' (structure_element)* '}';
+structure_define: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? (';' | ('{' (structure_element)* '}'));
 structure_element: param ';';
 
-diia_declare: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? ';';
-diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? body;
+diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? (';' | body);
 
-tsil_declare: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? ';';
-tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? '=' expr ';';
+tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? ('=' value=expr)? ';';
 
 synonym: 'синонім' id=ID '=' expr ';';
 
-section_declare: 'секція' id=ID;
-section_define: 'секція' id=ID body;
+section_define: 'секція' id=ID (body)?;
 
 set: object=atom '.' id=ID '=' value=expr ';';
 position_set: object=atom '[' idx=expr ']' '=' value=expr ';';
@@ -78,12 +74,12 @@ if: 'якщо' cond=operation ifok=body ('інакше' (ifnot=body | ifnotif=if
 while: 'поки' cond=operation body;
 
 body: '{' (body_element)* '}';
-body_element: structure_declare | structure_define
-            | diia_declare | diia_define
-            | tsil_declare | tsil_define
+body_element: structure_define
+            | diia_define
+            | tsil_define
             | set | section_set | position_set
             | synonym
-            | section_declare | section_define
+            | section_define
             | expr
             | if
             | while
