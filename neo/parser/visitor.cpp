@@ -131,6 +131,10 @@ namespace tsil::parser {
       return visitExpr_operation(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<TsilParser::Expr_objectContext*>(context)) {
+      return visitExpr_object(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<TsilParser::Structure_declareContext*>(context)) {
       return visitStructure_declare(ctx);
     }
@@ -237,7 +241,9 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitProgram(TsilParser::ProgramContext* ctx) {
     std::vector<АСДЗначення*> elements;
     for (const auto& element : ctx->body_element()) {
-      elements.push_back(AAV(visitBody_element(element)));
+      if (element->SEMICOLON() == nullptr) {
+        elements.push_back(AAV(visitBody_element(element)));
+      }
     }
     return elements;
   }
@@ -511,6 +517,18 @@ namespace tsil::parser {
     return visitContext(ctx->operation());
   }
 
+  std::any TsilASTVisitor::visitExpr_object(
+      TsilParser::Expr_objectContext* ctx) {
+    const auto асд_дані_створити_обʼєкт = new АСДДаніСтворитиОбʼєкт();
+    асд_дані_створити_обʼєкт->тип = AAV(visitContext(ctx->type()));
+    std::vector<АСДЗначення*> args;
+    for (const auto& argument : ctx->expr()) {
+      args.push_back(AAV(visitContext(argument)));
+    }
+    асд_дані_створити_обʼєкт->аргументи = AAVecToList(args);
+    return AV(this, ctx, АСДВидСтворитиОбʼєкт, асд_дані_створити_обʼєкт);
+  }
+
   std::any TsilASTVisitor::visitStructure_declare(
       TsilParser::Structure_declareContext* ctx) {
     if (ctx->generic_id != nullptr) {
@@ -727,8 +745,10 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitBody(TsilParser::BodyContext* ctx) {
     std::vector<АСДЗначення*> elements;
     for (const auto& bodyElement : ctx->body_element()) {
-      const auto any_асд = visitBody_element(bodyElement);
-      elements.push_back(AAV(any_асд));
+      if (bodyElement->SEMICOLON() == nullptr) {
+        const auto any_асд = visitBody_element(bodyElement);
+        elements.push_back(AAV(any_асд));
+      }
     }
     return elements;
   }

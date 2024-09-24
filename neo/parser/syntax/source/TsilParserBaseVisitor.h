@@ -183,6 +183,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitExpr_object(TsilParser::Expr_objectContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitStructure_declare(TsilParser::Structure_declareContext *ctx) override {
     return visitChildren(ctx);
   }

@@ -774,6 +774,23 @@ public:
    
   };
 
+  class  Expr_objectContext : public ExprContext {
+  public:
+    Expr_objectContext(ExprContext *ctx);
+
+    TsilParser::ExprContext *arg = nullptr;
+    TypeContext *type();
+    antlr4::tree::TerminalNode *QUOTE_OPEN();
+    antlr4::tree::TerminalNode *QUOTE_CLOSE();
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+    antlr4::tree::TerminalNode *COMA();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  Expr_operationContext : public ExprContext {
   public:
     Expr_operationContext(ExprContext *ctx);

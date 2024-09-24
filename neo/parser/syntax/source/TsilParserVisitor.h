@@ -103,6 +103,8 @@ public:
 
     virtual std::any visitExpr_operation(TsilParser::Expr_operationContext *context) = 0;
 
+    virtual std::any visitExpr_object(TsilParser::Expr_objectContext *context) = 0;
+
     virtual std::any visitStructure_declare(TsilParser::Structure_declareContext *context) = 0;
 
     virtual std::any visitStructure_define(TsilParser::Structure_defineContext *context) = 0;

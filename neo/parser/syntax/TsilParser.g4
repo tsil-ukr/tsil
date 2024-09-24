@@ -50,7 +50,8 @@ op_neq: '!' '=';
 op_land: '&' '&';
 op_lor: '|' '|';
 
-expr: operation #expr_operation;
+expr: operation #expr_operation
+    | type '{' (arg=expr (',' arg=expr))? '}' #expr_object;
 
 structure_declare: 'структура' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? ';';
 structure_define: 'структура' id=ID ('<' generic_id=ID (',' generic_id=ID)* '>')? '{' (structure_element)* '}';

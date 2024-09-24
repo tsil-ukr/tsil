@@ -142,6 +142,9 @@ public:
   virtual void enterExpr_operation(TsilParser::Expr_operationContext * /*ctx*/) override { }
   virtual void exitExpr_operation(TsilParser::Expr_operationContext * /*ctx*/) override { }
 
+  virtual void enterExpr_object(TsilParser::Expr_objectContext * /*ctx*/) override { }
+  virtual void exitExpr_object(TsilParser::Expr_objectContext * /*ctx*/) override { }
+
   virtual void enterStructure_declare(TsilParser::Structure_declareContext * /*ctx*/) override { }
   virtual void exitStructure_declare(TsilParser::Structure_declareContext * /*ctx*/) override { }
 

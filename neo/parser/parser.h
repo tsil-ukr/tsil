@@ -145,6 +145,8 @@ namespace tsil::parser {
     std::any visitExpr_operation(
         TsilParser::Expr_operationContext* ctx) override;
 
+    std::any visitExpr_object(TsilParser::Expr_objectContext* ctx) override;
+
     std::any visitStructure_declare(
         TsilParser::Structure_declareContext* ctx) override;
 

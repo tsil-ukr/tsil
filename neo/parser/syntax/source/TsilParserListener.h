@@ -140,6 +140,9 @@ public:
   virtual void enterExpr_operation(TsilParser::Expr_operationContext *ctx) = 0;
   virtual void exitExpr_operation(TsilParser::Expr_operationContext *ctx) = 0;
 
+  virtual void enterExpr_object(TsilParser::Expr_objectContext *ctx) = 0;
+  virtual void exitExpr_object(TsilParser::Expr_objectContext *ctx) = 0;
+
   virtual void enterStructure_declare(TsilParser::Structure_declareContext *ctx) = 0;
   virtual void exitStructure_declare(TsilParser::Structure_declareContext *ctx) = 0;
 
