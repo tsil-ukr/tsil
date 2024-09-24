@@ -17,7 +17,7 @@ cd neo
 ціль ../.плавлення/скомпільоване/Ц.ц.ll скомпілювати Ц.ц
 cd ..
 
-clang++ -o tsil \
+clang++ -o build-neo/tsil \
   neo/main.cpp \
   .плавлення/скомпільоване/Ц.ц.ll \
   build-neo/libxl.a \
