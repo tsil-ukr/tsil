@@ -3,6 +3,26 @@
 
 #include "parser/parser.h"
 
+extern "C" void* отримати_з_карти_юнікод_комірка(void* map, char* name) {
+  auto m = static_cast<std::map<std::string, void*>*>(map);
+  auto result = m->find(std::string(name));
+  if (result != m->end()) {
+    return result->second;
+  }
+  return nullptr;
+}
+
+extern "C" void змінити_в_карті_юнікод_комірка(void* map,
+                                               char* name,
+                                               void* value) {
+  auto m = static_cast<std::map<std::string, void*>*>(map);
+  m->insert_or_assign(std::string(name), value);
+}
+
+extern "C" void* створити_карту_юнікод() {
+  return new std::map<std::string, void*>();
+}
+
 extern "C" char* скомпілювати_ціль_в_ll(ТекстКоду* текст_коду);
 
 int main() {
@@ -10,7 +30,8 @@ int main() {
   std::ifstream file(filename);
   std::string code((std::istreambuf_iterator<char>(file)),
                    std::istreambuf_iterator<char>());
-  auto текстКоду = new ТекстКоду((char*)filename.c_str(), (char*)code.c_str());
+  auto текстКоду = new ТекстКоду{.шлях = (char*)filename.c_str(),
+                                 .значення = (char*)code.c_str()};
   const auto result = скомпілювати_ціль_в_ll(текстКоду);
   std::cout << result << std::endl;
   //  auto parseResult = розібрати_ціль(текстКоду);
