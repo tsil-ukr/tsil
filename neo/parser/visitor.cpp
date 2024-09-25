@@ -598,6 +598,8 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitTsil_define(
       TsilParser::Tsil_defineContext* ctx) {
     const auto асд_дані_створити_ціль = new АСДДаніСтворитиЦіль();
+    асд_дані_створити_ціль->ідентифікатор =
+        ІД(this, ctx->id, ctx->id->getText());
     if (ctx->type() != nullptr) {
       асд_дані_створити_ціль->тип = AAV(visitContext(ctx->type()));
     } else {
