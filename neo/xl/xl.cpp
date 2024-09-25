@@ -421,7 +421,7 @@ XLType* xl_get_int8_type(XLM* m) {
 }
 
 XLType* xl_get_int16_type(XLM* m) {
-  return llvm::Type::getInt8Ty(*m->llvmContext);
+  return llvm::Type::getInt16Ty(*m->llvmContext);
 }
 
 XLType* xl_get_int32_type(XLM* m) {
