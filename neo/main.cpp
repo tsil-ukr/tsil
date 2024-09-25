@@ -3,24 +3,33 @@
 
 #include "parser/parser.h"
 
-extern "C" void* отримати_з_карти_юнікод_комірка(void* map, char* name) {
-  auto m = static_cast<std::map<std::string, void*>*>(map);
+extern "C" size_t отримати_з_карти_субʼєктів(void* map,
+                                             char* name,
+                                             unsigned long* outType,
+                                             void** outData) {
+  auto m =
+      static_cast<std::map<std::string, std::pair<unsigned long, void*>>*>(map);
   auto result = m->find(std::string(name));
   if (result != m->end()) {
-    return result->second;
+    *outType = result->second.first;
+    *outData = result->second.second;
+    return true;
   }
-  return nullptr;
+  return false;
 }
 
-extern "C" void змінити_в_карті_юнікод_комірка(void* map,
-                                               char* name,
-                                               void* value) {
-  auto m = static_cast<std::map<std::string, void*>*>(map);
-  m->insert_or_assign(std::string(name), value);
+extern "C" void змінити_в_карті_субʼєктів(void* map,
+                                          char* name,
+                                          unsigned long type,
+                                          void* data) {
+  auto m =
+      static_cast<std::map<std::string, std::pair<unsigned long, void*>>*>(map);
+  m->insert_or_assign(std::string(name),
+                      std::pair<unsigned long, void*>({type, data}));
 }
 
-extern "C" void* створити_карту_юнікод() {
-  return new std::map<std::string, void*>();
+extern "C" void* створити_карту_субʼєктів() {
+  return new std::map<std::string, std::pair<unsigned long, void*>>();
 }
 
 extern "C" char* скомпілювати_ціль_в_ll(ТекстКоду* текст_коду);
