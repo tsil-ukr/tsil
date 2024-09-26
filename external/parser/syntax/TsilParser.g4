@@ -6,100 +6,97 @@ options {
 
 file: f_program=program EOF;
 
-program: program_element*;
-program_element: (take ';') | (synonym ';') | (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
+program: body_element*;
 
-identifier: ID;
-section_access: identifier (':' ':' identifier)* #real_section_access;
-number: NUMBER (':' id=identifier)?;
-string: (s_prefix=ID)? STRING;
+atom: '(' expr ')' #atom_nested
+    | id=ID #atom_subject
+    | object=atom ':' ':' id=ID #atom_section_get
+    | object=atom '<' type (',' type)* '>' #atom_template_get
+    | object=atom '.' id=ID #atom_get
+    | object=atom '[' position=expr ']' #atom_position_get
+    | object=atom '(' expr (',' expr)* ')' #atom_call;
 
-take: 'взяти' t_type=ID (t_string=STRING | t_parts=take_parts);
-take_parts: (tp_relative='.' '/')? ID ('/' ID)*;
+operation: NUMBER #operation_number
+         | (tt=ID)? STRING #operation_string
+         | atom #operation_atom
+         | left=operation op='*' right=operation #operation_mul
+         | left=operation op='/' right=operation #operation_div
+         | left=operation op='%' right=operation #operation_mod
+         | left=operation op='+' right=operation #operation_add
+         | left=operation op='-' right=operation #operation_sub
+         | left=operation op=op_lshift right=operation #operation_lshift
+         | left=operation op=op_rshift right=operation #operation_rshift
+         | left=operation op=op_urshift right=operation #operation_urshift
+         | left=operation op='<' right=operation #operation_lt
+         | left=operation op=op_lte right=operation #operation_lte
+         | left=operation op='>' right=operation #operation_gt
+         | left=operation op=op_gte right=operation #operation_gte
+         | left=operation op=op_eq right=operation #operation_eq
+         | left=operation op=op_neq right=operation #operation_neq
+         | left=operation op='&' right=operation #operation_and
+         | left=operation op='^' right=operation #operation_xor
+         | left=operation op='|' right=operation #operation_or
+         | left=operation op=op_land right=operation #operation_land
+         | left=operation op=op_lor right=operation #operation_lor
+         | cond=operation '?' ifok=operation ':' ifnot=operation #operation_ternary;
 
-synonym: 'синонім' s_name=ID '=' s_value=synonym_value;
-synonym_value: full_type | number | string;
+op_lshift: '<' '<';
+op_rshift: '>' '>';
+op_urshift: '>' '>' '>';
+op_lte: '<' '=';
+op_gte: '>' '=';
+op_eq: '=' '=';
+op_neq: '!' '=';
+op_land: '&' '&';
+op_lor: '|' '|';
 
-section: 'секція' s_name=ID '{' section_element* '}';
-section_element: (synonym ';') | (declare ';') | (define ';') | section | structure | diia_declaration | diia | ';';
+gendef: ID;
 
-structure: 'структура' s_name=ID ('<' s_generics=structure_generics '>')? ('{' (s_params=structure_params)? '}' | ';');
-structure_generics: structure_generic (',' structure_generic)*;
-structure_generic: sg_name=ID;
-structure_params: (structure_param ';')+;
-structure_param: sp_name=ID ':' sp_type=full_type;
+expr: operation #expr_operation
+    | type '{' (arg=expr (',' arg=expr))? '}' #expr_object;
 
-variation: 'варіація' v_name=ID (':' v_type=full_type)? ('{' (v_params=variation_params)? '}' | ';');
-variation_params: (variation_param ';')+;
-variation_param: vp_name=ID ':' vp_type=full_type;
+structure_define: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? (';' | ('{' (structure_element)* '}'));
+structure_element: param ';';
 
-diia_head: 'дія' d_name=ID ('<' d_generics=diia_generics '>')? '(' (d_params=params)? (d_variadic=',' '.' '.' '.')? ')' (':' d_type=full_type)?;
-diia: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? d_head=diia_head '{' (d_body=body)? '}';
-diia_generics: diia_generic (',' diia_generic)*;
-diia_generic: dg_name=ID;
-diia_declaration: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? d_head=diia_head ('як' d_as=ID)? ';';
-params: param (',' param)* (',')?;
-param: p_name=ID ':' p_type=full_type;
+diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? (';' | body);
 
-body: body_element+;
-body_element: if | while | (synonym ';') | (declare ';') | (define ';') | (assign ';') | (set ';') | (expr ';') | (return_body_element ';') | (defer ';') | block | ';';
-return_body_element: 'вернути' (rbl_value=expr)?;
-block: '{' body '}';
+tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? ('=' value=expr)? ';';
 
-defer: 'відкласти' (assign | set | expr);
+synonym: 'синонім' id=ID '=' expr ';';
 
-if: 'якщо' i_value=expr '{' (i_body=body)? '}' ('інакше' ('{' (i_else_body=body)? '}' | i_else_if=if))?;
+section_define: 'секція' id=ID (body)?;
 
-while: 'поки' w_value=expr '{' (w_body=body)? '}';
+set: object=atom '.' id=ID '=' value=expr ';';
+position_set: object=atom '[' idx=expr ']' '=' value=expr ';';
+section_set: object=atom ':' ':' id=ID '=' value=expr ';';
 
-declare: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? (d_tsil='ціль' | d_var='змінна') d_id=ID ':' d_type=full_type;
+if: 'якщо' cond=operation ifok=body ('інакше' (ifnot=body | ifnotif=if))?;
+while: 'поки' cond=operation body;
 
-define: (d_extern='зовнішня' | d_local='місцева' | d_internal='внутрішня')? (d_tsil='ціль' | d_var='змінна') d_id=ID (':' d_type=full_type)? '=' d_value=expr;
+body: '{' (body_element)* '}';
+body_element: structure_define
+            | diia_define
+            | tsil_define
+            | set | section_set | position_set
+            | synonym
+            | section_define
+            | expr
+            | if
+            | while
+            | body
+            | return
+            | ';';
+return: 'вернути' value=expr ';';
 
-assign: a_id=ID '=' a_value=expr;
+type: '(' type ')' #type_nested
+    | id=ID #type_subject
+    | object=type ':' ':' id=ID #type_section_get
+    | object=type '<' type (',' type)* '>' #type_template_get
+    | object=type '.' id=ID #type_get
+    | left=type '[' size=NUMBER ']' #type_array
+    | '(' ')' '-' '>' restyp=type #type_fn
+    | param_type=type '-' '>' restyp=type #type_fn_simple
+    | '(' type (',' type)+ ')' '-' '>' restyp=type #type_fn_complex
+    | '(' param (',' param)* ')' '-' '>' restyp=type #type_fn_complex_named;
 
-set: s_left=particle ('.' s_id=ID | '[' s_index=expr ']') '=' s_value=expr;
-
-particle: section_access #particle_section_access
-        | g_left=particle '.' g_id=ID #get
-        | g_left=particle '<' sa_generic_value=full_type (',' full_type)* '>' #generic
-        | a_value=particle '[' (a_index=expr)? ']' #access
-        | c_value=particle '(' (c_args=args)? ')' #call
-        | '(' n_value=expr ')' #nested;
-args: expr (',' expr)* (',')?;
-
-atom: particle #atom_particle
-    | number #atom_number
-    | string #atom_string;
-
-molecule: atom #molecule_atom
-        | '!' n_value=molecule #not
-        | '+' p_value=atom #positive
-        | '-' n_value=atom #negative
-        | '~' bn_value=atom #bitwise_not;
-
-operation: molecule #operation_molecule
-         | a_left=molecule 'як' a_type=full_type #as
-         | a_left=operation a_operation=('*' | '/' | '%') a_right=operation #mul
-         | a_left=operation a_operation=('+' | '-') a_right=operation #add
-         | b_left=operation b_operation=bitwise_op b_right=operation #bitwise
-         | c_left=operation c_operation=comparison_op c_right=operation #comparison
-         | t_left=operation t_operation=logical_op t_right=operation #logical;
-
-expr: c_type=full_type '{' (c_args=construct_args)? '}' #construct
-    | operation #expr_operation;
-construct_args: construct_arg (',' construct_arg)* ','?;
-construct_arg: (ca_name=ID '=')? ca_value=expr;
-
-basic_type: section_access ('<' t_first_generic_type=full_type (',' full_type)* '>')? #simple_type
-          | at_type=basic_type '[' at_size=NUMBER ']' #array_type
-          | ('(' full_type ')') #full_type_nested;
-full_type: basic_type ('|' basic_type)+ #variation_type
-         | basic_type #basic_type_real_basic
-         | '(' (cft_args=complex_function_type_args)? ')' '-' '>' cft_ret=full_type #complex_function_type
-         | sft_arg=full_type '-' '>' sft_ret=full_type #simple_function_type;
-complex_function_type_args: full_type (',' full_type)*;
-
-bitwise_op: '^' | '|' | '&' | ('<' '<') | ('>' '>');
-comparison_op: ('=' '=') | ('!' '=') | '>' | '<' | ('>' '=') | ('<' '=');
-logical_op: ('|' '|') | ('&' '&') | 'або' | 'і';
+param: id=ID (':' type)?;

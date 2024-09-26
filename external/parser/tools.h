@@ -34,7 +34,7 @@ namespace tsil::parser::tools {
   std::string ltrim(const std::string& source);
 
   template <typename Base, typename T>
-  bool instanceof (const T* ptr) {
+  bool instanceof(const T* ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
   }
 

@@ -1,256 +1,368 @@
 #include "parser.h"
 
-namespace tsil::ast {} // namespace tsil::ast
-
 namespace tsil::parser {
-  void FILL(ast::ASTValue* ast_value, antlr4::ParserRuleContext* context) {
-    ast_value->start_line = context->getStart()->getLine();
-    ast_value->start_column = context->getStart()->getCharPositionInLine() + 1;
-    ast_value->end_line = context->getStop()->getLine();
-    ast_value->end_column = context->getStop()->getCharPositionInLine() + 1;
+  Місцезнаходження* LOC(TsilASTVisitor* visitor,
+                        antlr4::ParserRuleContext* context) {
+    const auto місцезнаходження = new Місцезнаходження();
+    місцезнаходження->текст_коду = visitor->текст_коду;
+    місцезнаходження->рядок = context->getStart()->getLine();
+    місцезнаходження->стовпець =
+        context->getStart()->getCharPositionInLine() + 1;
+    return місцезнаходження;
   }
 
-  void FILL(ast::ASTValue* ast_value, antlr4::Token* token) {
-    ast_value->start_line = token->getLine();
-    ast_value->start_column = token->getCharPositionInLine() + 1;
-    ast_value->end_line = token->getLine();
-    ast_value->end_column = token->getCharPositionInLine() + 1;
+  Місцезнаходження* LOC(TsilASTVisitor* visitor, antlr4::Token* token) {
+    const auto місцезнаходження = new Місцезнаходження();
+    місцезнаходження->текст_коду = visitor->текст_коду;
+    місцезнаходження->рядок = token->getLine();
+    місцезнаходження->стовпець = token->getCharPositionInLine() + 1;
+    return місцезнаходження;
   }
 
-  ast::ASTValue* AV(ast::ASTValueKind kind, void* data) {
-    const auto ast_value = new ast::ASTValue();
-    ast_value->kind = kind;
-    ast_value->data.ref = data;
-    return ast_value;
+  void FILL(TsilASTVisitor* visitor,
+            АСДЗначення* асд_значення,
+            antlr4::ParserRuleContext* context) {
+    асд_значення->місцезнаходження = LOC(visitor, context);
   }
 
-  ast::ASTValue* AV(antlr4::ParserRuleContext* context,
-                    ast::ASTValueKind kind,
-                    void* data) {
-    const auto ast_value = new ast::ASTValue();
-    FILL(ast_value, context);
-    ast_value->kind = kind;
-    ast_value->data.ref = data;
-    return ast_value;
+  void FILL(TsilASTVisitor* visitor,
+            АСДЗначення* асд_значення,
+            antlr4::Token* token) {
+    асд_значення->місцезнаходження = LOC(visitor, token);
   }
 
-  ast::ASTValue* AV(antlr4::Token* token, ast::ASTValueKind kind, void* data) {
-    const auto ast_value = new ast::ASTValue();
-    FILL(ast_value, token);
-    ast_value->kind = kind;
-    ast_value->data.ref = data;
-    return ast_value;
+  АСДЗначення* AV(TsilASTVisitor* visitor, size_t kind, void* data) {
+    const auto асд_значення = new АСДЗначення();
+    асд_значення->вид = kind;
+    асд_значення->дані = data;
+    return асд_значення;
   }
 
-  std::any TsilASTVisitor::visitContext(antlr4::ParserRuleContext* context) {
-    if (const auto file_context =
-            dynamic_cast<TsilParser::FileContext*>(context)) {
-      return visitFile(file_context);
+  АСДЗначення* AV(TsilASTVisitor* visitor,
+                  antlr4::ParserRuleContext* context,
+                  size_t kind,
+                  void* data) {
+    const auto асд_значення = new АСДЗначення();
+    FILL(visitor, асд_значення, context);
+    асд_значення->вид = kind;
+    асд_значення->дані = data;
+    return асд_значення;
+  }
+
+  АСДЗначення* AV(TsilASTVisitor* visitor,
+                  antlr4::Token* token,
+                  size_t kind,
+                  void* data) {
+    const auto асд_значення = new АСДЗначення();
+    FILL(visitor, асд_значення, token);
+    асд_значення->вид = kind;
+    асд_значення->дані = data;
+    return асд_значення;
+  }
+
+  СписокАСДЗначень* AAVecToList(std::vector<АСДЗначення*> vec) {
+    const auto elements = new АСДЗначення*[vec.size()];
+    for (size_t i = 0; i < vec.size(); i++) {
+      elements[i] = vec[i];
     }
-    if (const auto program_context =
-            dynamic_cast<TsilParser::ProgramContext*>(context)) {
-      return visitProgram(program_context);
+    return new СписокАСДЗначень{.довжина = vec.size(), .елементи = elements};
+  }
+
+  Ідентифікатор* ІД(TsilASTVisitor* visitor,
+                    antlr4::ParserRuleContext* context,
+                    const std::string& значення) {
+    const auto ідентифікатор = new Ідентифікатор();
+    ідентифікатор->значення = strdup(значення.c_str());
+    ідентифікатор->місцезнаходження = LOC(visitor, context);
+    return ідентифікатор;
+  }
+
+  Ідентифікатор* ІД(TsilASTVisitor* visitor,
+                    antlr4::Token* token,
+                    const std::string& значення) {
+    const auto ідентифікатор = new Ідентифікатор();
+    ідентифікатор->значення = strdup(значення.c_str());
+    ідентифікатор->місцезнаходження = LOC(visitor, token);
+    return ідентифікатор;
+  }
+
+  std::string повторити_пробіл(size_t кількість) {
+    std::string r;
+    for (size_t i = 0; i < кількість; ++i) {
+      r += " ";
     }
-    if (const auto section_context =
-            dynamic_cast<TsilParser::SectionContext*>(context)) {
-      return visitSection(section_context);
+    return r;
+  }
+
+  std::string АСДЗначенняВString(АСДЗначення* асд_значення, size_t глибина) {
+    if (асд_значення == nullptr) {
+      return "nullptr";
     }
-    if (const auto structure_context =
-            dynamic_cast<TsilParser::StructureContext*>(context)) {
-      return visitStructure(structure_context);
+    if (асд_значення->вид == АСДВидНіщо) {
+      return "Ніщо";
     }
-    if (const auto variation_context =
-            dynamic_cast<TsilParser::VariationContext*>(context)) {
-      return visitVariation(variation_context);
+    if (асд_значення->вид == АСДВидЗвернутись) {
+      const auto data = static_cast<АСДДаніЗвернутись*>(асд_значення->дані);
+      std::string r = "Звернутись(";
+      r += data->ідентифікатор->значення;
+      r += ")";
+      return r;
     }
-    if (const auto diia_context =
-            dynamic_cast<TsilParser::DiiaContext*>(context)) {
-      return visitDiia(diia_context);
+    if (асд_значення->вид == АСДВидОтримати) {
+      const auto data = static_cast<АСДДаніОтримати*>(асд_значення->дані);
+      std::string r = "Отримати(";
+      r += АСДЗначенняВString(data->обʼєкт);
+      r += ", ";
+      r += data->ідентифікатор->значення;
+      r += ")";
+      return r;
     }
-    if (const auto diia_declaration_context =
-            dynamic_cast<TsilParser::Diia_declarationContext*>(context)) {
-      return visitDiia_declaration(diia_declaration_context);
+    if (асд_значення->вид == АСДВидОтриматиЗіСекції) {
+      const auto data =
+          static_cast<АСДДаніОтриматиЗіСекції*>(асд_значення->дані);
+      std::string r = "ОтриматиЗіСекції(";
+      r += АСДЗначенняВString(data->обʼєкт);
+      r += ", ";
+      r += data->ідентифікатор->значення;
+      r += ")";
+      return r;
     }
-    if (const auto body_context =
-            dynamic_cast<TsilParser::BodyContext*>(context)) {
-      return visitBody(body_context);
+    if (асд_значення->вид == АСДВидОтриматиЗаПозицією) {
+      const auto data =
+          static_cast<АСДДаніОтриматиЗаПозицією*>(асд_значення->дані);
+      std::string r = "ОтриматиЗаПозицією(";
+      r += АСДЗначенняВString(data->обʼєкт);
+      r += ", ";
+      r += data->позиція ? АСДЗначенняВString(data->позиція) : "ПРОП";
+      r += ")";
+      return r;
     }
-    if (const auto if_context = dynamic_cast<TsilParser::IfContext*>(context)) {
-      return visitIf(if_context);
+    if (асд_значення->вид == АСДВидЗмінити) {
+      const auto data = static_cast<АСДДаніЗмінити*>(асд_значення->дані);
+      std::string r = "Змінити(";
+      r += АСДЗначенняВString(data->обʼєкт);
+      r += ", ";
+      r += data->ідентифікатор->значення;
+      r += ", ";
+      r += АСДЗначенняВString(data->значення);
+      r += ")";
+      return r;
     }
-    if (const auto while_context =
-            dynamic_cast<TsilParser::WhileContext*>(context)) {
-      return visitWhile(while_context);
+    if (асд_значення->вид == АСДВидЗмінитиВСекції) {
+      const auto data = static_cast<АСДДаніЗмінитиВСекції*>(асд_значення->дані);
+      std::string r = "ЗмінитиВСекції(";
+      r += АСДЗначенняВString(data->обʼєкт);
+      r += ", ";
+      r += data->ідентифікатор->значення;
+      r += ", ";
+      r += АСДЗначенняВString(data->значення);
+      r += ")";
+      return r;
     }
-    if (const auto declare_context =
-            dynamic_cast<TsilParser::DeclareContext*>(context)) {
-      return visitDeclare(declare_context);
+    if (асд_значення->вид == АСДВидЗмінитиЗаПозицією) {
+      const auto data =
+          static_cast<АСДДаніЗмінитиЗаПозицією*>(асд_значення->дані);
+      std::string r = "ЗмінитиЗаПозицією(";
+      r += АСДЗначенняВString(data->обʼєкт);
+      r += ", ";
+      r += data->позиція ? АСДЗначенняВString(data->позиція) : "ПРОП";
+      r += ", ";
+      r += АСДЗначенняВString(data->значення);
+      r += ")";
+      return r;
     }
-    if (const auto define_context =
-            dynamic_cast<TsilParser::DefineContext*>(context)) {
-      return visitDefine(define_context);
+    if (асд_значення->вид == АСДВидВиконати) {
+      const auto data = static_cast<АСДДаніВиконати*>(асд_значення->дані);
+      std::string r = "Виконати(";
+      r += АСДЗначенняВString(data->обʼєкт);
+      r += ", [";
+      if (data->аргументи) {
+        if (data->аргументи->довжина) {
+          for (int i = 0; i < data->аргументи->довжина; ++i) {
+            r += АСДЗначенняВString(data->аргументи->елементи[i]);
+            if (i != data->аргументи->довжина - 1) {
+              r += ", ";
+            }
+          }
+        }
+      }
+      r += "]";
+      r += ")";
+      return r;
     }
-    if (const auto assign_context =
-            dynamic_cast<TsilParser::AssignContext*>(context)) {
-      return visitAssign(assign_context);
+    if (асд_значення->вид == АСДВидВиконатиШаблон) {
+      const auto data = static_cast<АСДДаніВиконатиШаблон*>(асд_значення->дані);
+      std::string r = "ВиконатиШаблон(";
+      r += АСДЗначенняВString(data->обʼєкт);
+      r += ", [";
+      if (data->аргументи) {
+        if (data->аргументи->довжина) {
+          for (int i = 0; i < data->аргументи->довжина; ++i) {
+            r += АСДЗначенняВString(data->аргументи->елементи[i]);
+            if (i != data->аргументи->довжина - 1) {
+              r += ", ";
+            }
+          }
+        }
+      }
+      r += "]";
+      r += ")";
+      return r;
     }
-    if (const auto set_context =
-            dynamic_cast<TsilParser::SetContext*>(context)) {
-      return visitSet(set_context);
+    if (асд_значення->вид == АСДВидСтворитиЦіль) {
+      const auto data = static_cast<АСДДаніСтворитиЦіль*>(асд_значення->дані);
+      std::string r = "СтворитиЦіль(";
+      r += data->тип ? АСДЗначенняВString(data->тип) : "ПРОП";
+      r += ", ";
+      r += data->значення ? АСДЗначенняВString(data->значення) : "ПРОП";
+      r += ")";
+      return r;
     }
-    if (const auto identifier_context =
-            dynamic_cast<TsilParser::IdentifierContext*>(context)) {
-      return visitIdentifier(identifier_context);
+    if (асд_значення->вид == АСДВидСтворитиДію) {
+      const auto data = static_cast<АСДДаніСтворитиДію*>(асд_значення->дані);
+      std::string r = "СтворитиДію(";
+      r += data->ідентифікатор->значення;
+      r += ", ";
+      r += "...";
+      r += ", [";
+      if (data->тіло) {
+        if (data->тіло->довжина) {
+          for (int i = 0; i < data->тіло->довжина; ++i) {
+            r += АСДЗначенняВString(data->тіло->елементи[i]);
+            if (i != data->тіло->довжина - 1) {
+              r += ", ";
+            }
+          }
+        }
+      }
+      r += "])";
+      return r;
     }
-    if (const auto get_context =
-            dynamic_cast<TsilParser::GetContext*>(context)) {
-      return visitGet(get_context);
+    if (асд_значення->вид == АСДВидСтворитиСтруктуру) {
+      const auto data =
+          static_cast<АСДДаніСтворитиСтруктуру*>(асд_значення->дані);
+      std::string r = "СтворитиСтруктуру(";
+      r += data->ідентифікатор->значення;
+      r += ", [";
+      if (data->параметри) {
+        if (data->кількість_параметрів) {
+          for (int i = 0; i < data->кількість_параметрів; ++i) {
+            r += data->параметри[i]->ідентифікатор->значення;
+            r += ": ";
+            r += АСДЗначенняВString(data->параметри[i]->тип);
+            if (i != data->кількість_параметрів - 1) {
+              r += ", ";
+            }
+          }
+        }
+      }
+      r += "])";
+      return r;
     }
-    if (const auto access_context =
-            dynamic_cast<TsilParser::AccessContext*>(context)) {
-      return visitAccess(access_context);
+    if (асд_значення->вид == АСДВидСтворитиСинонім) {
+      const auto data =
+          static_cast<АСДДаніСтворитиСинонім*>(асд_значення->дані);
+      std::string r = "СтворитиСинонім(";
+      r += АСДЗначенняВString(data->значення);
+      r += ")";
+      return r;
     }
-    if (const auto call_context =
-            dynamic_cast<TsilParser::CallContext*>(context)) {
-      return visitCall(call_context);
+    if (асд_значення->вид == АСДВидСтворитиШаблон) {
+      const auto data = static_cast<АСДДаніСтворитиШаблон*>(асд_значення->дані);
+      std::string r = "СтворитиШаблон(";
+      r += "[";
+      if (data->параметри) {
+        if (data->кількість_параметрів) {
+          for (int i = 0; i < data->кількість_параметрів; ++i) {
+            r += data->параметри[i]->значення;
+            if (i != data->кількість_параметрів - 1) {
+              r += ", ";
+            }
+          }
+        }
+      }
+      r += "], ";
+      r += data->значення ? АСДЗначенняВString(data->значення) : "ПРОП";
+      r += ")";
+      return r;
     }
-    if (const auto nested_context =
-            dynamic_cast<TsilParser::NestedContext*>(context)) {
-      return visitNested(nested_context);
+    if (асд_значення->вид == АСДВидСтворитиСекцію) {
+      const auto data = static_cast<АСДДаніСтворитиСекцію*>(асд_значення->дані);
+      std::string r = "СтворитиСекцію(";
+      r += data->ідентифікатор->значення;
+      r += ", [";
+      if (data->тіло) {
+        if (data->тіло->довжина) {
+          for (int i = 0; i < data->тіло->довжина; ++i) {
+            r += АСДЗначенняВString(data->тіло->елементи[i]);
+            if (i != data->тіло->довжина - 1) {
+              r += ", ";
+            }
+          }
+        }
+      }
+      r += "])";
+      return r;
     }
-    if (const auto atom_particle_context =
-            dynamic_cast<TsilParser::Atom_particleContext*>(context)) {
-      return visitContext(atom_particle_context->particle());
+    if (асд_значення->вид == АСДВидСтворитиОбʼєкт) {
     }
-    if (const auto atom_number_context =
-            dynamic_cast<TsilParser::Atom_numberContext*>(context)) {
-      return visitContext(atom_number_context->number());
+    if (асд_значення->вид == АСДВидЗначенняЧисло) {
+      const auto data = static_cast<АСДДаніЗначенняЧисло*>(асд_значення->дані);
+      std::string r = "Число(";
+      r += data->значення;
+      r += ")";
+      return r;
     }
-    if (const auto atom_string_context =
-            dynamic_cast<TsilParser::Atom_stringContext*>(context)) {
-      return visitContext(atom_string_context->string());
+    if (асд_значення->вид == АСДВидЗначенняТекст) {
+      const auto data = static_cast<АСДДаніЗначенняТекст*>(асд_значення->дані);
+      std::string r = "Текст([";
+      auto s = data->значення;
+      while (*s != 0) {
+        r += std::to_string(*s);
+        s++;
+        if (*s != 0) {
+          r += ", ";
+        }
+      }
+      r += "])";
+      return r;
     }
-    if (const auto number_context =
-            dynamic_cast<TsilParser::NumberContext*>(context)) {
-      return visitNumber(number_context);
+    if (асд_значення->вид == АСДВидЗначенняЮнікод) {
+      const auto data = static_cast<АСДДаніЗначенняЮнікод*>(асд_значення->дані);
+      std::string r = "Юнікод(";
+      r += data->ідентифікатор->значення;
+      r += ", ";
+      r += data->значення;
+      r += ")";
+      return r;
     }
-    if (const auto string_context =
-            dynamic_cast<TsilParser::StringContext*>(context)) {
-      return visitString(string_context);
+    if (асд_значення->вид == АСДВидОперація) {
+      const auto data = static_cast<АСДДаніОперація*>(асд_значення->дані);
+      std::string r = "Операція(";
+      r += АСДЗначенняВString(data->ліво);
+      r += ", ";
+      r += код_операції_в_юнікод(data->операція);
+      r += ", ";
+      r += АСДЗначенняВString(data->право);
+      r += ")";
+      return r;
     }
-    if (const auto molecule_atom_context =
-            dynamic_cast<TsilParser::Molecule_atomContext*>(context)) {
-      return visitContext(molecule_atom_context->atom());
+    if (асд_значення->вид == АСДВидЯкщо) {
     }
-    if (const auto not_context =
-            dynamic_cast<TsilParser::NotContext*>(context)) {
-      return visitNot(not_context);
+    if (асд_значення->вид == АСДВидПоки) {
     }
-    if (const auto positive_context =
-            dynamic_cast<TsilParser::PositiveContext*>(context)) {
-      return visitPositive(positive_context);
+    if (асд_значення->вид == АСДВидВернути) {
+      const auto data = static_cast<АСДДаніВернути*>(асд_значення->дані);
+      std::string r = "Вернути(";
+      r += data->значення ? АСДЗначенняВString(data->значення) : "ПРОП";
+      r += ")";
+      return r;
     }
-    if (const auto negative_context =
-            dynamic_cast<TsilParser::NegativeContext*>(context)) {
-      return visitNegative(negative_context);
+    if (асд_значення->вид == АСДВидСтворитиТипДії) {
     }
-    if (const auto bitwise_not_context =
-            dynamic_cast<TsilParser::Bitwise_notContext*>(context)) {
-      return visitBitwise_not(bitwise_not_context);
+    if (асд_значення->вид == АСДВидСтворитиТипМасиву) {
     }
-    if (const auto operation_molecule_context =
-            dynamic_cast<TsilParser::Operation_moleculeContext*>(context)) {
-      return visitContext(operation_molecule_context->molecule());
-    }
-    if (const auto as_context = dynamic_cast<TsilParser::AsContext*>(context)) {
-      return visitAs(as_context);
-    }
-    if (const auto mul_context =
-            dynamic_cast<TsilParser::MulContext*>(context)) {
-      return visitMul(mul_context);
-    }
-    if (const auto add_context =
-            dynamic_cast<TsilParser::AddContext*>(context)) {
-      return visitAdd(add_context);
-    }
-    if (const auto bitwise_context =
-            dynamic_cast<TsilParser::BitwiseContext*>(context)) {
-      return visitBitwise(bitwise_context);
-    }
-    if (const auto comparison_context =
-            dynamic_cast<TsilParser::ComparisonContext*>(context)) {
-      return visitComparison(comparison_context);
-    }
-    if (const auto logical_context =
-            dynamic_cast<TsilParser::LogicalContext*>(context)) {
-      return visitLogical(logical_context);
-    }
-    if (const auto expr_operation_context =
-            dynamic_cast<TsilParser::Expr_operationContext*>(context)) {
-      return visitContext(expr_operation_context->operation());
-    }
-    if (const auto construct_context =
-            dynamic_cast<TsilParser::ConstructContext*>(context)) {
-      return visitConstruct(construct_context);
-    }
-    if (const auto simple_type_context =
-            dynamic_cast<TsilParser::Simple_typeContext*>(context)) {
-      return visitSimple_type(simple_type_context);
-    }
-    if (const auto array_type_context =
-            dynamic_cast<TsilParser::Array_typeContext*>(context)) {
-      return visitArray_type(array_type_context);
-    }
-    if (const auto complex_function_type_context =
-            dynamic_cast<TsilParser::Complex_function_typeContext*>(context)) {
-      return visitComplex_function_type(complex_function_type_context);
-    }
-    if (const auto simple_function_type_context =
-            dynamic_cast<TsilParser::Simple_function_typeContext*>(context)) {
-      return visitSimple_function_type(simple_function_type_context);
-    }
-    if (const auto variation_type_context =
-            dynamic_cast<TsilParser::Variation_typeContext*>(context)) {
-      return visitVariation_type(variation_type_context);
-    }
-    if (const auto full_type_nested_context =
-            dynamic_cast<TsilParser::Full_type_nestedContext*>(context)) {
-      return visitFull_type_nested(full_type_nested_context);
-    }
-    if (const auto basic_type_real_basic_context =
-            dynamic_cast<TsilParser::Basic_type_real_basicContext*>(context)) {
-      return visitBasic_type_real_basic(basic_type_real_basic_context);
-    }
-    if (const auto take_context =
-            dynamic_cast<TsilParser::TakeContext*>(context)) {
-      return visitTake(take_context);
-    }
-    if (const auto real_section_access_context =
-            dynamic_cast<TsilParser::Real_section_accessContext*>(context)) {
-      return visitReal_section_access(real_section_access_context);
-    }
-    if (const auto particle_section_access_context =
-            dynamic_cast<TsilParser::Particle_section_accessContext*>(
-                context)) {
-      return visitContext(particle_section_access_context->section_access());
-    }
-    if (const auto generic_context =
-            dynamic_cast<TsilParser::GenericContext*>(context)) {
-      return visitGeneric(generic_context);
-    }
-    if (const auto block_context =
-            dynamic_cast<TsilParser::BlockContext*>(context)) {
-      return visitBlock(block_context);
-    }
-    if (const auto synonym_context =
-            dynamic_cast<TsilParser::SynonymContext*>(context)) {
-      return visitSynonym(synonym_context);
-    }
-    if (const auto defer_context =
-            dynamic_cast<TsilParser::DeferContext*>(context)) {
-      return visitDefer(defer_context);
-    }
-    return nullptr;
+    return "Невідомо";
   }
 
   void TsilParserErrorListener::syntaxError(antlr4::Recognizer* recognizer,
@@ -259,10 +371,12 @@ namespace tsil::parser {
                                             size_t charPositionInLine,
                                             const std::string& msg,
                                             std::exception_ptr e) {
-    TsilParserError error{};
-    error.line = line;
-    error.column = charPositionInLine;
-    error.message = msg;
+    const auto error = new ПомилкаРозборуЦілі();
+    error->місцезнаходження = new Місцезнаходження();
+    error->місцезнаходження->текст_коду = this->текст_коду;
+    error->місцезнаходження->рядок = line;
+    error->місцезнаходження->стовпець = charPositionInLine;
+    error->повідомлення = strdup(msg.c_str());
     this->errors.push_back(error);
   }
 
@@ -290,47 +404,119 @@ namespace tsil::parser {
       size_t stopIndex,
       size_t prediction,
       antlr4::atn::ATNConfigSet* configs) {}
-
-  TsilParserResult parse(const std::string& code) {
-    antlr4::ANTLRInputStream input(code);
-
-    const auto lexer_error_listener = new TsilParserErrorListener();
-    TsilLexer lexer(&input);
-    lexer.removeErrorListeners();
-    lexer.addErrorListener(lexer_error_listener);
-
-    antlr4::CommonTokenStream tokens(&lexer);
-
-    if (!lexer_error_listener->errors.empty()) {
-      return TsilParserResult{
-          .errors = lexer_error_listener->errors,
-      };
-    }
-
-    const auto parser_error_listener = new TsilParserErrorListener();
-    TsilParser parser(&tokens);
-    parser.getInterpreter<antlr4::atn::ParserATNSimulator>()->setPredictionMode(
-        antlr4::atn::PredictionMode::SLL);
-    parser.removeParseListeners();
-    parser.removeErrorListeners();
-    parser.addErrorListener(parser_error_listener);
-
-    TsilParser::FileContext* tree = parser.file();
-
-    if (!parser_error_listener->errors.empty()) {
-      return TsilParserResult{
-          .errors = parser_error_listener->errors,
-      };
-    }
-
-    const auto visitor = new TsilASTVisitor();
-    visitor->tokens = &tokens;
-
-    const auto ast_value = AAV(visitor->visitFile(tree));
-
-    auto parser_result = TsilParserResult();
-    parser_result.program_node = ast_value->data.ProgramNode;
-
-    return parser_result;
-  }
 } // namespace tsil::parser
+
+extern "C" РезультатРозборуЦілі* розібрати_ціль(ТекстКоду* текст_коду) {
+  antlr4::ANTLRInputStream input(текст_коду->значення);
+
+  const auto lexer_error_listener = new tsil::parser::TsilParserErrorListener();
+  lexer_error_listener->текст_коду = текст_коду;
+  TsilLexer lexer(&input);
+  lexer.removeErrorListeners();
+  lexer.addErrorListener(lexer_error_listener);
+
+  antlr4::CommonTokenStream tokens(&lexer);
+
+  if (!lexer_error_listener->errors.empty()) {
+    const auto error = lexer_error_listener->errors[0];
+    delete lexer_error_listener;
+    return new РезультатРозборуЦілі{false, {}, error};
+  }
+
+  const auto parser_error_listener =
+      new tsil::parser::TsilParserErrorListener();
+  parser_error_listener->текст_коду = текст_коду;
+  TsilParser parser(&tokens);
+  parser.removeParseListeners();
+  parser.removeErrorListeners();
+  parser.addErrorListener(parser_error_listener);
+
+  TsilParser::FileContext* tree = parser.file();
+
+  if (!parser_error_listener->errors.empty()) {
+    const auto error = parser_error_listener->errors[0];
+    delete lexer_error_listener;
+    delete parser_error_listener;
+    return new РезультатРозборуЦілі{false, {}, error};
+  }
+
+  const auto visitor = new tsil::parser::TsilASTVisitor();
+  visitor->tokens = &tokens;
+  visitor->текст_коду = текст_коду;
+
+  const auto body = AAVec(visitor->visitFile(tree));
+  const auto elements = new АСДЗначення*[body.size()];
+  for (size_t i = 0; i < body.size(); i++) {
+    elements[i] = body[i];
+  }
+
+  delete lexer_error_listener;
+  delete parser_error_listener;
+  delete visitor;
+
+  return new РезультатРозборуЦілі{
+      true, new СписокАСДЗначень{.довжина = body.size(), .елементи = elements},
+      nullptr};
+
+} // namespace tsil::parser
+
+extern "C" char* код_операції_в_юнікод(size_t операція) {
+  if (операція == АСДОпераціяМноження) {
+    return "*";
+  }
+  if (операція == АСДОпераціяДілення) {
+    return "/";
+  }
+  if (операція == АСДОпераціяМодуль) {
+    return "%";
+  }
+  if (операція == АСДОпераціяДодавання) {
+    return "+";
+  }
+  if (операція == АСДОпераціяВіднімання) {
+    return "-";
+  }
+  if (операція == АСДОпераціяЗсувВліво) {
+    return "<<";
+  }
+  if (операція == АСДОпераціяЗсувВправо) {
+    return ">>";
+  }
+  if (операція == АСДОпераціяЗсувВправоЗнаковий) {
+    return ">>>";
+  }
+  if (операція == АСДОпераціяМенше) {
+    return "<";
+  }
+  if (операція == АСДОпераціяБільше) {
+    return ">";
+  }
+  if (операція == АСДОпераціяМеншеРівне) {
+    return "<=";
+  }
+  if (операція == АСДОпераціяБільшеРівне) {
+    return ">=";
+  }
+  if (операція == АСДОпераціяРівне) {
+    return "==";
+  }
+  if (операція == АСДОпераціяНерівне) {
+    return "!=";
+  }
+  if (операція == АСДОпераціяДІ) {
+    return "&";
+  }
+  if (операція == АСДОпераціяВАБО) {
+    return "^";
+  }
+  if (операція == АСДОпераціяДАБО) {
+    return "|";
+  }
+  if (операція == АСДОпераціяІ) {
+    return "&&";
+  }
+  if (операція == АСДОпераціяАБО) {
+    return "||";
+  }
+  return "НЕВІДОМА_ОПЕРАЦІЯ";
+}
