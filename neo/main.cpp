@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "parser/parser.h"
+#include "xl/xl.h"
 
 extern "C" size_t отримати_з_карти_субʼєктів(void* map,
                                              char* name,
@@ -32,7 +33,13 @@ extern "C" void* створити_карту_субʼєктів() {
   return new std::map<std::string, std::pair<unsigned long, void*>>();
 }
 
-extern "C" char* скомпілювати_ціль_в_ll(ТекстКоду* текст_коду);
+struct ПомилкаКомпіляціїЦілі {
+  Місцезнаходження* місцезнаходження;
+  char* повідомлення;
+};
+
+extern "C" ПомилкаКомпіляціїЦілі* скомпілювати_ціль_в_ll(XLM* m,
+                                                         ТекстКоду* текст_коду);
 
 int main() {
   std::string filename = "тест.ц";
@@ -41,33 +48,39 @@ int main() {
                    std::istreambuf_iterator<char>());
   auto текстКоду = new ТекстКоду{.шлях = (char*)filename.c_str(),
                                  .значення = (char*)code.c_str()};
-  const auto result = скомпілювати_ціль_в_ll(текстКоду);
-  std::cout << result << std::endl;
+  const auto L = xlm_create("main");
+  const auto помилка_компіляції_цілі = скомпілювати_ціль_в_ll(L, текстКоду);
+  if (помилка_компіляції_цілі != nullptr) {
+    std::cout << "Failed" << std::endl;
+    std::cout << помилка_компіляції_цілі->повідомлення << std::endl;
+    return 1;
+  }
+  std::cout << dumpLL(L) << std::endl;
   //  auto parseResult = розібрати_ціль(текстКоду);
   //  if (parseResult.успіх) {
   //    const auto compiler = new Compiler();
   //    const auto globalScope = createScope(nullptr);
   //    compiler->globalScope = globalScope;
-  //    compiler->m = xlm_create(strdup(filename.c_str()));
+  //    compiler->L = xlm_create(strdup(filename.c_str()));
   //
   //    const auto scope = createScope(globalScope);
   //
   //    const auto nativeInt32 = new Native();
   //    nativeInt32->name = "ц32";
-  //    nativeInt32->xlType = xl_get_int32_type(compiler->m);
+  //    nativeInt32->xlType = xl_get_int32_type(compiler->L);
   //    setSubject(scope, "ц32",
   //               Subject{SubjectKindNative, {.native = nativeInt32}});
   //
   //    for (int i = 0; i < parseResult.тіло->довжина; ++i) {
   //      const auto& astValue = parseResult.тіло->елементи[i];
-  //      const auto result = compile(compiler, scope, astValue);
-  //      if (result.error) {
+  //      const auto помилка_компіляції_цілі = compile(compiler, scope, astValue);
+  //      if (помилка_компіляції_цілі.error) {
   //        std::cout << "Failed" << std::endl;
-  //        std::cout << result.error->message << std::endl;
+  //        std::cout << помилка_компіляції_цілі.error->message << std::endl;
   //        return 1;
   //      }
   //    }
-  //    std::cout << dumpLL(compiler->m) << std::endl;
+  //    std::cout << dumpLL(compiler->L) << std::endl;
   //  } else {
   //    std::cout << "Failed" << std::endl;
   //    std::cout << parseResult.помилка->повідомлення << std::endl;
