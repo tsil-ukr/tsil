@@ -42,6 +42,7 @@ XLType* xl_set_struct_fields(XLM* m,
 }
 
 XLFunction* xl_declare_function(XLM* m,
+                                size_t linkage,
                                 char* name,
                                 XLType* ret_type,
                                 unsigned long params_size,
@@ -51,9 +52,21 @@ XLFunction* xl_declare_function(XLM* m,
   for (int i = 0; i < params_size; i++) {
     llvmParams[i] = params[i];
   }
-  return llvm::Function::Create(
-      llvm::FunctionType::get(ret_type, llvmParams, isVarArg),
-      llvm::Function::ExternalLinkage, name, m->llvmModule);
+  llvm::Function::LinkageTypes linkageType;
+  if (linkage == XL_LINKAGE_EXTERNAL) {
+    linkageType = llvm::Function::ExternalLinkage;
+  } else if (linkage == XL_LINKAGE_DSO_LOCAL) {
+    linkageType = llvm::Function::ExternalLinkage;
+  } else {
+    linkageType = llvm::Function::InternalLinkage;
+  }
+  auto function = llvm::Function::Create(
+      llvm::FunctionType::get(ret_type, llvmParams, isVarArg), linkageType,
+      name, m->llvmModule);
+  if (linkage == XL_LINKAGE_DSO_LOCAL) {
+    function->setDSOLocal(true);
+  }
+  return function;
 }
 
 XLBasicBlock* xl_create_function_block(XLM* m, XLFunction* f, char* name) {
@@ -470,7 +483,7 @@ XLFunctionType* xl_get_as_function_type(XLM* m, XLValue* value) {
 }
 
 XLFunctionType* xl_get_function_type(XLM* m, XLFunction* f) {
-    return static_cast<llvm::Function*>(f)->getFunctionType();
+  return static_cast<llvm::Function*>(f)->getFunctionType();
 }
 
 XLValue* xl_get_function_arg_value(XLM* m, XLFunction* f, unsigned long index) {

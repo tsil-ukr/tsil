@@ -25,6 +25,10 @@ typedef XL_FUNCTION_TYPE_TYPE XLFunctionType;
 typedef XL_VALUE_TYPE XLValue;
 typedef XL_BASIC_BLOCK_TYPE XLBasicBlock;
 
+#define XL_LINKAGE_EXTERNAL 0
+#define XL_LINKAGE_DSO_LOCAL 1
+#define XL_LINKAGE_INTERNAL 2
+
 XLM* xlm_create(char* name);
 
 XLType* xl_create_struct(XLM* m, char* name);
@@ -34,6 +38,7 @@ XLType* xl_set_struct_fields(XLM* m,
                              XLType** fields);
 
 XLFunction* xl_declare_function(XLM* m,
+                                size_t linkage,
                                 char* name,
                                 XLType* ret_type,
                                 unsigned long params_size,

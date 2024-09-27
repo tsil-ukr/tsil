@@ -562,6 +562,13 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitDiia_define(
       TsilParser::Diia_defineContext* ctx) {
     const auto асд_дані_створити_дію = new АСДДаніСтворитиДію();
+    if (ctx->extern_) {
+      асд_дані_створити_дію->видимість = АСДВидимістьЗовнішня;
+    } else if (ctx->local) {
+      асд_дані_створити_дію->видимість = АСДВидимістьМісцева;
+    } else {
+      асд_дані_створити_дію->видимість = АСДВидимістьВнутрішня;
+    }
     асд_дані_створити_дію->ідентифікатор =
         ІД(this, ctx->id, ctx->id->getText());
     std::vector<Параметр*> params;
