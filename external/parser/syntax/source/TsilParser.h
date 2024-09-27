@@ -31,10 +31,10 @@ public:
     RuleOp_rshift = 5, RuleOp_urshift = 6, RuleOp_lte = 7, RuleOp_gte = 8, 
     RuleOp_eq = 9, RuleOp_neq = 10, RuleOp_land = 11, RuleOp_lor = 12, RuleGendef = 13, 
     RuleExpr = 14, RuleStructure_define = 15, RuleStructure_element = 16, 
-    RuleDiia_define = 17, RuleTsil_define = 18, RuleSynonym = 19, RuleSection_define = 20, 
-    RuleSet = 21, RulePosition_set = 22, RuleSection_set = 23, RuleIf = 24, 
-    RuleWhile = 25, RuleBody = 26, RuleBody_element = 27, RuleReturn = 28, 
-    RuleType = 29, RuleParam = 30
+    RuleDiia_define = 17, RuleTsil_define = 18, RuleAssign = 19, RuleSynonym = 20, 
+    RuleSection_define = 21, RuleSet = 22, RulePosition_set = 23, RuleSection_set = 24, 
+    RuleIf = 25, RuleWhile = 26, RuleBody = 27, RuleBody_element = 28, RuleReturn = 29, 
+    RuleType = 30, RuleParam = 31
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -73,6 +73,7 @@ public:
   class Structure_elementContext;
   class Diia_defineContext;
   class Tsil_defineContext;
+  class AssignContext;
   class SynonymContext;
   class Section_defineContext;
   class SetContext;
@@ -927,6 +928,26 @@ public:
 
   Tsil_defineContext* tsil_define();
 
+  class  AssignContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *id = nullptr;
+    TsilParser::ExprContext *value = nullptr;
+    AssignContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *EQUAL();
+    antlr4::tree::TerminalNode *SEMICOLON();
+    antlr4::tree::TerminalNode *ID();
+    ExprContext *expr();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  AssignContext* assign();
+
   class  SynonymContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *id = nullptr;
@@ -1103,6 +1124,7 @@ public:
     Structure_defineContext *structure_define();
     Diia_defineContext *diia_define();
     Tsil_defineContext *tsil_define();
+    AssignContext *assign();
     SetContext *set();
     Section_setContext *section_set();
     Position_setContext *position_set();

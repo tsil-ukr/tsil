@@ -146,6 +146,9 @@ namespace tsil::parser {
             dynamic_cast<TsilParser::Tsil_defineContext*>(context)) {
       return visitTsil_define(ctx);
     }
+    if (const auto ctx = dynamic_cast<TsilParser::AssignContext*>(context)) {
+      return visitAssign(ctx);
+    }
     if (const auto ctx = dynamic_cast<TsilParser::SynonymContext*>(context)) {
       return visitSynonym(ctx);
     }
@@ -613,6 +616,14 @@ namespace tsil::parser {
     return AV(this, ctx, АСДВидСтворитиЦіль, асд_дані_створити_ціль);
   }
 
+  std::any TsilASTVisitor::visitAssign(TsilParser::AssignContext* ctx) {
+    const auto асд_дані_перевизначити = new АСДДаніПеревизначити();
+    асд_дані_перевизначити->ідентифікатор =
+        ІД(this, ctx->id, ctx->id->getText());
+    асд_дані_перевизначити->значення = AAV(visitContext(ctx->value));
+    return AV(this, ctx, АСДВидПеревизначити, асд_дані_перевизначити);
+  }
+
   std::any TsilASTVisitor::visitSynonym(TsilParser::SynonymContext* ctx) {
     const auto асд_дані_створити_синонім = new АСДДаніСтворитиСинонім();
     асд_дані_створити_синонім->значення = AAV(visitContext(ctx->expr()));
@@ -702,6 +713,9 @@ namespace tsil::parser {
     }
     if (ctx->tsil_define() != nullptr) {
       return visitTsil_define(ctx->tsil_define());
+    }
+    if (ctx->assign() != nullptr) {
+      return visitAssign(ctx->assign());
     }
     if (ctx->synonym() != nullptr) {
       return visitSynonym(ctx->synonym());

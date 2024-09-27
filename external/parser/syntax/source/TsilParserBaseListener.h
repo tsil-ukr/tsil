@@ -160,6 +160,9 @@ public:
   virtual void enterTsil_define(TsilParser::Tsil_defineContext * /*ctx*/) override { }
   virtual void exitTsil_define(TsilParser::Tsil_defineContext * /*ctx*/) override { }
 
+  virtual void enterAssign(TsilParser::AssignContext * /*ctx*/) override { }
+  virtual void exitAssign(TsilParser::AssignContext * /*ctx*/) override { }
+
   virtual void enterSynonym(TsilParser::SynonymContext * /*ctx*/) override { }
   virtual void exitSynonym(TsilParser::SynonymContext * /*ctx*/) override { }
 

@@ -158,6 +158,9 @@ public:
   virtual void enterTsil_define(TsilParser::Tsil_defineContext *ctx) = 0;
   virtual void exitTsil_define(TsilParser::Tsil_defineContext *ctx) = 0;
 
+  virtual void enterAssign(TsilParser::AssignContext *ctx) = 0;
+  virtual void exitAssign(TsilParser::AssignContext *ctx) = 0;
+
   virtual void enterSynonym(TsilParser::SynonymContext *ctx) = 0;
   virtual void exitSynonym(TsilParser::SynonymContext *ctx) = 0;
 

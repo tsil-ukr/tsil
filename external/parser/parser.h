@@ -154,6 +154,8 @@ namespace tsil::parser {
 
     std::any visitTsil_define(TsilParser::Tsil_defineContext* ctx) override;
 
+    std::any visitAssign(TsilParser::AssignContext* ctx) override;
+
     std::any visitSynonym(TsilParser::SynonymContext* ctx) override;
 
     std::any visitSection_define(

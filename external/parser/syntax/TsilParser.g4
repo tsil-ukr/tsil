@@ -62,6 +62,8 @@ diia_define: (extern='зовнішня' | local='місцева' | intern='вн�
 
 tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? ('=' value=expr)? ';';
 
+assign: id=ID '=' value=expr ';';
+
 synonym: 'синонім' id=ID '=' expr ';';
 
 section_define: 'секція' id=ID (body)?;
@@ -77,6 +79,7 @@ body: '{' (body_element)* '}';
 body_element: structure_define
             | diia_define
             | tsil_define
+            | assign
             | set | section_set | position_set
             | synonym
             | section_define
