@@ -695,7 +695,7 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitBody(TsilParser::BodyContext* ctx) {
     std::vector<АСДЗначення*> elements;
     for (const auto& bodyElement : ctx->body_element()) {
-      if (bodyElement->SEMICOLON() == nullptr) {
+      if (bodyElement->semi == nullptr) {
         const auto any_асд = visitBody_element(bodyElement);
         elements.push_back(AAV(any_асд));
       }

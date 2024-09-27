@@ -469,6 +469,10 @@ XLFunctionType* xl_get_as_function_type(XLM* m, XLValue* value) {
   return static_cast<llvm::Function*>(value)->getFunctionType();
 }
 
+XLFunctionType* xl_get_function_type(XLM* m, XLFunction* f) {
+    return static_cast<llvm::Function*>(f)->getFunctionType();
+}
+
 XLValue* xl_get_function_arg_value(XLM* m, XLFunction* f, unsigned long index) {
   return static_cast<llvm::Function*>(f)->getArg(index);
 }

@@ -11,10 +11,10 @@ program: body_element*;
 atom: '(' expr ')' #atom_nested
     | id=ID #atom_subject
     | object=atom ':' ':' id=ID #atom_section_get
-    | object=atom '<' type (',' type)* '>' #atom_template_get
+    | object=atom '<' (type (',' type)*)? '>' #atom_template_get
     | object=atom '.' id=ID #atom_get
     | object=atom '[' position=expr ']' #atom_position_get
-    | object=atom '(' expr (',' expr)* ')' #atom_call;
+    | object=atom '(' (expr (',' expr)*)? ')' #atom_call;
 
 operation: NUMBER #operation_number
          | (tt=ID)? STRING #operation_string
@@ -83,12 +83,12 @@ body_element: structure_define
             | set | section_set | position_set
             | synonym
             | section_define
-            | expr
             | if
             | while
+            | (expr ';')
             | body
             | return
-            | ';';
+            | semi=';';
 return: 'вернути' value=expr ';';
 
 type: '(' type ')' #type_nested

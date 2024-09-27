@@ -218,6 +218,7 @@ XLValue* xl_create_string(XLM* m, char* value);
 
 XLType* xl_get_type(XLM* m, XLValue* value);
 XLFunctionType* xl_get_as_function_type(XLM* m, XLValue* value);
+XLFunctionType* xl_get_function_type(XLM* m, XLFunction* f);
 
 XLValue* xl_get_function_arg_value(XLM* m, XLFunction* f, unsigned long index);
 
