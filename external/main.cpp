@@ -1,8 +1,8 @@
 #include <fstream>
 #include <iostream>
 
-#include "parser/parser.h"
 #include "tsil_llvm/tsil_llvm.h"
+#include "tsil_parser/parser.h"
 
 extern "C" size_t отримати_з_карти_субʼєктів(void* map,
                                              char* name,

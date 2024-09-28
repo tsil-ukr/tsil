@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 file(READ "../ВЕРСІЯ" TSIL_VERSION)
 
-add_subdirectory(parser)
+add_subdirectory(tsil_parser)
 add_subdirectory(tsil_llvm)
 
 set(TSIL_SRC
