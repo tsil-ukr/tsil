@@ -33,6 +33,27 @@ extern "C" void* створити_карту_субʼєктів() {
   return new std::map<std::string, std::pair<unsigned long, void*>>();
 }
 
+extern "C" size_t отримати_з_карти_комірок(void* map,
+                                           char* name,
+                                           void** dataPtr) {
+  auto m = static_cast<std::map<std::string, void*>*>(map);
+  auto result = m->find(std::string(name));
+  if (result != m->end()) {
+    *dataPtr = result->second;
+    return true;
+  }
+  return false;
+}
+
+extern "C" void змінити_в_карті_комірок(void* map, char* name, void* data) {
+  auto m = static_cast<std::map<std::string, void*>*>(map);
+  m->insert_or_assign(std::string(name), data);
+}
+
+extern "C" void* створити_карту_комірок() {
+  return new std::map<std::string, void*>();
+}
+
 struct ПомилкаКомпіляціїЦілі {
   Місцезнаходження* місцезнаходження;
   char* повідомлення;
@@ -51,8 +72,10 @@ int main() {
   const auto L = xlm_create("main");
   const auto помилка_компіляції_цілі = скомпілювати_ціль_в_ll(L, текстКоду);
   if (помилка_компіляції_цілі != nullptr) {
-    std::cout << "Failed" << std::endl;
-    std::cout << помилка_компіляції_цілі->повідомлення << std::endl;
+    std::cout << помилка_компіляції_цілі->місцезнаходження->текст_коду->шлях
+              << ":" << помилка_компіляції_цілі->місцезнаходження->рядок << ":"
+              << помилка_компіляції_цілі->місцезнаходження->стовпець << ": "
+              << помилка_компіляції_цілі->повідомлення << std::endl;
     return 1;
   }
   std::cout << dumpLL(L) << std::endl;
