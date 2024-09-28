@@ -38,6 +38,7 @@ operation: NUMBER #operation_number
          | left=operation op='|' right=operation #operation_or
          | left=operation op=op_land right=operation #operation_land
          | left=operation op=op_lor right=operation #operation_lor
+         | left=operation op='як' right=type #operation_as
          | cond=operation '?' ifok=operation ':' ifnot=operation #operation_ternary;
 
 op_lshift: '<' '<';

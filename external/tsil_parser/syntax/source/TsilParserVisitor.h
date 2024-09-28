@@ -43,6 +43,8 @@ public:
 
     virtual std::any visitOperation_xor(TsilParser::Operation_xorContext *context) = 0;
 
+    virtual std::any visitOperation_as(TsilParser::Operation_asContext *context) = 0;
+
     virtual std::any visitOperation_lte(TsilParser::Operation_lteContext *context) = 0;
 
     virtual std::any visitOperation_atom(TsilParser::Operation_atomContext *context) = 0;

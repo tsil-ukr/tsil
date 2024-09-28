@@ -139,6 +139,8 @@ namespace tsil::parser {
 
     std::any visitOperation_lor(TsilParser::Operation_lorContext* ctx) override;
 
+    std::any visitOperation_as(TsilParser::Operation_asContext* ctx) override;
+
     std::any visitOperation_ternary(
         TsilParser::Operation_ternaryContext* ctx) override;
 

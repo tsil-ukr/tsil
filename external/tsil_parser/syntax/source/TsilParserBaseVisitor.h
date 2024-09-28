@@ -63,6 +63,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitOperation_as(TsilParser::Operation_asContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitOperation_lte(TsilParser::Operation_lteContext *ctx) override {
     return visitChildren(ctx);
   }

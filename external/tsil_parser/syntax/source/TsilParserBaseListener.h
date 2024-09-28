@@ -52,6 +52,9 @@ public:
   virtual void enterOperation_xor(TsilParser::Operation_xorContext * /*ctx*/) override { }
   virtual void exitOperation_xor(TsilParser::Operation_xorContext * /*ctx*/) override { }
 
+  virtual void enterOperation_as(TsilParser::Operation_asContext * /*ctx*/) override { }
+  virtual void exitOperation_as(TsilParser::Operation_asContext * /*ctx*/) override { }
+
   virtual void enterOperation_lte(TsilParser::Operation_lteContext * /*ctx*/) override { }
   virtual void exitOperation_lte(TsilParser::Operation_lteContext * /*ctx*/) override { }
 

@@ -123,6 +123,10 @@ namespace tsil::parser {
       return visitOperation_lor(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<TsilParser::Operation_asContext*>(context)) {
+      return visitOperation_as(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<TsilParser::Operation_ternaryContext*>(context)) {
       return visitOperation_ternary(ctx);
     }
@@ -500,6 +504,15 @@ namespace tsil::parser {
     const auto асд_дані_операція = new АСДДаніОперація();
     асд_дані_операція->ліво = AAV(visitContext(ctx->left));
     асд_дані_операція->операція = АСДОпераціяАБО;
+    асд_дані_операція->право = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидОперація, асд_дані_операція);
+  }
+
+  std::any TsilASTVisitor::visitOperation_as(
+      TsilParser::Operation_asContext* ctx) {
+    const auto асд_дані_операція = new АСДДаніОперація();
+    асд_дані_операція->ліво = AAV(visitContext(ctx->left));
+    асд_дані_операція->операція = АСДОпераціяЯк;
     асд_дані_операція->право = AAV(visitContext(ctx->right));
     return AV(this, ctx, АСДВидОперація, асд_дані_операція);
   }

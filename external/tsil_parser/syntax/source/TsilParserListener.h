@@ -50,6 +50,9 @@ public:
   virtual void enterOperation_xor(TsilParser::Operation_xorContext *ctx) = 0;
   virtual void exitOperation_xor(TsilParser::Operation_xorContext *ctx) = 0;
 
+  virtual void enterOperation_as(TsilParser::Operation_asContext *ctx) = 0;
+  virtual void exitOperation_as(TsilParser::Operation_asContext *ctx) = 0;
+
   virtual void enterOperation_lte(TsilParser::Operation_lteContext *ctx) = 0;
   virtual void exitOperation_lte(TsilParser::Operation_lteContext *ctx) = 0;
 
