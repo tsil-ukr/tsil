@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "parser/parser.h"
-#include "xl/xl.h"
+#include "tsil_llvm/tsil_llvm.h"
 
 extern "C" size_t отримати_з_карти_субʼєктів(void* map,
                                              char* name,

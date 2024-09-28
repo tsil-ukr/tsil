@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(xl)
+project(tsil_llvm)
 
 set(CMAKE_CXX_STANDARD 20)
 
@@ -213,5 +213,5 @@ llvm_map_components_to_libnames(llvm_libs
         #        xray
 )
 
-add_library(xl STATIC xl.cpp)
-target_link_libraries(xl PUBLIC ${llvm_libs})
+add_library(tsil_llvm STATIC tsil_llvm.cpp)
+target_link_libraries(tsil_llvm PUBLIC ${llvm_libs})
