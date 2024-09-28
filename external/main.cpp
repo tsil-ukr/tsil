@@ -69,7 +69,7 @@ int main() {
                    std::istreambuf_iterator<char>());
   auto текстКоду = new ТекстКоду{.шлях = (char*)filename.c_str(),
                                  .значення = (char*)code.c_str()};
-  const auto L = xlm_create("main");
+  const auto L = xlm_create(strdup(filename.c_str()));
   const auto помилка_компіляції_цілі = скомпілювати_ціль_в_ll(L, текстКоду);
   if (помилка_компіляції_цілі != nullptr) {
     std::cout << помилка_компіляції_цілі->місцезнаходження->текст_коду->шлях
