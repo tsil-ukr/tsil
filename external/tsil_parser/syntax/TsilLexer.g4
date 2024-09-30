@@ -53,7 +53,7 @@ SEMICOLON: ';';
 QUOTE_OPEN: '{';
 QUOTE_CLOSE: '}';
 
-NUMBER: INTEGER | FLOAT | HEX | BIN;
+NUMBER: ((INTEGER | FLOAT | HEX) ('ц8' | 'ц16' | 'ц32' | 'ц64' | 'п8' | 'п16' | 'п32' | 'п64' | 'д32' | 'д64')?) | BIN;
 INTEGER: DIGIT+;
 FLOAT: DIGIT+ '.' DIGIT+;
 HEX: '0ш' ('А' | 'а' | 'Б' | 'б' | 'В' | 'в' | 'Г' | 'г' | 'Ґ' | 'ґ' | 'Д' | 'д' | DIGIT)+;
