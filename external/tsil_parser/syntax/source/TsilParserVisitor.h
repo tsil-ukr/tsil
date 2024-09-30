@@ -133,6 +133,8 @@ public:
 
     virtual std::any visitWhile(TsilParser::WhileContext *context) = 0;
 
+    virtual std::any visitExec(TsilParser::ExecContext *context) = 0;
+
     virtual std::any visitBody(TsilParser::BodyContext *context) = 0;
 
     virtual std::any visitBody_element(TsilParser::Body_elementContext *context) = 0;

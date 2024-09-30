@@ -16,14 +16,14 @@ public:
     KW_DEFER = 7, KW_STRUCT = 8, KW_VARIATION = 9, KW_AS = 10, KW_SECTION = 11, 
     KW_IMPORT = 12, KW_EXPORT = 13, KW_COMPOSITION = 14, KW_PROPERTY = 15, 
     KW_PUBLIC = 16, KW_PRIVATE = 17, KW_LOCAL = 18, KW_NOT = 19, KW_OR = 20, 
-    KW_AND = 21, KW_VAR = 22, KW_IMMUT = 23, KW_SYNONYM = 24, EQUAL = 25, 
-    GREATER = 26, LESSER = 27, DOT = 28, PLUS = 29, MINUS = 30, MULTIPLY = 31, 
-    DIVIDE = 32, MOD = 33, POWER = 34, AND = 35, OR = 36, PAREN_OPEN = 37, 
-    PAREN_CLOSE = 38, BRACKET_OPEN = 39, BRACKET_CLOSE = 40, QUESTION = 41, 
-    COLON = 42, TILDA = 43, QUOTE = 44, DOUBLE_QUOTE = 45, EXCLAMATION = 46, 
-    COMA = 47, SEMICOLON = 48, QUOTE_OPEN = 49, QUOTE_CLOSE = 50, NUMBER = 51, 
-    INTEGER = 52, FLOAT = 53, HEX = 54, BIN = 55, ID = 56, STRING = 57, 
-    COMMENT = 58, LINE_COMMENT = 59, WS = 60, NL = 61
+    KW_AND = 21, KW_VAR = 22, KW_IMMUT = 23, KW_SYNONYM = 24, KW_EXEC = 25, 
+    EQUAL = 26, GREATER = 27, LESSER = 28, DOT = 29, PLUS = 30, MINUS = 31, 
+    MULTIPLY = 32, DIVIDE = 33, MOD = 34, POWER = 35, AND = 36, OR = 37, 
+    PAREN_OPEN = 38, PAREN_CLOSE = 39, BRACKET_OPEN = 40, BRACKET_CLOSE = 41, 
+    QUESTION = 42, COLON = 43, TILDA = 44, QUOTE = 45, DOUBLE_QUOTE = 46, 
+    EXCLAMATION = 47, COMA = 48, SEMICOLON = 49, QUOTE_OPEN = 50, QUOTE_CLOSE = 51, 
+    NUMBER = 52, INTEGER = 53, FLOAT = 54, HEX = 55, BIN = 56, ID = 57, 
+    STRING = 58, COMMENT = 59, LINE_COMMENT = 60, WS = 61, NL = 62
   };
 
   enum {
@@ -33,8 +33,8 @@ public:
     RuleExpr = 14, RuleStructure_define = 15, RuleStructure_element = 16, 
     RuleDiia_define = 17, RuleTsil_define = 18, RuleAssign = 19, RuleSynonym = 20, 
     RuleSection_define = 21, RuleSet = 22, RulePosition_set = 23, RuleSection_set = 24, 
-    RuleIf = 25, RuleWhile = 26, RuleBody = 27, RuleBody_element = 28, RuleReturn = 29, 
-    RuleType = 30, RuleParam = 31
+    RuleIf = 25, RuleWhile = 26, RuleExec = 27, RuleBody = 28, RuleBody_element = 29, 
+    RuleReturn = 30, RuleType = 31, RuleParam = 32
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -81,6 +81,7 @@ public:
   class Section_setContext;
   class IfContext;
   class WhileContext;
+  class ExecContext;
   class BodyContext;
   class Body_elementContext;
   class ReturnContext;
@@ -1122,6 +1123,23 @@ public:
 
   WhileContext* while_();
 
+  class  ExecContext : public antlr4::ParserRuleContext {
+  public:
+    ExecContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_EXEC();
+    BodyContext *body();
+    antlr4::tree::TerminalNode *SEMICOLON();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  ExecContext* exec();
+
   class  BodyContext : public antlr4::ParserRuleContext {
   public:
     BodyContext(antlr4::ParserRuleContext *parent, size_t invokingState);
@@ -1159,6 +1177,7 @@ public:
     ExprContext *expr();
     antlr4::tree::TerminalNode *SEMICOLON();
     BodyContext *body();
+    ExecContext *exec();
     ReturnContext *return_();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;

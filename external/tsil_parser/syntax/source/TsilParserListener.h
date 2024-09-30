@@ -185,6 +185,9 @@ public:
   virtual void enterWhile(TsilParser::WhileContext *ctx) = 0;
   virtual void exitWhile(TsilParser::WhileContext *ctx) = 0;
 
+  virtual void enterExec(TsilParser::ExecContext *ctx) = 0;
+  virtual void exitExec(TsilParser::ExecContext *ctx) = 0;
+
   virtual void enterBody(TsilParser::BodyContext *ctx) = 0;
   virtual void exitBody(TsilParser::BodyContext *ctx) = 0;
 

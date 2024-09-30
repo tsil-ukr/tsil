@@ -187,6 +187,9 @@ public:
   virtual void enterWhile(TsilParser::WhileContext * /*ctx*/) override { }
   virtual void exitWhile(TsilParser::WhileContext * /*ctx*/) override { }
 
+  virtual void enterExec(TsilParser::ExecContext * /*ctx*/) override { }
+  virtual void exitExec(TsilParser::ExecContext * /*ctx*/) override { }
+
   virtual void enterBody(TsilParser::BodyContext * /*ctx*/) override { }
   virtual void exitBody(TsilParser::BodyContext * /*ctx*/) override { }
 

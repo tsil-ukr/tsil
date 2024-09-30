@@ -76,6 +76,8 @@ section_set: object=atom ':' ':' id=ID '=' value=expr ';';
 if: 'якщо' cond=operation ifok=body ('інакше' (ifnot=body | ifnotif=if))?;
 while: 'поки' cond=operation body;
 
+exec: 'виконати' body ';';
+
 body: '{' (body_element)* '}';
 body_element: structure_define
             | diia_define
@@ -88,6 +90,7 @@ body_element: structure_define
             | while
             | (expr ';')
             | body
+            | exec
             | return
             | semi=';';
 return: 'вернути' value=expr ';';

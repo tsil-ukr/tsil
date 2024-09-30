@@ -24,6 +24,7 @@ KW_AND: 'і';
 KW_VAR: 'змінна';
 KW_IMMUT: 'стала';
 KW_SYNONYM: 'синонім';
+KW_EXEC: 'виконати';
 
 EQUAL: '=';
 GREATER: '>';

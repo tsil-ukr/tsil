@@ -243,6 +243,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitExec(TsilParser::ExecContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitBody(TsilParser::BodyContext *ctx) override {
     return visitChildren(ctx);
   }
