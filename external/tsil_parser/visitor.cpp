@@ -650,8 +650,26 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitSynonym(TsilParser::SynonymContext* ctx) {
     const auto асд_дані_створити_синонім = new АСДДаніСтворитиСинонім();
+    асд_дані_створити_синонім->ідентифікатор =
+        ІД(this, ctx->id, ctx->id->getText());
     асд_дані_створити_синонім->значення = AAV(visitContext(ctx->expr()));
-    return AV(this, ctx, АСДВидСтворитиСинонім, асд_дані_створити_синонім);
+    const auto асд_значення_створити_синонім =
+        AV(this, ctx, АСДВидСтворитиСинонім, асд_дані_створити_синонім);
+    if (ctx->first_gendef == nullptr) {
+      return асд_значення_створити_синонім;
+    } else {
+      const auto асд_дані_створити_шаблон = new АСДДаніСтворитиШаблон();
+      асд_дані_створити_шаблон->ідентифікатор =
+          ІД(this, ctx->id, ctx->id->getText());
+      асд_дані_створити_шаблон->значення = асд_значення_створити_синонім;
+      std::vector<Ідентифікатор*> params;
+      for (const auto& gendef : ctx->gendef()) {
+        params.push_back(ІД(this, gendef, gendef->getText()));
+      }
+      асд_дані_створити_шаблон->кількість_параметрів = params.size();
+      асд_дані_створити_шаблон->параметри = VecToArr(params);
+      return AV(this, ctx, АСДВидСтворитиШаблон, асд_дані_створити_шаблон);
+    }
   }
 
   std::any TsilASTVisitor::visitSection_define(

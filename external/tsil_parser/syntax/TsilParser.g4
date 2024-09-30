@@ -65,7 +65,7 @@ tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль
 
 assign: id=ID '=' value=expr ';';
 
-synonym: 'синонім' id=ID '=' expr ';';
+synonym: 'синонім' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '=' expr ';';
 
 section_define: 'секція' id=ID (body)?;
 
