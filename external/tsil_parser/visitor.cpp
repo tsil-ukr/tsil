@@ -322,7 +322,6 @@ namespace tsil::parser {
                    .substr(1, ctx->STRING()->getText().size() - 2)
                    .c_str());
     return AV(this, ctx, АСДВидЗначенняТекст, асд_дані_значення_текст);
-
   }
 
   std::any TsilASTVisitor::visitOperation_atom(
@@ -503,11 +502,10 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitOperation_as(
       TsilParser::Operation_asContext* ctx) {
-    const auto асд_дані_операція = new АСДДаніОперація();
-    асд_дані_операція->ліво = AAV(visitContext(ctx->left));
-    асд_дані_операція->операція = АСДОпераціяЯк;
-    асд_дані_операція->право = AAV(visitContext(ctx->right));
-    return AV(this, ctx, АСДВидОперація, асд_дані_операція);
+    const auto асд_дані_як = new АСДДаніЯк();
+    асд_дані_як->ліво = AAV(visitContext(ctx->left));
+    асд_дані_як->право = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидЯк, асд_дані_як);
   }
 
   std::any TsilASTVisitor::visitOperation_ternary(
