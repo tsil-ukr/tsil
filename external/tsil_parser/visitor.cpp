@@ -503,8 +503,8 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitOperation_as(
       TsilParser::Operation_asContext* ctx) {
     const auto асд_дані_як = new АСДДаніЯк();
-    асд_дані_як->ліво = AAV(visitContext(ctx->left));
-    асд_дані_як->право = AAV(visitContext(ctx->right));
+    асд_дані_як->значення = AAV(visitContext(ctx->left));
+    асд_дані_як->тип = AAV(visitContext(ctx->right));
     return AV(this, ctx, АСДВидЯк, асд_дані_як);
   }
 
