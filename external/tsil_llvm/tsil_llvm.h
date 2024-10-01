@@ -228,8 +228,15 @@ XLType* tsil_llvm_get_int64_type(XLM* m);
 XLType* tsil_llvm_get_float32_type(XLM* m);
 XLType* tsil_llvm_get_float64_type(XLM* m);
 
-XLValue* tsil_llvm_create_int32(XLM* m, long value);
+XLValue* tsil_llvm_create_int8(XLM* m, char value);
+XLValue* tsil_llvm_create_int16(XLM* m, short value);
+XLValue* tsil_llvm_create_int32(XLM* m, int value);
 XLValue* tsil_llvm_create_int64(XLM* m, long value);
+XLValue* tsil_llvm_create_uint8(XLM* m, unsigned char value);
+XLValue* tsil_llvm_create_uint16(XLM* m, unsigned short value);
+XLValue* tsil_llvm_create_uint32(XLM* m, unsigned int value);
+XLValue* tsil_llvm_create_uint64(XLM* m, unsigned long value);
+XLValue* tsil_llvm_create_float(XLM* m, float value);
 XLValue* tsil_llvm_create_double(XLM* m, double value);
 XLValue* tsil_llvm_create_string(XLM* m, char* value);
 

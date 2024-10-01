@@ -466,12 +466,16 @@ XLType* tsil_llvm_get_float64_type(XLM* m) {
   return llvm::Type::getDoubleTy(*m->llvmContext);
 }
 
-XLValue* tsil_llvm_create_int32(XLM* m, long value) {
+XLValue* tsil_llvm_create_int32(XLM* m, int value) {
   return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(32, value));
 }
 
 XLValue* tsil_llvm_create_int64(XLM* m, long value) {
   return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(64, value));
+}
+
+XLValue* tsil_llvm_create_float(XLM* m, float value) {
+  return llvm::ConstantFP::get(*m->llvmContext, llvm::APFloat(value));
 }
 
 XLValue* tsil_llvm_create_double(XLM* m, double value) {
