@@ -311,25 +311,18 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitOperation_string(
       TsilParser::Operation_stringContext* ctx) {
-    if (ctx->tt) {
-      const auto асд_дані_значення_юнікод = new АСДДаніЗначенняЮнікод();
-      асд_дані_значення_юнікод->ідентифікатор =
+    const auto асд_дані_значення_текст = new АСДДаніЗначенняТекст();
+    if (ctx->tt != nullptr) {
+      асд_дані_значення_текст->ідентифікатор =
           ІД(this, ctx->tt, ctx->tt->getText());
-      асд_дані_значення_юнікод->значення =
-          strdup(ctx->STRING()
-                     ->getText()
-                     .substr(1, ctx->STRING()->getText().size() - 2)
-                     .c_str());
-      return AV(this, ctx, АСДВидЗначенняЮнікод, асд_дані_значення_юнікод);
-    } else {
-      const auto асд_дані_значення_текст = new АСДДаніЗначенняТекст();
-      асд_дані_значення_текст->значення =
-          strdup(ctx->STRING()
-                     ->getText()
-                     .substr(1, ctx->STRING()->getText().size() - 2)
-                     .c_str());
-      return AV(this, ctx, АСДВидЗначенняТекст, асд_дані_значення_текст);
     }
+    асд_дані_значення_текст->значення =
+        strdup(ctx->STRING()
+                   ->getText()
+                   .substr(1, ctx->STRING()->getText().size() - 2)
+                   .c_str());
+    return AV(this, ctx, АСДВидЗначенняТекст, асд_дані_значення_текст);
+
   }
 
   std::any TsilASTVisitor::visitOperation_atom(
