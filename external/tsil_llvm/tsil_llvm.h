@@ -130,11 +130,15 @@ XLValue* tsil_llvm_inst_fdiv(XLM* m,
                              XLBasicBlock* block,
                              XLValue* left,
                              XLValue* right);
-XLValue* tsil_llvm_inst_mod(XLM* m,
-                            XLBasicBlock* block,
-                            XLValue* left,
-                            XLValue* right);
-XLValue* tsil_llvm_inst_fmod(XLM* m,
+XLValue* tsil_llvm_inst_urem(XLM* m,
+                             XLBasicBlock* block,
+                             XLValue* left,
+                             XLValue* right);
+XLValue* tsil_llvm_inst_srem(XLM* m,
+                             XLBasicBlock* block,
+                             XLValue* left,
+                             XLValue* right);
+XLValue* tsil_llvm_inst_frem(XLM* m,
                              XLBasicBlock* block,
                              XLValue* left,
                              XLValue* right);
