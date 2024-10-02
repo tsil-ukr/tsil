@@ -524,14 +524,14 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitExpr_object(
       TsilParser::Expr_objectContext* ctx) {
-    const auto асд_дані_створити_обʼєкт = new АСДДаніСтворитиОбʼєкт();
+    const auto асд_дані_створити_обʼєкт = new АСДДаніЗначенняОбʼєкт();
     асд_дані_створити_обʼєкт->тип = AAV(visitContext(ctx->type()));
     std::vector<АСДЗначення*> args;
     for (const auto& argument : ctx->expr()) {
       args.push_back(AAV(visitContext(argument)));
     }
     асд_дані_створити_обʼєкт->аргументи = AAVecToList(args);
-    return AV(this, ctx, АСДВидСтворитиОбʼєкт, асд_дані_створити_обʼєкт);
+    return AV(this, ctx, АСДВидЗначенняОбʼєкт, асд_дані_створити_обʼєкт);
   }
 
   std::any TsilASTVisitor::visitStructure_define(
