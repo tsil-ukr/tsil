@@ -47,6 +47,22 @@ namespace tsil::parser {
       return visitOperation_atom(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<TsilParser::Operation_pre_notContext*>(context)) {
+      return visitOperation_pre_not(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<TsilParser::Operation_pre_bw_notContext*>(context)) {
+      return visitOperation_pre_bw_not(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<TsilParser::Operation_pre_plusContext*>(context)) {
+      return visitOperation_pre_plus(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<TsilParser::Operation_pre_minusContext*>(context)) {
+      return visitOperation_pre_minus(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<TsilParser::Operation_mulContext*>(context)) {
       return visitOperation_mul(ctx);
     }
@@ -327,6 +343,38 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitOperation_atom(
       TsilParser::Operation_atomContext* ctx) {
     return visitContext(ctx->atom());
+  }
+
+  std::any TsilASTVisitor::visitOperation_pre_not(
+      TsilParser::Operation_pre_notContext* ctx) {
+    const auto асд_дані_само_операція = new АСДДаніСамоОперація();
+    асд_дані_само_операція->операція = АСДСамоОпераціяЛогічнеНі;
+    асд_дані_само_операція->обʼєкт = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидСамоОперація, асд_дані_само_операція);
+  }
+
+  std::any TsilASTVisitor::visitOperation_pre_bw_not(
+      TsilParser::Operation_pre_bw_notContext* ctx) {
+    const auto асд_дані_само_операція = new АСДДаніСамоОперація();
+    асд_дані_само_операція->операція = АСДСамоОпераціяДвійковеНі;
+    асд_дані_само_операція->обʼєкт = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидСамоОперація, асд_дані_само_операція);
+  }
+
+  std::any TsilASTVisitor::visitOperation_pre_plus(
+      TsilParser::Operation_pre_plusContext* ctx) {
+    const auto асд_дані_само_операція = new АСДДаніСамоОперація();
+    асд_дані_само_операція->операція = АСДСамоОпераціяПлюс;
+    асд_дані_само_операція->обʼєкт = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидСамоОперація, асд_дані_само_операція);
+  }
+
+  std::any TsilASTVisitor::visitOperation_pre_minus(
+      TsilParser::Operation_pre_minusContext* ctx) {
+    const auto асд_дані_само_операція = new АСДДаніСамоОперація();
+    асд_дані_само_операція->операція = АСДСамоОпераціяМінус;
+    асд_дані_само_операція->обʼєкт = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидСамоОперація, асд_дані_само_операція);
   }
 
   std::any TsilASTVisitor::visitOperation_mul(

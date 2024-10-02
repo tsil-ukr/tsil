@@ -8,6 +8,7 @@ file: f_program=program EOF;
 
 program: body_element*;
 
+// a::b<c>(d)[e]
 atom: '(' expr ')' #atom_nested
     | id=ID #atom_subject
     | object=atom ':' ':' id=ID #atom_section_get
@@ -19,6 +20,10 @@ atom: '(' expr ')' #atom_nested
 operation: NUMBER #operation_number
          | (tt=ID)? STRING #operation_string
          | atom #operation_atom
+         | op='!' right=operation #operation_pre_not
+         | op='~' right=operation #operation_pre_bw_not
+         | op='+' right=operation #operation_pre_plus
+         | op='-' right=operation #operation_pre_minus
          | left=operation op='*' right=operation #operation_mul
          | left=operation op='/' right=operation #operation_div
          | left=operation op='%' right=operation #operation_mod

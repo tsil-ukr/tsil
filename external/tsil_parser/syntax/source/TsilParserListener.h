@@ -50,23 +50,38 @@ public:
   virtual void enterOperation_xor(TsilParser::Operation_xorContext *ctx) = 0;
   virtual void exitOperation_xor(TsilParser::Operation_xorContext *ctx) = 0;
 
-  virtual void enterOperation_as(TsilParser::Operation_asContext *ctx) = 0;
-  virtual void exitOperation_as(TsilParser::Operation_asContext *ctx) = 0;
-
   virtual void enterOperation_lte(TsilParser::Operation_lteContext *ctx) = 0;
   virtual void exitOperation_lte(TsilParser::Operation_lteContext *ctx) = 0;
 
-  virtual void enterOperation_atom(TsilParser::Operation_atomContext *ctx) = 0;
-  virtual void exitOperation_atom(TsilParser::Operation_atomContext *ctx) = 0;
-
-  virtual void enterOperation_sub(TsilParser::Operation_subContext *ctx) = 0;
-  virtual void exitOperation_sub(TsilParser::Operation_subContext *ctx) = 0;
+  virtual void enterOperation_pre_plus(TsilParser::Operation_pre_plusContext *ctx) = 0;
+  virtual void exitOperation_pre_plus(TsilParser::Operation_pre_plusContext *ctx) = 0;
 
   virtual void enterOperation_add(TsilParser::Operation_addContext *ctx) = 0;
   virtual void exitOperation_add(TsilParser::Operation_addContext *ctx) = 0;
 
   virtual void enterOperation_lt(TsilParser::Operation_ltContext *ctx) = 0;
   virtual void exitOperation_lt(TsilParser::Operation_ltContext *ctx) = 0;
+
+  virtual void enterOperation_pre_minus(TsilParser::Operation_pre_minusContext *ctx) = 0;
+  virtual void exitOperation_pre_minus(TsilParser::Operation_pre_minusContext *ctx) = 0;
+
+  virtual void enterOperation_land(TsilParser::Operation_landContext *ctx) = 0;
+  virtual void exitOperation_land(TsilParser::Operation_landContext *ctx) = 0;
+
+  virtual void enterOperation_or(TsilParser::Operation_orContext *ctx) = 0;
+  virtual void exitOperation_or(TsilParser::Operation_orContext *ctx) = 0;
+
+  virtual void enterOperation_pre_not(TsilParser::Operation_pre_notContext *ctx) = 0;
+  virtual void exitOperation_pre_not(TsilParser::Operation_pre_notContext *ctx) = 0;
+
+  virtual void enterOperation_as(TsilParser::Operation_asContext *ctx) = 0;
+  virtual void exitOperation_as(TsilParser::Operation_asContext *ctx) = 0;
+
+  virtual void enterOperation_atom(TsilParser::Operation_atomContext *ctx) = 0;
+  virtual void exitOperation_atom(TsilParser::Operation_atomContext *ctx) = 0;
+
+  virtual void enterOperation_sub(TsilParser::Operation_subContext *ctx) = 0;
+  virtual void exitOperation_sub(TsilParser::Operation_subContext *ctx) = 0;
 
   virtual void enterOperation_mod(TsilParser::Operation_modContext *ctx) = 0;
   virtual void exitOperation_mod(TsilParser::Operation_modContext *ctx) = 0;
@@ -83,11 +98,8 @@ public:
   virtual void enterOperation_string(TsilParser::Operation_stringContext *ctx) = 0;
   virtual void exitOperation_string(TsilParser::Operation_stringContext *ctx) = 0;
 
-  virtual void enterOperation_land(TsilParser::Operation_landContext *ctx) = 0;
-  virtual void exitOperation_land(TsilParser::Operation_landContext *ctx) = 0;
-
-  virtual void enterOperation_or(TsilParser::Operation_orContext *ctx) = 0;
-  virtual void exitOperation_or(TsilParser::Operation_orContext *ctx) = 0;
+  virtual void enterOperation_pre_bw_not(TsilParser::Operation_pre_bw_notContext *ctx) = 0;
+  virtual void exitOperation_pre_bw_not(TsilParser::Operation_pre_bw_notContext *ctx) = 0;
 
   virtual void enterOperation_lor(TsilParser::Operation_lorContext *ctx) = 0;
   virtual void exitOperation_lor(TsilParser::Operation_lorContext *ctx) = 0;

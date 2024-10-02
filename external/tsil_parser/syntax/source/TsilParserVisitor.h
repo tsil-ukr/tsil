@@ -43,17 +43,27 @@ public:
 
     virtual std::any visitOperation_xor(TsilParser::Operation_xorContext *context) = 0;
 
-    virtual std::any visitOperation_as(TsilParser::Operation_asContext *context) = 0;
-
     virtual std::any visitOperation_lte(TsilParser::Operation_lteContext *context) = 0;
 
-    virtual std::any visitOperation_atom(TsilParser::Operation_atomContext *context) = 0;
-
-    virtual std::any visitOperation_sub(TsilParser::Operation_subContext *context) = 0;
+    virtual std::any visitOperation_pre_plus(TsilParser::Operation_pre_plusContext *context) = 0;
 
     virtual std::any visitOperation_add(TsilParser::Operation_addContext *context) = 0;
 
     virtual std::any visitOperation_lt(TsilParser::Operation_ltContext *context) = 0;
+
+    virtual std::any visitOperation_pre_minus(TsilParser::Operation_pre_minusContext *context) = 0;
+
+    virtual std::any visitOperation_land(TsilParser::Operation_landContext *context) = 0;
+
+    virtual std::any visitOperation_or(TsilParser::Operation_orContext *context) = 0;
+
+    virtual std::any visitOperation_pre_not(TsilParser::Operation_pre_notContext *context) = 0;
+
+    virtual std::any visitOperation_as(TsilParser::Operation_asContext *context) = 0;
+
+    virtual std::any visitOperation_atom(TsilParser::Operation_atomContext *context) = 0;
+
+    virtual std::any visitOperation_sub(TsilParser::Operation_subContext *context) = 0;
 
     virtual std::any visitOperation_mod(TsilParser::Operation_modContext *context) = 0;
 
@@ -65,9 +75,7 @@ public:
 
     virtual std::any visitOperation_string(TsilParser::Operation_stringContext *context) = 0;
 
-    virtual std::any visitOperation_land(TsilParser::Operation_landContext *context) = 0;
-
-    virtual std::any visitOperation_or(TsilParser::Operation_orContext *context) = 0;
+    virtual std::any visitOperation_pre_bw_not(TsilParser::Operation_pre_bw_notContext *context) = 0;
 
     virtual std::any visitOperation_lor(TsilParser::Operation_lorContext *context) = 0;
 

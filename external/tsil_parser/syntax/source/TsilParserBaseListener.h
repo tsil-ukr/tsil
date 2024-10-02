@@ -52,23 +52,38 @@ public:
   virtual void enterOperation_xor(TsilParser::Operation_xorContext * /*ctx*/) override { }
   virtual void exitOperation_xor(TsilParser::Operation_xorContext * /*ctx*/) override { }
 
-  virtual void enterOperation_as(TsilParser::Operation_asContext * /*ctx*/) override { }
-  virtual void exitOperation_as(TsilParser::Operation_asContext * /*ctx*/) override { }
-
   virtual void enterOperation_lte(TsilParser::Operation_lteContext * /*ctx*/) override { }
   virtual void exitOperation_lte(TsilParser::Operation_lteContext * /*ctx*/) override { }
 
-  virtual void enterOperation_atom(TsilParser::Operation_atomContext * /*ctx*/) override { }
-  virtual void exitOperation_atom(TsilParser::Operation_atomContext * /*ctx*/) override { }
-
-  virtual void enterOperation_sub(TsilParser::Operation_subContext * /*ctx*/) override { }
-  virtual void exitOperation_sub(TsilParser::Operation_subContext * /*ctx*/) override { }
+  virtual void enterOperation_pre_plus(TsilParser::Operation_pre_plusContext * /*ctx*/) override { }
+  virtual void exitOperation_pre_plus(TsilParser::Operation_pre_plusContext * /*ctx*/) override { }
 
   virtual void enterOperation_add(TsilParser::Operation_addContext * /*ctx*/) override { }
   virtual void exitOperation_add(TsilParser::Operation_addContext * /*ctx*/) override { }
 
   virtual void enterOperation_lt(TsilParser::Operation_ltContext * /*ctx*/) override { }
   virtual void exitOperation_lt(TsilParser::Operation_ltContext * /*ctx*/) override { }
+
+  virtual void enterOperation_pre_minus(TsilParser::Operation_pre_minusContext * /*ctx*/) override { }
+  virtual void exitOperation_pre_minus(TsilParser::Operation_pre_minusContext * /*ctx*/) override { }
+
+  virtual void enterOperation_land(TsilParser::Operation_landContext * /*ctx*/) override { }
+  virtual void exitOperation_land(TsilParser::Operation_landContext * /*ctx*/) override { }
+
+  virtual void enterOperation_or(TsilParser::Operation_orContext * /*ctx*/) override { }
+  virtual void exitOperation_or(TsilParser::Operation_orContext * /*ctx*/) override { }
+
+  virtual void enterOperation_pre_not(TsilParser::Operation_pre_notContext * /*ctx*/) override { }
+  virtual void exitOperation_pre_not(TsilParser::Operation_pre_notContext * /*ctx*/) override { }
+
+  virtual void enterOperation_as(TsilParser::Operation_asContext * /*ctx*/) override { }
+  virtual void exitOperation_as(TsilParser::Operation_asContext * /*ctx*/) override { }
+
+  virtual void enterOperation_atom(TsilParser::Operation_atomContext * /*ctx*/) override { }
+  virtual void exitOperation_atom(TsilParser::Operation_atomContext * /*ctx*/) override { }
+
+  virtual void enterOperation_sub(TsilParser::Operation_subContext * /*ctx*/) override { }
+  virtual void exitOperation_sub(TsilParser::Operation_subContext * /*ctx*/) override { }
 
   virtual void enterOperation_mod(TsilParser::Operation_modContext * /*ctx*/) override { }
   virtual void exitOperation_mod(TsilParser::Operation_modContext * /*ctx*/) override { }
@@ -85,11 +100,8 @@ public:
   virtual void enterOperation_string(TsilParser::Operation_stringContext * /*ctx*/) override { }
   virtual void exitOperation_string(TsilParser::Operation_stringContext * /*ctx*/) override { }
 
-  virtual void enterOperation_land(TsilParser::Operation_landContext * /*ctx*/) override { }
-  virtual void exitOperation_land(TsilParser::Operation_landContext * /*ctx*/) override { }
-
-  virtual void enterOperation_or(TsilParser::Operation_orContext * /*ctx*/) override { }
-  virtual void exitOperation_or(TsilParser::Operation_orContext * /*ctx*/) override { }
+  virtual void enterOperation_pre_bw_not(TsilParser::Operation_pre_bw_notContext * /*ctx*/) override { }
+  virtual void exitOperation_pre_bw_not(TsilParser::Operation_pre_bw_notContext * /*ctx*/) override { }
 
   virtual void enterOperation_lor(TsilParser::Operation_lorContext * /*ctx*/) override { }
   virtual void exitOperation_lor(TsilParser::Operation_lorContext * /*ctx*/) override { }

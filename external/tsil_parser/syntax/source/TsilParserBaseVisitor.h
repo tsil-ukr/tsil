@@ -63,19 +63,11 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitOperation_as(TsilParser::Operation_asContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitOperation_lte(TsilParser::Operation_lteContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual std::any visitOperation_atom(TsilParser::Operation_atomContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitOperation_sub(TsilParser::Operation_subContext *ctx) override {
+  virtual std::any visitOperation_pre_plus(TsilParser::Operation_pre_plusContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -84,6 +76,34 @@ public:
   }
 
   virtual std::any visitOperation_lt(TsilParser::Operation_ltContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_pre_minus(TsilParser::Operation_pre_minusContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_land(TsilParser::Operation_landContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_or(TsilParser::Operation_orContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_pre_not(TsilParser::Operation_pre_notContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_as(TsilParser::Operation_asContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_atom(TsilParser::Operation_atomContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOperation_sub(TsilParser::Operation_subContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -107,11 +127,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitOperation_land(TsilParser::Operation_landContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitOperation_or(TsilParser::Operation_orContext *ctx) override {
+  virtual std::any visitOperation_pre_bw_not(TsilParser::Operation_pre_bw_notContext *ctx) override {
     return visitChildren(ctx);
   }
 

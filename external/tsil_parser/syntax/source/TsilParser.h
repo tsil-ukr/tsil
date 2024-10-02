@@ -305,22 +305,6 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  Operation_asContext : public OperationContext {
-  public:
-    Operation_asContext(OperationContext *ctx);
-
-    TsilParser::OperationContext *left = nullptr;
-    antlr4::Token *op = nullptr;
-    TsilParser::TypeContext *right = nullptr;
-    OperationContext *operation();
-    antlr4::tree::TerminalNode *KW_AS();
-    TypeContext *type();
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
   class  Operation_lteContext : public OperationContext {
   public:
     Operation_lteContext(OperationContext *ctx);
@@ -337,27 +321,14 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  Operation_atomContext : public OperationContext {
+  class  Operation_pre_plusContext : public OperationContext {
   public:
-    Operation_atomContext(OperationContext *ctx);
+    Operation_pre_plusContext(OperationContext *ctx);
 
-    AtomContext *atom();
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  Operation_subContext : public OperationContext {
-  public:
-    Operation_subContext(OperationContext *ctx);
-
-    TsilParser::OperationContext *left = nullptr;
     antlr4::Token *op = nullptr;
     TsilParser::OperationContext *right = nullptr;
-    std::vector<OperationContext *> operation();
-    OperationContext* operation(size_t i);
-    antlr4::tree::TerminalNode *MINUS();
+    antlr4::tree::TerminalNode *PLUS();
+    OperationContext *operation();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
@@ -390,6 +361,109 @@ public:
     std::vector<OperationContext *> operation();
     OperationContext* operation(size_t i);
     antlr4::tree::TerminalNode *LESSER();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Operation_pre_minusContext : public OperationContext {
+  public:
+    Operation_pre_minusContext(OperationContext *ctx);
+
+    antlr4::Token *op = nullptr;
+    TsilParser::OperationContext *right = nullptr;
+    antlr4::tree::TerminalNode *MINUS();
+    OperationContext *operation();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Operation_landContext : public OperationContext {
+  public:
+    Operation_landContext(OperationContext *ctx);
+
+    TsilParser::OperationContext *left = nullptr;
+    TsilParser::Op_landContext *op = nullptr;
+    TsilParser::OperationContext *right = nullptr;
+    std::vector<OperationContext *> operation();
+    OperationContext* operation(size_t i);
+    Op_landContext *op_land();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Operation_orContext : public OperationContext {
+  public:
+    Operation_orContext(OperationContext *ctx);
+
+    TsilParser::OperationContext *left = nullptr;
+    antlr4::Token *op = nullptr;
+    TsilParser::OperationContext *right = nullptr;
+    std::vector<OperationContext *> operation();
+    OperationContext* operation(size_t i);
+    antlr4::tree::TerminalNode *OR();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Operation_pre_notContext : public OperationContext {
+  public:
+    Operation_pre_notContext(OperationContext *ctx);
+
+    antlr4::Token *op = nullptr;
+    TsilParser::OperationContext *right = nullptr;
+    antlr4::tree::TerminalNode *EXCLAMATION();
+    OperationContext *operation();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Operation_asContext : public OperationContext {
+  public:
+    Operation_asContext(OperationContext *ctx);
+
+    TsilParser::OperationContext *left = nullptr;
+    antlr4::Token *op = nullptr;
+    TsilParser::TypeContext *right = nullptr;
+    OperationContext *operation();
+    antlr4::tree::TerminalNode *KW_AS();
+    TypeContext *type();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Operation_atomContext : public OperationContext {
+  public:
+    Operation_atomContext(OperationContext *ctx);
+
+    AtomContext *atom();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Operation_subContext : public OperationContext {
+  public:
+    Operation_subContext(OperationContext *ctx);
+
+    TsilParser::OperationContext *left = nullptr;
+    antlr4::Token *op = nullptr;
+    TsilParser::OperationContext *right = nullptr;
+    std::vector<OperationContext *> operation();
+    OperationContext* operation(size_t i);
+    antlr4::tree::TerminalNode *MINUS();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
@@ -473,32 +547,14 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  Operation_landContext : public OperationContext {
+  class  Operation_pre_bw_notContext : public OperationContext {
   public:
-    Operation_landContext(OperationContext *ctx);
+    Operation_pre_bw_notContext(OperationContext *ctx);
 
-    TsilParser::OperationContext *left = nullptr;
-    TsilParser::Op_landContext *op = nullptr;
-    TsilParser::OperationContext *right = nullptr;
-    std::vector<OperationContext *> operation();
-    OperationContext* operation(size_t i);
-    Op_landContext *op_land();
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  Operation_orContext : public OperationContext {
-  public:
-    Operation_orContext(OperationContext *ctx);
-
-    TsilParser::OperationContext *left = nullptr;
     antlr4::Token *op = nullptr;
     TsilParser::OperationContext *right = nullptr;
-    std::vector<OperationContext *> operation();
-    OperationContext* operation(size_t i);
-    antlr4::tree::TerminalNode *OR();
+    antlr4::tree::TerminalNode *TILDA();
+    OperationContext *operation();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 

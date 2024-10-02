@@ -97,6 +97,18 @@ namespace tsil::parser {
     std::any visitOperation_atom(
         TsilParser::Operation_atomContext* ctx) override;
 
+    std::any visitOperation_pre_not(
+        TsilParser::Operation_pre_notContext* ctx) override;
+
+    std::any visitOperation_pre_bw_not(
+        TsilParser::Operation_pre_bw_notContext* ctx) override;
+
+    std::any visitOperation_pre_plus(
+        TsilParser::Operation_pre_plusContext* ctx) override;
+
+    std::any visitOperation_pre_minus(
+        TsilParser::Operation_pre_minusContext* ctx) override;
+
     std::any visitOperation_mul(TsilParser::Operation_mulContext* ctx) override;
 
     std::any visitOperation_div(TsilParser::Operation_divContext* ctx) override;
