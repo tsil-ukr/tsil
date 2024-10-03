@@ -28,6 +28,6 @@
 дія + ц8 д32 = llvm { %2 = fptosi %1 to i8; add i8 %0 %2 };
 дія + ц8 д64 = llvm { %2 = fptosi %1 to i8; add i8 %0 %2 };
 
-дія як ц8 ц16 = llvm { zext %0 to i16 };
-дія як ц8 ц32 = llvm { zext %0 to i32 };
-дія як ц8 ц64 = llvm { zext %0 to i64 };
+дія як= ц8 ц16 = llvm { zext %0 to i16 };
+дія як= ц8 ц32 = llvm { zext %0 to i32 };
+дія як= ц8 ц64 = llvm { zext %0 to i64 };

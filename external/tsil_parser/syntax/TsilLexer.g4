@@ -53,11 +53,23 @@ SEMICOLON: ';';
 QUOTE_OPEN: '{';
 QUOTE_CLOSE: '}';
 
-NUMBER: ((INTEGER | FLOAT | HEX) ('ц8' | 'ц16' | 'ц32' | 'ц64' | 'п8' | 'п16' | 'п32' | 'п64' | 'д32' | 'д64')?) | BIN;
-INTEGER: DIGIT+;
-FLOAT: DIGIT+ '.' DIGIT+;
-HEX: '0ш' ('А' | 'а' | 'Б' | 'б' | 'В' | 'в' | 'Г' | 'г' | 'Ґ' | 'ґ' | 'Д' | 'д' | DIGIT)+;
-BIN: '0д' ('0' | '1')+;
+NUMBER: INTEGER | FLOAT | HEX | BIN;
+
+INTEGER: INTEGER_PART_START INTEGER_PART_CONTINUE* ('ц8' | 'ц16' | 'ц32' | 'ц64' | 'п8' | 'п16' | 'п32' | 'п64')?;
+fragment INTEGER_PART_START: DIGIT;
+fragment INTEGER_PART_CONTINUE: ('_')? DIGIT;
+
+FLOAT: FLOAT_PART_START FLOAT_PART_CONTINUE* '.' FLOAT_PART_START FLOAT_PART_CONTINUE* ('д32' | 'д64')?;
+fragment FLOAT_PART_START: DIGIT;
+fragment FLOAT_PART_CONTINUE: ('_')? DIGIT;
+
+HEX: '0' ('ш' | 'Ш') HEX_PART_START HEX_PART_CONTINUE*;
+fragment HEX_PART_START: ('А' | 'а' | 'Б' | 'б' | 'В' | 'в' | 'Г' | 'г' | 'Ґ' | 'ґ' | 'Д' | 'д' | DIGIT);
+fragment HEX_PART_CONTINUE: ('_')? ('А' | 'а' | 'Б' | 'б' | 'В' | 'в' | 'Г' | 'г' | 'Ґ' | 'ґ' | 'Д' | 'д' | DIGIT);
+
+BIN: '0' ('д' | 'Д') BIN_PART_START BIN_PART_CONTINUE*;
+fragment BIN_PART_START: ('0' | '1');
+fragment BIN_PART_CONTINUE: ('_')? ('0' | '1');
 
 ID: ID_START ID_CONTINUE*;
 
