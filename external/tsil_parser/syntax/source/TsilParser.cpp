@@ -92,7 +92,7 @@ void tsilparserParserInitialize() {
     }
   );
   static const int32_t serializedATNSegment[] = {
-  	4,1,62,532,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
+  	4,1,62,533,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
   	7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,
   	14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,
   	21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,7,27,2,28,7,
@@ -118,28 +118,28 @@ void tsilparserParserInitialize() {
   	17,1,17,3,17,334,8,17,1,18,1,18,1,18,3,18,339,8,18,1,18,1,18,1,18,3,18,
   	344,8,18,1,18,1,18,3,18,348,8,18,1,18,1,18,1,19,1,19,1,19,1,19,1,19,1,
   	20,1,20,1,20,1,20,1,20,1,20,5,20,363,8,20,10,20,12,20,366,9,20,1,20,1,
-  	20,3,20,370,8,20,1,20,1,20,1,20,1,20,1,21,1,21,1,21,3,21,379,8,21,1,22,
-  	1,22,1,22,1,22,1,22,1,22,1,22,1,23,1,23,1,23,1,23,1,23,1,23,1,23,1,23,
-  	1,24,1,24,1,24,1,24,1,24,1,24,1,24,1,24,1,25,1,25,1,25,1,25,1,25,1,25,
-  	3,25,410,8,25,3,25,412,8,25,1,26,1,26,1,26,1,26,1,27,1,27,1,27,1,27,1,
-  	28,1,28,5,28,424,8,28,10,28,12,28,427,9,28,1,28,1,28,1,29,1,29,1,29,1,
+  	20,3,20,370,8,20,1,20,1,20,1,20,1,20,1,20,1,21,1,21,1,21,3,21,380,8,21,
+  	1,22,1,22,1,22,1,22,1,22,1,22,1,22,1,23,1,23,1,23,1,23,1,23,1,23,1,23,
+  	1,23,1,24,1,24,1,24,1,24,1,24,1,24,1,24,1,24,1,25,1,25,1,25,1,25,1,25,
+  	1,25,3,25,411,8,25,3,25,413,8,25,1,26,1,26,1,26,1,26,1,27,1,27,1,27,1,
+  	27,1,28,1,28,5,28,425,8,28,10,28,12,28,428,9,28,1,28,1,28,1,29,1,29,1,
   	29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,29,1,
-  	29,3,29,449,8,29,1,30,1,30,1,30,1,30,1,31,1,31,1,31,1,31,1,31,1,31,1,
-  	31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,4,31,470,8,31,11,31,12,31,
-  	471,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,5,31,483,8,31,10,31,
-  	12,31,486,9,31,1,31,1,31,1,31,1,31,1,31,3,31,493,8,31,1,31,1,31,1,31,
-  	1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,5,31,508,8,31,10,31,
-  	12,31,511,9,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,5,31,522,
-  	8,31,10,31,12,31,525,9,31,1,32,1,32,1,32,3,32,530,8,32,1,32,0,3,4,6,62,
+  	29,1,29,3,29,450,8,29,1,30,1,30,1,30,1,30,1,31,1,31,1,31,1,31,1,31,1,
+  	31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,4,31,471,8,31,11,31,12,
+  	31,472,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,5,31,484,8,31,10,
+  	31,12,31,487,9,31,1,31,1,31,1,31,1,31,1,31,3,31,494,8,31,1,31,1,31,1,
+  	31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,5,31,509,8,31,10,
+  	31,12,31,512,9,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,1,31,5,31,523,
+  	8,31,10,31,12,31,526,9,31,1,32,1,32,1,32,3,32,531,8,32,1,32,0,3,4,6,62,
   	33,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,
-  	48,50,52,54,56,58,60,62,64,0,0,590,0,66,1,0,0,0,2,72,1,0,0,0,4,81,1,0,
+  	48,50,52,54,56,58,60,62,64,0,0,591,0,66,1,0,0,0,2,72,1,0,0,0,4,81,1,0,
   	0,0,6,141,1,0,0,0,8,223,1,0,0,0,10,226,1,0,0,0,12,229,1,0,0,0,14,233,
   	1,0,0,0,16,236,1,0,0,0,18,239,1,0,0,0,20,242,1,0,0,0,22,245,1,0,0,0,24,
   	248,1,0,0,0,26,251,1,0,0,0,28,264,1,0,0,0,30,266,1,0,0,0,32,292,1,0,0,
-  	0,34,298,1,0,0,0,36,338,1,0,0,0,38,351,1,0,0,0,40,356,1,0,0,0,42,375,
-  	1,0,0,0,44,380,1,0,0,0,46,387,1,0,0,0,48,395,1,0,0,0,50,403,1,0,0,0,52,
-  	413,1,0,0,0,54,417,1,0,0,0,56,421,1,0,0,0,58,448,1,0,0,0,60,450,1,0,0,
-  	0,62,492,1,0,0,0,64,526,1,0,0,0,66,67,3,2,1,0,67,68,5,0,0,1,68,1,1,0,
+  	0,34,298,1,0,0,0,36,338,1,0,0,0,38,351,1,0,0,0,40,356,1,0,0,0,42,376,
+  	1,0,0,0,44,381,1,0,0,0,46,388,1,0,0,0,48,396,1,0,0,0,50,404,1,0,0,0,52,
+  	414,1,0,0,0,54,418,1,0,0,0,56,422,1,0,0,0,58,449,1,0,0,0,60,451,1,0,0,
+  	0,62,493,1,0,0,0,64,527,1,0,0,0,66,67,3,2,1,0,67,68,5,0,0,1,68,1,1,0,
   	0,0,69,71,3,58,29,0,70,69,1,0,0,0,71,74,1,0,0,0,72,70,1,0,0,0,72,73,1,
   	0,0,0,73,3,1,0,0,0,74,72,1,0,0,0,75,76,6,2,-1,0,76,77,5,38,0,0,77,78,
   	3,28,14,0,78,79,5,39,0,0,79,82,1,0,0,0,80,82,5,57,0,0,81,75,1,0,0,0,81,
@@ -224,55 +224,55 @@ void tsilparserParserInitialize() {
   	5,28,0,0,359,364,3,26,13,0,360,361,5,48,0,0,361,363,3,26,13,0,362,360,
   	1,0,0,0,363,366,1,0,0,0,364,362,1,0,0,0,364,365,1,0,0,0,365,367,1,0,0,
   	0,366,364,1,0,0,0,367,368,5,27,0,0,368,370,1,0,0,0,369,358,1,0,0,0,369,
-  	370,1,0,0,0,370,371,1,0,0,0,371,372,5,26,0,0,372,373,3,28,14,0,373,374,
-  	5,49,0,0,374,41,1,0,0,0,375,376,5,11,0,0,376,378,5,57,0,0,377,379,3,56,
-  	28,0,378,377,1,0,0,0,378,379,1,0,0,0,379,43,1,0,0,0,380,381,3,4,2,0,381,
-  	382,5,29,0,0,382,383,5,57,0,0,383,384,5,26,0,0,384,385,3,28,14,0,385,
-  	386,5,49,0,0,386,45,1,0,0,0,387,388,3,4,2,0,388,389,5,40,0,0,389,390,
-  	3,28,14,0,390,391,5,41,0,0,391,392,5,26,0,0,392,393,3,28,14,0,393,394,
-  	5,49,0,0,394,47,1,0,0,0,395,396,3,4,2,0,396,397,5,43,0,0,397,398,5,43,
-  	0,0,398,399,5,57,0,0,399,400,5,26,0,0,400,401,3,28,14,0,401,402,5,49,
-  	0,0,402,49,1,0,0,0,403,404,5,3,0,0,404,405,3,6,3,0,405,411,3,56,28,0,
-  	406,409,5,4,0,0,407,410,3,56,28,0,408,410,3,50,25,0,409,407,1,0,0,0,409,
-  	408,1,0,0,0,410,412,1,0,0,0,411,406,1,0,0,0,411,412,1,0,0,0,412,51,1,
-  	0,0,0,413,414,5,5,0,0,414,415,3,6,3,0,415,416,3,56,28,0,416,53,1,0,0,
-  	0,417,418,5,25,0,0,418,419,3,56,28,0,419,420,5,49,0,0,420,55,1,0,0,0,
-  	421,425,5,50,0,0,422,424,3,58,29,0,423,422,1,0,0,0,424,427,1,0,0,0,425,
-  	423,1,0,0,0,425,426,1,0,0,0,426,428,1,0,0,0,427,425,1,0,0,0,428,429,5,
-  	51,0,0,429,57,1,0,0,0,430,449,3,30,15,0,431,449,3,34,17,0,432,449,3,36,
-  	18,0,433,449,3,38,19,0,434,449,3,44,22,0,435,449,3,48,24,0,436,449,3,
-  	46,23,0,437,449,3,40,20,0,438,449,3,42,21,0,439,449,3,50,25,0,440,449,
-  	3,52,26,0,441,442,3,28,14,0,442,443,5,49,0,0,443,449,1,0,0,0,444,449,
-  	3,56,28,0,445,449,3,54,27,0,446,449,3,60,30,0,447,449,5,49,0,0,448,430,
-  	1,0,0,0,448,431,1,0,0,0,448,432,1,0,0,0,448,433,1,0,0,0,448,434,1,0,0,
-  	0,448,435,1,0,0,0,448,436,1,0,0,0,448,437,1,0,0,0,448,438,1,0,0,0,448,
-  	439,1,0,0,0,448,440,1,0,0,0,448,441,1,0,0,0,448,444,1,0,0,0,448,445,1,
-  	0,0,0,448,446,1,0,0,0,448,447,1,0,0,0,449,59,1,0,0,0,450,451,5,6,0,0,
-  	451,452,3,28,14,0,452,453,5,49,0,0,453,61,1,0,0,0,454,455,6,31,-1,0,455,
-  	456,5,38,0,0,456,457,3,62,31,0,457,458,5,39,0,0,458,493,1,0,0,0,459,493,
-  	5,57,0,0,460,461,5,38,0,0,461,462,5,39,0,0,462,463,5,31,0,0,463,464,5,
-  	27,0,0,464,493,3,62,31,4,465,466,5,38,0,0,466,469,3,62,31,0,467,468,5,
-  	48,0,0,468,470,3,62,31,0,469,467,1,0,0,0,470,471,1,0,0,0,471,469,1,0,
-  	0,0,471,472,1,0,0,0,472,473,1,0,0,0,473,474,5,39,0,0,474,475,5,31,0,0,
-  	475,476,5,27,0,0,476,477,3,62,31,2,477,493,1,0,0,0,478,479,5,38,0,0,479,
-  	484,3,64,32,0,480,481,5,48,0,0,481,483,3,64,32,0,482,480,1,0,0,0,483,
-  	486,1,0,0,0,484,482,1,0,0,0,484,485,1,0,0,0,485,487,1,0,0,0,486,484,1,
-  	0,0,0,487,488,5,39,0,0,488,489,5,31,0,0,489,490,5,27,0,0,490,491,3,62,
-  	31,1,491,493,1,0,0,0,492,454,1,0,0,0,492,459,1,0,0,0,492,460,1,0,0,0,
-  	492,465,1,0,0,0,492,478,1,0,0,0,493,523,1,0,0,0,494,495,10,3,0,0,495,
-  	496,5,31,0,0,496,497,5,27,0,0,497,522,3,62,31,4,498,499,10,8,0,0,499,
-  	500,5,43,0,0,500,501,5,43,0,0,501,522,5,57,0,0,502,503,10,7,0,0,503,504,
-  	5,28,0,0,504,509,3,62,31,0,505,506,5,48,0,0,506,508,3,62,31,0,507,505,
-  	1,0,0,0,508,511,1,0,0,0,509,507,1,0,0,0,509,510,1,0,0,0,510,512,1,0,0,
-  	0,511,509,1,0,0,0,512,513,5,27,0,0,513,522,1,0,0,0,514,515,10,6,0,0,515,
-  	516,5,29,0,0,516,522,5,57,0,0,517,518,10,5,0,0,518,519,5,40,0,0,519,520,
-  	5,52,0,0,520,522,5,41,0,0,521,494,1,0,0,0,521,498,1,0,0,0,521,502,1,0,
-  	0,0,521,514,1,0,0,0,521,517,1,0,0,0,522,525,1,0,0,0,523,521,1,0,0,0,523,
-  	524,1,0,0,0,524,63,1,0,0,0,525,523,1,0,0,0,526,529,5,57,0,0,527,528,5,
-  	43,0,0,528,530,3,62,31,0,529,527,1,0,0,0,529,530,1,0,0,0,530,65,1,0,0,
-  	0,42,72,81,94,97,115,118,121,123,129,141,218,220,260,264,274,279,286,
-  	290,298,308,313,321,324,329,333,338,343,347,364,369,378,409,411,425,448,
-  	471,484,492,509,521,523,529
+  	370,1,0,0,0,370,371,1,0,0,0,371,372,5,26,0,0,372,373,5,27,0,0,373,374,
+  	3,28,14,0,374,375,5,49,0,0,375,41,1,0,0,0,376,377,5,11,0,0,377,379,5,
+  	57,0,0,378,380,3,56,28,0,379,378,1,0,0,0,379,380,1,0,0,0,380,43,1,0,0,
+  	0,381,382,3,4,2,0,382,383,5,29,0,0,383,384,5,57,0,0,384,385,5,26,0,0,
+  	385,386,3,28,14,0,386,387,5,49,0,0,387,45,1,0,0,0,388,389,3,4,2,0,389,
+  	390,5,40,0,0,390,391,3,28,14,0,391,392,5,41,0,0,392,393,5,26,0,0,393,
+  	394,3,28,14,0,394,395,5,49,0,0,395,47,1,0,0,0,396,397,3,4,2,0,397,398,
+  	5,43,0,0,398,399,5,43,0,0,399,400,5,57,0,0,400,401,5,26,0,0,401,402,3,
+  	28,14,0,402,403,5,49,0,0,403,49,1,0,0,0,404,405,5,3,0,0,405,406,3,6,3,
+  	0,406,412,3,56,28,0,407,410,5,4,0,0,408,411,3,56,28,0,409,411,3,50,25,
+  	0,410,408,1,0,0,0,410,409,1,0,0,0,411,413,1,0,0,0,412,407,1,0,0,0,412,
+  	413,1,0,0,0,413,51,1,0,0,0,414,415,5,5,0,0,415,416,3,6,3,0,416,417,3,
+  	56,28,0,417,53,1,0,0,0,418,419,5,25,0,0,419,420,3,56,28,0,420,421,5,49,
+  	0,0,421,55,1,0,0,0,422,426,5,50,0,0,423,425,3,58,29,0,424,423,1,0,0,0,
+  	425,428,1,0,0,0,426,424,1,0,0,0,426,427,1,0,0,0,427,429,1,0,0,0,428,426,
+  	1,0,0,0,429,430,5,51,0,0,430,57,1,0,0,0,431,450,3,30,15,0,432,450,3,34,
+  	17,0,433,450,3,36,18,0,434,450,3,38,19,0,435,450,3,44,22,0,436,450,3,
+  	48,24,0,437,450,3,46,23,0,438,450,3,40,20,0,439,450,3,42,21,0,440,450,
+  	3,50,25,0,441,450,3,52,26,0,442,443,3,28,14,0,443,444,5,49,0,0,444,450,
+  	1,0,0,0,445,450,3,56,28,0,446,450,3,54,27,0,447,450,3,60,30,0,448,450,
+  	5,49,0,0,449,431,1,0,0,0,449,432,1,0,0,0,449,433,1,0,0,0,449,434,1,0,
+  	0,0,449,435,1,0,0,0,449,436,1,0,0,0,449,437,1,0,0,0,449,438,1,0,0,0,449,
+  	439,1,0,0,0,449,440,1,0,0,0,449,441,1,0,0,0,449,442,1,0,0,0,449,445,1,
+  	0,0,0,449,446,1,0,0,0,449,447,1,0,0,0,449,448,1,0,0,0,450,59,1,0,0,0,
+  	451,452,5,6,0,0,452,453,3,28,14,0,453,454,5,49,0,0,454,61,1,0,0,0,455,
+  	456,6,31,-1,0,456,457,5,38,0,0,457,458,3,62,31,0,458,459,5,39,0,0,459,
+  	494,1,0,0,0,460,494,5,57,0,0,461,462,5,38,0,0,462,463,5,39,0,0,463,464,
+  	5,31,0,0,464,465,5,27,0,0,465,494,3,62,31,4,466,467,5,38,0,0,467,470,
+  	3,62,31,0,468,469,5,48,0,0,469,471,3,62,31,0,470,468,1,0,0,0,471,472,
+  	1,0,0,0,472,470,1,0,0,0,472,473,1,0,0,0,473,474,1,0,0,0,474,475,5,39,
+  	0,0,475,476,5,31,0,0,476,477,5,27,0,0,477,478,3,62,31,2,478,494,1,0,0,
+  	0,479,480,5,38,0,0,480,485,3,64,32,0,481,482,5,48,0,0,482,484,3,64,32,
+  	0,483,481,1,0,0,0,484,487,1,0,0,0,485,483,1,0,0,0,485,486,1,0,0,0,486,
+  	488,1,0,0,0,487,485,1,0,0,0,488,489,5,39,0,0,489,490,5,31,0,0,490,491,
+  	5,27,0,0,491,492,3,62,31,1,492,494,1,0,0,0,493,455,1,0,0,0,493,460,1,
+  	0,0,0,493,461,1,0,0,0,493,466,1,0,0,0,493,479,1,0,0,0,494,524,1,0,0,0,
+  	495,496,10,3,0,0,496,497,5,31,0,0,497,498,5,27,0,0,498,523,3,62,31,4,
+  	499,500,10,8,0,0,500,501,5,43,0,0,501,502,5,43,0,0,502,523,5,57,0,0,503,
+  	504,10,7,0,0,504,505,5,28,0,0,505,510,3,62,31,0,506,507,5,48,0,0,507,
+  	509,3,62,31,0,508,506,1,0,0,0,509,512,1,0,0,0,510,508,1,0,0,0,510,511,
+  	1,0,0,0,511,513,1,0,0,0,512,510,1,0,0,0,513,514,5,27,0,0,514,523,1,0,
+  	0,0,515,516,10,6,0,0,516,517,5,29,0,0,517,523,5,57,0,0,518,519,10,5,0,
+  	0,519,520,5,40,0,0,520,521,5,52,0,0,521,523,5,41,0,0,522,495,1,0,0,0,
+  	522,499,1,0,0,0,522,503,1,0,0,0,522,515,1,0,0,0,522,518,1,0,0,0,523,526,
+  	1,0,0,0,524,522,1,0,0,0,524,525,1,0,0,0,525,63,1,0,0,0,526,524,1,0,0,
+  	0,527,530,5,57,0,0,528,529,5,43,0,0,529,531,3,62,31,0,530,528,1,0,0,0,
+  	530,531,1,0,0,0,531,65,1,0,0,0,42,72,81,94,97,115,118,121,123,129,141,
+  	218,220,260,264,274,279,286,290,298,308,313,321,324,329,333,338,343,347,
+  	364,369,379,410,412,426,449,472,485,493,510,522,524,530
   };
   staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
 
@@ -3835,6 +3835,14 @@ tree::TerminalNode* TsilParser::SynonymContext::EQUAL() {
   return getToken(TsilParser::EQUAL, 0);
 }
 
+std::vector<tree::TerminalNode *> TsilParser::SynonymContext::GREATER() {
+  return getTokens(TsilParser::GREATER);
+}
+
+tree::TerminalNode* TsilParser::SynonymContext::GREATER(size_t i) {
+  return getToken(TsilParser::GREATER, i);
+}
+
 TsilParser::ExprContext* TsilParser::SynonymContext::expr() {
   return getRuleContext<TsilParser::ExprContext>(0);
 }
@@ -3849,10 +3857,6 @@ tree::TerminalNode* TsilParser::SynonymContext::ID() {
 
 tree::TerminalNode* TsilParser::SynonymContext::LESSER() {
   return getToken(TsilParser::LESSER, 0);
-}
-
-tree::TerminalNode* TsilParser::SynonymContext::GREATER() {
-  return getToken(TsilParser::GREATER, 0);
 }
 
 std::vector<TsilParser::GendefContext *> TsilParser::SynonymContext::gendef() {
@@ -3941,8 +3945,10 @@ TsilParser::SynonymContext* TsilParser::synonym() {
     setState(371);
     match(TsilParser::EQUAL);
     setState(372);
-    expr();
+    match(TsilParser::GREATER);
     setState(373);
+    expr();
+    setState(374);
     match(TsilParser::SEMICOLON);
    
   }
@@ -4011,16 +4017,16 @@ TsilParser::Section_defineContext* TsilParser::section_define() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(375);
-    match(TsilParser::KW_SECTION);
     setState(376);
+    match(TsilParser::KW_SECTION);
+    setState(377);
     antlrcpp::downCast<Section_defineContext *>(_localctx)->id = match(TsilParser::ID);
-    setState(378);
+    setState(379);
     _errHandler->sync(this);
 
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 30, _ctx)) {
     case 1: {
-      setState(377);
+      setState(378);
       body();
       break;
     }
@@ -4107,17 +4113,17 @@ TsilParser::SetContext* TsilParser::set() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(380);
-    antlrcpp::downCast<SetContext *>(_localctx)->object = atom(0);
     setState(381);
-    match(TsilParser::DOT);
+    antlrcpp::downCast<SetContext *>(_localctx)->object = atom(0);
     setState(382);
-    antlrcpp::downCast<SetContext *>(_localctx)->id = match(TsilParser::ID);
+    match(TsilParser::DOT);
     setState(383);
-    match(TsilParser::EQUAL);
+    antlrcpp::downCast<SetContext *>(_localctx)->id = match(TsilParser::ID);
     setState(384);
-    antlrcpp::downCast<SetContext *>(_localctx)->value = expr();
+    match(TsilParser::EQUAL);
     setState(385);
+    antlrcpp::downCast<SetContext *>(_localctx)->value = expr();
+    setState(386);
     match(TsilParser::SEMICOLON);
    
   }
@@ -4202,19 +4208,19 @@ TsilParser::Position_setContext* TsilParser::position_set() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(387);
-    antlrcpp::downCast<Position_setContext *>(_localctx)->object = atom(0);
     setState(388);
-    match(TsilParser::BRACKET_OPEN);
+    antlrcpp::downCast<Position_setContext *>(_localctx)->object = atom(0);
     setState(389);
-    antlrcpp::downCast<Position_setContext *>(_localctx)->idx = expr();
+    match(TsilParser::BRACKET_OPEN);
     setState(390);
-    match(TsilParser::BRACKET_CLOSE);
+    antlrcpp::downCast<Position_setContext *>(_localctx)->idx = expr();
     setState(391);
-    match(TsilParser::EQUAL);
+    match(TsilParser::BRACKET_CLOSE);
     setState(392);
-    antlrcpp::downCast<Position_setContext *>(_localctx)->value = expr();
+    match(TsilParser::EQUAL);
     setState(393);
+    antlrcpp::downCast<Position_setContext *>(_localctx)->value = expr();
+    setState(394);
     match(TsilParser::SEMICOLON);
    
   }
@@ -4299,19 +4305,19 @@ TsilParser::Section_setContext* TsilParser::section_set() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(395);
-    antlrcpp::downCast<Section_setContext *>(_localctx)->object = atom(0);
     setState(396);
-    match(TsilParser::COLON);
+    antlrcpp::downCast<Section_setContext *>(_localctx)->object = atom(0);
     setState(397);
     match(TsilParser::COLON);
     setState(398);
-    antlrcpp::downCast<Section_setContext *>(_localctx)->id = match(TsilParser::ID);
+    match(TsilParser::COLON);
     setState(399);
-    match(TsilParser::EQUAL);
+    antlrcpp::downCast<Section_setContext *>(_localctx)->id = match(TsilParser::ID);
     setState(400);
-    antlrcpp::downCast<Section_setContext *>(_localctx)->value = expr();
+    match(TsilParser::EQUAL);
     setState(401);
+    antlrcpp::downCast<Section_setContext *>(_localctx)->value = expr();
+    setState(402);
     match(TsilParser::SEMICOLON);
    
   }
@@ -4393,30 +4399,30 @@ TsilParser::IfContext* TsilParser::if_() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(403);
-    match(TsilParser::KW_IF);
     setState(404);
-    antlrcpp::downCast<IfContext *>(_localctx)->cond = operation(0);
+    match(TsilParser::KW_IF);
     setState(405);
+    antlrcpp::downCast<IfContext *>(_localctx)->cond = operation(0);
+    setState(406);
     antlrcpp::downCast<IfContext *>(_localctx)->ifok = body();
-    setState(411);
+    setState(412);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == TsilParser::KW_ELSE) {
-      setState(406);
+      setState(407);
       match(TsilParser::KW_ELSE);
-      setState(409);
+      setState(410);
       _errHandler->sync(this);
       switch (_input->LA(1)) {
         case TsilParser::QUOTE_OPEN: {
-          setState(407);
+          setState(408);
           antlrcpp::downCast<IfContext *>(_localctx)->ifnot = body();
           break;
         }
 
         case TsilParser::KW_IF: {
-          setState(408);
+          setState(409);
           antlrcpp::downCast<IfContext *>(_localctx)->ifnotif = if_();
           break;
         }
@@ -4492,11 +4498,11 @@ TsilParser::WhileContext* TsilParser::while_() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(413);
-    match(TsilParser::KW_WHILE);
     setState(414);
-    antlrcpp::downCast<WhileContext *>(_localctx)->cond = operation(0);
+    match(TsilParser::KW_WHILE);
     setState(415);
+    antlrcpp::downCast<WhileContext *>(_localctx)->cond = operation(0);
+    setState(416);
     body();
    
   }
@@ -4565,11 +4571,11 @@ TsilParser::ExecContext* TsilParser::exec() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(417);
-    match(TsilParser::KW_EXEC);
     setState(418);
-    body();
+    match(TsilParser::KW_EXEC);
     setState(419);
+    body();
+    setState(420);
     match(TsilParser::SEMICOLON);
    
   }
@@ -4643,20 +4649,20 @@ TsilParser::BodyContext* TsilParser::body() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(421);
+    setState(422);
     match(TsilParser::QUOTE_OPEN);
-    setState(425);
+    setState(426);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while ((((_la & ~ 0x3fULL) == 0) &&
       ((1ULL << _la) & 438696621552109934) != 0)) {
-      setState(422);
+      setState(423);
       body_element();
-      setState(427);
+      setState(428);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(428);
+    setState(429);
     match(TsilParser::QUOTE_CLOSE);
    
   }
@@ -4776,119 +4782,119 @@ TsilParser::Body_elementContext* TsilParser::body_element() {
     exitRule();
   });
   try {
-    setState(448);
+    setState(449);
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 34, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(430);
+      setState(431);
       structure_define();
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(431);
+      setState(432);
       diia_define();
       break;
     }
 
     case 3: {
       enterOuterAlt(_localctx, 3);
-      setState(432);
+      setState(433);
       tsil_define();
       break;
     }
 
     case 4: {
       enterOuterAlt(_localctx, 4);
-      setState(433);
+      setState(434);
       assign();
       break;
     }
 
     case 5: {
       enterOuterAlt(_localctx, 5);
-      setState(434);
+      setState(435);
       set();
       break;
     }
 
     case 6: {
       enterOuterAlt(_localctx, 6);
-      setState(435);
+      setState(436);
       section_set();
       break;
     }
 
     case 7: {
       enterOuterAlt(_localctx, 7);
-      setState(436);
+      setState(437);
       position_set();
       break;
     }
 
     case 8: {
       enterOuterAlt(_localctx, 8);
-      setState(437);
+      setState(438);
       synonym();
       break;
     }
 
     case 9: {
       enterOuterAlt(_localctx, 9);
-      setState(438);
+      setState(439);
       section_define();
       break;
     }
 
     case 10: {
       enterOuterAlt(_localctx, 10);
-      setState(439);
+      setState(440);
       if_();
       break;
     }
 
     case 11: {
       enterOuterAlt(_localctx, 11);
-      setState(440);
+      setState(441);
       while_();
       break;
     }
 
     case 12: {
       enterOuterAlt(_localctx, 12);
-      setState(441);
-      expr();
       setState(442);
+      expr();
+      setState(443);
       match(TsilParser::SEMICOLON);
       break;
     }
 
     case 13: {
       enterOuterAlt(_localctx, 13);
-      setState(444);
+      setState(445);
       body();
       break;
     }
 
     case 14: {
       enterOuterAlt(_localctx, 14);
-      setState(445);
+      setState(446);
       exec();
       break;
     }
 
     case 15: {
       enterOuterAlt(_localctx, 15);
-      setState(446);
+      setState(447);
       return_();
       break;
     }
 
     case 16: {
       enterOuterAlt(_localctx, 16);
-      setState(447);
+      setState(448);
       antlrcpp::downCast<Body_elementContext *>(_localctx)->semi = match(TsilParser::SEMICOLON);
       break;
     }
@@ -4963,11 +4969,11 @@ TsilParser::ReturnContext* TsilParser::return_() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(450);
-    match(TsilParser::KW_RETURN);
     setState(451);
-    antlrcpp::downCast<ReturnContext *>(_localctx)->value = expr();
+    match(TsilParser::KW_RETURN);
     setState(452);
+    antlrcpp::downCast<ReturnContext *>(_localctx)->value = expr();
+    setState(453);
     match(TsilParser::SEMICOLON);
    
   }
@@ -5419,7 +5425,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(492);
+    setState(493);
     _errHandler->sync(this);
     switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 37, _ctx)) {
     case 1: {
@@ -5427,11 +5433,11 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
       _ctx = _localctx;
       previousContext = _localctx;
 
-      setState(455);
-      match(TsilParser::PAREN_OPEN);
       setState(456);
-      type(0);
+      match(TsilParser::PAREN_OPEN);
       setState(457);
+      type(0);
+      setState(458);
       match(TsilParser::PAREN_CLOSE);
       break;
     }
@@ -5440,7 +5446,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
       _localctx = _tracker.createInstance<Type_subjectContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
-      setState(459);
+      setState(460);
       antlrcpp::downCast<Type_subjectContext *>(_localctx)->id = match(TsilParser::ID);
       break;
     }
@@ -5449,15 +5455,15 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
       _localctx = _tracker.createInstance<Type_fnContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
-      setState(460);
-      match(TsilParser::PAREN_OPEN);
       setState(461);
-      match(TsilParser::PAREN_CLOSE);
+      match(TsilParser::PAREN_OPEN);
       setState(462);
-      match(TsilParser::MINUS);
+      match(TsilParser::PAREN_CLOSE);
       setState(463);
-      match(TsilParser::GREATER);
+      match(TsilParser::MINUS);
       setState(464);
+      match(TsilParser::GREATER);
+      setState(465);
       antlrcpp::downCast<Type_fnContext *>(_localctx)->restyp = type(4);
       break;
     }
@@ -5466,29 +5472,29 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
       _localctx = _tracker.createInstance<Type_fn_complexContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
-      setState(465);
-      match(TsilParser::PAREN_OPEN);
       setState(466);
+      match(TsilParser::PAREN_OPEN);
+      setState(467);
       type(0);
-      setState(469); 
+      setState(470); 
       _errHandler->sync(this);
       _la = _input->LA(1);
       do {
-        setState(467);
-        match(TsilParser::COMA);
         setState(468);
+        match(TsilParser::COMA);
+        setState(469);
         type(0);
-        setState(471); 
+        setState(472); 
         _errHandler->sync(this);
         _la = _input->LA(1);
       } while (_la == TsilParser::COMA);
-      setState(473);
-      match(TsilParser::PAREN_CLOSE);
       setState(474);
-      match(TsilParser::MINUS);
+      match(TsilParser::PAREN_CLOSE);
       setState(475);
-      match(TsilParser::GREATER);
+      match(TsilParser::MINUS);
       setState(476);
+      match(TsilParser::GREATER);
+      setState(477);
       antlrcpp::downCast<Type_fn_complexContext *>(_localctx)->restyp = type(2);
       break;
     }
@@ -5497,29 +5503,29 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
       _localctx = _tracker.createInstance<Type_fn_complex_namedContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
-      setState(478);
-      match(TsilParser::PAREN_OPEN);
       setState(479);
+      match(TsilParser::PAREN_OPEN);
+      setState(480);
       param();
-      setState(484);
+      setState(485);
       _errHandler->sync(this);
       _la = _input->LA(1);
       while (_la == TsilParser::COMA) {
-        setState(480);
-        match(TsilParser::COMA);
         setState(481);
+        match(TsilParser::COMA);
+        setState(482);
         param();
-        setState(486);
+        setState(487);
         _errHandler->sync(this);
         _la = _input->LA(1);
       }
-      setState(487);
-      match(TsilParser::PAREN_CLOSE);
       setState(488);
-      match(TsilParser::MINUS);
+      match(TsilParser::PAREN_CLOSE);
       setState(489);
-      match(TsilParser::GREATER);
+      match(TsilParser::MINUS);
       setState(490);
+      match(TsilParser::GREATER);
+      setState(491);
       antlrcpp::downCast<Type_fn_complex_namedContext *>(_localctx)->restyp = type(1);
       break;
     }
@@ -5528,7 +5534,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
       break;
     }
     _ctx->stop = _input->LT(-1);
-    setState(523);
+    setState(524);
     _errHandler->sync(this);
     alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 40, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
@@ -5536,7 +5542,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
         if (!_parseListeners.empty())
           triggerExitRuleEvent();
         previousContext = _localctx;
-        setState(521);
+        setState(522);
         _errHandler->sync(this);
         switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 39, _ctx)) {
         case 1: {
@@ -5544,14 +5550,14 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
           _localctx = newContext;
           newContext->param_type = previousContext;
           pushNewRecursionContext(newContext, startState, RuleType);
-          setState(494);
+          setState(495);
 
           if (!(precpred(_ctx, 3))) throw FailedPredicateException(this, "precpred(_ctx, 3)");
-          setState(495);
-          match(TsilParser::MINUS);
           setState(496);
-          match(TsilParser::GREATER);
+          match(TsilParser::MINUS);
           setState(497);
+          match(TsilParser::GREATER);
+          setState(498);
           antlrcpp::downCast<Type_fn_simpleContext *>(_localctx)->restyp = type(4);
           break;
         }
@@ -5561,14 +5567,14 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
           _localctx = newContext;
           newContext->object = previousContext;
           pushNewRecursionContext(newContext, startState, RuleType);
-          setState(498);
+          setState(499);
 
           if (!(precpred(_ctx, 8))) throw FailedPredicateException(this, "precpred(_ctx, 8)");
-          setState(499);
-          match(TsilParser::COLON);
           setState(500);
           match(TsilParser::COLON);
           setState(501);
+          match(TsilParser::COLON);
+          setState(502);
           antlrcpp::downCast<Type_section_getContext *>(_localctx)->id = match(TsilParser::ID);
           break;
         }
@@ -5578,26 +5584,26 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
           _localctx = newContext;
           newContext->object = previousContext;
           pushNewRecursionContext(newContext, startState, RuleType);
-          setState(502);
+          setState(503);
 
           if (!(precpred(_ctx, 7))) throw FailedPredicateException(this, "precpred(_ctx, 7)");
-          setState(503);
-          match(TsilParser::LESSER);
           setState(504);
+          match(TsilParser::LESSER);
+          setState(505);
           type(0);
-          setState(509);
+          setState(510);
           _errHandler->sync(this);
           _la = _input->LA(1);
           while (_la == TsilParser::COMA) {
-            setState(505);
-            match(TsilParser::COMA);
             setState(506);
+            match(TsilParser::COMA);
+            setState(507);
             type(0);
-            setState(511);
+            setState(512);
             _errHandler->sync(this);
             _la = _input->LA(1);
           }
-          setState(512);
+          setState(513);
           match(TsilParser::GREATER);
           break;
         }
@@ -5607,12 +5613,12 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
           _localctx = newContext;
           newContext->object = previousContext;
           pushNewRecursionContext(newContext, startState, RuleType);
-          setState(514);
+          setState(515);
 
           if (!(precpred(_ctx, 6))) throw FailedPredicateException(this, "precpred(_ctx, 6)");
-          setState(515);
-          match(TsilParser::DOT);
           setState(516);
+          match(TsilParser::DOT);
+          setState(517);
           antlrcpp::downCast<Type_getContext *>(_localctx)->id = match(TsilParser::ID);
           break;
         }
@@ -5622,14 +5628,14 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
           _localctx = newContext;
           newContext->left = previousContext;
           pushNewRecursionContext(newContext, startState, RuleType);
-          setState(517);
+          setState(518);
 
           if (!(precpred(_ctx, 5))) throw FailedPredicateException(this, "precpred(_ctx, 5)");
-          setState(518);
-          match(TsilParser::BRACKET_OPEN);
           setState(519);
-          antlrcpp::downCast<Type_arrayContext *>(_localctx)->size = match(TsilParser::NUMBER);
+          match(TsilParser::BRACKET_OPEN);
           setState(520);
+          antlrcpp::downCast<Type_arrayContext *>(_localctx)->size = match(TsilParser::NUMBER);
+          setState(521);
           match(TsilParser::BRACKET_CLOSE);
           break;
         }
@@ -5638,7 +5644,7 @@ TsilParser::TypeContext* TsilParser::type(int precedence) {
           break;
         } 
       }
-      setState(525);
+      setState(526);
       _errHandler->sync(this);
       alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 40, _ctx);
     }
@@ -5708,16 +5714,16 @@ TsilParser::ParamContext* TsilParser::param() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(526);
+    setState(527);
     antlrcpp::downCast<ParamContext *>(_localctx)->id = match(TsilParser::ID);
-    setState(529);
+    setState(530);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == TsilParser::COLON) {
-      setState(527);
-      match(TsilParser::COLON);
       setState(528);
+      match(TsilParser::COLON);
+      setState(529);
       type(0);
     }
    

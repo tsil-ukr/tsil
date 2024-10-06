@@ -1029,11 +1029,12 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *KW_SYNONYM();
     antlr4::tree::TerminalNode *EQUAL();
+    std::vector<antlr4::tree::TerminalNode *> GREATER();
+    antlr4::tree::TerminalNode* GREATER(size_t i);
     ExprContext *expr();
     antlr4::tree::TerminalNode *SEMICOLON();
     antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *LESSER();
-    antlr4::tree::TerminalNode *GREATER();
     std::vector<GendefContext *> gendef();
     GendefContext* gendef(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COMA();
