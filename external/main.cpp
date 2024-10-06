@@ -54,6 +54,13 @@ extern "C" void* створити_карту_комірок() {
   return new std::map<std::string, void*>();
 }
 
+extern "C" unsigned char* зʼєднати_ю8(unsigned char* value,
+                                      unsigned char* value2) {
+  std::string str = (char*)value;
+  std::string str2 = (char*)value2;
+  return (unsigned char*)strdup((str + str2).c_str());
+}
+
 struct ПомилкаКомпіляціїЦілі {
   Місцезнаходження* місцезнаходження;
   char* повідомлення;
