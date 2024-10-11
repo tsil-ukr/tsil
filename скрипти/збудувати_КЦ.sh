@@ -40,10 +40,13 @@ KTS_FILES=(
   "К/КЯкщо.ц"
 )
 
+
+PWDR="$(pwd)"
+
 cd КЦ
 for KTS_FILE in "${KTS_FILES[@]}"; do
-  echo "ціль ../.плавлення/скомпільоване/$KTS_FILE.ll скомпілювати $KTS_FILE"
-  ціль ../.плавлення/скомпільоване/"$KTS_FILE".ll скомпілювати "$KTS_FILE"
+  echo "../build-old/ціль ../.плавлення/скомпільоване/$KTS_FILE.ll скомпілювати --бібліотека=$PWDR/.плавлення-бібліотеки/бібліотека $KTS_FILE"
+  ../build-old/ціль ../.плавлення/скомпільоване/"$KTS_FILE".ll скомпілювати --бібліотека="$PWDR/.плавлення-бібліотеки/бібліотека" "$KTS_FILE"
   echo "$CXX -c -o ../.плавлення/скомпільоване/$KTS_FILE.o ../.плавлення/скомпільоване/$KTS_FILE.ll -Wno-override-module"
   $CXX -c -o ../.плавлення/скомпільоване/"$KTS_FILE".o ../.плавлення/скомпільоване/"$KTS_FILE".ll -Wno-override-module
 done

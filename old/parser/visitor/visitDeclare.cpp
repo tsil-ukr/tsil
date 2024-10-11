@@ -1,0 +1,12 @@
+#include "../parser.h"
+
+namespace tsil::parser {
+  std::any TsilASTVisitor::visitDeclare(TsilParser::DeclareContext* context) {
+    const auto define_node = new ast::DefineNode();
+    define_node->id = context->d_id->getText();
+    if (context->d_type) {
+      define_node->type = AAV(visitContext(context->d_type));
+    }
+    return AV(context, ast::KindDefineNode, define_node);
+  }
+} // namespace tsil::parser
