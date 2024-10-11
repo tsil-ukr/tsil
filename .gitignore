@@ -37,3 +37,4 @@ build-antlr/
 build-neo/
 .llvm-source-and-build/
 x
+.тестування/
