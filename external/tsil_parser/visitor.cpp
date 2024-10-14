@@ -584,18 +584,17 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitStructure_define(
       TsilParser::Structure_defineContext* ctx) {
-    const auto асд_дані_створити_структуру = new АСДДаніСтворитиСтруктуру();
-    асд_дані_створити_структуру->ідентифікатор =
-        ІД(this, ctx->id, ctx->id->getText());
+    const auto асд_дані_структура = new АСДДаніСтруктура();
+    асд_дані_структура->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     std::vector<Параметр*> params;
     for (const auto& structureElement : ctx->structure_element()) {
       const auto any_param = visitParam(structureElement->param());
       params.push_back(std::any_cast<Параметр*>(any_param));
     }
-    асд_дані_створити_структуру->кількість_параметрів = params.size();
-    асд_дані_створити_структуру->параметри = VecToArr(params);
+    асд_дані_структура->кількість_параметрів = params.size();
+    асд_дані_структура->параметри = VecToArr(params);
     const auto асд_значення_створити_структуру =
-        AV(this, ctx, АСДВидСтворитиСтруктуру, асд_дані_створити_структуру);
+        AV(this, ctx, АСДВидСтруктура, асд_дані_структура);
     if (ctx->first_gendef == nullptr) {
       return асд_значення_створити_структуру;
     } else {
