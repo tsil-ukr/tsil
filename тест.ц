@@ -8,11 +8,13 @@
 
 дія f(s: S): S;
 
-//структура STyped<T>;
+структура STyped<T>;
 
-//структура STyped<T> {
-//  t: T;
-//}
+дія ftyped(st: STyped<ц32>): STyped<ц64>;
+
+структура STyped<T> {
+  t: T;
+}
 
 //структура Some;
 //
