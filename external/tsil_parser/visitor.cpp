@@ -593,15 +593,15 @@ namespace tsil::parser {
     }
     асд_дані_структура->кількість_параметрів = params.size();
     асд_дані_структура->параметри = VecToArr(params);
-    const auto асд_значення_створити_структуру =
+    const auto асд_значення_структура =
         AV(this, ctx, АСДВидСтруктура, асд_дані_структура);
     if (ctx->first_gendef == nullptr) {
-      return асд_значення_створити_структуру;
+      return асд_значення_структура;
     } else {
       const auto асд_дані_створити_шаблон = new АСДДаніСтворитиШаблон();
       асд_дані_створити_шаблон->ідентифікатор =
           ІД(this, ctx->id, ctx->id->getText());
-      асд_дані_створити_шаблон->значення = асд_значення_створити_структуру;
+      асд_дані_створити_шаблон->значення = асд_значення_структура;
       std::vector<Ідентифікатор*> params;
       for (const auto& gendef : ctx->gendef()) {
         params.push_back(ІД(this, gendef, gendef->getText()));
@@ -614,42 +614,40 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitDiia_define(
       TsilParser::Diia_defineContext* ctx) {
-    const auto асд_дані_створити_дію = new АСДДаніСтворитиДію();
+    const auto асд_дані_дія = new АСДДаніДія();
     if (ctx->extern_) {
-      асд_дані_створити_дію->видимість = АСДВидимістьЗовнішня;
+      асд_дані_дія->видимість = АСДВидимістьЗовнішня;
     } else if (ctx->local) {
-      асд_дані_створити_дію->видимість = АСДВидимістьМісцева;
+      асд_дані_дія->видимість = АСДВидимістьМісцева;
     } else {
-      асд_дані_створити_дію->видимість = АСДВидимістьВнутрішня;
+      асд_дані_дія->видимість = АСДВидимістьВнутрішня;
     }
-    асд_дані_створити_дію->ідентифікатор =
-        ІД(this, ctx->id, ctx->id->getText());
+    асд_дані_дія->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     std::vector<Параметр*> params;
     for (const auto& param : ctx->param()) {
       const auto any_param = visitParam(param);
       params.push_back(std::any_cast<Параметр*>(any_param));
     }
-    асд_дані_створити_дію->кількість_параметрів = params.size();
-    асд_дані_створити_дію->параметри = VecToArr(params);
+    асд_дані_дія->кількість_параметрів = params.size();
+    асд_дані_дія->параметри = VecToArr(params);
     if (ctx->restyp) {
-      асд_дані_створити_дію->тип_результату = AAV(visitContext(ctx->restyp));
+      асд_дані_дія->тип_результату = AAV(visitContext(ctx->restyp));
     } else {
-      асд_дані_створити_дію->тип_результату = nullptr;
+      асд_дані_дія->тип_результату = nullptr;
     }
     if (ctx->body()) {
-      асд_дані_створити_дію->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
+      асд_дані_дія->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
     } else {
-      асд_дані_створити_дію->тіло = nullptr;
+      асд_дані_дія->тіло = nullptr;
     }
-    const auto асд_значення_створити_дію =
-        AV(this, ctx, АСДВидСтворитиДію, асд_дані_створити_дію);
+    const auto асд_значення_дія = AV(this, ctx, АСДВидДія, асд_дані_дія);
     if (ctx->first_gendef == nullptr) {
-      return асд_значення_створити_дію;
+      return асд_значення_дія;
     } else {
       const auto асд_дані_створити_шаблон = new АСДДаніСтворитиШаблон();
       асд_дані_створити_шаблон->ідентифікатор =
           ІД(this, ctx->id, ctx->id->getText());
-      асд_дані_створити_шаблон->значення = асд_значення_створити_дію;
+      асд_дані_створити_шаблон->значення = асд_значення_дія;
       std::vector<Ідентифікатор*> params;
       for (const auto& gendef : ctx->gendef()) {
         params.push_back(ІД(this, gendef, gendef->getText()));
