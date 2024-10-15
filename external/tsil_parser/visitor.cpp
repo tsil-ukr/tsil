@@ -683,18 +683,17 @@ namespace tsil::parser {
   }
 
   std::any TsilASTVisitor::visitSynonym(TsilParser::SynonymContext* ctx) {
-    const auto асд_дані_створити_синонім = new АСДДаніСтворитиСинонім();
-    асд_дані_створити_синонім->ідентифікатор =
-        ІД(this, ctx->id, ctx->id->getText());
-    асд_дані_створити_синонім->значення = AAV(visitContext(ctx->expr()));
-    const auto асд_значення_створити_синонім =
-        AV(this, ctx, АСДВидСтворитиСинонім, асд_дані_створити_синонім);
+    const auto асд_дані_синонім = new АСДДаніСинонім();
+    асд_дані_синонім->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    асд_дані_синонім->значення = AAV(visitContext(ctx->expr()));
+    const auto асд_значення_синонім =
+        AV(this, ctx, АСДВидСинонім, асд_дані_синонім);
     if (ctx->first_gendef == nullptr) {
-      return асд_значення_створити_синонім;
+      return асд_значення_синонім;
     } else {
       const auto асд_дані_шаблон = new АСДДаніШаблон();
       асд_дані_шаблон->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
-      асд_дані_шаблон->значення = асд_значення_створити_синонім;
+      асд_дані_шаблон->значення = асд_значення_синонім;
       std::vector<Ідентифікатор*> params;
       for (const auto& gendef : ctx->gendef()) {
         params.push_back(ІД(this, gendef, gendef->getText()));
