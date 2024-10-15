@@ -25,6 +25,9 @@ KW_VAR: 'змінна';
 KW_IMMUT: 'стала';
 KW_SYNONYM: 'синонім';
 KW_EXEC: 'виконати';
+KW_TRY: 'спробувати';
+KW_CATCH: 'зловити';
+KW_THROW: 'впасти';
 
 EQUAL: '=';
 GREATER: '>';
