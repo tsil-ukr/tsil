@@ -706,16 +706,14 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitSection_define(
       TsilParser::Section_defineContext* ctx) {
-    const auto асд_дані_створити_секцію = new АСДДаніСтворитиСекцію();
-    асд_дані_створити_секцію->ідентифікатор =
-        ІД(this, ctx->id, ctx->id->getText());
+    const auto асд_дані_секція = new АСДДаніСекція();
+    асд_дані_секція->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     if (ctx->body()) {
-      асд_дані_створити_секцію->тіло =
-          AAVecToList(AAVec(visitBody(ctx->body())));
+      асд_дані_секція->тіло = AAVecToList(AAVec(visitBody(ctx->body())));
     } else {
-      асд_дані_створити_секцію->тіло = nullptr;
+      асд_дані_секція->тіло = nullptr;
     }
-    return AV(this, ctx, АСДВидСтворитиСекцію, асд_дані_створити_секцію);
+    return AV(this, ctx, АСДВидСекція, асд_дані_секція);
   }
 
   std::any TsilASTVisitor::visitSet(TsilParser::SetContext* ctx) {
