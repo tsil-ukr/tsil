@@ -45,10 +45,15 @@ PWDR="$(pwd)"
 
 cd КЦ
 for KTS_FILE in "${KTS_FILES[@]}"; do
-  echo "../build-old/ціль ../.плавлення/скомпільоване/$KTS_FILE.ll скомпілювати --бібліотека=$PWDR/.плавлення-бібліотеки/бібліотека $KTS_FILE"
-  ../build-old/ціль ../.плавлення/скомпільоване/"$KTS_FILE".ll скомпілювати --бібліотека="$PWDR/.плавлення-бібліотеки/бібліотека" "$KTS_FILE"
-  echo "$CXX -c -o ../.плавлення/скомпільоване/$KTS_FILE.o ../.плавлення/скомпільоване/$KTS_FILE.ll -Wno-override-module"
-  $CXX -c -o ../.плавлення/скомпільоване/"$KTS_FILE".o ../.плавлення/скомпільоване/"$KTS_FILE".ll -Wno-override-module
+  CHANGED_AT=$(stat -c %y $KTS_FILE)
+  CHANGED_AT_OLD=$(cat "../.плавлення/скомпільоване/$KTS_FILE.ll.changed_at" 2>/dev/null || echo "")
+  if [ ! -f "../.плавлення/скомпільоване/$KTS_FILE.ll" ] || [ "$CHANGED_AT" != "$CHANGED_AT_OLD" ]; then
+    echo "$CHANGED_AT" > "../.плавлення/скомпільоване/$KTS_FILE.ll.changed_at"
+    echo "../build-old/ціль ../.плавлення/скомпільоване/$KTS_FILE.ll скомпілювати --бібліотека=$PWDR/.плавлення-бібліотеки/бібліотека $KTS_FILE"
+    ../build-old/ціль ../.плавлення/скомпільоване/"$KTS_FILE".ll скомпілювати --бібліотека="$PWDR/.плавлення-бібліотеки/бібліотека" "$KTS_FILE"
+    echo "$CXX -c -o ../.плавлення/скомпільоване/$KTS_FILE.o ../.плавлення/скомпільоване/$KTS_FILE.ll -Wno-override-module"
+    $CXX -c -o ../.плавлення/скомпільоване/"$KTS_FILE".o ../.плавлення/скомпільоване/"$KTS_FILE".ll -Wno-override-module
+  fi
 done
 cd ..
 
