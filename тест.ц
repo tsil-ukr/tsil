@@ -12,7 +12,7 @@
 
 дія ftyped(st: STyped<ц32>): STyped<ц64>;
 
-//дія ftyped(st: STyped<ц32>): STyped<ц64> {}
+дія ftyped(st: STyped<ц32>): STyped<ц64> {}
 
 структура STyped<T> {
   t: T;
