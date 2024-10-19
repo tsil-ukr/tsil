@@ -136,3 +136,7 @@ int main() {
   //  }
   return 0;
 }
+
+extern "C" char* позитивне_в_ю8(unsigned long value) {
+  return (char*)strdup(std::to_string(value).c_str());
+}
