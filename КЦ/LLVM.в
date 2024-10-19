@@ -1,5 +1,4 @@
 структура ЛМодуль;
-структура Value;
 структура ЛБлок;
 
 секція LLVM {
@@ -9,6 +8,7 @@
 
   структура Type;
   структура FunctionType;
+  структура Value;
   структура Function;
 }
 
@@ -47,7 +47,7 @@
 зовнішня дія tsil_llvm_get_function_type(Л: комірка<ЛМодуль>, функція: комірка<LLVM::Function>): комірка<LLVM::FunctionType>;
 
 зовнішня дія tsil_llvm_inst_call_value(Л: комірка<ЛМодуль>, блок: комірка<ЛБлок>, тип: комірка<Type>, значення: комірка<LLVM::Value>, розмір_аргументів: позитивне, аргументи: памʼять<комірка<LLVM::Value>>): комірка<LLVM::Value>;
-зовнішня дія tsil_llvm_get_function_arg_value(Л: комірка<ЛМодуль>, функція: комірка<LLVM::Function>, позиція: позитивне): комірка<Value>;
+зовнішня дія tsil_llvm_get_function_arg_value(Л: комірка<ЛМодуль>, функція: комірка<LLVM::Function>, позиція: позитивне): комірка<LLVM::Value>;
 
 зовнішня дія tsil_llvm_inst_add(Л: комірка<ЛМодуль>, блок: комірка<ЛБлок>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_fadd(Л: комірка<ЛМодуль>, блок: комірка<ЛБлок>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
