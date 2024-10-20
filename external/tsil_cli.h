@@ -1,3 +1,5 @@
+#pragma once
+
 // TODO: переписати на Ціль!
 
 #include <functional>

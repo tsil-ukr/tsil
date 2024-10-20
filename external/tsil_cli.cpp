@@ -2,6 +2,7 @@
 #include <optional>
 #include "tsil_llvm/tsil_llvm.h"
 #include "tsil_parser/parser.h"
+#include "tsil_toc/tsil_toc.h"
 
 struct ПомилкаКомпіляціїЦілі {
   Місцезнаходження* місцезнаходження;
@@ -35,112 +36,20 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
     return 1;
   }
 
-  std::set<std::string> availableCommands = {
-      "допомога",
-      "скомпілювати",
-  };
-
-  std::map<std::string, std::optional<std::string>> programOptions;
-  struct Output {
-    std::string path;
-    std::map<std::string, std::optional<std::string>> options;
-  };
-  std::vector<Output> outputs;
-  std::optional<std::string> command = std::nullopt;
-  std::map<std::string, std::optional<std::string>> commandOptions;
-  struct Input {
-    std::string path;
-    std::map<std::string, std::optional<std::string>> options;
-  };
-  std::vector<Input> inputs;
-
-  size_t i = 0;
-
-  // programOptions
-  while (i < argsSize) {
-    std::string arg = args[i];
-    if (arg.starts_with("--")) {
-      std::string key;
-      std::optional<std::string> value = std::nullopt;
-      if (arg.find('=') == std::string::npos) {
-        key = arg.substr(2);
-      } else {
-        key = arg.substr(2, arg.find('=') - 2);
-        value = arg.substr(arg.find('=') + 1);
-      }
-      programOptions.insert_or_assign(key, value);
-    } else {
-      break;
-    }
-    i = i + 1;
-  }
-
-  // outputs and command
-  while (i < argsSize) {
-    std::string arg = args[i];
-    if (arg.starts_with("--")) {
-      std::string key;
-      std::optional<std::string> value = std::nullopt;
-      if (arg.find('=') == std::string::npos) {
-        key = arg.substr(2);
-      } else {
-        key = arg.substr(2, arg.find('=') - 2);
-        value = arg.substr(arg.find('=') + 1);
-      }
-      outputs.back().options.insert_or_assign(key, value);
-    } else {
-      if (availableCommands.contains(arg)) {
-        command = arg;
-        i = i + 1;
-        break;
-      } else {
-        outputs.push_back({.path = arg, .options = {}});
-      }
-    }
-    i = i + 1;
-  }
-  if (!command.has_value()) {
-    config.println("Не вказано команду");
+  auto toc = parseTOC(std::vector<std::string>(args, args + argsSize),
+                      {
+                          "допомога",
+                          "скомпілювати",
+                      });
+  if (std::holds_alternative<std::string>(toc)) {
+    config.println(strdup(std::get<std::string>(toc).c_str()));
     return 1;
   }
-
-  // command options
-  while (i < argsSize) {
-    std::string arg = args[i];
-    if (arg.starts_with("--")) {
-      std::string key;
-      std::optional<std::string> value = std::nullopt;
-      if (arg.find('=') == std::string::npos) {
-        key = arg.substr(2);
-      } else {
-        key = arg.substr(2, arg.find('=') - 2);
-        value = arg.substr(arg.find('=') + 1);
-      }
-      commandOptions.insert_or_assign(key, value);
-    } else {
-      break;
-    }
-    i = i + 1;
-  }
-
-  // inputs
-  while (i < argsSize) {
-    std::string arg = args[i];
-    if (arg.starts_with("--")) {
-      std::string key;
-      std::optional<std::string> value = std::nullopt;
-      if (arg.find('=') == std::string::npos) {
-        key = arg.substr(2);
-      } else {
-        key = arg.substr(2, arg.find('=') - 2);
-        value = arg.substr(arg.find('=') + 1);
-      }
-      inputs.back().options.insert_or_assign(key, value);
-    } else {
-      inputs.push_back({.path = arg, .options = {}});
-    }
-    i = i + 1;
-  }
+  auto programOptions = std::get<TargetOrientedCommand>(toc).programOptions;
+  auto outputs = std::get<TargetOrientedCommand>(toc).outputs;
+  auto command = std::get<TargetOrientedCommand>(toc).command;
+  auto commandOptions = std::get<TargetOrientedCommand>(toc).commandOptions;
+  auto inputs = std::get<TargetOrientedCommand>(toc).inputs;
 
   if (command == "допомога") {
     parsedCommandPtr->type = TsilCliParsedCommandTypeHelp;
