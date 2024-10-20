@@ -54,7 +54,8 @@ extern "C" int tsil_cli_compile_single(TsilCliConfig config,
       }
     }
     auto llvm_out = dumpLL(L);
-    outputWriter.write((unsigned char*)llvm_out, outputWriter.options);
+    outputWriter.write(reinterpret_cast<unsigned char*>(llvm_out),
+                       outputWriter.options);
     return 0;
   } else {
     config.println("Unsupported output format");
