@@ -12,12 +12,67 @@ struct ПомилкаКомпіляціїЦілі {
 extern "C" ПомилкаКомпіляціїЦілі* скомпілювати_ціль_в_ll(XTL* m,
                                                          ТекстКоду* текст_коду);
 
-extern "C" int tsil_cli_compile_single(TsilCliConfig config,
-                                       TsilCliWriter outputWriter,
-                                       TsilCliCompileOptions options,
-                                       char* inputPath,
-                                       char* inputSource) {
-  if (options.outFormat == TsilCliCompileOutFormatLLVM) {
+extern "C" int tsil_cli_parse(TsilCliConfig config,
+                              size_t argsSize,
+                              char** args,
+                              TsilCliParsedCommand* parsedCommandPtr) {
+  if (argsSize == 0) {
+    config.println("Не вказано команду");
+    return 1;
+  }
+  if (std::string(args[0]) == "допомога") {
+    parsedCommandPtr->type = TsilCliParsedCommandTypeHelp;
+    parsedCommandPtr->c = TsilCliFuseHelp{};
+    return 0;
+  }
+  if (argsSize >= 2 && std::string(args[1]) == "скомпілювати") {
+    if (argsSize < 3) {
+      config.println("Не вказано вхідні файли");
+      return 1;
+    }
+    TsilCliCompileCommand compileCommand;
+    compileCommand.outputPath = args[0];
+    compileCommand.options.outFormat = TsilCliCompileCommandOutputFormatLLVM;
+    compileCommand.options.libraryPath = "";
+    if (std::string(compileCommand.outputPath) == "-ll" ||
+        std::string(compileCommand.outputPath).ends_with(".ll")) {
+      compileCommand.options.outFormat = TsilCliCompileCommandOutputFormatLLVM;
+    } else {
+      config.println("Невідомий формат вихідного файлу");
+      return 1;
+    }
+    size_t i = 2;
+    while (i < argsSize) {
+      std::string arg = args[i];
+      if (arg.starts_with("--")) {
+        // handle args
+      } else {
+        break;
+      }
+      i = i + 1;
+    }
+    if (i >= argsSize) {
+      config.println("Не вказано вхідні файли");
+      return 1;
+    }
+    if (i + 1 < argsSize) {
+      config.println("Можна вказати лише один вхідний файл");
+      return 1;
+    }
+    compileCommand.inputPath = args[i];
+    parsedCommandPtr->type = TsilCliParsedCommandTypeCompile;
+    parsedCommandPtr->c = compileCommand;
+    return 0;
+  }
+  return 0;
+}
+
+extern "C" int tsil_cli_compile(TsilCliConfig config,
+                                TsilCliWriter outputWriter,
+                                TsilCliCompileCommandOptions options,
+                                char* inputPath,
+                                char* inputSource) {
+  if (options.outFormat == TsilCliCompileCommandOutputFormatLLVM) {
     auto текстКоду = new ТекстКоду{.шлях = inputPath, .значення = inputSource};
     const auto L = xlm_create(inputPath);
     const auto помилка_компіляції_цілі = скомпілювати_ціль_в_ll(L, текстКоду);
@@ -54,7 +109,7 @@ extern "C" int tsil_cli_compile_single(TsilCliConfig config,
       }
     }
     auto llvm_out = dumpLL(L);
-    outputWriter.write(reinterpret_cast<unsigned char*>(llvm_out),
+    outputWriter.write(config, reinterpret_cast<unsigned char*>(llvm_out),
                        outputWriter.options);
     return 0;
   } else {
