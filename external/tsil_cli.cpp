@@ -149,23 +149,13 @@ extern "C" int tsil_cli_run_compile_command(TsilCliConfig config,
                  .c_str());
   for (size_t i = 0; i < command.outputsSize; i++) {
     auto output = command.outputs[i];
-    if (std::string(output.path) == "-") {
-      return tsil_cli_do_compile(config,
-                                 {
-                                     write_to_stdout,
-                                     nullptr,
-                                 },
-                                 output.format, command.options, inputPath,
-                                 inputSource);
-    } else {
-      return tsil_cli_do_compile(config,
-                                 {
-                                     write_to_file_by_path,
-                                     output.path,
-                                 },
-                                 output.format, command.options, inputPath,
-                                 inputSource);
-    }
+    return tsil_cli_do_compile(config,
+                               {
+                                   write_to_file_by_path,
+                                   output.path,
+                               },
+                               output.format, command.options, inputPath,
+                               inputSource);
   }
   return 0;
 }
