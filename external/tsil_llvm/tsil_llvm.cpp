@@ -17,22 +17,22 @@ struct XLMStruct {
 #include "tsil_llvm.h"
 
 extern "C" {
-XTL* xlm_create(char* name) {
-  const auto xlModule = new XTL();
+TL* tsil_llvm_create_tl(char* name) {
+  const auto xlModule = new TL();
   xlModule->llvmContext = new llvm::LLVMContext();
   xlModule->llvmModule = new llvm::Module(name, *xlModule->llvmContext);
   xlModule->llvmBuilder = new llvm::IRBuilder<>(*xlModule->llvmContext);
   return xlModule;
 }
 
-XLType* tsil_llvm_create_struct(XTL* m, char* name) {
+LLVMType* tsil_llvm_create_struct(TL* m, char* name) {
   return llvm::StructType::create(*m->llvmContext, name);
 }
 
-XLType* tsil_llvm_set_struct_fields(XTL* m,
-                                    XLType* st,
-                                    unsigned long fields_size,
-                                    XLType** fields) {
+LLVMType* tsil_llvm_set_struct_fields(TL* m,
+                                      LLVMType* st,
+                                      unsigned long fields_size,
+                                      LLVMType** fields) {
   std::vector<llvm::Type*> llvmFields(fields_size);
   for (int i = 0; i < fields_size; i++) {
     llvmFields[i] = fields[i];
@@ -41,13 +41,13 @@ XLType* tsil_llvm_set_struct_fields(XTL* m,
   return st;
 }
 
-XLFunction* tsil_llvm_declare_function(XTL* m,
-                                       size_t linkage,
-                                       char* name,
-                                       XLType* ret_type,
-                                       unsigned long params_size,
-                                       XLType** params,
-                                       unsigned long isVarArg) {
+LLVMFunction* tsil_llvm_declare_function(TL* m,
+                                         size_t linkage,
+                                         char* name,
+                                         LLVMType* ret_type,
+                                         unsigned long params_size,
+                                         LLVMType** params,
+                                         unsigned long isVarArg) {
   std::vector<llvm::Type*> llvmParams(params_size);
   for (int i = 0; i < params_size; i++) {
     llvmParams[i] = params[i];
@@ -69,27 +69,27 @@ XLFunction* tsil_llvm_declare_function(XTL* m,
   return function;
 }
 
-XLBasicBlock* tsil_llvm_create_function_block(XTL* m,
-                                              XLFunction* f,
-                                              char* name) {
+LLVMBasicBlock* tsil_llvm_create_function_block(TL* m,
+                                                LLVMFunction* f,
+                                                char* name) {
   return llvm::BasicBlock::Create(*m->llvmContext, name,
                                   static_cast<llvm::Function*>(f));
 }
 
-XLValue* tsil_llvm_inst_alloca(XTL* m,
-                               XLBasicBlock* block,
-                               char* name,
-                               XLType* type) {
+LLVMValue* tsil_llvm_inst_alloca(TL* m,
+                                 LLVMBasicBlock* block,
+                                 char* name,
+                                 LLVMType* type) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateAlloca(type, nullptr, name);
 }
 
-XLValue* tsil_llvm_inst_getelementptr(XTL* m,
-                                      XLBasicBlock* block,
-                                      XLType* type,
-                                      XLValue* pointer,
-                                      unsigned long indices_size,
-                                      XLValue** indices) {
+LLVMValue* tsil_llvm_inst_getelementptr(TL* m,
+                                        LLVMBasicBlock* block,
+                                        LLVMType* type,
+                                        LLVMValue* pointer,
+                                        unsigned long indices_size,
+                                        LLVMValue** indices) {
   llvm::IRBuilder<> builder(block);
   std::vector<llvm::Value*> llvmIndices(indices_size);
   for (int i = 0; i < indices_size; i++) {
@@ -98,37 +98,37 @@ XLValue* tsil_llvm_inst_getelementptr(XTL* m,
   return builder.CreateGEP(type, pointer, llvmIndices);
 }
 
-void tsil_llvm_inst_store(XTL* m,
-                          XLBasicBlock* block,
-                          XLValue* value,
-                          XLValue* pointer) {
+void tsil_llvm_inst_store(TL* m,
+                          LLVMBasicBlock* block,
+                          LLVMValue* value,
+                          LLVMValue* pointer) {
   llvm::IRBuilder<> builder(block);
   builder.CreateStore(value, pointer);
 }
 
 size_t loadIndex = 0;
 
-XLValue* tsil_llvm_inst_load(XTL* m,
-                             XLBasicBlock* block,
-                             XLType* type,
-                             XLValue* pointer) {
+LLVMValue* tsil_llvm_inst_load(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMType* type,
+                               LLVMValue* pointer) {
   llvm::IRBuilder<> builder(block);
   loadIndex++;
   auto name = "load" + std::to_string(loadIndex);
   return builder.CreateLoad(type, pointer, name);
 }
 
-XLValue* tsil_llvm_inst_ret(XTL* m, XLBasicBlock* block, XLValue* value) {
+LLVMValue* tsil_llvm_inst_ret(TL* m, LLVMBasicBlock* block, LLVMValue* value) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateRet(value);
 }
 
-XLValue* tsil_llvm_inst_call_value(XTL* m,
-                                   XLBasicBlock* block,
-                                   XLFunctionType* ft,
-                                   XLValue* value,
-                                   unsigned long arguments_size,
-                                   XLValue** arguments) {
+LLVMValue* tsil_llvm_inst_call_value(TL* m,
+                                     LLVMBasicBlock* block,
+                                     LLVMFunctionType* ft,
+                                     LLVMValue* value,
+                                     unsigned long arguments_size,
+                                     LLVMValue** arguments) {
   llvm::IRBuilder<> builder(block);
   std::vector<llvm::Value*> llvmArguments(arguments_size);
   for (int i = 0; i < arguments_size; i++) {
@@ -137,11 +137,11 @@ XLValue* tsil_llvm_inst_call_value(XTL* m,
   return builder.CreateCall(ft, value, llvmArguments);
 }
 
-XLValue* tsil_llvm_inst_call_func(XTL* m,
-                                  XLBasicBlock* block,
-                                  XLFunction* func,
-                                  unsigned long arguments_size,
-                                  XLValue** arguments) {
+LLVMValue* tsil_llvm_inst_call_func(TL* m,
+                                    LLVMBasicBlock* block,
+                                    LLVMFunction* func,
+                                    unsigned long arguments_size,
+                                    LLVMValue** arguments) {
   llvm::IRBuilder<> builder(block);
   std::vector<llvm::Value*> llvmArguments(arguments_size);
   for (int i = 0; i < arguments_size; i++) {
@@ -150,339 +150,341 @@ XLValue* tsil_llvm_inst_call_func(XTL* m,
   return builder.CreateCall(static_cast<llvm::Function*>(func), llvmArguments);
 }
 
-void tsil_llvm_inst_br(XTL* m, XLBasicBlock* block, XLBasicBlock* target) {
+void tsil_llvm_inst_br(TL* m, LLVMBasicBlock* block, LLVMBasicBlock* target) {
   llvm::IRBuilder<> builder(block);
   builder.CreateBr(target);
 }
 
-void tsil_llvm_inst_br_if(XTL* m,
-                          XLBasicBlock* block,
-                          XLValue* condition,
-                          XLBasicBlock* target_true,
-                          XLBasicBlock* target_false) {
+void tsil_llvm_inst_br_if(TL* m,
+                          LLVMBasicBlock* block,
+                          LLVMValue* condition,
+                          LLVMBasicBlock* target_true,
+                          LLVMBasicBlock* target_false) {
   llvm::IRBuilder<> builder(block);
   builder.CreateCondBr(condition, target_true, target_false);
 }
 
-XLValue* tsil_llvm_inst_icmp(XTL* m,
-                             XLBasicBlock* block,
-                             char* op,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_icmp(TL* m,
+                               LLVMBasicBlock* block,
+                               char* op,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_EQ, left, right);
 }
 
-XLValue* tsil_llvm_inst_fcmp(XTL* m,
-                             XLBasicBlock* block,
-                             char* op,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_fcmp(TL* m,
+                               LLVMBasicBlock* block,
+                               char* op,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OEQ, left, right);
 }
 
-XLValue* tsil_llvm_inst_add(XTL* m,
-                            XLBasicBlock* block,
-                            XLValue* left,
-                            XLValue* right) {
+LLVMValue* tsil_llvm_inst_add(TL* m,
+                              LLVMBasicBlock* block,
+                              LLVMValue* left,
+                              LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateAdd(left, right);
 }
 
-XLValue* tsil_llvm_inst_fadd(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_fadd(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateFAdd(left, right);
 }
 
-XLValue* tsil_llvm_inst_sub(XTL* m,
-                            XLBasicBlock* block,
-                            XLValue* left,
-                            XLValue* right) {
+LLVMValue* tsil_llvm_inst_sub(TL* m,
+                              LLVMBasicBlock* block,
+                              LLVMValue* left,
+                              LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateSub(left, right);
 }
 
-XLValue* tsil_llvm_inst_fsub(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_fsub(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateFSub(left, right);
 }
 
-XLValue* tsil_llvm_inst_mul(XTL* m,
-                            XLBasicBlock* block,
-                            XLValue* left,
-                            XLValue* right) {
+LLVMValue* tsil_llvm_inst_mul(TL* m,
+                              LLVMBasicBlock* block,
+                              LLVMValue* left,
+                              LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateMul(left, right);
 }
 
-XLValue* tsil_llvm_inst_fmul(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_fmul(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateFMul(left, right);
 }
 
-XLValue* tsil_llvm_inst_udiv(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_udiv(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateUDiv(left, right);
 }
 
-XLValue* tsil_llvm_inst_sdiv(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_sdiv(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateSDiv(left, right);
 }
 
-XLValue* tsil_llvm_inst_fdiv(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_fdiv(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateFDiv(left, right);
 }
 
-XLValue* tsil_llvm_inst_urem(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_urem(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateURem(left, right);
 }
 
-XLValue* tsil_llvm_inst_srem(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_srem(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateSRem(left, right);
 }
 
-XLValue* tsil_llvm_inst_frem(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_frem(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateFRem(left, right);
 }
 
-XLValue* tsil_llvm_inst_and(XTL* m,
-                            XLBasicBlock* block,
-                            XLValue* left,
-                            XLValue* right) {
+LLVMValue* tsil_llvm_inst_and(TL* m,
+                              LLVMBasicBlock* block,
+                              LLVMValue* left,
+                              LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateAnd(left, right);
 }
 
-XLValue* tsil_llvm_inst_or(XTL* m,
-                           XLBasicBlock* block,
-                           XLValue* left,
-                           XLValue* right) {
+LLVMValue* tsil_llvm_inst_or(TL* m,
+                             LLVMBasicBlock* block,
+                             LLVMValue* left,
+                             LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateOr(left, right);
 }
 
-XLValue* tsil_llvm_inst_xor(XTL* m,
-                            XLBasicBlock* block,
-                            XLValue* left,
-                            XLValue* right) {
+LLVMValue* tsil_llvm_inst_xor(TL* m,
+                              LLVMBasicBlock* block,
+                              LLVMValue* left,
+                              LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateXor(left, right);
 }
 
-XLValue* tsil_llvm_inst_shl(XTL* m,
-                            XLBasicBlock* block,
-                            XLValue* left,
-                            XLValue* right) {
+LLVMValue* tsil_llvm_inst_shl(TL* m,
+                              LLVMBasicBlock* block,
+                              LLVMValue* left,
+                              LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateShl(left, right);
 }
 
-XLValue* tsil_llvm_inst_lshr(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_lshr(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateLShr(left, right);
 }
 
-XLValue* tsil_llvm_inst_ashr(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* left,
-                             XLValue* right) {
+LLVMValue* tsil_llvm_inst_ashr(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* left,
+                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateAShr(left, right);
 }
 
-XLValue* tsil_llvm_inst_trunc(XTL* m,
-                              XLBasicBlock* block,
-                              XLValue* value,
-                              XLType* toType) {
+LLVMValue* tsil_llvm_inst_trunc(TL* m,
+                                LLVMBasicBlock* block,
+                                LLVMValue* value,
+                                LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateTrunc(value, toType);
 }
 
-XLValue* tsil_llvm_inst_zext(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* value,
-                             XLType* toType) {
+LLVMValue* tsil_llvm_inst_zext(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* value,
+                               LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateZExt(value, toType);
 }
 
-XLValue* tsil_llvm_inst_sext(XTL* m,
-                             XLBasicBlock* block,
-                             XLValue* value,
-                             XLType* toType) {
+LLVMValue* tsil_llvm_inst_sext(TL* m,
+                               LLVMBasicBlock* block,
+                               LLVMValue* value,
+                               LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateSExt(value, toType);
 }
 
-XLValue* tsil_llvm_inst_fptrunc(XTL* m,
-                                XLBasicBlock* block,
-                                XLValue* value,
-                                XLType* toType) {
+LLVMValue* tsil_llvm_inst_fptrunc(TL* m,
+                                  LLVMBasicBlock* block,
+                                  LLVMValue* value,
+                                  LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateFPTrunc(value, toType);
 }
 
-XLValue* tsil_llvm_inst_fpext(XTL* m,
-                              XLBasicBlock* block,
-                              XLValue* value,
-                              XLType* toType) {
+LLVMValue* tsil_llvm_inst_fpext(TL* m,
+                                LLVMBasicBlock* block,
+                                LLVMValue* value,
+                                LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateFPExt(value, toType);
 }
 
-XLValue* tsil_llvm_inst_fptoui(XTL* m,
-                               XLBasicBlock* block,
-                               XLValue* value,
-                               XLType* toType) {
+LLVMValue* tsil_llvm_inst_fptoui(TL* m,
+                                 LLVMBasicBlock* block,
+                                 LLVMValue* value,
+                                 LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateFPToUI(value, toType);
 }
 
-XLValue* tsil_llvm_inst_fptosi(XTL* m,
-                               XLBasicBlock* block,
-                               XLValue* value,
-                               XLType* toType) {
+LLVMValue* tsil_llvm_inst_fptosi(TL* m,
+                                 LLVMBasicBlock* block,
+                                 LLVMValue* value,
+                                 LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateFPToSI(value, toType);
 }
 
-XLValue* tsil_llvm_inst_uitofp(XTL* m,
-                               XLBasicBlock* block,
-                               XLValue* value,
-                               XLType* toType) {
+LLVMValue* tsil_llvm_inst_uitofp(TL* m,
+                                 LLVMBasicBlock* block,
+                                 LLVMValue* value,
+                                 LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateUIToFP(value, toType);
 }
 
-XLValue* tsil_llvm_inst_sitofp(XTL* m,
-                               XLBasicBlock* block,
-                               XLValue* value,
-                               XLType* toType) {
+LLVMValue* tsil_llvm_inst_sitofp(TL* m,
+                                 LLVMBasicBlock* block,
+                                 LLVMValue* value,
+                                 LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateSIToFP(value, toType);
 }
 
-XLValue* tsil_llvm_inst_ptrtoint(XTL* m,
-                                 XLBasicBlock* block,
-                                 XLValue* value,
-                                 XLType* toType) {
+LLVMValue* tsil_llvm_inst_ptrtoint(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* value,
+                                   LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreatePtrToInt(value, toType);
 }
 
-XLValue* tsil_llvm_inst_inttoptr(XTL* m,
-                                 XLBasicBlock* block,
-                                 XLValue* value,
-                                 XLType* toType) {
+LLVMValue* tsil_llvm_inst_inttoptr(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* value,
+                                   LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateIntToPtr(value, toType);
 }
 
-XLValue* tsil_llvm_inst_bitcast(XTL* m,
-                                XLBasicBlock* block,
-                                XLValue* value,
-                                XLType* toType) {
+LLVMValue* tsil_llvm_inst_bitcast(TL* m,
+                                  LLVMBasicBlock* block,
+                                  LLVMValue* value,
+                                  LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
   return builder.CreateBitCast(value, toType);
 }
 
-XLType* tsil_llvm_type_get_pointer_to(XTL* m, XLType* type) {
+LLVMType* tsil_llvm_type_get_pointer_to(TL* m, LLVMType* type) {
   return llvm::PointerType::get(type, 0);
 }
 
-XLType* tsil_llvm_type_get_array_of(XTL* m, XLType* type, unsigned long size) {
+LLVMType* tsil_llvm_type_get_array_of(TL* m,
+                                      LLVMType* type,
+                                      unsigned long size) {
   return llvm::ArrayType::get(type, size);
 }
 
-XLType* tsil_llvm_get_void_type(XTL* m) {
+LLVMType* tsil_llvm_get_void_type(TL* m) {
   return llvm::Type::getVoidTy(*m->llvmContext);
 }
 
-XLType* tsil_llvm_get_pointer_type(XTL* m) {
+LLVMType* tsil_llvm_get_pointer_type(TL* m) {
   return tsil_llvm_type_get_pointer_to(m, tsil_llvm_get_void_type(m));
 }
 
-XLType* tsil_llvm_get_int1_type(XTL* m) {
+LLVMType* tsil_llvm_get_int1_type(TL* m) {
   return llvm::Type::getInt1Ty(*m->llvmContext);
 }
 
-XLType* tsil_llvm_get_int8_type(XTL* m) {
+LLVMType* tsil_llvm_get_int8_type(TL* m) {
   return llvm::Type::getInt8Ty(*m->llvmContext);
 }
 
-XLType* tsil_llvm_get_int16_type(XTL* m) {
+LLVMType* tsil_llvm_get_int16_type(TL* m) {
   return llvm::Type::getInt16Ty(*m->llvmContext);
 }
 
-XLType* tsil_llvm_get_int32_type(XTL* m) {
+LLVMType* tsil_llvm_get_int32_type(TL* m) {
   return llvm::Type::getInt32Ty(*m->llvmContext);
 }
 
-XLType* tsil_llvm_get_int64_type(XTL* m) {
+LLVMType* tsil_llvm_get_int64_type(TL* m) {
   return llvm::Type::getInt64Ty(*m->llvmContext);
 }
 
-XLType* tsil_llvm_get_float32_type(XTL* m) {
+LLVMType* tsil_llvm_get_float32_type(TL* m) {
   return llvm::Type::getFloatTy(*m->llvmContext);
 }
 
-XLType* tsil_llvm_get_float64_type(XTL* m) {
+LLVMType* tsil_llvm_get_float64_type(TL* m) {
   return llvm::Type::getDoubleTy(*m->llvmContext);
 }
 
-XLValue* tsil_llvm_create_int32(XTL* m, int value) {
+LLVMValue* tsil_llvm_create_int32(TL* m, int value) {
   return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(32, value));
 }
 
-XLValue* tsil_llvm_create_int64(XTL* m, long value) {
+LLVMValue* tsil_llvm_create_int64(TL* m, long value) {
   return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(64, value));
 }
 
-XLValue* tsil_llvm_create_float(XTL* m, float value) {
+LLVMValue* tsil_llvm_create_float(TL* m, float value) {
   return llvm::ConstantFP::get(*m->llvmContext, llvm::APFloat(value));
 }
 
-XLValue* tsil_llvm_create_double(XTL* m, double value) {
+LLVMValue* tsil_llvm_create_double(TL* m, double value) {
   return llvm::ConstantFP::get(*m->llvmContext, llvm::APFloat(value));
 }
 
-XLValue* tsil_llvm_create_string(XTL* m, char* value) {
+LLVMValue* tsil_llvm_create_string(TL* m, char* value) {
   return new llvm::GlobalVariable(
       *m->llvmModule,
       llvm::ArrayType::get(llvm::Type::getInt8Ty(*m->llvmContext),
@@ -491,29 +493,29 @@ XLValue* tsil_llvm_create_string(XTL* m, char* value) {
       llvm::ConstantDataArray::getString(*m->llvmContext, value));
 }
 
-XLType* tsil_llvm_get_type(XTL* m, XLValue* value) {
+LLVMType* tsil_llvm_get_type(TL* m, LLVMValue* value) {
   return value->getType();
 }
 
-XLFunctionType* tsil_llvm_get_as_function_type(XTL* m, XLValue* value) {
+LLVMFunctionType* tsil_llvm_get_as_function_type(TL* m, LLVMValue* value) {
   return static_cast<llvm::Function*>(value)->getFunctionType();
 }
 
-XLFunctionType* tsil_llvm_get_function_type(XTL* m, XLFunction* f) {
+LLVMFunctionType* tsil_llvm_get_function_type(TL* m, LLVMFunction* f) {
   return static_cast<llvm::Function*>(f)->getFunctionType();
 }
 
-XLValue* tsil_llvm_get_function_arg_value(XTL* m,
-                                          XLFunction* f,
-                                          unsigned long index) {
+LLVMValue* tsil_llvm_get_function_arg_value(TL* m,
+                                            LLVMFunction* f,
+                                            unsigned long index) {
   return static_cast<llvm::Function*>(f)->getArg(index);
 }
 
-XLType* tsil_llvm_create_function_type(XTL* m,
-                                       XLType* ret_type,
-                                       unsigned long params_size,
-                                       XLType** params,
-                                       unsigned long isVarArg) {
+LLVMType* tsil_llvm_create_function_type(TL* m,
+                                         LLVMType* ret_type,
+                                         unsigned long params_size,
+                                         LLVMType** params,
+                                         unsigned long isVarArg) {
   std::vector<llvm::Type*> llvmParams(params_size);
   for (int i = 0; i < params_size; i++) {
     llvmParams[i] = params[i];
@@ -521,12 +523,12 @@ XLType* tsil_llvm_create_function_type(XTL* m,
   return llvm::FunctionType::get(ret_type, llvmParams, isVarArg);
 }
 
-XLValue* tsil_llvm_get_null(XTL* m) {
+LLVMValue* tsil_llvm_get_null(TL* m) {
   return llvm::ConstantPointerNull::get(
       llvm::PointerType::get(llvm::Type::getInt8Ty(*m->llvmContext), 0));
 }
 
-char* dumpLL(XTL* m) {
+char* dumpLL(TL* m) {
   std::string str;
   llvm::raw_string_ostream os(str);
   m->llvmModule->print(os, nullptr);

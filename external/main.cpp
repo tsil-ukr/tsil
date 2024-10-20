@@ -100,18 +100,6 @@ void printHelp() {
   std::cout << "      --clang-append=\"additional clang options\"" << std::endl;
 }
 
-void write_to_stdout(TsilCliConfig config, unsigned char* data, void* options) {
-  config.println(reinterpret_cast<char*>(data));
-}
-
-void write_to_file_by_path(TsilCliConfig config,
-                           unsigned char* data,
-                           void* options) {
-  auto path = reinterpret_cast<char*>(options);
-  std::ofstream ofs(path);
-  ofs << reinterpret_cast<char*>(data);
-}
-
 int main(int argc, char** argv) {
   TsilCliConfig tsilCliConfig{.println = println};
   TsilCliParsedCommand parsedCommand;
@@ -127,27 +115,7 @@ int main(int argc, char** argv) {
   if (parsedCommand.type == TsilCliParsedCommandTypeCompile) {
     TsilCliCompileCommand command =
         std::get<TsilCliCompileCommand>(parsedCommand.c);
-    char* inputPath = command.inputPath;
-    std::ifstream inputIfs(inputPath);
-    char* inputSource =
-        strdup(std::string((std::istreambuf_iterator<char>(inputIfs)),
-                           std::istreambuf_iterator<char>())
-                   .c_str());
-    if (std::string(command.outputPath) == "-ll") {
-      return tsil_cli_compile(tsilCliConfig,
-                              {
-                                  write_to_stdout,
-                                  nullptr,
-                              },
-                              command.options, inputPath, inputSource);
-    } else {
-      return tsil_cli_compile(tsilCliConfig,
-                              {
-                                  write_to_file_by_path,
-                                  command.outputPath,
-                              },
-                              command.options, inputPath, inputSource);
-    }
+    return tsil_cli_run_compile_command(tsilCliConfig, command);
   }
   tsilCliConfig.println("Здається ви виявили помилку...");
   return 1;
