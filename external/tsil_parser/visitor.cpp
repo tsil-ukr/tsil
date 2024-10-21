@@ -658,20 +658,19 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitTsil_define(
       TsilParser::Tsil_defineContext* ctx) {
-    const auto асд_дані_створити_ціль = new АСДДаніСтворитиЦіль();
-    асд_дані_створити_ціль->ідентифікатор =
-        ІД(this, ctx->id, ctx->id->getText());
+    const auto асд_дані_ціль = new АСДДаніЦіль();
+    асд_дані_ціль->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     if (ctx->type() != nullptr) {
-      асд_дані_створити_ціль->тип = AAV(visitContext(ctx->type()));
+      асд_дані_ціль->тип = AAV(visitContext(ctx->type()));
     } else {
-      асд_дані_створити_ціль->тип = nullptr;
+      асд_дані_ціль->тип = nullptr;
     }
     if (ctx->value) {
-      асд_дані_створити_ціль->значення = AAV(visitContext(ctx->value));
+      асд_дані_ціль->значення = AAV(visitContext(ctx->value));
     } else {
-      асд_дані_створити_ціль->значення = nullptr;
+      асд_дані_ціль->значення = nullptr;
     }
-    return AV(this, ctx, АСДВидСтворитиЦіль, асд_дані_створити_ціль);
+    return AV(this, ctx, АСДВидЦіль, асд_дані_ціль);
   }
 
   std::any TsilASTVisitor::visitAssign(TsilParser::AssignContext* ctx) {

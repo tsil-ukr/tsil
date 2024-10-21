@@ -10,13 +10,17 @@
 
 структура STyped<T>;
 
-//структура STyped<T> {
-//  t: T;
-//}
+структура STyped<T> {
+  t: T;
+}
 
 дія ftyped(st: STyped<ц32>): STyped<ц64>;
 
-//дія ftyped(st: STyped<ц32>): STyped<ц64> {}
+дія ftyped(st: STyped<ц32>): STyped<ц64> {
+  ціль a: ц32;
+  ціль b: ц32 = a;
+  вернути a;
+}
 
 //структура Some;
 //
