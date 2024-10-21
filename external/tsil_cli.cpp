@@ -152,13 +152,16 @@ extern "C" int tsil_cli_run_compile_command(TsilCliConfig config,
                  .c_str());
   for (size_t i = 0; i < command.outputsSize; i++) {
     auto output = command.outputs[i];
-    return tsil_cli_do_compile(config,
-                               {
-                                   write_to_file_by_path,
-                                   output.path,
-                               },
-                               output.format, command.options, inputPath,
-                               inputSource);
+    auto result = tsil_cli_do_compile(config,
+                                      {
+                                          write_to_file_by_path,
+                                          output.path,
+                                      },
+                                      output.format, command.options, inputPath,
+                                      inputSource);
+    if (result != 0) {
+      return result;
+    }
   }
   return 0;
 }

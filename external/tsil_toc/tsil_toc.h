@@ -27,3 +27,5 @@ struct TargetOrientedCommand {
 std::variant<TargetOrientedCommand, std::string> parseTOC(
     std::vector<std::string> args,
     std::set<std::string> commands);
+
+void printTOC(const TargetOrientedCommand& toc);

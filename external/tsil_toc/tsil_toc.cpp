@@ -1,4 +1,5 @@
 #include "tsil_toc.h"
+#include <iostream>
 
 // програма [--опції-програми]... [(вихід) [--опції-виходу]...]... (команда) [--опції-команди]... [(вхід) [--опції-входу]...]...
 std::variant<TargetOrientedCommand, std::string> parseTOC(
@@ -104,4 +105,43 @@ std::variant<TargetOrientedCommand, std::string> parseTOC(
       .commandOptions = commandOptions,
       .inputs = inputs,
   };
+}
+
+void printTOC(const TargetOrientedCommand& toc) {
+  for (auto [key, value] : toc.programOptions) {
+    std::cout << "--" << key;
+    if (value.has_value()) {
+      std::cout << "=" << value.value();
+    }
+    std::cout << " ";
+  }
+  for (auto output : toc.outputs) {
+    std::cout << output.path << " ";
+    for (auto [key, value] : output.options) {
+      std::cout << "--" << key;
+      if (value.has_value()) {
+        std::cout << "=" << value.value();
+      }
+      std::cout << " ";
+    }
+  }
+  std::cout << toc.command.value() << " ";
+  for (auto [key, value] : toc.commandOptions) {
+    std::cout << "--" << key;
+    if (value.has_value()) {
+      std::cout << "=" << value.value();
+    }
+    std::cout << " ";
+  }
+  for (auto input : toc.inputs) {
+    std::cout << input.path << " ";
+    for (auto [key, value] : input.options) {
+      std::cout << "--" << key;
+      if (value.has_value()) {
+        std::cout << "=" << value.value();
+      }
+      std::cout << " ";
+    }
+  }
+  std::cout << std::endl;
 }
