@@ -17,7 +17,7 @@
 дія ftyped(st: STyped<ц32>): STyped<ц64>;
 
 дія ftyped(st: STyped<ц32>): STyped<ц64> {
-  ціль a: п32 = 1ц32;
+  ціль a: ц32 = 1;
 //  ціль b: ц32 = a;
 //  вернути a;
 }
