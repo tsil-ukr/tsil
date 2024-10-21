@@ -31,11 +31,11 @@
     поки пх < дія_.параметри.довжина {
       ціль параметр = дія_.параметри.дані[пх];
       ціль arg = LLVM::function_arg(К.Л, дія_.llvm_function, пх);
-      ціль л_значення = LLVM::alloca(К.Л, блок.llvm_alloca_block, параметр.назва, отримати_llvm_type(К, параметр.тип));
-      LLVM::store(К.Л, блок.llvm_alloca_block, arg, л_значення);
+      ціль llvm_value = LLVM::alloca(К.Л, блок.llvm_alloca_block, параметр.назва, отримати_llvm_type(К, параметр.тип));
+      LLVM::store(К.Л, блок.llvm_alloca_block, arg, llvm_value);
       ціль ціль_ = виділити<Ціль>();
       ціль_.тип = параметр.тип;
-      ціль_.llvm_alloca_value = л_значення;
+      ціль_.llvm_alloca_value = llvm_value;
       змінити_в_середовищі(середовище_тіла_дії, параметр.назва, ОбʼєктКомпіляції { ВидОКЦіль, ціль_ });
       пх = пх + 1;
     }
@@ -49,8 +49,8 @@
     якщо блок.llvm_ret_value == пусто {
       LLVM::ret(К.Л, блок.llvm_exit_block, пусто);
     } інакше {
-      ціль л_значення = LLVM::load(К.Л, блок.llvm_exit_block, отримати_llvm_type(К, дія_.тип_результату), блок.llvm_ret_value);
-      LLVM::ret(К.Л, блок.llvm_exit_block, л_значення);
+      ціль llvm_value = LLVM::load(К.Л, блок.llvm_exit_block, отримати_llvm_type(К, дія_.тип_результату), блок.llvm_ret_value);
+      LLVM::ret(К.Л, блок.llvm_exit_block, llvm_value);
     }
 
     вернути пусто;
