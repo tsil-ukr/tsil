@@ -14,19 +14,22 @@ struct ПомилкаКомпіляціїЦілі {
 extern "C" ПомилкаКомпіляціїЦілі* скомпілювати_ціль_в_ll(TL* m,
                                                          ТекстКоду* текст_коду);
 
-void write_to_stdout(TsilCliConfig config, unsigned char* data, void* options) {
+void write_to_stdout(TsilCliConfig config,
+                     size_t size,
+                     unsigned char* data,
+                     void* options) {
   config.println(reinterpret_cast<char*>(data));
 }
 
 void write_to_file_by_path(TsilCliConfig config,
+                           size_t size,
                            unsigned char* data,
                            void* options) {
   auto path = reinterpret_cast<char*>(options);
   std::ofstream ofs(path);
-  ofs << reinterpret_cast<char*>(data);
+  ofs.write(reinterpret_cast<char*>(data), size);
 }
 
-// програма [--опції-програми]... [(вихід) [--опції-виходу]...]... (команда) [--опції-команди]... [(вхід) [--опції-входу]...]...
 extern "C" int tsil_cli_parse(TsilCliConfig config,
                               size_t argsSize,
                               char** args,
@@ -202,12 +205,18 @@ extern "C" int tsil_cli_do_compile(
   }
   if (outputFormat == TsilCliCompileCommandOutputFormatLLVM) {
     auto llvm_out = dumpLL(L);
-    outputWriter.write(config, reinterpret_cast<unsigned char*>(llvm_out),
+    outputWriter.write(config, strlen(llvm_out),
+                       reinterpret_cast<unsigned char*>(llvm_out),
+                       outputWriter.options);
+    return 0;
+  } else if (outputFormat == TsilCliCompileCommandOutputFormatOBJ) {
+    std::vector<unsigned char> llvm_out;
+    dumpOBJ(L, llvm_out);
+    outputWriter.write(config, llvm_out.size(), llvm_out.data(),
                        outputWriter.options);
     return 0;
   } else {
     config.println("Unsupported output format");
     return 1;
   }
-  return 0;
 }

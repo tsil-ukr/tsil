@@ -1,5 +1,6 @@
 #include "tsil_toc.h"
 
+// програма [--опції-програми]... [(вихід) [--опції-виходу]...]... (команда) [--опції-команди]... [(вхід) [--опції-входу]...]...
 std::variant<TargetOrientedCommand, std::string> parseTOC(
     std::vector<std::string> args,
     std::set<std::string> commands) {

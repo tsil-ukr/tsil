@@ -14,9 +14,12 @@
   t: T;
 }
 
-дія ftyped(st: STyped<ц32>): STyped<ц64>;
+зовнішня дія ftyped(st: STyped<ц32>): STyped<ц64>;
 
-дія ftyped(st: STyped<ц32>): STyped<ц64> {}
+//дія ftyped(st: STyped<ц32>): STyped<ц64> {}
+
+зовнішня дія main(): ц32 {
+}
 
 //структура Some;
 //

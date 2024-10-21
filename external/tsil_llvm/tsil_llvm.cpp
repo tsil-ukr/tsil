@@ -1,5 +1,21 @@
+#include "llvm/ADT/APFloat.h"
+#include "llvm/IR/BasicBlock.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Module.h"
+#include "llvm/IR/Type.h"
+#include "llvm/MC/TargetRegistry.h"
+#include "llvm/Support/FileSystem.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Support/raw_ostream.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Target/TargetOptions.h"
+#include "llvm/TargetParser/Host.h"
 
 #include <iostream>
 
@@ -533,5 +549,51 @@ char* dumpLL(TL* m) {
   llvm::raw_string_ostream os(str);
   m->llvmModule->print(os, nullptr);
   return strdup(os.str().c_str());
+}
+
+void dumpOBJ(TL* m, std::vector<unsigned char>& out) {
+  llvm::InitializeAllTargetInfos();
+  llvm::InitializeAllTargets();
+  llvm::InitializeAllTargetMCs();
+  llvm::InitializeAllAsmParsers();
+  llvm::InitializeAllAsmPrinters();
+
+  auto TargetTriple = llvm::sys::getDefaultTargetTriple();
+  m->llvmModule->setTargetTriple(TargetTriple);
+
+  std::string Error;
+  auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
+
+  // Print an error and exit if we couldn't find the requested target.
+  // This generally occurs if we've forgotten to initialise the
+  // TargetRegistry or we have a bogus target triple.
+  if (!Target) {
+    llvm::errs() << Error;
+    return;
+  }
+
+  auto CPU = "generic";
+  auto Features = "";
+
+  llvm::TargetOptions opt;
+  auto TheTargetMachine = Target->createTargetMachine(
+      TargetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
+
+  m->llvmModule->setDataLayout(TheTargetMachine->createDataLayout());
+
+  llvm::SmallVector<char> data;
+  llvm::raw_svector_ostream dest(data);
+
+  llvm::legacy::PassManager pass;
+  auto FileType = llvm::CodeGenFileType::ObjectFile;
+
+  if (TheTargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
+    llvm::errs() << "TheTargetMachine can't emit a file of this type";
+    return;
+  }
+
+  pass.run(*m->llvmModule);
+
+  out = std::vector<unsigned char>(data.begin(), data.end());
 }
 }

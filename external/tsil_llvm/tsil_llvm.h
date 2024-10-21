@@ -259,4 +259,5 @@ LLVMType* tsil_llvm_create_function_type(TL* m,
 LLVMValue* tsil_llvm_get_null(TL* m);
 
 char* dumpLL(TL* m);
+void dumpOBJ(TL* m, std::vector<unsigned char>& out);
 }

@@ -11,7 +11,10 @@ struct TsilCliConfig {
 };
 
 struct TsilCliWriter {
-  void (*write)(TsilCliConfig config, unsigned char* data, void* options);
+  void (*write)(TsilCliConfig config,
+                size_t size,
+                unsigned char* data,
+                void* options);
   void* options;
 };
 
