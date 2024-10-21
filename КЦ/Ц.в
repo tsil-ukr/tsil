@@ -272,11 +272,11 @@
   }
 
   структура Блок {
-    ret_value: комірка<LLVM::Value>;
-    alloca_block: комірка<LLVM::Block>;
-    block: комірка<LLVM::Block>;
-    exit_block: комірка<LLVM::Block>;
-    function_exit_block: комірка<LLVM::Block>;
+    llvm_ret_value: комірка<LLVM::Value>;
+    llvm_alloca_block: комірка<LLVM::BasicBlock>;
+    llvm_block: комірка<LLVM::BasicBlock>;
+    llvm_exit_block: комірка<LLVM::BasicBlock>;
+    llvm_function_exit_block: комірка<LLVM::BasicBlock>;
   }
 
   структура ПомилкаКомпіляції {
