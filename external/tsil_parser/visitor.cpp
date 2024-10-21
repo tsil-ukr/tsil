@@ -321,7 +321,57 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitOperation_number(
       TsilParser::Operation_numberContext* ctx) {
     const auto асд_дані_значення_число = new АСДДаніЗначенняЧисло();
-    асд_дані_значення_число->значення = strdup(ctx->getText().c_str());
+    auto value = ctx->getText();
+    асд_дані_значення_число->база = 0;
+    асд_дані_значення_число->значення = nullptr;
+    асд_дані_значення_число->тип = АСДТипЧислаД64;
+    if (value.starts_with("0ш") || value.starts_with("0Ш")) {
+      value = value.substr(3);
+      асд_дані_значення_число->база = 16;
+      асд_дані_значення_число->тип = АСДТипЧислаЦ64;
+    } else if (value.starts_with("0д") || value.starts_with("0Д")) {
+      value = value.substr(3);
+      асд_дані_значення_число->база = 2;
+      асд_дані_значення_число->тип = АСДТипЧислаП64;
+    } else {
+      асд_дані_значення_число->база = 10;
+    }
+    if (value.ends_with("ц8")) {
+      value = value.substr(0, value.size() - 3);
+      асд_дані_значення_число->тип = АСДТипЧислаЦ8;
+    } else if (value.ends_with("ц16")) {
+      value = value.substr(0, value.size() - 4);
+      асд_дані_значення_число->тип = АСДТипЧислаЦ16;
+    } else if (value.ends_with("ц32")) {
+      value = value.substr(0, value.size() - 4);
+      асд_дані_значення_число->тип = АСДТипЧислаЦ32;
+    } else if (value.ends_with("ц64")) {
+      value = value.substr(0, value.size() - 4);
+      асд_дані_значення_число->тип = АСДТипЧислаЦ64;
+    } else if (value.ends_with("п8")) {
+      value = value.substr(0, value.size() - 3);
+      асд_дані_значення_число->тип = АСДТипЧислаП8;
+    } else if (value.ends_with("п16")) {
+      value = value.substr(0, value.size() - 4);
+      асд_дані_значення_число->тип = АСДТипЧислаП16;
+    } else if (value.ends_with("п32")) {
+      value = value.substr(0, value.size() - 4);
+      асд_дані_значення_число->тип = АСДТипЧислаП32;
+    } else if (value.ends_with("п64")) {
+      value = value.substr(0, value.size() - 4);
+      асд_дані_значення_число->тип = АСДТипЧислаП64;
+    } else if (value.ends_with("д32")) {
+      value = value.substr(0, value.size() - 4);
+      асд_дані_значення_число->тип = АСДТипЧислаД32;
+    } else if (value.ends_with("д64")) {
+      value = value.substr(0, value.size() - 4);
+      асд_дані_значення_число->тип = АСДТипЧислаД64;
+    } else if (value.find('.') != std::string::npos) {
+      асд_дані_значення_число->тип = АСДТипЧислаД64;
+    } else {
+      асд_дані_значення_число->тип = АСДТипЧислаЦ64;
+    }
+    асд_дані_значення_число->значення = strdup(value.c_str());
     return AV(this, ctx, АСДВидЗначенняЧисло, асд_дані_значення_число);
   }
 

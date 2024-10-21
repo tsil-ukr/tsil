@@ -484,11 +484,35 @@ LLVMType* tsil_llvm_get_float64_type(TL* m) {
   return llvm::Type::getDoubleTy(*m->llvmContext);
 }
 
+LLVMValue* tsil_llvm_create_int8(TL* m, char value) {
+  return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(8, value));
+}
+
+LLVMValue* tsil_llvm_create_int16(TL* m, short value) {
+  return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(16, value));
+}
+
 LLVMValue* tsil_llvm_create_int32(TL* m, int value) {
   return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(32, value));
 }
 
 LLVMValue* tsil_llvm_create_int64(TL* m, long value) {
+  return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(64, value));
+}
+
+LLVMValue* tsil_llvm_create_uint8(TL* m, unsigned char value) {
+  return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(8, value));
+}
+
+LLVMValue* tsil_llvm_create_uint16(TL* m, unsigned short value) {
+  return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(16, value));
+}
+
+LLVMValue* tsil_llvm_create_uint32(TL* m, unsigned int value) {
+  return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(32, value));
+}
+
+LLVMValue* tsil_llvm_create_uint64(TL* m, unsigned long value) {
   return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(64, value));
 }
 

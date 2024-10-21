@@ -38,8 +38,14 @@
 зовнішня дія tsil_llvm_get_float32_type(Л: комірка<LLVM::TL>): комірка<Type>;
 зовнішня дія tsil_llvm_get_float64_type(Л: комірка<LLVM::TL>): комірка<Type>;
 
+зовнішня дія tsil_llvm_create_int8(Л: комірка<LLVM::TL>, значення: ц8): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_int16(Л: комірка<LLVM::TL>, значення: ц16): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_create_int32(Л: комірка<LLVM::TL>, значення: ц32): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_create_int64(Л: комірка<LLVM::TL>, значення: ц64): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_uint8(Л: комірка<LLVM::TL>, значення: п8): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_uint16(Л: комірка<LLVM::TL>, значення: п16): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_uint32(Л: комірка<LLVM::TL>, значення: п32): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_uint64(Л: комірка<LLVM::TL>, значення: п64): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_create_float(Л: комірка<LLVM::TL>, значення: д32): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_create_double(Л: комірка<LLVM::TL>, значення: д64): комірка<LLVM::Value>;
 
@@ -146,6 +152,14 @@
     вернути tsil_llvm_get_float64_type(Л);
   }
 
+  дія const_int8(Л: комірка<TL>, значення: ц8): комірка<Value> {
+    вернути tsil_llvm_create_int8(Л, значення);
+  }
+
+  дія const_int16(Л: комірка<TL>, значення: ц16): комірка<Value> {
+    вернути tsil_llvm_create_int16(Л, значення);
+  }
+
   дія const_int32(Л: комірка<TL>, значення: ц32): комірка<Value> {
     вернути tsil_llvm_create_int32(Л, значення);
   }
@@ -154,11 +168,27 @@
     вернути tsil_llvm_create_int64(Л, значення);
   }
 
-  дія const_float(Л: комірка<TL>, значення: ц32): комірка<Value> {
+  дія const_uint8(Л: комірка<TL>, значення: п8): комірка<Value> {
+    вернути tsil_llvm_create_uint8(Л, значення);
+  }
+
+  дія const_uint16(Л: комірка<TL>, значення: п16): комірка<Value> {
+    вернути tsil_llvm_create_uint16(Л, значення);
+  }
+
+  дія const_uint32(Л: комірка<TL>, значення: п32): комірка<Value> {
+    вернути tsil_llvm_create_uint32(Л, значення);
+  }
+
+  дія const_uint64(Л: комірка<TL>, значення: п64): комірка<Value> {
+    вернути tsil_llvm_create_uint64(Л, значення);
+  }
+
+  дія const_float(Л: комірка<TL>, значення: д32): комірка<Value> {
     вернути tsil_llvm_create_float(Л, значення);
   }
 
-  дія const_double(Л: комірка<TL>, значення: ц64): комірка<Value> {
+  дія const_double(Л: комірка<TL>, значення: д64): комірка<Value> {
     вернути tsil_llvm_create_double(Л, значення);
   }
 
