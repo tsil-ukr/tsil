@@ -98,7 +98,7 @@ full_type: basic_type ('|' basic_type)+ #variation_type
          | basic_type #basic_type_real_basic
          | '(' (cft_args=complex_function_type_args)? ')' '-' '>' cft_ret=full_type #complex_function_type
          | sft_arg=full_type '-' '>' sft_ret=full_type #simple_function_type;
-complex_function_type_args: full_type (',' full_type)*;
+complex_function_type_args: ((identifier ':')? full_type) (',' ((identifier ':')? full_type))*;
 
 bitwise_op: '^' | '|' | '&' | ('<' '<') | ('>' '>');
 comparison_op: ('=' '=') | ('!' '=') | '>' | '<' | ('>' '=') | ('<' '=');
