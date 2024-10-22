@@ -126,6 +126,7 @@
       пх = пх + 1;
     }
     LLVM::struct_set_fields(К.L, обʼєкт_типу.llvm_type, дані.кількість_параметрів, llvm_param_types);
+    звільнити(llvm_param_types);
     вернути пусто;
   }
 
