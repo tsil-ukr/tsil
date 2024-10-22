@@ -19,6 +19,8 @@
   c.b.a.x = 90;
   b = 10;
   putchar(c.b.a.x);
+  ціль aaa: A = { 90 };
+  putchar(aaa.x);
 }
 
 зовнішня дія main(): ц32 {

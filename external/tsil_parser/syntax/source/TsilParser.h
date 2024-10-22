@@ -873,7 +873,8 @@ public:
     antlr4::tree::TerminalNode *QUOTE_CLOSE();
     std::vector<Object_argContext *> object_arg();
     Object_argContext* object_arg(size_t i);
-    antlr4::tree::TerminalNode *COMA();
+    std::vector<antlr4::tree::TerminalNode *> COMA();
+    antlr4::tree::TerminalNode* COMA(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
@@ -922,7 +923,8 @@ public:
     antlr4::tree::TerminalNode *QUOTE_CLOSE();
     std::vector<Object_argContext *> object_arg();
     Object_argContext* object_arg(size_t i);
-    antlr4::tree::TerminalNode *COMA();
+    std::vector<antlr4::tree::TerminalNode *> COMA();
+    antlr4::tree::TerminalNode* COMA(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
