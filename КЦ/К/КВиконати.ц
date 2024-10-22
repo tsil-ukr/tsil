@@ -93,7 +93,7 @@
       ах = ах + 1;
     }
     ціль llvm_value_call = LLVM::call(К.L, блок.llvm_block, llvm_function_type як комірка<LLVM::Type>, llvm_value, параметри.довжина, args_llvm_values);
-//    звільнити(args_llvm_values);
+    звільнити(args_llvm_values);
     ціль обʼєкт_значення_виконання = виділити<ОбʼєктЗначення>();
     обʼєкт_значення_виконання.тип = тип_результату;
     обʼєкт_значення_виконання.llvm_value = llvm_value_call;

@@ -58,12 +58,12 @@ QUOTE_CLOSE: '}';
 
 NUMBER: TYPED_INTEGER | INTEGER | TYPED_FLOAT | FLOAT | HEX | BIN;
 
-TYPED_INTEGER: INTEGER ('_')? ('ц8' | 'ц16' | 'ц32' | 'ц64' | 'п8' | 'п16' | 'п32' | 'п64' | 'д32' | 'д64');
+TYPED_INTEGER: INTEGER ('_')? ('ц8' | 'ц16' | 'ц32' | 'ц64' | 'п8' | 'п16' | 'п32' | 'п64' | 'д32' | 'д64' | 'Ц' | 'П' | 'Д');
 INTEGER: INTEGER_START INTEGER_CONTINUE*;
 fragment INTEGER_START: DIGIT;
 fragment INTEGER_CONTINUE: ('_')? DIGIT;
 
-TYPED_FLOAT: FLOAT ('_')? ('ц8' | 'ц16' | 'ц32' | 'ц64' | 'п8' | 'п16' | 'п32' | 'п64' | 'д32' | 'д64');
+TYPED_FLOAT: FLOAT ('_')? ('ц8' | 'ц16' | 'ц32' | 'ц64' | 'п8' | 'п16' | 'п32' | 'п64' | 'д32' | 'д64' | 'Ц' | 'П' | 'Д');
 FLOAT: FLOAT_START FLOAT_CONTINUE* '.' FLOAT_START FLOAT_CONTINUE*;
 fragment FLOAT_START: DIGIT;
 fragment FLOAT_CONTINUE: ('_')? DIGIT;
