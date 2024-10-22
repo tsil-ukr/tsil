@@ -117,6 +117,10 @@ public:
 
     virtual std::any visitExpr_object(TsilParser::Expr_objectContext *context) = 0;
 
+    virtual std::any visitObject_arg(TsilParser::Object_argContext *context) = 0;
+
+    virtual std::any visitTypeless_object(TsilParser::Typeless_objectContext *context) = 0;
+
     virtual std::any visitStructure_define(TsilParser::Structure_defineContext *context) = 0;
 
     virtual std::any visitStructure_element(TsilParser::Structure_elementContext *context) = 0;
@@ -149,25 +153,27 @@ public:
 
     virtual std::any visitReturn(TsilParser::ReturnContext *context) = 0;
 
-    virtual std::any visitType_get(TsilParser::Type_getContext *context) = 0;
+    virtual std::any visitSimple_type_section_get(TsilParser::Simple_type_section_getContext *context) = 0;
+
+    virtual std::any visitSimple_type_subject(TsilParser::Simple_type_subjectContext *context) = 0;
+
+    virtual std::any visitSimple_type_template_get(TsilParser::Simple_type_template_getContext *context) = 0;
+
+    virtual std::any visitSimple_type_array(TsilParser::Simple_type_arrayContext *context) = 0;
+
+    virtual std::any visitSimple_type_get(TsilParser::Simple_type_getContext *context) = 0;
+
+    virtual std::any visitType_simple_type(TsilParser::Type_simple_typeContext *context) = 0;
 
     virtual std::any visitType_nested(TsilParser::Type_nestedContext *context) = 0;
 
-    virtual std::any visitType_subject(TsilParser::Type_subjectContext *context) = 0;
-
-    virtual std::any visitType_array(TsilParser::Type_arrayContext *context) = 0;
-
     virtual std::any visitType_fn_complex(TsilParser::Type_fn_complexContext *context) = 0;
-
-    virtual std::any visitType_template_get(TsilParser::Type_template_getContext *context) = 0;
 
     virtual std::any visitType_fn_complex_named(TsilParser::Type_fn_complex_namedContext *context) = 0;
 
     virtual std::any visitType_fn_simple(TsilParser::Type_fn_simpleContext *context) = 0;
 
     virtual std::any visitType_fn(TsilParser::Type_fnContext *context) = 0;
-
-    virtual std::any visitType_section_get(TsilParser::Type_section_getContext *context) = 0;
 
     virtual std::any visitParam(TsilParser::ParamContext *context) = 0;
 

@@ -59,24 +59,26 @@ op_lor: '|' '|';
 gendef: ID;
 
 expr: operation #expr_operation
-    | type '{' (arg=expr (',' arg=expr))? '}' #expr_object;
+    | simple_type '{' (object_arg (',' object_arg))? '}' #expr_object;
+object_arg: (id=ID '=')? (value_expr=expr | value_object=typeless_object);
+typeless_object: '{' (object_arg (',' object_arg))? '}';
 
 structure_define: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? (';' | ('{' (structure_element)* '}'));
 structure_element: param ';';
 
 diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? (';' | body);
 
-tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? ('=' value=expr)? ';';
+tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? ('=' (value_expr=expr | value_object=typeless_object))? ';';
 
-assign: id=ID '=' value=expr ';';
+assign: id=ID '=' (value_expr=expr | value_object=typeless_object) ';';
 
 synonym: 'синонім' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '=' '>' expr ';';
 
 section_define: 'секція' id=ID (body)?;
 
-set: object=atom '.' id=ID '=' value=expr ';';
-position_set: object=atom '[' idx=expr ']' '=' value=expr ';';
-section_set: object=atom ':' ':' id=ID '=' value=expr ';';
+set: object=atom '.' id=ID '=' (value_expr=expr | value_object=typeless_object) ';';
+position_set: object=atom '[' idx=expr ']' '=' (value_expr=expr | value_object=typeless_object) ';';
+section_set: object=atom ':' ':' id=ID '=' (value_expr=expr | value_object=typeless_object) ';';
 
 if: 'якщо' cond=operation ifok=body ('інакше' (ifnot=body | ifnotif=if))?;
 while: 'поки' cond=operation body;
@@ -100,12 +102,13 @@ body_element: structure_define
             | semi=';';
 return: 'вернути' value=expr ';';
 
+simple_type: id=ID #simple_type_subject
+           | object=simple_type ':' ':' id=ID #simple_type_section_get
+           | object=simple_type '<' type (',' type)* '>' #simple_type_template_get
+           | object=simple_type '.' id=ID #simple_type_get
+           | left=simple_type '[' size=NUMBER ']' #simple_type_array;
 type: '(' type ')' #type_nested
-    | id=ID #type_subject
-    | object=type ':' ':' id=ID #type_section_get
-    | object=type '<' type (',' type)* '>' #type_template_get
-    | object=type '.' id=ID #type_get
-    | left=type '[' size=NUMBER ']' #type_array
+    | simple_type #type_simple_type
     | '(' ')' '-' '>' restyp=type #type_fn
     | param_type=type '-' '>' restyp=type #type_fn_simple
     | '(' type (',' type)+ ')' '-' '>' restyp=type #type_fn_complex

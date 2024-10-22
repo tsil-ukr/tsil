@@ -161,6 +161,9 @@ namespace tsil::parser {
 
     std::any visitExpr_object(TsilParser::Expr_objectContext* ctx) override;
 
+    std::any visitTypeless_object(
+        TsilParser::Typeless_objectContext* ctx) override;
+
     std::any visitStructure_define(
         TsilParser::Structure_defineContext* ctx) override;
 
@@ -193,17 +196,20 @@ namespace tsil::parser {
 
     std::any visitType_nested(TsilParser::Type_nestedContext* ctx) override;
 
-    std::any visitType_subject(TsilParser::Type_subjectContext* ctx) override;
+    std::any visitSimple_type_subject(
+        TsilParser::Simple_type_subjectContext* ctx) override;
 
-    std::any visitType_section_get(
-        TsilParser::Type_section_getContext* ctx) override;
+    std::any visitSimple_type_section_get(
+        TsilParser::Simple_type_section_getContext* ctx) override;
 
-    std::any visitType_template_get(
-        TsilParser::Type_template_getContext* ctx) override;
+    std::any visitSimple_type_template_get(
+        TsilParser::Simple_type_template_getContext* ctx) override;
 
-    std::any visitType_get(TsilParser::Type_getContext* ctx) override;
+    std::any visitSimple_type_get(
+        TsilParser::Simple_type_getContext* ctx) override;
 
-    std::any visitType_array(TsilParser::Type_arrayContext* ctx) override;
+    std::any visitSimple_type_array(
+        TsilParser::Simple_type_arrayContext* ctx) override;
 
     std::any visitType_fn(TsilParser::Type_fnContext* ctx) override;
 

@@ -161,6 +161,12 @@ public:
   virtual void enterExpr_object(TsilParser::Expr_objectContext *ctx) = 0;
   virtual void exitExpr_object(TsilParser::Expr_objectContext *ctx) = 0;
 
+  virtual void enterObject_arg(TsilParser::Object_argContext *ctx) = 0;
+  virtual void exitObject_arg(TsilParser::Object_argContext *ctx) = 0;
+
+  virtual void enterTypeless_object(TsilParser::Typeless_objectContext *ctx) = 0;
+  virtual void exitTypeless_object(TsilParser::Typeless_objectContext *ctx) = 0;
+
   virtual void enterStructure_define(TsilParser::Structure_defineContext *ctx) = 0;
   virtual void exitStructure_define(TsilParser::Structure_defineContext *ctx) = 0;
 
@@ -209,23 +215,29 @@ public:
   virtual void enterReturn(TsilParser::ReturnContext *ctx) = 0;
   virtual void exitReturn(TsilParser::ReturnContext *ctx) = 0;
 
-  virtual void enterType_get(TsilParser::Type_getContext *ctx) = 0;
-  virtual void exitType_get(TsilParser::Type_getContext *ctx) = 0;
+  virtual void enterSimple_type_section_get(TsilParser::Simple_type_section_getContext *ctx) = 0;
+  virtual void exitSimple_type_section_get(TsilParser::Simple_type_section_getContext *ctx) = 0;
+
+  virtual void enterSimple_type_subject(TsilParser::Simple_type_subjectContext *ctx) = 0;
+  virtual void exitSimple_type_subject(TsilParser::Simple_type_subjectContext *ctx) = 0;
+
+  virtual void enterSimple_type_template_get(TsilParser::Simple_type_template_getContext *ctx) = 0;
+  virtual void exitSimple_type_template_get(TsilParser::Simple_type_template_getContext *ctx) = 0;
+
+  virtual void enterSimple_type_array(TsilParser::Simple_type_arrayContext *ctx) = 0;
+  virtual void exitSimple_type_array(TsilParser::Simple_type_arrayContext *ctx) = 0;
+
+  virtual void enterSimple_type_get(TsilParser::Simple_type_getContext *ctx) = 0;
+  virtual void exitSimple_type_get(TsilParser::Simple_type_getContext *ctx) = 0;
+
+  virtual void enterType_simple_type(TsilParser::Type_simple_typeContext *ctx) = 0;
+  virtual void exitType_simple_type(TsilParser::Type_simple_typeContext *ctx) = 0;
 
   virtual void enterType_nested(TsilParser::Type_nestedContext *ctx) = 0;
   virtual void exitType_nested(TsilParser::Type_nestedContext *ctx) = 0;
 
-  virtual void enterType_subject(TsilParser::Type_subjectContext *ctx) = 0;
-  virtual void exitType_subject(TsilParser::Type_subjectContext *ctx) = 0;
-
-  virtual void enterType_array(TsilParser::Type_arrayContext *ctx) = 0;
-  virtual void exitType_array(TsilParser::Type_arrayContext *ctx) = 0;
-
   virtual void enterType_fn_complex(TsilParser::Type_fn_complexContext *ctx) = 0;
   virtual void exitType_fn_complex(TsilParser::Type_fn_complexContext *ctx) = 0;
-
-  virtual void enterType_template_get(TsilParser::Type_template_getContext *ctx) = 0;
-  virtual void exitType_template_get(TsilParser::Type_template_getContext *ctx) = 0;
 
   virtual void enterType_fn_complex_named(TsilParser::Type_fn_complex_namedContext *ctx) = 0;
   virtual void exitType_fn_complex_named(TsilParser::Type_fn_complex_namedContext *ctx) = 0;
@@ -235,9 +247,6 @@ public:
 
   virtual void enterType_fn(TsilParser::Type_fnContext *ctx) = 0;
   virtual void exitType_fn(TsilParser::Type_fnContext *ctx) = 0;
-
-  virtual void enterType_section_get(TsilParser::Type_section_getContext *ctx) = 0;
-  virtual void exitType_section_get(TsilParser::Type_section_getContext *ctx) = 0;
 
   virtual void enterParam(TsilParser::ParamContext *ctx) = 0;
   virtual void exitParam(TsilParser::ParamContext *ctx) = 0;

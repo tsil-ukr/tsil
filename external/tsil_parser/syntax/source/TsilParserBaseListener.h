@@ -163,6 +163,12 @@ public:
   virtual void enterExpr_object(TsilParser::Expr_objectContext * /*ctx*/) override { }
   virtual void exitExpr_object(TsilParser::Expr_objectContext * /*ctx*/) override { }
 
+  virtual void enterObject_arg(TsilParser::Object_argContext * /*ctx*/) override { }
+  virtual void exitObject_arg(TsilParser::Object_argContext * /*ctx*/) override { }
+
+  virtual void enterTypeless_object(TsilParser::Typeless_objectContext * /*ctx*/) override { }
+  virtual void exitTypeless_object(TsilParser::Typeless_objectContext * /*ctx*/) override { }
+
   virtual void enterStructure_define(TsilParser::Structure_defineContext * /*ctx*/) override { }
   virtual void exitStructure_define(TsilParser::Structure_defineContext * /*ctx*/) override { }
 
@@ -211,23 +217,29 @@ public:
   virtual void enterReturn(TsilParser::ReturnContext * /*ctx*/) override { }
   virtual void exitReturn(TsilParser::ReturnContext * /*ctx*/) override { }
 
-  virtual void enterType_get(TsilParser::Type_getContext * /*ctx*/) override { }
-  virtual void exitType_get(TsilParser::Type_getContext * /*ctx*/) override { }
+  virtual void enterSimple_type_section_get(TsilParser::Simple_type_section_getContext * /*ctx*/) override { }
+  virtual void exitSimple_type_section_get(TsilParser::Simple_type_section_getContext * /*ctx*/) override { }
+
+  virtual void enterSimple_type_subject(TsilParser::Simple_type_subjectContext * /*ctx*/) override { }
+  virtual void exitSimple_type_subject(TsilParser::Simple_type_subjectContext * /*ctx*/) override { }
+
+  virtual void enterSimple_type_template_get(TsilParser::Simple_type_template_getContext * /*ctx*/) override { }
+  virtual void exitSimple_type_template_get(TsilParser::Simple_type_template_getContext * /*ctx*/) override { }
+
+  virtual void enterSimple_type_array(TsilParser::Simple_type_arrayContext * /*ctx*/) override { }
+  virtual void exitSimple_type_array(TsilParser::Simple_type_arrayContext * /*ctx*/) override { }
+
+  virtual void enterSimple_type_get(TsilParser::Simple_type_getContext * /*ctx*/) override { }
+  virtual void exitSimple_type_get(TsilParser::Simple_type_getContext * /*ctx*/) override { }
+
+  virtual void enterType_simple_type(TsilParser::Type_simple_typeContext * /*ctx*/) override { }
+  virtual void exitType_simple_type(TsilParser::Type_simple_typeContext * /*ctx*/) override { }
 
   virtual void enterType_nested(TsilParser::Type_nestedContext * /*ctx*/) override { }
   virtual void exitType_nested(TsilParser::Type_nestedContext * /*ctx*/) override { }
 
-  virtual void enterType_subject(TsilParser::Type_subjectContext * /*ctx*/) override { }
-  virtual void exitType_subject(TsilParser::Type_subjectContext * /*ctx*/) override { }
-
-  virtual void enterType_array(TsilParser::Type_arrayContext * /*ctx*/) override { }
-  virtual void exitType_array(TsilParser::Type_arrayContext * /*ctx*/) override { }
-
   virtual void enterType_fn_complex(TsilParser::Type_fn_complexContext * /*ctx*/) override { }
   virtual void exitType_fn_complex(TsilParser::Type_fn_complexContext * /*ctx*/) override { }
-
-  virtual void enterType_template_get(TsilParser::Type_template_getContext * /*ctx*/) override { }
-  virtual void exitType_template_get(TsilParser::Type_template_getContext * /*ctx*/) override { }
 
   virtual void enterType_fn_complex_named(TsilParser::Type_fn_complex_namedContext * /*ctx*/) override { }
   virtual void exitType_fn_complex_named(TsilParser::Type_fn_complex_namedContext * /*ctx*/) override { }
@@ -237,9 +249,6 @@ public:
 
   virtual void enterType_fn(TsilParser::Type_fnContext * /*ctx*/) override { }
   virtual void exitType_fn(TsilParser::Type_fnContext * /*ctx*/) override { }
-
-  virtual void enterType_section_get(TsilParser::Type_section_getContext * /*ctx*/) override { }
-  virtual void exitType_section_get(TsilParser::Type_section_getContext * /*ctx*/) override { }
 
   virtual void enterParam(TsilParser::ParamContext * /*ctx*/) override { }
   virtual void exitParam(TsilParser::ParamContext * /*ctx*/) override { }

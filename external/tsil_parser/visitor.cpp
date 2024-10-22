@@ -155,6 +155,10 @@ namespace tsil::parser {
       return visitExpr_object(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<TsilParser::Typeless_objectContext*>(context)) {
+      return visitTypeless_object(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<TsilParser::Structure_defineContext*>(context)) {
       return visitStructure_define(ctx);
     }
@@ -201,27 +205,34 @@ namespace tsil::parser {
       return visitReturn(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<TsilParser::Simple_type_subjectContext*>(context)) {
+      return visitSimple_type_subject(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<TsilParser::Simple_type_section_getContext*>(
+                context)) {
+      return visitSimple_type_section_get(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<TsilParser::Simple_type_template_getContext*>(
+                context)) {
+      return visitSimple_type_template_get(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<TsilParser::Simple_type_getContext*>(context)) {
+      return visitSimple_type_get(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<TsilParser::Simple_type_arrayContext*>(context)) {
+      return visitSimple_type_array(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<TsilParser::Type_nestedContext*>(context)) {
       return visitType_nested(ctx);
     }
     if (const auto ctx =
-            dynamic_cast<TsilParser::Type_subjectContext*>(context)) {
-      return visitType_subject(ctx);
-    }
-    if (const auto ctx =
-            dynamic_cast<TsilParser::Type_section_getContext*>(context)) {
-      return visitType_section_get(ctx);
-    }
-    if (const auto ctx =
-            dynamic_cast<TsilParser::Type_template_getContext*>(context)) {
-      return visitType_template_get(ctx);
-    }
-    if (const auto ctx = dynamic_cast<TsilParser::Type_getContext*>(context)) {
-      return visitType_get(ctx);
-    }
-    if (const auto ctx =
-            dynamic_cast<TsilParser::Type_arrayContext*>(context)) {
-      return visitType_array(ctx);
+            dynamic_cast<TsilParser::Type_simple_typeContext*>(context)) {
+      return visitContext(ctx->simple_type());
     }
     if (const auto ctx = dynamic_cast<TsilParser::Type_fnContext*>(context)) {
       return visitType_fn(ctx);
@@ -620,14 +631,59 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitExpr_object(
       TsilParser::Expr_objectContext* ctx) {
-    const auto асд_дані_створити_обʼєкт = new АСДДаніЗначенняОбʼєкт();
-    асд_дані_створити_обʼєкт->тип = AAV(visitContext(ctx->type()));
-    std::vector<АСДЗначення*> args;
-    for (const auto& argument : ctx->expr()) {
-      args.push_back(AAV(visitContext(argument)));
+    const auto асд_дані_значення_обʼєкт = new АСДДаніЗначенняОбʼєкт();
+    асд_дані_значення_обʼєкт->тип = AAV(visitContext(ctx->simple_type()));
+    std::vector<АргументОбʼєкта*> args;
+    for (const auto& argument : ctx->object_arg()) {
+      const auto аргумент_обʼєкта = new АргументОбʼєкта();
+      if (argument->id) {
+        аргумент_обʼєкта->ідентифікатор =
+            ІД(this, argument->id, argument->id->getText());
+      } else {
+        аргумент_обʼєкта->ідентифікатор = nullptr;
+      }
+      if (argument->value_expr) {
+        аргумент_обʼєкта->значення = AAV(visitContext(argument->value_expr));
+      } else if (argument->value_object) {
+        аргумент_обʼєкта->значення = AAV(visitContext(argument->value_object));
+      } else {
+        аргумент_обʼєкта->значення = nullptr;
+      }
+      аргумент_обʼєкта->місцезнаходження = LOC(this, ctx);
+      args.push_back(аргумент_обʼєкта);
     }
-    асд_дані_створити_обʼєкт->аргументи = AAVecToList(args);
-    return AV(this, ctx, АСДВидЗначенняОбʼєкт, асд_дані_створити_обʼєкт);
+    асд_дані_значення_обʼєкт->кількість_аргументів = args.size();
+    асд_дані_значення_обʼєкт->аргументи = VecToArr(args);
+    return AV(this, ctx, АСДВидЗначенняОбʼєкт, асд_дані_значення_обʼєкт);
+  }
+
+  std::any TsilASTVisitor::visitTypeless_object(
+      TsilParser::Typeless_objectContext* ctx) {
+    const auto асд_дані_значення_безтиповий_обʼєкт =
+        new АСДДаніЗначенняБезтиповийОбʼєкт();
+    std::vector<АргументОбʼєкта*> args;
+    for (const auto& argument : ctx->object_arg()) {
+      const auto аргумент_обʼєкта = new АргументОбʼєкта();
+      if (argument->id) {
+        аргумент_обʼєкта->ідентифікатор =
+            ІД(this, argument->id, argument->id->getText());
+      } else {
+        аргумент_обʼєкта->ідентифікатор = nullptr;
+      }
+      if (argument->value_expr) {
+        аргумент_обʼєкта->значення = AAV(visitContext(argument->value_expr));
+      } else if (argument->value_object) {
+        аргумент_обʼєкта->значення = AAV(visitContext(argument->value_object));
+      } else {
+        аргумент_обʼєкта->значення = nullptr;
+      }
+      аргумент_обʼєкта->місцезнаходження = LOC(this, ctx);
+      args.push_back(аргумент_обʼєкта);
+    }
+    асд_дані_значення_безтиповий_обʼєкт->кількість_аргументів = args.size();
+    асд_дані_значення_безтиповий_обʼєкт->аргументи = VecToArr(args);
+    return AV(this, ctx, АСДВидЗначенняБезтиповийОбʼєкт,
+              асд_дані_значення_безтиповий_обʼєкт);
   }
 
   std::any TsilASTVisitor::visitStructure_define(
@@ -713,8 +769,10 @@ namespace tsil::parser {
     } else {
       асд_дані_ціль->тип = nullptr;
     }
-    if (ctx->value) {
-      асд_дані_ціль->значення = AAV(visitContext(ctx->value));
+    if (ctx->value_expr) {
+      асд_дані_ціль->значення = AAV(visitContext(ctx->value_expr));
+    } else if (ctx->value_object) {
+      асд_дані_ціль->значення = AAV(visitContext(ctx->value_object));
     } else {
       асд_дані_ціль->значення = nullptr;
     }
@@ -725,7 +783,13 @@ namespace tsil::parser {
     const auto асд_дані_перевизначити = new АСДДаніПеревизначити();
     асд_дані_перевизначити->ідентифікатор =
         ІД(this, ctx->id, ctx->id->getText());
-    асд_дані_перевизначити->значення = AAV(visitContext(ctx->value));
+    if (ctx->value_expr) {
+      асд_дані_перевизначити->значення = AAV(visitContext(ctx->value_expr));
+    } else if (ctx->value_object) {
+      асд_дані_перевизначити->значення = AAV(visitContext(ctx->value_object));
+    } else {
+      асд_дані_перевизначити->значення = nullptr;
+    }
     return AV(this, ctx, АСДВидПеревизначити, асд_дані_перевизначити);
   }
 
@@ -767,7 +831,13 @@ namespace tsil::parser {
     const auto асд_дані_змінити = new АСДДаніЗмінити();
     асд_дані_змінити->обʼєкт = AAV(visitContext(ctx->object));
     асд_дані_змінити->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
-    асд_дані_змінити->значення = AAV(visitContext(ctx->value));
+    if (ctx->value_expr) {
+      асд_дані_змінити->значення = AAV(visitContext(ctx->value_expr));
+    } else if (ctx->value_object) {
+      асд_дані_змінити->значення = AAV(visitContext(ctx->value_object));
+    } else {
+      асд_дані_змінити->значення = nullptr;
+    }
     return AV(this, ctx, АСДВидЗмінити, асд_дані_змінити);
   }
 
@@ -776,7 +846,15 @@ namespace tsil::parser {
     const auto асд_дані_змінити_за_позицією = new АСДДаніЗмінитиЗаПозицією();
     асд_дані_змінити_за_позицією->обʼєкт = AAV(visitContext(ctx->object));
     асд_дані_змінити_за_позицією->позиція = AAV(visitContext(ctx->idx));
-    асд_дані_змінити_за_позицією->значення = AAV(visitContext(ctx->value));
+    if (ctx->value_expr) {
+      асд_дані_змінити_за_позицією->значення =
+          AAV(visitContext(ctx->value_expr));
+    } else if (ctx->value_object) {
+      асд_дані_змінити_за_позицією->значення =
+          AAV(visitContext(ctx->value_object));
+    } else {
+      асд_дані_змінити_за_позицією->значення = nullptr;
+    }
     return AV(this, ctx, АСДВидЗмінитиЗаПозицією, асд_дані_змінити_за_позицією);
   }
 
@@ -786,7 +864,14 @@ namespace tsil::parser {
     асд_дані_змінити_в_секції->обʼєкт = AAV(visitContext(ctx->object));
     асд_дані_змінити_в_секції->ідентифікатор =
         ІД(this, ctx->id, ctx->id->getText());
-    асд_дані_змінити_в_секції->значення = AAV(visitContext(ctx->value));
+    if (ctx->value_expr) {
+      асд_дані_змінити_в_секції->значення = AAV(visitContext(ctx->value_expr));
+    } else if (ctx->value_object) {
+      асд_дані_змінити_в_секції->значення =
+          AAV(visitContext(ctx->value_object));
+    } else {
+      асд_дані_змінити_в_секції->значення = nullptr;
+    }
     return AV(this, ctx, АСДВидЗмінитиВСекції, асд_дані_змінити_в_секції);
   }
 
@@ -873,20 +958,15 @@ namespace tsil::parser {
     return AV(this, ctx, АСДВидВернути, асд_дані_вернути);
   }
 
-  std::any TsilASTVisitor::visitType_nested(
-      TsilParser::Type_nestedContext* ctx) {
-    return visitContext(ctx->type());
-  }
-
-  std::any TsilASTVisitor::visitType_subject(
-      TsilParser::Type_subjectContext* ctx) {
+  std::any TsilASTVisitor::visitSimple_type_subject(
+      TsilParser::Simple_type_subjectContext* ctx) {
     const auto асд_дані_звернутись = new АСДДаніЗвернутись();
     асд_дані_звернутись->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     return AV(this, ctx, АСДВидЗвернутись, асд_дані_звернутись);
   }
 
-  std::any TsilASTVisitor::visitType_section_get(
-      TsilParser::Type_section_getContext* ctx) {
+  std::any TsilASTVisitor::visitSimple_type_section_get(
+      TsilParser::Simple_type_section_getContext* ctx) {
     const auto асд_дані_отримати_зі_секції = new АСДДаніОтриматиЗіСекції();
     асд_дані_отримати_зі_секції->обʼєкт = AAV(visitContext(ctx->object));
     асд_дані_отримати_зі_секції->ідентифікатор =
@@ -894,36 +974,41 @@ namespace tsil::parser {
     return AV(this, ctx, АСДВидОтриматиЗіСекції, асд_дані_отримати_зі_секції);
   }
 
-  std::any TsilASTVisitor::visitType_template_get(
-      TsilParser::Type_template_getContext* ctx) {
+  std::any TsilASTVisitor::visitSimple_type_template_get(
+      TsilParser::Simple_type_template_getContext* ctx) {
     const auto асд_дані_виконати_шаблон = new АСДДаніВиконатиШаблон();
     асд_дані_виконати_шаблон->обʼєкт = AAV(visitContext(ctx->object));
     std::vector<АСДЗначення*> args;
     for (const auto& argument : ctx->type()) {
-      if (argument != ctx->object) {
-        args.push_back(AAV(visitContext(argument)));
-      }
+      args.push_back(AAV(visitContext(argument)));
     }
     асд_дані_виконати_шаблон->аргументи = AAVecToList(args);
     return AV(this, ctx, АСДВидВиконатиШаблон, асд_дані_виконати_шаблон);
   }
 
-  std::any TsilASTVisitor::visitType_get(TsilParser::Type_getContext* ctx) {
+  std::any TsilASTVisitor::visitSimple_type_get(
+      TsilParser::Simple_type_getContext* ctx) {
     const auto асд_дані_отримати = new АСДДаніОтримати();
     асд_дані_отримати->обʼєкт = AAV(visitContext(ctx->object));
     асд_дані_отримати->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
     return AV(this, ctx, АСДВидОтримати, асд_дані_отримати);
   }
 
-  std::any TsilASTVisitor::visitType_array(TsilParser::Type_arrayContext* ctx) {
+  std::any TsilASTVisitor::visitSimple_type_array(
+      TsilParser::Simple_type_arrayContext* ctx) {
     const auto асд_дані_створити_тип_масиву = new АСДДаніСтворитиТипМасиву();
-    асд_дані_створити_тип_масиву->тип = AAV(visitContext(ctx->type()));
+    асд_дані_створити_тип_масиву->тип = AAV(visitContext(ctx->simple_type()));
     const auto асд_дані_значення_число = new АСДДаніЗначенняЧисло();
     асд_дані_значення_число->значення =
         strdup(ctx->NUMBER()->getText().c_str());
     асд_дані_створити_тип_масиву->розмір =
         AV(this, ctx, АСДВидЗначенняЧисло, асд_дані_значення_число);
     return AV(this, ctx, АСДВидСтворитиТипМасиву, асд_дані_створити_тип_масиву);
+  }
+
+  std::any TsilASTVisitor::visitType_nested(
+      TsilParser::Type_nestedContext* ctx) {
+    return visitContext(ctx->type());
   }
 
   std::any TsilASTVisitor::visitType_fn(TsilParser::Type_fnContext* ctx) {
