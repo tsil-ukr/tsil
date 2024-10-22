@@ -8,6 +8,7 @@ export AR="llvm-ar"
 export RANLIB="llvm-ranlib"
 
 KTS_FILES=(
+  "Обʼєкт.ц"
   "Помилка.ц"
   "Середовище.ц"
   "Тип.ц"
