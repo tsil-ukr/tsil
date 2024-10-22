@@ -277,7 +277,7 @@
     llvm_alloca_block: комірка<LLVM::BasicBlock>;
     llvm_block: комірка<LLVM::BasicBlock>;
     llvm_exit_block: комірка<LLVM::BasicBlock>;
-    llvm_function_exit_block: комірка<LLVM::BasicBlock>;
+    llvm_return_exit_block: комірка<LLVM::BasicBlock>;
   }
 
   структура ПомилкаКомпіляції {
@@ -458,7 +458,7 @@
     llvm_alloca_block: комірка<LLVM::BasicBlock>;
     llvm_block: комірка<LLVM::BasicBlock>;
     llvm_exit_block: комірка<LLVM::BasicBlock>;
-    llvm_function_exit_block: комірка<LLVM::BasicBlock>;
+    llvm_return_exit_block: комірка<LLVM::BasicBlock>;
   }
 
   структура Обʼєкт {

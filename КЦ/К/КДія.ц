@@ -21,7 +21,7 @@
     блок.llvm_alloca_block = LLVM::block(К.Л, дія_.llvm_function, ю8"alloca");
     блок.llvm_block = LLVM::block(К.Л, дія_.llvm_function, ю8"entry");
     блок.llvm_exit_block = LLVM::block(К.Л, дія_.llvm_function, ю8"exit");
-    блок.llvm_function_exit_block = блок.llvm_exit_block;
+    блок.llvm_return_exit_block = блок.llvm_exit_block;
 
     якщо перевірити_тип(К, дія_.тип_результату, К.тип_ніщо) == ні {
       блок.llvm_ret_value = LLVM::alloca(К.Л, блок.llvm_alloca_block, ю8"return", отримати_llvm_type(К, дія_.тип_результату));
@@ -234,7 +234,7 @@
     блок.llvm_alloca_block = LLVM::block(К.L, обʼєкт_дії.llvm_function, ю8"alloca");
     блок.llvm_block = LLVM::block(К.L, обʼєкт_дії.llvm_function, ю8"entry");
     блок.llvm_exit_block = LLVM::block(К.L, обʼєкт_дії.llvm_function, ю8"exit");
-    блок.llvm_function_exit_block = блок.llvm_exit_block;
+    блок.llvm_return_exit_block = блок.llvm_exit_block;
     якщо обʼєкт_дії.тип_результату != К.тип_ніщо {
       блок.llvm_ret_value = LLVM::alloca(К.L, блок.llvm_alloca_block, ю8"return", обʼєкт_дії.тип_результату.llvm_type);
     }
