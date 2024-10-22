@@ -243,6 +243,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitSynonym_fn(TsilParser::Synonym_fnContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitSection_define(TsilParser::Section_defineContext *ctx) override {
     return visitChildren(ctx);
   }

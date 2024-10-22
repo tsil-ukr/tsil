@@ -175,6 +175,8 @@ namespace tsil::parser {
 
     std::any visitSynonym(TsilParser::SynonymContext* ctx) override;
 
+    std::any visitSynonym_fn(TsilParser::Synonym_fnContext* ctx) override;
+
     std::any visitSection_define(
         TsilParser::Section_defineContext* ctx) override;
 

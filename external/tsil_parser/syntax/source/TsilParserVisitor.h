@@ -133,6 +133,8 @@ public:
 
     virtual std::any visitSynonym(TsilParser::SynonymContext *context) = 0;
 
+    virtual std::any visitSynonym_fn(TsilParser::Synonym_fnContext *context) = 0;
+
     virtual std::any visitSection_define(TsilParser::Section_defineContext *context) = 0;
 
     virtual std::any visitSet(TsilParser::SetContext *context) = 0;

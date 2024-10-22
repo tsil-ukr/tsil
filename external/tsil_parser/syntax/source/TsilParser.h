@@ -33,10 +33,10 @@ public:
     RuleOp_eq = 9, RuleOp_neq = 10, RuleOp_land = 11, RuleOp_lor = 12, RuleGendef = 13, 
     RuleExpr = 14, RuleObject_arg = 15, RuleTypeless_object = 16, RuleStructure_define = 17, 
     RuleStructure_element = 18, RuleDiia_define = 19, RuleTsil_define = 20, 
-    RuleAssign = 21, RuleSynonym = 22, RuleSection_define = 23, RuleSet = 24, 
-    RulePosition_set = 25, RuleSection_set = 26, RuleIf = 27, RuleWhile = 28, 
-    RuleExec = 29, RuleBody = 30, RuleBody_element = 31, RuleReturn = 32, 
-    RuleSimple_type = 33, RuleType = 34, RuleParam = 35
+    RuleAssign = 21, RuleSynonym = 22, RuleSynonym_fn = 23, RuleSection_define = 24, 
+    RuleSet = 25, RulePosition_set = 26, RuleSection_set = 27, RuleIf = 28, 
+    RuleWhile = 29, RuleExec = 30, RuleBody = 31, RuleBody_element = 32, 
+    RuleReturn = 33, RuleSimple_type = 34, RuleType = 35, RuleParam = 36
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -79,6 +79,7 @@ public:
   class Tsil_defineContext;
   class AssignContext;
   class SynonymContext;
+  class Synonym_fnContext;
   class Section_defineContext;
   class SetContext;
   class Position_setContext;
@@ -1079,6 +1080,35 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *KW_SYNONYM();
     antlr4::tree::TerminalNode *EQUAL();
+    ExprContext *expr();
+    antlr4::tree::TerminalNode *SEMICOLON();
+    antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *LESSER();
+    antlr4::tree::TerminalNode *GREATER();
+    std::vector<GendefContext *> gendef();
+    GendefContext* gendef(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> COMA();
+    antlr4::tree::TerminalNode* COMA(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  SynonymContext* synonym();
+
+  class  Synonym_fnContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *id = nullptr;
+    TsilParser::GendefContext *first_gendef = nullptr;
+    Synonym_fnContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_SYNONYM();
+    antlr4::tree::TerminalNode *PAREN_OPEN();
+    antlr4::tree::TerminalNode *PAREN_CLOSE();
+    antlr4::tree::TerminalNode *EQUAL();
     std::vector<antlr4::tree::TerminalNode *> GREATER();
     antlr4::tree::TerminalNode* GREATER(size_t i);
     ExprContext *expr();
@@ -1097,7 +1127,7 @@ public:
    
   };
 
-  SynonymContext* synonym();
+  Synonym_fnContext* synonym_fn();
 
   class  Section_defineContext : public antlr4::ParserRuleContext {
   public:

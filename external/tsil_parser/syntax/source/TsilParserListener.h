@@ -185,6 +185,9 @@ public:
   virtual void enterSynonym(TsilParser::SynonymContext *ctx) = 0;
   virtual void exitSynonym(TsilParser::SynonymContext *ctx) = 0;
 
+  virtual void enterSynonym_fn(TsilParser::Synonym_fnContext *ctx) = 0;
+  virtual void exitSynonym_fn(TsilParser::Synonym_fnContext *ctx) = 0;
+
   virtual void enterSection_define(TsilParser::Section_defineContext *ctx) = 0;
   virtual void exitSection_define(TsilParser::Section_defineContext *ctx) = 0;
 

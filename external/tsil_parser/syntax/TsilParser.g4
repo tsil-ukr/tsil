@@ -72,7 +72,8 @@ tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль
 
 assign: id=ID '=' (value_expr=expr | value_object=typeless_object) ';';
 
-synonym: 'синонім' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '=' '>' expr ';';
+synonym: 'синонім' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '=' expr ';';
+synonym_fn: 'синонім' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' ')' '=' '>' expr ';';
 
 section_define: 'секція' id=ID (body)?;
 

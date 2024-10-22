@@ -187,6 +187,9 @@ public:
   virtual void enterSynonym(TsilParser::SynonymContext * /*ctx*/) override { }
   virtual void exitSynonym(TsilParser::SynonymContext * /*ctx*/) override { }
 
+  virtual void enterSynonym_fn(TsilParser::Synonym_fnContext * /*ctx*/) override { }
+  virtual void exitSynonym_fn(TsilParser::Synonym_fnContext * /*ctx*/) override { }
+
   virtual void enterSection_define(TsilParser::Section_defineContext * /*ctx*/) override { }
   virtual void exitSection_define(TsilParser::Section_defineContext * /*ctx*/) override { }
 

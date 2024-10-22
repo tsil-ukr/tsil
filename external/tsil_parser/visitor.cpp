@@ -177,6 +177,10 @@ namespace tsil::parser {
       return visitSynonym(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<TsilParser::Synonym_fnContext*>(context)) {
+      return visitSynonym_fn(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<TsilParser::Section_defineContext*>(context)) {
       return visitSection_define(ctx);
     }
@@ -805,6 +809,28 @@ namespace tsil::parser {
       const auto асд_дані_шаблон = new АСДДаніШаблон();
       асд_дані_шаблон->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
       асд_дані_шаблон->значення = асд_значення_синонім;
+      std::vector<Ідентифікатор*> params;
+      for (const auto& gendef : ctx->gendef()) {
+        params.push_back(ІД(this, gendef, gendef->getText()));
+      }
+      асд_дані_шаблон->кількість_параметрів = params.size();
+      асд_дані_шаблон->параметри = VecToArr(params);
+      return AV(this, ctx, АСДВидШаблон, асд_дані_шаблон);
+    }
+  }
+
+  std::any TsilASTVisitor::visitSynonym_fn(TsilParser::Synonym_fnContext* ctx) {
+    const auto асд_дані_синонім = new АСДДаніСинонімДія();
+    асд_дані_синонім->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    асд_дані_синонім->значення = AAV(visitContext(ctx->expr()));
+    const auto асд_значення_синонім_дія =
+        AV(this, ctx, АСДВидСинонімДія, асд_дані_синонім);
+    if (ctx->first_gendef == nullptr) {
+      return асд_значення_синонім_дія;
+    } else {
+      const auto асд_дані_шаблон = new АСДДаніШаблон();
+      асд_дані_шаблон->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+      асд_дані_шаблон->значення = асд_значення_синонім_дія;
       std::vector<Ідентифікатор*> params;
       for (const auto& gendef : ctx->gendef()) {
         params.push_back(ІД(this, gendef, gendef->getText()));
