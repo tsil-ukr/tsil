@@ -79,11 +79,11 @@ LLVMValue* tsil_llvm_inst_call_func(TL* m,
                                     unsigned long arguments_size,
                                     LLVMValue** arguments);
 void tsil_llvm_inst_br(TL* m, LLVMBasicBlock* block, LLVMBasicBlock* target);
-void tsil_llvm_inst_br_if(TL* m,
-                          LLVMBasicBlock* block,
-                          LLVMValue* condition,
-                          LLVMBasicBlock* target_true,
-                          LLVMBasicBlock* target_false);
+void tsil_llvm_inst_brif(TL* m,
+                         LLVMBasicBlock* block,
+                         LLVMValue* condition,
+                         LLVMBasicBlock* target_true,
+                         LLVMBasicBlock* target_false);
 LLVMValue* tsil_llvm_inst_icmp(TL* m,
                                LLVMBasicBlock* block,
                                char* op,
@@ -234,6 +234,7 @@ LLVMValue* tsil_llvm_create_int8(TL* m, char value);
 LLVMValue* tsil_llvm_create_int16(TL* m, short value);
 LLVMValue* tsil_llvm_create_int32(TL* m, int value);
 LLVMValue* tsil_llvm_create_int64(TL* m, long value);
+LLVMValue* tsil_llvm_create_uint1(TL* m, unsigned char value);
 LLVMValue* tsil_llvm_create_uint8(TL* m, unsigned char value);
 LLVMValue* tsil_llvm_create_uint16(TL* m, unsigned short value);
 LLVMValue* tsil_llvm_create_uint32(TL* m, unsigned int value);

@@ -171,11 +171,11 @@ void tsil_llvm_inst_br(TL* m, LLVMBasicBlock* block, LLVMBasicBlock* target) {
   builder.CreateBr(target);
 }
 
-void tsil_llvm_inst_br_if(TL* m,
-                          LLVMBasicBlock* block,
-                          LLVMValue* condition,
-                          LLVMBasicBlock* target_true,
-                          LLVMBasicBlock* target_false) {
+void tsil_llvm_inst_brif(TL* m,
+                         LLVMBasicBlock* block,
+                         LLVMValue* condition,
+                         LLVMBasicBlock* target_true,
+                         LLVMBasicBlock* target_false) {
   llvm::IRBuilder<> builder(block);
   builder.CreateCondBr(condition, target_true, target_false);
 }
@@ -498,6 +498,10 @@ LLVMValue* tsil_llvm_create_int32(TL* m, int value) {
 
 LLVMValue* tsil_llvm_create_int64(TL* m, long value) {
   return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(64, value));
+}
+
+LLVMValue* tsil_llvm_create_uint1(TL* m, unsigned char value) {
+  return llvm::ConstantInt::get(*m->llvmContext, llvm::APInt(1, value));
 }
 
 LLVMValue* tsil_llvm_create_uint8(TL* m, unsigned char value) {

@@ -24,6 +24,7 @@
 зовнішня дія tsil_llvm_inst_store(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, алока: комірка<LLVM::Value>);
 зовнішня дія tsil_llvm_inst_load(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, тип: комірка<Type>, значення: комірка<LLVM::Value>): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_br(Л: комірка<LLVM::TL>, звідки: комірка<LLVM::BasicBlock>, куда: комірка<LLVM::BasicBlock>);
+зовнішня дія tsil_llvm_inst_brif(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, звідки: комірка<LLVM::BasicBlock>, куда: комірка<LLVM::BasicBlock>);
 зовнішня дія tsil_llvm_inst_ret(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>);
 зовнішня дія tsil_llvm_inst_getelementptr(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, тип: комірка<Type>, значення: комірка<LLVM::Value>, кількість_позицій: позитивне, позиції: памʼять<комірка<LLVM::Value>>): комірка<LLVM::Value>;
 
@@ -42,6 +43,7 @@
 зовнішня дія tsil_llvm_create_int16(Л: комірка<LLVM::TL>, значення: ц16): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_create_int32(Л: комірка<LLVM::TL>, значення: ц32): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_create_int64(Л: комірка<LLVM::TL>, значення: ц64): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_uint1(Л: комірка<LLVM::TL>, значення: п8): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_create_uint8(Л: комірка<LLVM::TL>, значення: п8): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_create_uint16(Л: комірка<LLVM::TL>, значення: п16): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_create_uint32(Л: комірка<LLVM::TL>, значення: п32): комірка<LLVM::Value>;
@@ -96,8 +98,12 @@
     вернути tsil_llvm_inst_load(Л, блок, тип, значення);
   }
 
-  дія br(Л: комірка<TL>, звідки: комірка<LLVM::BasicBlock>, куда: комірка<LLVM::BasicBlock>) {
+  дія br(Л: комірка<TL>, звідки: комірка<BasicBlock>, куда: комірка<LLVM::BasicBlock>) {
     tsil_llvm_inst_br(Л, звідки, куда);
+  }
+
+  дія brif(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, значення: комірка<Value>, звідки: комірка<BasicBlock>, куда: комірка<LLVM::BasicBlock>) {
+    tsil_llvm_inst_brif(Л, блок, значення, звідки, куда);
   }
 
   дія ret(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, значення: комірка<Value>) {
@@ -166,6 +172,10 @@
 
   дія const_int64(Л: комірка<TL>, значення: ц64): комірка<Value> {
     вернути tsil_llvm_create_int64(Л, значення);
+  }
+
+  дія const_uint1(Л: комірка<TL>, значення: п8): комірка<Value> {
+    вернути tsil_llvm_create_uint1(Л, значення);
   }
 
   дія const_uint8(Л: комірка<TL>, значення: п8): комірка<Value> {
