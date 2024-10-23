@@ -21,13 +21,18 @@
   putchar(c.b.a.x);
   ціль aaa: A = { 90 };
   putchar(aaa.x);
-//  змінна d = 0ц8;
-//  поки 1 {
-//    putchar(d);
-//    d = d + 1;
-//  }
+  змінна d = 0ц8;
+  поки 0 {
+    putchar(d);
+    d = d + 1;
+  }
   ціль cxxxx: C;
   putchar(80);
+  якщо 0 {
+    putchar(80);
+  } інакше {
+    putchar(81);
+  }
 }
 
 зовнішня дія main(): ц32 {
