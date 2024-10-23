@@ -23,9 +23,11 @@
     ціль b = 2;
     c.b.a.x = 90;
     b = 10;
-//    putchar(c.b.a.x);
+    putchar(c.b.a.x);
+    синонім лол = c.b.a.x;
+    лол = 80;
     ціль aaa: A = { 90 };
-//    putchar(aaa.x);
+    putchar(aaa.x);
     змінна d = 126ц8;
 //    поки d > 32 {
 //      putchar(d);
