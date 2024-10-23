@@ -23,7 +23,7 @@
 //    блок.llvm_exit_block = LLVM::block(К.Л, дія_.llvm_function, ю8"exit");
 //    блок.llvm_return_exit_block = блок.llvm_exit_block;
 //
-//    якщо перевірити_тип(К, дія_.тип_результату, К.тип_ніщо) == ні {
+//    якщо перевірити_тип(дія_.тип_результату, К.тип_ніщо) == ні {
 //      блок.llvm_ret_value = LLVM::alloca(К.Л, блок.llvm_alloca_block, ю8"return", отримати_llvm_type(К, дія_.тип_результату));
 //    }
 //
