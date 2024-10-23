@@ -36,7 +36,11 @@
 }
 
 секція Section {
-  місцева дія lol();
+  секція SectionInner {
+   секція SectionInner2 {
+    місцева дія lol();
+  }
+  }
 }
 
 зовнішня дія main(): ц32 {
