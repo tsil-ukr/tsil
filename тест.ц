@@ -24,10 +24,10 @@
     putchar(c.b.a.x);
     ціль aaa: A = { 90 };
     putchar(aaa.x);
-    змінна d = 0ц8;
-    поки d < 255 {
+    змінна d = 127ц8;
+    поки d > 32 {
       putchar(d);
-      d = d + 1;
+      d = d - 1;
     }
     ціль cxxxx: XOP::C;
     putchar(80);

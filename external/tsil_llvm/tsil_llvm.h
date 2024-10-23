@@ -142,6 +142,22 @@ LLVMValue* tsil_llvm_inst_frem(TL* m,
                                LLVMBasicBlock* block,
                                LLVMValue* left,
                                LLVMValue* right);
+LLVMValue* tsil_llvm_inst_icmp_sgt(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right);
+LLVMValue* tsil_llvm_inst_icmp_ugt(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right);
+LLVMValue* tsil_llvm_inst_fcmp_ogt(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right);
+LLVMValue* tsil_llvm_inst_fcmp_ugt(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right);
 LLVMValue* tsil_llvm_inst_and(TL* m,
                               LLVMBasicBlock* block,
                               LLVMValue* left,

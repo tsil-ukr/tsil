@@ -68,6 +68,10 @@
 зовнішня дія tsil_llvm_inst_urem(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_srem(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_frem(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_sgt(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_ugt(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_ogt(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_ugt(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
 
 секція LLVM {
   дія struct(Л: комірка<TL>, назва: памʼять<п8>): комірка<Type> {
@@ -256,5 +260,21 @@
 
   дія frem(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
     вернути tsil_llvm_inst_frem(Л, блок, ліво, право);
+  }
+
+  дія icmp_sgt(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_sgt(Л, блок, ліво, право);
+  }
+
+  дія icmp_ugt(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_ugt(Л, блок, ліво, право);
+  }
+
+  дія fcmp_ogt(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_ogt(Л, блок, ліво, право);
+  }
+
+  дія fcmp_ugt(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_ugt(Л, блок, ліво, право);
   }
 }

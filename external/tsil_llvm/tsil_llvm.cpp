@@ -294,6 +294,38 @@ LLVMValue* tsil_llvm_inst_frem(TL* m,
   return builder.CreateFRem(left, right);
 }
 
+LLVMValue* tsil_llvm_inst_icmp_sgt(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right) {
+  llvm::IRBuilder<> builder(block);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_SGT, left, right);
+}
+
+LLVMValue* tsil_llvm_inst_icmp_ugt(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right) {
+  llvm::IRBuilder<> builder(block);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_UGT, left, right);
+}
+
+LLVMValue* tsil_llvm_inst_fcmp_ogt(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right) {
+  llvm::IRBuilder<> builder(block);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OGT, left, right);
+}
+
+LLVMValue* tsil_llvm_inst_fcmp_ugt(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right) {
+  llvm::IRBuilder<> builder(block);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_UGT, left, right);
+}
+
 LLVMValue* tsil_llvm_inst_and(TL* m,
                               LLVMBasicBlock* block,
                               LLVMValue* left,
