@@ -422,6 +422,54 @@ LLVMValue* tsil_llvm_inst_fcmp_ule(TL* m,
   return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_ULE, left, right);
 }
 
+LLVMValue* tsil_llvm_inst_icmp_eq(TL* m,
+                                  LLVMBasicBlock* block,
+                                  LLVMValue* left,
+                                  LLVMValue* right) {
+  llvm::IRBuilder<> builder(block);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_EQ, left, right);
+}
+
+LLVMValue* tsil_llvm_inst_icmp_ne(TL* m,
+                                  LLVMBasicBlock* block,
+                                  LLVMValue* left,
+                                  LLVMValue* right) {
+  llvm::IRBuilder<> builder(block);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_NE, left, right);
+}
+
+LLVMValue* tsil_llvm_inst_fcmp_oeq(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right) {
+  llvm::IRBuilder<> builder(block);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OEQ, left, right);
+}
+
+LLVMValue* tsil_llvm_inst_fcmp_one(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right) {
+  llvm::IRBuilder<> builder(block);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_ONE, left, right);
+}
+
+LLVMValue* tsil_llvm_inst_fcmp_ueq(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right) {
+  llvm::IRBuilder<> builder(block);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_UEQ, left, right);
+}
+
+LLVMValue* tsil_llvm_inst_fcmp_une(TL* m,
+                                   LLVMBasicBlock* block,
+                                   LLVMValue* left,
+                                   LLVMValue* right) {
+  llvm::IRBuilder<> builder(block);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_UNE, left, right);
+}
+
 LLVMValue* tsil_llvm_inst_and(TL* m,
                               LLVMBasicBlock* block,
                               LLVMValue* left,

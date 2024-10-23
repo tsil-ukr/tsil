@@ -84,6 +84,12 @@
 зовнішня дія tsil_llvm_inst_icmp_ule(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_fcmp_ole(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_fcmp_ule(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_eq(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_ne(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_oeq(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_one(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_ueq(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_une(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
 
 секція LLVM {
   дія struct(Л: комірка<TL>, назва: памʼять<п8>): комірка<Type> {
@@ -336,5 +342,29 @@
   
   дія fcmp_ule(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
     вернути tsil_llvm_inst_fcmp_ule(Л, блок, ліво, право);
+  }
+
+  дія icmp_eq(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_eq(Л, блок, ліво, право);
+  }
+
+  дія icmp_ne(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_ne(Л, блок, ліво, право);
+  }
+
+  дія fcmp_oeq(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_oeq(Л, блок, ліво, право);
+  }
+
+  дія fcmp_one(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_one(Л, блок, ліво, право);
+  }
+
+  дія fcmp_ueq(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_ueq(Л, блок, ліво, право);
+  }
+
+  дія fcmp_une(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_une(Л, блок, ліво, право);
   }
 }
