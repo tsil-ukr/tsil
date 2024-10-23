@@ -93,6 +93,9 @@
 зовнішня дія tsil_llvm_inst_shl(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_lshr(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_ashr(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_and(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_or(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_xor(Л: комірка<LLVM::TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
 
 секція LLVM {
   дія struct(Л: комірка<TL>, назва: памʼять<п8>): комірка<Type> {
@@ -381,5 +384,17 @@
 
   дія ashr(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
     вернути tsil_llvm_inst_ashr(Л, блок, ліво, право);
+  }
+
+  дія and(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_and(Л, блок, ліво, право);
+  }
+
+  дія or(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_or(Л, блок, ліво, право);
+  }
+
+  дія xor(Л: комірка<TL>, блок: комірка<LLVM::BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_xor(Л, блок, ліво, право);
   }
 }
