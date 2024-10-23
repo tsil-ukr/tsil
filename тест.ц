@@ -6,14 +6,17 @@
   a: A;
 }
 
+секція XOP {
 структура C {
   b: B;
+}
 }
 
 зовнішня дія putchar(char: ц8): ц32;
 
+секція SS {
 дія test() {
-  ціль c: C;
+  ціль c: XOP::C;
   ціль m = c.b.a.x;
   ціль b = 2;
   c.b.a.x = 90;
@@ -26,7 +29,7 @@
     putchar(d);
     d = d + 1;
   }
-  ціль cxxxx: C;
+  ціль cxxxx: XOP::C;
   putchar(80);
   якщо 0 {
     putchar(80);
@@ -34,9 +37,10 @@
     putchar(81);
   }
 }
+}
 
 зовнішня дія main(): ц32 {
-  test();
+  SS::test();
 }
 
 //дія f() {
