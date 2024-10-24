@@ -2,12 +2,16 @@
 зовнішня дія putchar(значення: ц8): ц32;
 
 структура Test {
-  value: ц8;
-  value: ц8;
-  value: ц8;
-  value: ц32;
+  a: ц8;
+  b: ц8;
+  c: ц8;
+  d: ц32;
 }
 
 зовнішня дія main(): ц32 {
-  ціль test_size = Test.розмір;
+  ціль test = malloc(/* Test.розмір */ 8) як комірка<Test>;
+  test.a = 1;
+  test.b = 2;
+  test.c = 3;
+  test.d = 4;
 }
