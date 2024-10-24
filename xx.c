@@ -1,10 +1,8 @@
-extern int putchar(char);
-
-int x;
-int y;
-
 typedef struct Test {
-  long value;
+  char a;
+  char b;
+  char c;
+  int d;
 } Test;
 
 void test() {

@@ -3,10 +3,11 @@
 
 структура Test {
   value: ц8;
+  value: ц8;
+  value: ц8;
+  value: ц32;
 }
 
 зовнішня дія main(): ц32 {
-  ціль test: комірка<Test> = malloc(1) як комірка<Test>;
-  test.value = 90;
-  putchar(test.value);
+  ціль test_size = Test.розмір;
 }
