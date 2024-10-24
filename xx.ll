@@ -10,19 +10,7 @@ target triple = "x86_64-pc-linux-gnu"
 define dso_local void @test() #0 {
 entry:
   %d = alloca i32, align 4
-  %0 = load i32, ptr @x, align 4
-  %cmp = icmp eq i32 %0, 228
-  br i1 %cmp, label %lor.end, label %lor.rhs
-
-lor.rhs:                                          ; preds = %entry
-  %1 = load i32, ptr @y, align 4
-  %cmp1 = icmp eq i32 %1, 333
-  br label %lor.end
-
-lor.end:                                          ; preds = %lor.rhs, %entry
-  %2 = phi i1 [ true, %entry ], [ %cmp1, %lor.rhs ]
-  %lor.ext = zext i1 %2 to i32
-  store i32 %lor.ext, ptr %d, align 4
+  store i32 8, ptr %d, align 4
   ret void
 }
 
