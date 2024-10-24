@@ -94,6 +94,7 @@ body_element: structure_define
             | assign
             | set | section_set | position_set
             | synonym
+            | synonym_fn
             | section_define
             | if
             | while

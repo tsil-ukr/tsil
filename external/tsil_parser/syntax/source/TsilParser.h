@@ -1331,6 +1331,7 @@ public:
     Section_setContext *section_set();
     Position_setContext *position_set();
     SynonymContext *synonym();
+    Synonym_fnContext *synonym_fn();
     Section_defineContext *section_define();
     IfContext *if_();
     WhileContext *while_();

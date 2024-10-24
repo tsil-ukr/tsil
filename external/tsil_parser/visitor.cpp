@@ -954,6 +954,9 @@ namespace tsil::parser {
     if (ctx->synonym() != nullptr) {
       return visitSynonym(ctx->synonym());
     }
+    if (ctx->synonym_fn() != nullptr) {
+      return visitSynonym_fn(ctx->synonym_fn());
+    }
     if (ctx->section_define() != nullptr) {
       return visitSection_define(ctx->section_define());
     }
