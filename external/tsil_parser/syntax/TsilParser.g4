@@ -44,7 +44,7 @@ operation: NUMBER #operation_number
          | left=operation op='|' right=operation #operation_or
          | left=operation op=op_land right=operation #operation_land
          | left=operation op=op_lor right=operation #operation_lor
-         | left=operation op='як' right=type #operation_as
+         | left=operation op='як' (right_type=type | right_tsil='ціль') #operation_as
          | cond=operation '?' ifok=operation ':' ifnot=operation #operation_ternary;
 
 op_lshift: '<' '<';
@@ -69,7 +69,7 @@ structure_element: param ';';
 
 diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? (';' | body);
 
-tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? ('=' (value_expr=expr | value_object=typeless_object))? ';';
+tsil_define: (td_var='змінна' | td_immut='стала')? td_const='ціль' id=ID (':' type)? ('=' (value_expr=expr | value_object=typeless_object))? ';';
 
 assign: id=ID '=' (value_expr=expr | value_object=typeless_object) ';';
 

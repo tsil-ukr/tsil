@@ -456,10 +456,12 @@ public:
 
     TsilParser::OperationContext *left = nullptr;
     antlr4::Token *op = nullptr;
-    TsilParser::TypeContext *right = nullptr;
+    TsilParser::TypeContext *right_type = nullptr;
+    antlr4::Token *right_tsil = nullptr;
     OperationContext *operation();
     antlr4::tree::TerminalNode *KW_AS();
     TypeContext *type();
+    antlr4::tree::TerminalNode *KW_TSIL();
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
 
@@ -1048,13 +1050,13 @@ public:
     Tsil_defineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *SEMICOLON();
-    antlr4::tree::TerminalNode *ID();
-    antlr4::tree::TerminalNode *KW_VAR();
-    antlr4::tree::TerminalNode *KW_IMMUT();
     antlr4::tree::TerminalNode *KW_TSIL();
+    antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *COLON();
     TypeContext *type();
     antlr4::tree::TerminalNode *EQUAL();
+    antlr4::tree::TerminalNode *KW_VAR();
+    antlr4::tree::TerminalNode *KW_IMMUT();
     ExprContext *expr();
     Typeless_objectContext *typeless_object();
 

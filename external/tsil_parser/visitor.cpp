@@ -619,7 +619,11 @@ namespace tsil::parser {
       TsilParser::Operation_asContext* ctx) {
     const auto асд_дані_як = new АСДДаніЯк();
     асд_дані_як->значення = AAV(visitContext(ctx->left));
-    асд_дані_як->тип = AAV(visitContext(ctx->right));
+    if (ctx->right_type) {
+      асд_дані_як->тип = AAV(visitContext(ctx->right_type));
+    } else {
+      асд_дані_як->тип = nullptr;
+    }
     return AV(this, ctx, АСДВидЯк, асд_дані_як);
   }
 
