@@ -103,7 +103,7 @@ body_element: structure_define
             | exec
             | return
             | semi=';';
-return: 'вернути' value=expr ';';
+return: 'вернути' (value_expr=expr | value_object=typeless_object)? ';';
 
 simple_type: id=ID #simple_type_subject
            | object=simple_type ':' ':' id=ID #simple_type_section_get

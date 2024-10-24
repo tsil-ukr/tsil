@@ -991,7 +991,13 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitReturn(TsilParser::ReturnContext* ctx) {
     const auto асд_дані_вернути = new АСДДаніВернути();
-    асд_дані_вернути->значення = AAV(visitContext(ctx->value));
+    if (ctx->value_expr) {
+      асд_дані_вернути->значення = AAV(visitContext(ctx->value_expr));
+    } else if (ctx->value_object) {
+      асд_дані_вернути->значення = AAV(visitContext(ctx->value_object));
+    } else {
+      асд_дані_вернути->значення = nullptr;
+    }
     return AV(this, ctx, АСДВидВернути, асд_дані_вернути);
   }
 
