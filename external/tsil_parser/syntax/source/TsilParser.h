@@ -28,15 +28,15 @@ public:
   };
 
   enum {
-    RuleFile = 0, RuleProgram = 1, RuleAtom = 2, RuleOperation = 3, RuleOp_lshift = 4, 
-    RuleOp_rshift = 5, RuleOp_urshift = 6, RuleOp_lte = 7, RuleOp_gte = 8, 
-    RuleOp_eq = 9, RuleOp_neq = 10, RuleOp_land = 11, RuleOp_lor = 12, RuleGendef = 13, 
-    RuleExpr = 14, RuleObject_arg = 15, RuleTypeless_object = 16, RuleStructure_define = 17, 
-    RuleStructure_element = 18, RuleDiia_define = 19, RuleTsil_define = 20, 
-    RuleAssign = 21, RuleSynonym = 22, RuleSynonym_fn = 23, RuleSection_define = 24, 
-    RuleSet = 25, RulePosition_set = 26, RuleSection_set = 27, RuleIf = 28, 
-    RuleWhile = 29, RuleExec = 30, RuleBody = 31, RuleBody_element = 32, 
-    RuleReturn = 33, RuleSimple_type = 34, RuleType = 35, RuleParam = 36
+    RuleFile = 0, RuleProgram = 1, RuleAtom = 2, RuleCall_arg = 3, RuleOperation = 4, 
+    RuleOp_lshift = 5, RuleOp_rshift = 6, RuleOp_urshift = 7, RuleOp_lte = 8, 
+    RuleOp_gte = 9, RuleOp_eq = 10, RuleOp_neq = 11, RuleOp_land = 12, RuleOp_lor = 13, 
+    RuleGendef = 14, RuleExpr = 15, RuleObject_arg = 16, RuleTypeless_object = 17, 
+    RuleStructure_define = 18, RuleStructure_element = 19, RuleDiia_define = 20, 
+    RuleTsil_define = 21, RuleAssign = 22, RuleSynonym = 23, RuleSynonym_fn = 24, 
+    RuleSection_define = 25, RuleSet = 26, RulePosition_set = 27, RuleSection_set = 28, 
+    RuleIf = 29, RuleWhile = 30, RuleExec = 31, RuleBody = 32, RuleBody_element = 33, 
+    RuleReturn = 34, RuleSimple_type = 35, RuleType = 36, RuleParam = 37
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -59,6 +59,7 @@ public:
   class FileContext;
   class ProgramContext;
   class AtomContext;
+  class Call_argContext;
   class OperationContext;
   class Op_lshiftContext;
   class Op_rshiftContext;
@@ -238,8 +239,8 @@ public:
     antlr4::tree::TerminalNode *PAREN_OPEN();
     antlr4::tree::TerminalNode *PAREN_CLOSE();
     AtomContext *atom();
-    std::vector<ExprContext *> expr();
-    ExprContext* expr(size_t i);
+    std::vector<Call_argContext *> call_arg();
+    Call_argContext* call_arg(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COMA();
     antlr4::tree::TerminalNode* COMA(size_t i);
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -250,6 +251,22 @@ public:
 
   AtomContext* atom();
   AtomContext* atom(int precedence);
+  class  Call_argContext : public antlr4::ParserRuleContext {
+  public:
+    Call_argContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    ExprContext *expr();
+    Typeless_objectContext *typeless_object();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Call_argContext* call_arg();
+
   class  OperationContext : public antlr4::ParserRuleContext {
   public:
     OperationContext(antlr4::ParserRuleContext *parent, size_t invokingState);

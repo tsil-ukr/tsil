@@ -41,6 +41,9 @@ public:
   virtual void enterAtom_call(TsilParser::Atom_callContext *ctx) = 0;
   virtual void exitAtom_call(TsilParser::Atom_callContext *ctx) = 0;
 
+  virtual void enterCall_arg(TsilParser::Call_argContext *ctx) = 0;
+  virtual void exitCall_arg(TsilParser::Call_argContext *ctx) = 0;
+
   virtual void enterOperation_gte(TsilParser::Operation_gteContext *ctx) = 0;
   virtual void exitOperation_gte(TsilParser::Operation_gteContext *ctx) = 0;
 

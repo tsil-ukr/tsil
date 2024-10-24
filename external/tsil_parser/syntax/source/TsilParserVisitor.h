@@ -37,6 +37,8 @@ public:
 
     virtual std::any visitAtom_call(TsilParser::Atom_callContext *context) = 0;
 
+    virtual std::any visitCall_arg(TsilParser::Call_argContext *context) = 0;
+
     virtual std::any visitOperation_gte(TsilParser::Operation_gteContext *context) = 0;
 
     virtual std::any visitOperation_neq(TsilParser::Operation_neqContext *context) = 0;

@@ -51,6 +51,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitCall_arg(TsilParser::Call_argContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitOperation_gte(TsilParser::Operation_gteContext *ctx) override {
     return visitChildren(ctx);
   }

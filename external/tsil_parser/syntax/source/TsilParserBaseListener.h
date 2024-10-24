@@ -43,6 +43,9 @@ public:
   virtual void enterAtom_call(TsilParser::Atom_callContext * /*ctx*/) override { }
   virtual void exitAtom_call(TsilParser::Atom_callContext * /*ctx*/) override { }
 
+  virtual void enterCall_arg(TsilParser::Call_argContext * /*ctx*/) override { }
+  virtual void exitCall_arg(TsilParser::Call_argContext * /*ctx*/) override { }
+
   virtual void enterOperation_gte(TsilParser::Operation_gteContext * /*ctx*/) override { }
   virtual void exitOperation_gte(TsilParser::Operation_gteContext * /*ctx*/) override { }
 

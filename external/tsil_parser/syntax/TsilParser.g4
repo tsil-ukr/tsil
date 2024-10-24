@@ -15,7 +15,8 @@ atom: '(' expr ')' #atom_nested
     | object=atom '<' (type (',' type)*)? '>' #atom_template_get
     | object=atom '.' id=ID #atom_get
     | object=atom '[' position=expr ']' #atom_position_get
-    | object=atom '(' (expr (',' expr)*)? ')' #atom_call;
+    | object=atom '(' (call_arg (',' call_arg)*)? ')' #atom_call;
+call_arg: expr | typeless_object;
 
 operation: NUMBER #operation_number
          | (tt=ID)? STRING #operation_string

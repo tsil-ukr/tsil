@@ -326,8 +326,12 @@ namespace tsil::parser {
     const auto асд_дані_виконати = new АСДДаніВиконати();
     асд_дані_виконати->обʼєкт = AAV(visitContext(ctx->object));
     std::vector<АСДЗначення*> arguments;
-    for (const auto& argument : ctx->expr()) {
-      arguments.push_back(AAV(visitContext(argument)));
+    for (const auto& argument : ctx->call_arg()) {
+      if (argument->expr()) {
+        arguments.push_back(AAV(visitContext(argument->expr())));
+      } else if (argument->typeless_object()) {
+        arguments.push_back(AAV(visitContext(argument->typeless_object())));
+      }
     }
     асд_дані_виконати->аргументи = AAVecToList(arguments);
     return AV(this, ctx, АСДВидВиконати, асд_дані_виконати);
