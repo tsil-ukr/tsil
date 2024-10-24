@@ -20,7 +20,7 @@
 
 зовнішня дія main(): ц32 {
   ціль test = виділити<Test>(1) як комірка<Test>;
-  test.x = 90;
+  test.a = 90;
   test.b = 91;
   test.c = 92;
   test.d = 93;
