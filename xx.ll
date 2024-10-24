@@ -6,8 +6,11 @@ target triple = "x86_64-pc-linux-gnu"
 ; Function Attrs: noinline nounwind optnone
 define dso_local void @test() #0 {
 entry:
-  %d = alloca i32, align 4
-  store i32 8, ptr %d, align 4
+  %a = alloca i32, align 4
+  %b = alloca i32, align 4
+  store i32 2, ptr %a, align 4
+  %0 = load i32, ptr %a, align 4
+  store i32 %0, ptr %b, align 4
   ret void
 }
 

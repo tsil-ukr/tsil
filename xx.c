@@ -6,5 +6,6 @@ typedef struct Test {
 } Test;
 
 void test() {
-  int d = sizeof(Test);
+  unsigned int a = 2;
+  int b = a;
 }
