@@ -768,9 +768,6 @@ void dumpOBJ(TL* m, std::vector<unsigned char>& out) {
   std::string Error;
   auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
 
-  // Print an error and exit if we couldn't find the requested target.
-  // This generally occurs if we've forgotten to initialise the
-  // TargetRegistry or we have a bogus target triple.
   if (!Target) {
     llvm::errs() << Error;
     return;
