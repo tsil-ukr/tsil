@@ -1,12 +1,12 @@
-зовнішня дія malloc(size: ц32): памʼять;
-зовнішня дія putchar(c: ц8): ц32;
+зовнішня дія malloc(розмір: ц32): невідома_памʼять;
+зовнішня дія putchar(значення: ц8): ц32;
 
 структура Test {
   value: ц8;
 }
 
 зовнішня дія main(): ц32 {
-  ціль test: комірка<Test> = malloc(1);
+  ціль test: комірка<Test> = malloc(1) як комірка<Test>;
   test.value = 90;
   putchar(test.value);
 }
