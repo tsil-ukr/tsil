@@ -26,5 +26,7 @@
   test.d = 93;
   putchar(test.a);
   putchar(test.b);
-  putchar(test.c як ціль);
+  putchar(test.c);
+  ціль n = 93.5д64;
+  putchar(n як ціль);
 }
