@@ -127,6 +127,7 @@
     синонім VERTICAL_BAR = 124ц8;
     синонім CLOSE_CURLY_BRACKET = 125ц8;
     синонім TILDE = 126ц8;
+    синонім DELETE = 127ц8;
   }
 
   синонім START_OF_VISIBLE = CODE::SPACE;
