@@ -166,6 +166,61 @@ extern "C" int tsil_cli_run_compile_command(TsilCliConfig config,
   return 0;
 }
 
+std::pair<size_t, std::string> strtrim(const std::string& str) {
+  size_t start = 0;
+  size_t end = str.size();
+  for (size_t i = 0; i < str.size(); i++) {
+    if (str[i] != ' ' && str[i] != '\t' && str[i] != '\n' && str[i] != '\r') {
+      start = i;
+      break;
+    }
+  }
+  for (size_t i = str.size(); i > 0; i--) {
+    if (str[i - 1] != ' ' && str[i - 1] != '\t' && str[i - 1] != '\n' &&
+        str[i - 1] != '\r') {
+      end = i;
+      break;
+    }
+  }
+  const auto res = str.substr(start, end - start);
+  return {start + 1, res};
+}
+
+std::string strgetline(const std::string& code, size_t line) {
+  size_t current_line = 1;
+  size_t start = 0;
+  size_t end = 0;
+  for (size_t i = 0; i < code.size(); i++) {
+    if (code[i] == '\n') {
+      if (current_line == line) {
+        end = i;
+        break;
+      }
+      start = i + 1;
+      current_line++;
+    }
+  }
+  return code.substr(start, end - start);
+}
+
+void printCompilerError(Місцезнаходження* місцезнаходження,
+                        const char* повідомлення) {
+  const auto line = std::to_string(місцезнаходження->рядок);
+  const auto column = std::to_string(місцезнаходження->стовпець);
+  const auto message = повідомлення;
+  std::cerr << місцезнаходження->текст_коду->шлях << ":"
+            << line + ":" + column + ": " << message << std::endl;
+  const auto [new_start, code_line] = strtrim(strgetline(
+      місцезнаходження->текст_коду->значення, місцезнаходження->рядок));
+  std::string prefix = line + "| ";
+  std::cerr << prefix << code_line << std::endl;
+  for (size_t i = 0;
+       i < (місцезнаходження->стовпець - new_start) + prefix.size(); i++) {
+    std::cerr << " ";
+  }
+  std::cerr << "^" << std::endl;
+}
+
 extern "C" int tsil_cli_do_compile(
     TsilCliConfig config,
     TsilCliWriter outputWriter,
@@ -178,28 +233,8 @@ extern "C" int tsil_cli_do_compile(
   const auto помилка_компіляції_цілі = скомпілювати_ціль_в_ll(L, текстКоду);
   if (помилка_компіляції_цілі != nullptr) {
     if (помилка_компіляції_цілі->місцезнаходження != nullptr) {
-      std::vector<Місцезнаходження*> шлях;
-      for (size_t i = 0; i < помилка_компіляції_цілі->довжина_шляху; ++i) {
-        шлях.push_back(помилка_компіляції_цілі->шлях[i]);
-      }
-      std::reverse(шлях.begin(), шлях.end());
-
-      config.println(strdup(
-          (std::string(
-               помилка_компіляції_цілі->місцезнаходження->текст_коду->шлях) +
-           ":" +
-           std::to_string(помилка_компіляції_цілі->місцезнаходження->рядок) +
-           ":" +
-           std::to_string(помилка_компіляції_цілі->місцезнаходження->стовпець) +
-           ": " + помилка_компіляції_цілі->повідомлення)
-              .c_str()));
-
-      for (auto місцезнаходження : шлях) {
-        config.println(strdup((std::string(місцезнаходження->текст_коду->шлях) +
-                               ":" + std::to_string(місцезнаходження->рядок) +
-                               ":" + std::to_string(місцезнаходження->стовпець))
-                                  .c_str()));
-      }
+      printCompilerError(помилка_компіляції_цілі->місцезнаходження,
+                         помилка_компіляції_цілі->повідомлення);
       return 1;
     } else {
       config.println(помилка_компіляції_цілі->повідомлення);
