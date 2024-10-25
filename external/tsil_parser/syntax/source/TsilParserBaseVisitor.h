@@ -315,14 +315,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitType_variation(TsilParser::Type_variationContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitType_nested(TsilParser::Type_nestedContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitType_fn_complex(TsilParser::Type_fn_complexContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -336,6 +328,18 @@ public:
   }
 
   virtual std::any visitType_fn(TsilParser::Type_fnContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitType_nested(TsilParser::Type_nestedContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitType_single(TsilParser::Type_singleContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitType_variation(TsilParser::Type_variationContext *ctx) override {
     return visitChildren(ctx);
   }
 

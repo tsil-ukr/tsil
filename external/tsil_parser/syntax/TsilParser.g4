@@ -92,7 +92,9 @@ body_element: structure_define
             | diia_define
             | tsil_define
             | assign
-            | set | section_set | position_set
+            | set
+            | section_set
+            | position_set
             | synonym
             | synonym_fn
             | section_define
@@ -110,12 +112,13 @@ simple_type: id=ID #simple_type_subject
            | object=simple_type '<' type (',' type)* '>' #simple_type_template_get
            | object=simple_type '.' id=ID #simple_type_get
            | left=simple_type '[' size=NUMBER ']' #simple_type_array;
+single_type: simple_type #type_simple_type
+           | '(' ')' '-' '>' restyp=type #type_fn
+           | param_type=single_type '-' '>' restyp=type #type_fn_simple
+           | '(' type (',' type)+ ')' '-' '>' restyp=type #type_fn_complex
+           | '(' param (',' param)* ')' '-' '>' restyp=type #type_fn_complex_named;
 type: '(' type ')' #type_nested
-    | simple_type #type_simple_type
-    | '(' ')' '-' '>' restyp=type #type_fn
-    | param_type=type '-' '>' restyp=type #type_fn_simple
-    | '(' type (',' type)+ ')' '-' '>' restyp=type #type_fn_complex
-    | '(' param (',' param)* ')' '-' '>' restyp=type #type_fn_complex_named
-    | type ('|' type)+ #type_variation;
+    | single_type #type_single
+    | single_type ('|' single_type)+ #type_variation;
 
 param: id=ID (':' type)?;

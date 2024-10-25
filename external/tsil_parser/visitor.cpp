@@ -231,10 +231,6 @@ namespace tsil::parser {
       return visitSimple_type_array(ctx);
     }
     if (const auto ctx =
-            dynamic_cast<TsilParser::Type_nestedContext*>(context)) {
-      return visitType_nested(ctx);
-    }
-    if (const auto ctx =
             dynamic_cast<TsilParser::Type_simple_typeContext*>(context)) {
       return visitContext(ctx->simple_type());
     }
@@ -252,6 +248,14 @@ namespace tsil::parser {
     if (const auto ctx =
             dynamic_cast<TsilParser::Type_fn_complex_namedContext*>(context)) {
       return visitType_fn_complex_named(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<TsilParser::Type_nestedContext*>(context)) {
+      return visitType_nested(ctx);
+    }
+    if (const auto ctx =
+            dynamic_cast<TsilParser::Type_singleContext*>(context)) {
+      return visitContext(ctx->single_type());
     }
     if (const auto ctx =
             dynamic_cast<TsilParser::Type_variationContext*>(context)) {
@@ -1118,7 +1122,7 @@ namespace tsil::parser {
       TsilParser::Type_variationContext* ctx) {
     const auto тип_варіація_асд_дані = new АСДДаніТипВаріація();
     std::vector<АСДЗначення*> types;
-    for (const auto& type : ctx->type()) {
+    for (const auto& type : ctx->single_type()) {
       types.push_back(AAV(visitContext(type)));
     }
     тип_варіація_асд_дані->типи = AAVecToList(types);

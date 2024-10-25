@@ -165,8 +165,14 @@
   a: ц8;
 }
 
+структура Stc {
+  a: Sta | Stb;
+  b: Stb | Sta;
+}
+
 зовнішня дія main(): ц32 {
-  змінна ціль wtf: Sta | Stb = Stb {};
+  змінна ціль wtf: Sta | Stb | Stc = Stb {};
+  wtf = Stc {};
   змінна ціль символ: ц8 = ASCII::START_OF_VISIBLE;
   поки символ <= ASCII::END_OF_VISIBLE {
     putchar(символ);

@@ -169,10 +169,6 @@ public:
 
     virtual std::any visitType_simple_type(TsilParser::Type_simple_typeContext *context) = 0;
 
-    virtual std::any visitType_variation(TsilParser::Type_variationContext *context) = 0;
-
-    virtual std::any visitType_nested(TsilParser::Type_nestedContext *context) = 0;
-
     virtual std::any visitType_fn_complex(TsilParser::Type_fn_complexContext *context) = 0;
 
     virtual std::any visitType_fn_complex_named(TsilParser::Type_fn_complex_namedContext *context) = 0;
@@ -180,6 +176,12 @@ public:
     virtual std::any visitType_fn_simple(TsilParser::Type_fn_simpleContext *context) = 0;
 
     virtual std::any visitType_fn(TsilParser::Type_fnContext *context) = 0;
+
+    virtual std::any visitType_nested(TsilParser::Type_nestedContext *context) = 0;
+
+    virtual std::any visitType_single(TsilParser::Type_singleContext *context) = 0;
+
+    virtual std::any visitType_variation(TsilParser::Type_variationContext *context) = 0;
 
     virtual std::any visitParam(TsilParser::ParamContext *context) = 0;
 

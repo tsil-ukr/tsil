@@ -239,12 +239,6 @@ public:
   virtual void enterType_simple_type(TsilParser::Type_simple_typeContext *ctx) = 0;
   virtual void exitType_simple_type(TsilParser::Type_simple_typeContext *ctx) = 0;
 
-  virtual void enterType_variation(TsilParser::Type_variationContext *ctx) = 0;
-  virtual void exitType_variation(TsilParser::Type_variationContext *ctx) = 0;
-
-  virtual void enterType_nested(TsilParser::Type_nestedContext *ctx) = 0;
-  virtual void exitType_nested(TsilParser::Type_nestedContext *ctx) = 0;
-
   virtual void enterType_fn_complex(TsilParser::Type_fn_complexContext *ctx) = 0;
   virtual void exitType_fn_complex(TsilParser::Type_fn_complexContext *ctx) = 0;
 
@@ -256,6 +250,15 @@ public:
 
   virtual void enterType_fn(TsilParser::Type_fnContext *ctx) = 0;
   virtual void exitType_fn(TsilParser::Type_fnContext *ctx) = 0;
+
+  virtual void enterType_nested(TsilParser::Type_nestedContext *ctx) = 0;
+  virtual void exitType_nested(TsilParser::Type_nestedContext *ctx) = 0;
+
+  virtual void enterType_single(TsilParser::Type_singleContext *ctx) = 0;
+  virtual void exitType_single(TsilParser::Type_singleContext *ctx) = 0;
+
+  virtual void enterType_variation(TsilParser::Type_variationContext *ctx) = 0;
+  virtual void exitType_variation(TsilParser::Type_variationContext *ctx) = 0;
 
   virtual void enterParam(TsilParser::ParamContext *ctx) = 0;
   virtual void exitParam(TsilParser::ParamContext *ctx) = 0;
