@@ -166,7 +166,7 @@
 }
 
 зовнішня дія main(): ц32 {
-  змінна ціль wtf: Sta | Stb = Sta {};
+  змінна ціль wtf: Sta | Stb = Stb {};
   змінна ціль символ: ц8 = ASCII::START_OF_VISIBLE;
   поки символ <= ASCII::END_OF_VISIBLE {
     putchar(символ);
