@@ -115,6 +115,7 @@ type: '(' type ')' #type_nested
     | '(' ')' '-' '>' restyp=type #type_fn
     | param_type=type '-' '>' restyp=type #type_fn_simple
     | '(' type (',' type)+ ')' '-' '>' restyp=type #type_fn_complex
-    | '(' param (',' param)* ')' '-' '>' restyp=type #type_fn_complex_named;
+    | '(' param (',' param)* ')' '-' '>' restyp=type #type_fn_complex_named
+    | type ('|' type)+ #type_variation;
 
 param: id=ID (':' type)?;

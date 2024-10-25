@@ -169,6 +169,8 @@ public:
 
     virtual std::any visitType_simple_type(TsilParser::Type_simple_typeContext *context) = 0;
 
+    virtual std::any visitType_variation(TsilParser::Type_variationContext *context) = 0;
+
     virtual std::any visitType_nested(TsilParser::Type_nestedContext *context) = 0;
 
     virtual std::any visitType_fn_complex(TsilParser::Type_fn_complexContext *context) = 0;

@@ -224,6 +224,9 @@ namespace tsil::parser {
     std::any visitType_fn_complex_named(
         TsilParser::Type_fn_complex_namedContext* ctx) override;
 
+    std::any visitType_variation(
+        TsilParser::Type_variationContext* ctx) override;
+
     std::any visitParam(TsilParser::ParamContext* ctx) override;
   };
 

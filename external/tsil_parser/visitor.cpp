@@ -253,6 +253,10 @@ namespace tsil::parser {
             dynamic_cast<TsilParser::Type_fn_complex_namedContext*>(context)) {
       return visitType_fn_complex_named(ctx);
     }
+    if (const auto ctx =
+            dynamic_cast<TsilParser::Type_variationContext*>(context)) {
+      return visitType_variation(ctx);
+    }
     if (const auto ctx = dynamic_cast<TsilParser::ParamContext*>(context)) {
       return visitParam(ctx);
     }
@@ -1108,6 +1112,17 @@ namespace tsil::parser {
     створити_тип_дії->параметри = VecToArr(params);
     створити_тип_дії->тип_результату = AAV(visitContext(ctx->restyp));
     return AV(this, ctx, АСДВидСтворитиТипДії, створити_тип_дії);
+  }
+
+  std::any TsilASTVisitor::visitType_variation(
+      TsilParser::Type_variationContext* ctx) {
+    const auto тип_варіація_асд_дані = new АСДДаніТипВаріація();
+    std::vector<АСДЗначення*> types;
+    for (const auto& type : ctx->type()) {
+      types.push_back(AAV(visitContext(type)));
+    }
+    тип_варіація_асд_дані->типи = AAVecToList(types);
+    return AV(this, ctx, АСДВидТипВаріація, тип_варіація_асд_дані);
   }
 
   std::any TsilASTVisitor::visitParam(TsilParser::ParamContext* ctx) {

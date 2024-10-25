@@ -239,6 +239,9 @@ public:
   virtual void enterType_simple_type(TsilParser::Type_simple_typeContext *ctx) = 0;
   virtual void exitType_simple_type(TsilParser::Type_simple_typeContext *ctx) = 0;
 
+  virtual void enterType_variation(TsilParser::Type_variationContext *ctx) = 0;
+  virtual void exitType_variation(TsilParser::Type_variationContext *ctx) = 0;
+
   virtual void enterType_nested(TsilParser::Type_nestedContext *ctx) = 0;
   virtual void exitType_nested(TsilParser::Type_nestedContext *ctx) = 0;
 

@@ -154,7 +154,19 @@
   синонім END_OF_VISIBLE = CODE::TILDE;
 }
 
+структура Sta {
+  a: ц8;
+  b: ц8;
+  c: ц8;
+  d: ц8;
+}
+
+структура Stb {
+  a: ц8;
+}
+
 зовнішня дія main(): ц32 {
+  змінна ціль wtf: Sta | Stb = Sta {};
   змінна ціль символ: ц8 = ASCII::START_OF_VISIBLE;
   поки символ <= ASCII::END_OF_VISIBLE {
     putchar(символ);
