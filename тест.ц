@@ -171,14 +171,18 @@
 }
 
 зовнішня дія main(): ц32 {
+  ціль д: () -> ніщо;
   змінна ціль wtf: Sta | Stb | Stc;
+  синонім wStc = wtf як Stc;
+  синонім wStc_a = (wtf як Stc).a як Sta;
   wtf = wtf як Stc;
-  ((wtf як Stc).a як Sta).b = 3;
+  wStc_a.b = ASCII::CODE::a;
   змінна ціль символ: ц8 = ASCII::START_OF_VISIBLE;
   поки символ <= ASCII::END_OF_VISIBLE {
     putchar(символ);
     символ = символ + 1;
   }
   putchar(ASCII::CODE::LINE_FEED);
+  putchar(wStc_a.b);
   вернути 0;
 }
