@@ -171,8 +171,9 @@
 }
 
 зовнішня дія main(): ц32 {
-  змінна ціль wtf: Sta | Stb | Stc = Stb {};
-  wtf = Stc {};
+  змінна ціль wtf: Sta | Stb | Stc;
+  wtf = wtf як Stc;
+  ((wtf як Stc).a як Sta).b = 3;
   змінна ціль символ: ц8 = ASCII::START_OF_VISIBLE;
   поки символ <= ASCII::END_OF_VISIBLE {
     putchar(символ);
