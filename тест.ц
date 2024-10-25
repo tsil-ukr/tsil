@@ -157,7 +157,9 @@
 дія a();
 дія a() {}
 дія a(x: ц32);
-дія a(x: ц32) {}
+дія a(x: ц32) {
+  putchar(x як ц8);
+}
 
 структура Sta {
   a: ц8;
@@ -180,6 +182,7 @@
   синонім wStc = wtf як Stc;
   синонім wStc_a = (wtf як Stc).a як Sta;
   wtf = wtf як Stc;
+  a(65ц32);
   wStc_a.b = ASCII::CODE::a;
   змінна ціль символ: ц8 = ASCII::START_OF_VISIBLE;
   поки символ <= ASCII::END_OF_VISIBLE {
