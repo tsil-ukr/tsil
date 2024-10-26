@@ -263,6 +263,12 @@ public:
   virtual void enterParam(TsilParser::ParamContext *ctx) = 0;
   virtual void exitParam(TsilParser::ParamContext *ctx) = 0;
 
+  virtual void enterPreproc_if(TsilParser::Preproc_ifContext *ctx) = 0;
+  virtual void exitPreproc_if(TsilParser::Preproc_ifContext *ctx) = 0;
+
+  virtual void enterPreproc_throw(TsilParser::Preproc_throwContext *ctx) = 0;
+  virtual void exitPreproc_throw(TsilParser::Preproc_throwContext *ctx) = 0;
+
 
 };
 

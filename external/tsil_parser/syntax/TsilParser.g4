@@ -67,7 +67,7 @@ typeless_object: '{' (object_arg (',' object_arg)* ','?)? '}';
 structure_define: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? (';' | ('{' (structure_element)* '}'));
 structure_element: param ';';
 
-diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? (';' | body);
+diia_define: ((not_var='не')? 'змінна')? (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? (';' | body);
 
 tsil_define: (td_var='змінна' | td_immut='стала')? td_const='ціль' id=ID (':' type)? ('=' (value_expr=expr | value_object=typeless_object))? ';';
 
@@ -104,6 +104,7 @@ body_element: structure_define
             | body
             | exec
             | return
+            | preproc
             | semi=';';
 return: 'вернути' (value_expr=expr | value_object=typeless_object)? ';';
 
@@ -122,3 +123,6 @@ type: '(' type ')' #type_nested
     | single_type ('|' single_type)+ #type_variation;
 
 param: id=ID (':' type)?;
+
+preproc: '%' '[' 'якщо' cond=operation ']' (body_element)* ('%' '[' 'інакше' ']' (body_element)*)? '%' '[' '/' 'якщо' ']' #preproc_if
+       | '%' '[' 'впасти' cond=operation ']' #preproc_throw;

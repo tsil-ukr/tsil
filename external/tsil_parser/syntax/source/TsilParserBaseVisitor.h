@@ -347,6 +347,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitPreproc_if(TsilParser::Preproc_ifContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitPreproc_throw(TsilParser::Preproc_throwContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
 
 };
 

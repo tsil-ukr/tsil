@@ -37,7 +37,7 @@ public:
     RuleSection_define = 25, RuleSet = 26, RulePosition_set = 27, RuleSection_set = 28, 
     RuleIf = 29, RuleWhile = 30, RuleExec = 31, RuleBody = 32, RuleBody_element = 33, 
     RuleReturn = 34, RuleSimple_type = 35, RuleSingle_type = 36, RuleType = 37, 
-    RuleParam = 38
+    RuleParam = 38, RulePreproc = 39
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -95,7 +95,8 @@ public:
   class Simple_typeContext;
   class Single_typeContext;
   class TypeContext;
-  class ParamContext; 
+  class ParamContext;
+  class PreprocContext; 
 
   class  FileContext : public antlr4::ParserRuleContext {
   public:
@@ -1004,6 +1005,7 @@ public:
 
   class  Diia_defineContext : public antlr4::ParserRuleContext {
   public:
+    antlr4::Token *not_var = nullptr;
     antlr4::Token *extern_ = nullptr;
     antlr4::Token *local = nullptr;
     antlr4::Token *intern = nullptr;
@@ -1018,6 +1020,7 @@ public:
     antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *SEMICOLON();
     BodyContext *body();
+    antlr4::tree::TerminalNode *KW_VAR();
     antlr4::tree::TerminalNode *LESSER();
     antlr4::tree::TerminalNode *GREATER();
     std::vector<ParamContext *> param();
@@ -1031,6 +1034,7 @@ public:
     TypeContext *type();
     std::vector<antlr4::tree::TerminalNode *> COMA();
     antlr4::tree::TerminalNode* COMA(size_t i);
+    antlr4::tree::TerminalNode *KW_NOT();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1344,6 +1348,7 @@ public:
     BodyContext *body();
     ExecContext *exec();
     ReturnContext *return_();
+    PreprocContext *preproc();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1633,6 +1638,61 @@ public:
   };
 
   ParamContext* param();
+
+  class  PreprocContext : public antlr4::ParserRuleContext {
+  public:
+    PreprocContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+   
+    PreprocContext() = default;
+    void copyFrom(PreprocContext *context);
+    using antlr4::ParserRuleContext::copyFrom;
+
+    virtual size_t getRuleIndex() const override;
+
+   
+  };
+
+  class  Preproc_ifContext : public PreprocContext {
+  public:
+    Preproc_ifContext(PreprocContext *ctx);
+
+    TsilParser::OperationContext *cond = nullptr;
+    std::vector<antlr4::tree::TerminalNode *> MOD();
+    antlr4::tree::TerminalNode* MOD(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> BRACKET_OPEN();
+    antlr4::tree::TerminalNode* BRACKET_OPEN(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> KW_IF();
+    antlr4::tree::TerminalNode* KW_IF(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> BRACKET_CLOSE();
+    antlr4::tree::TerminalNode* BRACKET_CLOSE(size_t i);
+    antlr4::tree::TerminalNode *DIVIDE();
+    OperationContext *operation();
+    std::vector<Body_elementContext *> body_element();
+    Body_elementContext* body_element(size_t i);
+    antlr4::tree::TerminalNode *KW_ELSE();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  Preproc_throwContext : public PreprocContext {
+  public:
+    Preproc_throwContext(PreprocContext *ctx);
+
+    TsilParser::OperationContext *cond = nullptr;
+    antlr4::tree::TerminalNode *MOD();
+    antlr4::tree::TerminalNode *BRACKET_OPEN();
+    antlr4::tree::TerminalNode *KW_THROW();
+    antlr4::tree::TerminalNode *BRACKET_CLOSE();
+    OperationContext *operation();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  PreprocContext* preproc();
 
 
   bool sempred(antlr4::RuleContext *_localctx, size_t ruleIndex, size_t predicateIndex) override;

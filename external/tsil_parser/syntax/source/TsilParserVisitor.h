@@ -185,6 +185,10 @@ public:
 
     virtual std::any visitParam(TsilParser::ParamContext *context) = 0;
 
+    virtual std::any visitPreproc_if(TsilParser::Preproc_ifContext *context) = 0;
+
+    virtual std::any visitPreproc_throw(TsilParser::Preproc_throwContext *context) = 0;
+
 
 };
 
