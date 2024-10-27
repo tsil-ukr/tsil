@@ -3,6 +3,8 @@ project(tsil_llvm)
 
 set(CMAKE_CXX_STANDARD 20)
 
+add_subdirectory(zlib)
+
 include_directories(../../.llvm-source-and-build/llvm-project-19.1.0.build/llvm/include)
 
 find_package(LLVM REQUIRED CONFIG PATHS ../../.llvm-source-and-build/llvm-project-19.1.0.build/llvm NO_DEFAULT_PATH)
@@ -214,4 +216,4 @@ llvm_map_components_to_libnames(llvm_libs
 )
 
 add_library(tsil_llvm STATIC tsil_llvm.cpp)
-target_link_libraries(tsil_llvm PUBLIC ${llvm_libs})
+target_link_libraries(tsil_llvm PUBLIC ${llvm_libs} z)
