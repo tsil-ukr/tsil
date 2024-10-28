@@ -57,6 +57,10 @@ set(TSIL_SRC
 
 add_executable(tsil ${TSIL_SRC})
 target_link_libraries(tsil PUBLIC tsil_parser tsil_llvm tsil_toc bib)
-target_link_options(tsil PUBLIC -L../.плавлення-бібліотеки/бібліотека -static)
+if (DEFINED TSIL_STATIC)
+    target_link_options(tsil PUBLIC -L../.плавлення-бібліотеки/бібліотека -static)
+else ()
+    target_link_options(tsil PUBLIC -L../.плавлення-бібліотеки/бібліотека)
+endif ()
 target_compile_options(tsil PUBLIC -fexceptions -DTSIL_VERSION="${TSIL_VERSION}")
 set_target_properties(tsil PROPERTIES OUTPUT_NAME "ціль")

@@ -103,8 +103,8 @@ void printHelp() {
 int main(int argc, char** argv) {
   TsilCliConfig tsilCliConfig{.println = println};
   TsilCliParsedCommand parsedCommand;
-  int result =
-      tsil_cli_parse(tsilCliConfig, argc - 1, argv + 1, &parsedCommand);
+  int result = tsil_cli_parse(tsilCliConfig, argv[0], argc - 1, argv + 1,
+                              &parsedCommand);
   if (result != 0) {
     return result;
   }
@@ -116,6 +116,15 @@ int main(int argc, char** argv) {
     TsilCliCompileCommand command =
         std::get<TsilCliCompileCommand>(parsedCommand.c);
     return tsil_cli_run_compile_command(tsilCliConfig, command);
+  }
+  if (parsedCommand.type == TsilCliParsedCommandTypeLLD) {
+    TsilCliLLDCommand command = std::get<TsilCliLLDCommand>(parsedCommand.c);
+    return tsil_cli_do_lld(tsilCliConfig, command);
+  }
+  if (parsedCommand.type == TsilCliParsedCommandTypeClang) {
+    TsilCliClangCommand command =
+        std::get<TsilCliClangCommand>(parsedCommand.c);
+    return tsil_cli_do_clang(tsilCliConfig, command);
   }
   tsilCliConfig.println("Здається ви виявили помилку...");
   return 1;

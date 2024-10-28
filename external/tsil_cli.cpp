@@ -31,6 +31,7 @@ void write_to_file_by_path(TsilCliConfig config,
 }
 
 extern "C" int tsil_cli_parse(TsilCliConfig config,
+                              char* firstArg,
                               size_t argsSize,
                               char** args,
                               TsilCliParsedCommand* parsedCommandPtr) {
@@ -39,10 +40,32 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
     return 1;
   }
 
+  if (argsSize >= 1) {
+    if (std::string(args[0]) == "lld") {
+      TsilCliLLDCommand lldCommand{};
+      lldCommand.argc = argsSize - 1;
+      lldCommand.argv = args + 1;
+      parsedCommandPtr->type = TsilCliParsedCommandTypeLLD;
+      parsedCommandPtr->c = lldCommand;
+      return 0;
+    } else if ((std::string(args[0]) == "clang") ||
+               (std::string(args[0]) == "clang++")) {
+      TsilCliClangCommand clangCommand{};
+      clangCommand.path = firstArg;
+      clangCommand.prependArg = args[0];
+      clangCommand.argsSize = argsSize - 1;
+      clangCommand.args = args + 1;
+      parsedCommandPtr->type = TsilCliParsedCommandTypeClang;
+      parsedCommandPtr->c = clangCommand;
+      return 0;
+    }
+  }
+
   auto toc = parseTOC(std::vector<std::string>(args, args + argsSize),
                       {
                           "допомога",
                           "скомпілювати",
+                          "lld",
                       });
   if (std::holds_alternative<std::string>(toc)) {
     config.println(strdup(std::get<std::string>(toc).c_str()));
@@ -56,7 +79,7 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
 
   if (command == "допомога") {
     parsedCommandPtr->type = TsilCliParsedCommandTypeHelp;
-    parsedCommandPtr->c = TsilCliFuseHelp{};
+    parsedCommandPtr->c = TsilCliHelpCommand{};
     return 0;
   }
 
@@ -257,4 +280,15 @@ extern "C" int tsil_cli_do_compile(
     config.println("Unsupported output format");
     return 1;
   }
+}
+
+extern "C" int tsil_cli_do_lld(TsilCliConfig config,
+                               TsilCliLLDCommand command) {
+  return tsil_llvm_run_lld(command.argc, command.argv);
+}
+
+extern "C" int tsil_cli_do_clang(TsilCliConfig config,
+                                 TsilCliClangCommand command) {
+  return tsil_clang_main(command.path, command.prependArg, command.argsSize,
+                         command.args);
 }

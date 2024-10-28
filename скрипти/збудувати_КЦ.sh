@@ -70,6 +70,9 @@ cd ..
 
 mkdir -p build
 cd build
-cmake ../external/ -G Ninja -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always
+cmake ../external/ -G Ninja \
+  -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always \
+  -DTSIL_STATIC="ON" \
+  -DTSIL_LLVM_PATH="../../.llvm-source-and-build/llvm-project-19.1.0.build/llvm"
 ninja
 cd ..

@@ -1,3 +1,5 @@
+#include "clang-c/Index.h"
+#include "lld/Common/Driver.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Constants.h"
@@ -17,7 +19,10 @@
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/TargetParser/Host.h"
 
+#include <llvm/Support/LLVMDriver.h>
 #include <iostream>
+
+LLD_HAS_DRIVER(elf)
 
 struct XLMStruct {
   llvm::LLVMContext* llvmContext;
@@ -796,5 +801,14 @@ void dumpOBJ(TL* m, std::vector<unsigned char>& out) {
   pass.run(*m->llvmModule);
 
   out = std::vector<unsigned char>(data.begin(), data.end());
+}
+
+int tsil_llvm_run_lld(int argc, char** argv) {
+  if (argc) {
+    auto arrayRef = llvm::ArrayRef<char*>(argv, argc);
+    return lld::elf::link(arrayRef, llvm::outs(), llvm::errs(), true, false);
+  } else {
+    return 1;
+  }
 }
 }

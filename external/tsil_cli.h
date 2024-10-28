@@ -61,22 +61,42 @@ struct TsilCliFuseCommand {
   char** inputPaths;
 };
 
-struct TsilCliFuseHelp {
+struct TsilCliHelpCommand {
   bool someDummyField;
+};
+
+struct TsilCliLLDCommand {
+  size_t argc;
+  char** argv;
+};
+
+struct TsilCliClangCommand {
+  char* path;
+  char* prependArg;
+  size_t argsSize;
+  char** args;
 };
 
 enum TsilCliParsedCommandType {
   TsilCliParsedCommandTypeHelp,
   TsilCliParsedCommandTypeCompile,
   TsilCliParsedCommandTypeFuse,
+  TsilCliParsedCommandTypeLLD,
+  TsilCliParsedCommandTypeClang,
 };
 
 struct TsilCliParsedCommand {
   TsilCliParsedCommandType type;
-  std::variant<TsilCliFuseHelp, TsilCliCompileCommand, TsilCliFuseCommand> c;
+  std::variant<TsilCliHelpCommand,
+               TsilCliCompileCommand,
+               TsilCliFuseCommand,
+               TsilCliLLDCommand,
+               TsilCliClangCommand>
+      c;
 };
 
 extern "C" int tsil_cli_parse(TsilCliConfig config,
+                              char* firstArg,
                               size_t argsSize,
                               char** args,
                               TsilCliParsedCommand* parsedCommandPtr);
@@ -91,3 +111,15 @@ extern "C" int tsil_cli_do_compile(
     TsilCliCompileCommandOptions options,
     char* inputPath,
     char* inputSource);
+
+extern "C" int tsil_cli_do_fuse(TsilCliConfig config,
+                                TsilCliWriter outputWriter,
+                                TsilCliFuseCommandOutputFormat outputFormat,
+                                TsilCliFuseCommandOptions options,
+                                char* outputPath,
+                                unsigned long inputPathsSize,
+                                char** inputPaths);
+
+extern "C" int tsil_cli_do_lld(TsilCliConfig config, TsilCliLLDCommand command);
+extern "C" int tsil_cli_do_clang(TsilCliConfig config,
+                                 TsilCliClangCommand command);
