@@ -72,10 +72,10 @@ llvm_map_components_to_libnames(llvm_libs
         #        debuginfopdb
         #        demangle
         #        diff
-        #        dlltooldriver
-        #        dwarflinker
-        #        dwarflinkerclassic
-        #        dwarflinkerparallel
+        dlltooldriver
+        dwarflinker
+        dwarflinkerclassic
+        dwarflinkerparallel
         #        dwp
         #        executionengine
         #        exegesis
@@ -85,7 +85,7 @@ llvm_map_components_to_libnames(llvm_libs
         #        exegesisx86
         #        extensions
         #        filecheck
-        #        frontenddriver
+        frontenddriver
         #        frontendhlsl
         #        frontendoffloading
         #        frontendopenacc
@@ -112,15 +112,15 @@ llvm_map_components_to_libnames(llvm_libs
         #        lanaidesc
         #        lanaidisassembler
         #        lanaiinfo
-        #        libdriver
+        libdriver
         #        lineeditor
-        #        linker
+        linker
         #        loongarchasmparser
         #        loongarchcodegen
         #        loongarchdesc
         #        loongarchdisassembler
         #        loongarchinfo
-        #        lto
+        lto
         #        mc
         #        mca
         #        mcdisassembler
@@ -200,7 +200,7 @@ llvm_map_components_to_libnames(llvm_libs
         #        webassemblydisassembler
         #        webassemblyinfo
         #        webassemblyutils
-        #        windowsdriver
+        windowsdriver
         #        windowsmanifest
         #        x86asmparser
         #        x86codegen
