@@ -355,6 +355,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitTake(TsilParser::TakeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitTake_element(TsilParser::Take_elementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
 
 };
 

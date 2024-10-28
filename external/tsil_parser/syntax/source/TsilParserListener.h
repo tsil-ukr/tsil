@@ -269,6 +269,12 @@ public:
   virtual void enterPreproc_throw(TsilParser::Preproc_throwContext *ctx) = 0;
   virtual void exitPreproc_throw(TsilParser::Preproc_throwContext *ctx) = 0;
 
+  virtual void enterTake(TsilParser::TakeContext *ctx) = 0;
+  virtual void exitTake(TsilParser::TakeContext *ctx) = 0;
+
+  virtual void enterTake_element(TsilParser::Take_elementContext *ctx) = 0;
+  virtual void exitTake_element(TsilParser::Take_elementContext *ctx) = 0;
+
 
 };
 

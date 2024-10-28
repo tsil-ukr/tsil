@@ -12,6 +12,8 @@ add_subdirectory(tsil_toc)
 set(TSIL_SRC
         main.cpp
         tsil_cli.cpp
+        bib.c
+        ../.плавлення/скомпільоване/біб.ц.o
         ../.плавлення/скомпільоване/Обʼєкт.ц.o
         ../.плавлення/скомпільоване/ОбʼєктГрупиДій.ц.o
         ../.плавлення/скомпільоване/ОбʼєктДії.ц.o
@@ -27,6 +29,7 @@ set(TSIL_SRC
         ../.плавлення/скомпільоване/Ц.ц.o
         ../.плавлення/скомпільоване/К/К.ц.o
         ../.плавлення/скомпільоване/К/КВернути.ц.o
+        ../.плавлення/скомпільоване/К/КВзяти.ц.o
         ../.плавлення/скомпільоване/К/КВиконати.ц.o
         ../.плавлення/скомпільоване/К/КВиконатиШаблон.ц.o
         ../.плавлення/скомпільоване/К/КЗвернутись.ц.o
@@ -56,11 +59,11 @@ set(TSIL_SRC
 )
 
 add_executable(tsil ${TSIL_SRC})
-target_link_libraries(tsil PUBLIC tsil_parser tsil_llvm tsil_toc bib)
+target_link_libraries(tsil PUBLIC tsil_parser tsil_llvm tsil_toc)
 if (DEFINED TSIL_STATIC)
-    target_link_options(tsil PUBLIC -L../.плавлення-бібліотеки/бібліотека -static)
+    target_link_options(tsil PUBLIC -static)
 else ()
-    target_link_options(tsil PUBLIC -L../.плавлення-бібліотеки/бібліотека)
+    target_link_options(tsil PUBLIC)
 endif ()
 target_compile_options(tsil PUBLIC -fexceptions -DTSIL_VERSION="${TSIL_VERSION}")
 set_target_properties(tsil PROPERTIES OUTPUT_NAME "ціль")

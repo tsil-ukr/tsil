@@ -271,6 +271,12 @@ public:
   virtual void enterPreproc_throw(TsilParser::Preproc_throwContext * /*ctx*/) override { }
   virtual void exitPreproc_throw(TsilParser::Preproc_throwContext * /*ctx*/) override { }
 
+  virtual void enterTake(TsilParser::TakeContext * /*ctx*/) override { }
+  virtual void exitTake(TsilParser::TakeContext * /*ctx*/) override { }
+
+  virtual void enterTake_element(TsilParser::Take_elementContext * /*ctx*/) override { }
+  virtual void exitTake_element(TsilParser::Take_elementContext * /*ctx*/) override { }
+
 
   virtual void enterEveryRule(antlr4::ParserRuleContext * /*ctx*/) override { }
   virtual void exitEveryRule(antlr4::ParserRuleContext * /*ctx*/) override { }

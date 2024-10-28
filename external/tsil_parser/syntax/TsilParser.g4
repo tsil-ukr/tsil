@@ -69,7 +69,7 @@ structure_element: param ';';
 
 diia_define: ((not_var='не')? 'змінна')? (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? (';' | body);
 
-tsil_define: (td_var='змінна' | td_immut='стала')? td_const='ціль' id=ID (':' type)? ('=' (value_expr=expr | value_object=typeless_object))? ';';
+tsil_define: (td_var='змінна' | td_immut='стала' | td_const='ціль') id=ID (':' type)? ('=' (value_expr=expr | value_object=typeless_object))? ';';
 
 assign: id=ID '=' (value_expr=expr | value_object=typeless_object) ';';
 
@@ -105,6 +105,7 @@ body_element: structure_define
             | exec
             | return
             | preproc
+            | take
             | semi=';';
 return: 'вернути' (value_expr=expr | value_object=typeless_object)? ';';
 
@@ -126,3 +127,6 @@ param: id=ID (':' type)?;
 
 preproc: '%' '[' 'якщо' cond=operation ']' (body_element)* ('%' '[' 'інакше' ']' (body_element)*)? '%' '[' '/' 'якщо' ']' #preproc_if
        | '%' '[' 'впасти' cond=operation ']' #preproc_throw;
+
+take: 'взяти' (type_id=ID)? take_element ('/' take_element)* ';';
+take_element: ID | STRING;

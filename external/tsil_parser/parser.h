@@ -228,6 +228,8 @@ namespace tsil::parser {
         TsilParser::Type_variationContext* ctx) override;
 
     std::any visitParam(TsilParser::ParamContext* ctx) override;
+
+    std::any visitTake(TsilParser::TakeContext* ctx) override;
   };
 
   class TsilParserErrorListener final : public antlr4::BaseErrorListener {

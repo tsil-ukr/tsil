@@ -37,7 +37,7 @@ public:
     RuleSection_define = 25, RuleSet = 26, RulePosition_set = 27, RuleSection_set = 28, 
     RuleIf = 29, RuleWhile = 30, RuleExec = 31, RuleBody = 32, RuleBody_element = 33, 
     RuleReturn = 34, RuleSimple_type = 35, RuleSingle_type = 36, RuleType = 37, 
-    RuleParam = 38, RulePreproc = 39
+    RuleParam = 38, RulePreproc = 39, RuleTake = 40, RuleTake_element = 41
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -96,7 +96,9 @@ public:
   class Single_typeContext;
   class TypeContext;
   class ParamContext;
-  class PreprocContext; 
+  class PreprocContext;
+  class TakeContext;
+  class Take_elementContext; 
 
   class  FileContext : public antlr4::ParserRuleContext {
   public:
@@ -1056,13 +1058,13 @@ public:
     Tsil_defineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *SEMICOLON();
-    antlr4::tree::TerminalNode *KW_TSIL();
     antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *KW_VAR();
+    antlr4::tree::TerminalNode *KW_IMMUT();
+    antlr4::tree::TerminalNode *KW_TSIL();
     antlr4::tree::TerminalNode *COLON();
     TypeContext *type();
     antlr4::tree::TerminalNode *EQUAL();
-    antlr4::tree::TerminalNode *KW_VAR();
-    antlr4::tree::TerminalNode *KW_IMMUT();
     ExprContext *expr();
     Typeless_objectContext *typeless_object();
 
@@ -1349,6 +1351,7 @@ public:
     ExecContext *exec();
     ReturnContext *return_();
     PreprocContext *preproc();
+    TakeContext *take();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1693,6 +1696,44 @@ public:
   };
 
   PreprocContext* preproc();
+
+  class  TakeContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *type_id = nullptr;
+    TakeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_IMPORT();
+    std::vector<Take_elementContext *> take_element();
+    Take_elementContext* take_element(size_t i);
+    antlr4::tree::TerminalNode *SEMICOLON();
+    std::vector<antlr4::tree::TerminalNode *> DIVIDE();
+    antlr4::tree::TerminalNode* DIVIDE(size_t i);
+    antlr4::tree::TerminalNode *ID();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  TakeContext* take();
+
+  class  Take_elementContext : public antlr4::ParserRuleContext {
+  public:
+    Take_elementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *STRING();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Take_elementContext* take_element();
 
 
   bool sempred(antlr4::RuleContext *_localctx, size_t ruleIndex, size_t predicateIndex) override;

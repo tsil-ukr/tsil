@@ -1,4 +1,5 @@
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -134,4 +135,28 @@ int main(int argc, char** argv) {
 
 extern "C" char* позитивне_в_ю8(unsigned long value) {
   return (char*)strdup(std::to_string(value).c_str());
+}
+
+extern "C" char* отримати_копію_cwd() {
+  char* cwd = strdup(std::filesystem::current_path().c_str());
+  return cwd;
+}
+
+extern "C" size_t перевірити_чи_файл_існує(char* path) {
+  return std::filesystem::exists(path);
+}
+
+extern "C" size_t перевірити_чи_файл_доступний(char* path) {
+  return std::filesystem::exists(path) &&
+         std::filesystem::is_regular_file(path);
+}
+
+extern "C" char* прочитати_файл(char* path) {
+  std::ifstream file(path);
+  if (!file.is_open()) {
+    return nullptr;
+  }
+  std::string content((std::istreambuf_iterator<char>(file)),
+                      std::istreambuf_iterator<char>());
+  return strdup(content.c_str());
 }

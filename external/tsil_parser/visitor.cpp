@@ -264,6 +264,11 @@ namespace tsil::parser {
     if (const auto ctx = dynamic_cast<TsilParser::ParamContext*>(context)) {
       return visitParam(ctx);
     }
+    if (const auto ctx = dynamic_cast<TsilParser::TakeContext*>(context)) {
+      return visitTake(ctx);
+    }
+    std::cout << "[PARSER] Unknown context: " << context->getText()
+              << std::endl;
     return nullptr;
   }
 
@@ -993,6 +998,9 @@ namespace tsil::parser {
     if (ctx->return_() != nullptr) {
       return visitReturn(ctx->return_());
     }
+    if (ctx->take() != nullptr) {
+      return visitTake(ctx->take());
+    }
     std::cout << "Unknown body element" << std::endl;
     return nullptr;
   }
@@ -1138,6 +1146,18 @@ namespace tsil::parser {
       параметр->тип = AAV(visitContext(ctx->type()));
     }
     return параметр;
+  }
+
+  std::any TsilASTVisitor::visitTake(TsilParser::TakeContext* ctx) {
+    const auto асд_дані_взяти = new АСДДаніВзяти();
+        асд_дані_взяти->тип = ІД(this, ctx->type_id, ctx->type_id->getText());
+    std::vector<Ідентифікатор*> шлях;
+    for (const auto& take_element : ctx->take_element()) {
+      шлях.push_back(ІД(this, take_element, take_element->getText()));
+    }
+    асд_дані_взяти->довжина_шляху = шлях.size();
+    асд_дані_взяти->шлях = VecToArr(шлях);
+        return AV(this, ctx, АСДВидВзяти, асд_дані_взяти);
   }
 
 } // namespace tsil::parser

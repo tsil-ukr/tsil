@@ -2,12 +2,26 @@
 
 set -e
 
+#rm -rf .плавлення
+
+TSIL_MODE="$1"
+if [ -z "$TSIL_MODE" ]; then
+  TSIL_MODE="old"
+fi
+
+if [ "$TSIL_MODE" == "old" ]; then
+  TSIL="../build-old/ціль"
+else
+  TSIL="../build/ціль"
+fi
+
 export CXX="clang++"
 export CC="clang"
 export AR="llvm-ar"
 export RANLIB="llvm-ranlib"
 
 KTS_FILES=(
+  "біб.ц"
   "Обʼєкт.ц"
   "ОбʼєктГрупиДій.ц"
   "ОбʼєктДії.ц"
@@ -23,6 +37,7 @@ KTS_FILES=(
   "Ц.ц"
   "К/К.ц"
   "К/КВернути.ц"
+  "К/КВзяти.ц"
   "К/КВиконати.ц"
   "К/КВиконатиШаблон.ц"
   "К/КЗвернутись.ц"
@@ -59,8 +74,8 @@ for KTS_FILE in "${KTS_FILES[@]}"; do
   CHANGED_AT=$(stat -c %y $KTS_FILE)
   CHANGED_AT_OLD=$(cat "../.плавлення/скомпільоване/$KTS_FILE.ll.changed_at" 2>/dev/null || echo "")
   if [ ! -f "../.плавлення/скомпільоване/$KTS_FILE.ll" ] || [ "$CHANGED_AT" != "$CHANGED_AT_OLD" ]; then
-    echo "../build-old/ціль ../.плавлення/скомпільоване/$KTS_FILE.ll скомпілювати --бібліотека=$PWDR/.плавлення-бібліотеки/бібліотека $KTS_FILE"
-    ../build-old/ціль ../.плавлення/скомпільоване/"$KTS_FILE".ll скомпілювати --бібліотека="$PWDR/.плавлення-бібліотеки/бібліотека" "$KTS_FILE"
+    echo "$TSIL ../.плавлення/скомпільоване/$KTS_FILE.ll скомпілювати --бібліотека=$PWDR/.плавлення-бібліотеки/бібліотека $KTS_FILE"
+    $TSIL ../.плавлення/скомпільоване/"$KTS_FILE".ll скомпілювати --бібліотека="$PWDR/.плавлення-бібліотеки/бібліотека" "$KTS_FILE"
     echo "$CXX -c -o ../.плавлення/скомпільоване/$KTS_FILE.o ../.плавлення/скомпільоване/$KTS_FILE.ll -Wno-override-module"
     $CXX -c -o ../.плавлення/скомпільоване/"$KTS_FILE".o ../.плавлення/скомпільоване/"$KTS_FILE".ll -Wno-override-module
     echo "$CHANGED_AT" > "../.плавлення/скомпільоване/$KTS_FILE.ll.changed_at"
