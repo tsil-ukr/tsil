@@ -451,8 +451,6 @@ int clang_main(int Argc, char** Argv, const llvm::ToolContext& ToolContext) {
   return Res;
 }
 
-#include <iostream>
-
 extern "C" int tsil_clang_main(char* path,
                                char* prependArg,
                                size_t argsSize,
@@ -468,10 +466,11 @@ extern "C" int tsil_clang_main(char* path,
     fullPath.append(prependArg);
   }
   ToolContext.Path = fullPath.data();
+  int newArgsSize = argsSize + 1;
   auto newArgs = new char*[argsSize + 1];
   newArgs[0] = fullPath.data();
   for (size_t i = 0; i < argsSize; i++) {
     newArgs[i + 1] = args[i];
   }
-  return clang_main(argsSize + 1, newArgs, ToolContext);
+  return clang_main(newArgsSize, newArgs, ToolContext);
 }
