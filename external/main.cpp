@@ -78,17 +78,15 @@ void printHelp() {
   std::cout << std::endl;
   std::cout << "Команди:" << std::endl;
   std::cout << "  <вихід> скомпілювати [опції...] <вхід>" << std::endl;
-  std::cout
-      << "    Опис: скомпілювати вхідний файл в зрозумілий для LLVM формат"
-      << std::endl;
-  std::cout << "    Вихід: .ll .bc" << std::endl;
+  std::cout << "    Опис: скомпілювати вхідний файл" << std::endl;
+  std::cout << "    Вихід: .o .ll .bc" << std::endl;
   std::cout << "    Вхід: .ц" << std::endl;
   std::cout << "    Опції:" << std::endl;
   std::cout << "      --режим=<розробка|випуск>" << std::endl;
   std::cout << "      --бібліотека=\"власний шлях до бібліотеки\"" << std::endl;
   std::cout << std::endl;
   std::cout << "  <вихід> сплавити [опції...]  <вхід...>" << std::endl;
-  std::cout << "    Опис: сплавити через CLang" << std::endl;
+  std::cout << "    Опис: сплавити файли" << std::endl;
   std::cout << "    Вихід: без розширення або .o .so .wasm" << std::endl;
   std::cout << "    Вхід: .ц .c .cpp .ll .bc" << std::endl;
   std::cout << "    Опції:" << std::endl;
@@ -116,6 +114,10 @@ int main(int argc, char** argv) {
     TsilCliCompileCommand command =
         std::get<TsilCliCompileCommand>(parsedCommand.c);
     return tsil_cli_run_compile_command(tsilCliConfig, command);
+  }
+  if (parsedCommand.type == TsilCliParsedCommandTypeFuse) {
+    TsilCliFuseCommand command = std::get<TsilCliFuseCommand>(parsedCommand.c);
+    return tsil_cli_run_fuse_command(tsilCliConfig, command);
   }
   if (parsedCommand.type == TsilCliParsedCommandTypeLLD) {
     TsilCliLLDCommand command = std::get<TsilCliLLDCommand>(parsedCommand.c);

@@ -65,7 +65,7 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
                       {
                           "допомога",
                           "скомпілювати",
-                          "lld",
+                          "сплавити",
                       });
   if (std::holds_alternative<std::string>(toc)) {
     config.println(strdup(std::get<std::string>(toc).c_str()));
@@ -161,6 +161,10 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
     return 0;
   }
 
+  if (command == "сплавити") {
+    // ...
+  }
+
   config.println("Невідома команда");
   return 1;
 }
@@ -186,6 +190,11 @@ extern "C" int tsil_cli_run_compile_command(TsilCliConfig config,
       return result;
     }
   }
+  return 0;
+}
+
+extern "C" int tsil_cli_run_fuse_command(TsilCliConfig config,
+                                         TsilCliFuseCommand command) {
   return 0;
 }
 

@@ -49,16 +49,24 @@ enum TsilCliFuseCommandOutputFormat {
   TsilCliCompileCommandOutputFormatELF,
 };
 
+struct TsilCliFuseCommandOutput {
+  char* path;
+  TsilCliFuseCommandOutputFormat format;
+};
+
+struct TsilCliFuseCommandInput {
+  char* path;
+};
+
 struct TsilCliFuseCommandOptions {
-  TsilCliFuseCommandOutputFormat outFormat;
   std::string libraryPath;
 };
 
 struct TsilCliFuseCommand {
-  char* outputPath;
+  size_t outputsSize;
+  TsilCliFuseCommandOutput* outputs;
   TsilCliFuseCommandOptions options;
-  unsigned long inputPathsSize;
-  char** inputPaths;
+  TsilCliFuseCommandInput input;
 };
 
 struct TsilCliHelpCommand {
@@ -103,6 +111,8 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
 
 extern "C" int tsil_cli_run_compile_command(TsilCliConfig config,
                                             TsilCliCompileCommand command);
+extern "C" int tsil_cli_run_fuse_command(TsilCliConfig config,
+                                         TsilCliFuseCommand command);
 
 extern "C" int tsil_cli_do_compile(
     TsilCliConfig config,
