@@ -50,6 +50,7 @@
 зовнішня дія tsil_llvm_create_uint64(L: комірка<LLVM::TL>, значення: п64): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_create_float(L: комірка<LLVM::TL>, значення: д32): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_create_double(L: комірка<LLVM::TL>, значення: д64): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_string(L: комірка<LLVM::TL>, значення: памʼять<п8>): комірка<LLVM::Value>;
 
 зовнішня дія tsil_llvm_get_function_type(L: комірка<LLVM::TL>, функція: комірка<LLVM::Function>): комірка<LLVM::FunctionType>;
 
@@ -241,6 +242,10 @@
 
   дія const_double(L: комірка<TL>, значення: д64): комірка<Value> {
     вернути tsil_llvm_create_double(L, значення);
+  }
+
+  дія const_string(L: комірка<TL>, значення: памʼять<п8>): комірка<Value> {
+    вернути tsil_llvm_create_string(L, значення);
   }
 
   дія type_of_function(L: комірка<TL>, функція: комірка<Function>): комірка<FunctionType> {
