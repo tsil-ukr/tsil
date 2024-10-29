@@ -1,0 +1,471 @@
+секція LLVM {
+  синонім LINKAGE_EXTERNAL = 0;
+  синонім LINKAGE_DSO_LOCAL = 1;
+  синонім LINKAGE_INTERNAL = 2;
+
+  структура TL;
+  структура Type;
+  структура FunctionType;
+  структура Value;
+  структура Function;
+  структура BasicBlock;
+}
+
+зовнішня дія tsil_llvm_create_tl(назва: памʼять<п8>): комірка<LLVM::TL>;
+зовнішня дія dumpLL(L: комірка<LLVM::TL>): памʼять<п8>;
+
+зовнішня дія tsil_llvm_create_struct(L: комірка<LLVM::TL>, назва: памʼять<п8>): комірка<LLVM::Type>;
+зовнішня дія tsil_llvm_set_struct_fields(L: комірка<LLVM::TL>, с: комірка<LLVM::Type>, розмір_полів: позитивне, поля: памʼять<комірка<LLVM::Type>>);
+
+зовнішня дія tsil_llvm_declare_function(L: комірка<LLVM::TL>, лінкування: позитивне, назва: памʼять<п8>, тип_повернення: комірка<LLVM::Type>, розмір_параметрів: позитивне, параметри: памʼять<комірка<LLVM::Type>>, варарг: позитивне): комірка<LLVM::Function>;
+зовнішня дія tsil_llvm_create_function_block(L: комірка<LLVM::TL>, функція: комірка<LLVM::Function>, назва: памʼять<п8>): комірка<LLVM::BasicBlock>;
+
+зовнішня дія tsil_llvm_inst_alloca(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, назва: памʼять<п8>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_store(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, алока: комірка<LLVM::Value>);
+зовнішня дія tsil_llvm_inst_load(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, тип: комірка<LLVM::Type>, значення: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_br(L: комірка<LLVM::TL>, звідки: комірка<LLVM::BasicBlock>, куда: комірка<LLVM::BasicBlock>);
+зовнішня дія tsil_llvm_inst_brif(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, звідки: комірка<LLVM::BasicBlock>, куда: комірка<LLVM::BasicBlock>);
+зовнішня дія tsil_llvm_inst_ret(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>);
+зовнішня дія tsil_llvm_inst_getelementptr(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, тип: комірка<LLVM::Type>, значення: комірка<LLVM::Value>, кількість_позицій: позитивне, позиції: памʼять<комірка<LLVM::Value>>): комірка<LLVM::Value>;
+
+зовнішня дія tsil_llvm_get_null(L: комірка<LLVM::TL>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_get_void_type(L: комірка<LLVM::TL>): комірка<LLVM::Type>;
+зовнішня дія tsil_llvm_get_pointer_type(L: комірка<LLVM::TL>): комірка<LLVM::Type>;
+зовнішня дія tsil_llvm_get_int1_type(L: комірка<LLVM::TL>): комірка<LLVM::Type>;
+зовнішня дія tsil_llvm_get_int8_type(L: комірка<LLVM::TL>): комірка<LLVM::Type>;
+зовнішня дія tsil_llvm_get_int16_type(L: комірка<LLVM::TL>): комірка<LLVM::Type>;
+зовнішня дія tsil_llvm_get_int32_type(L: комірка<LLVM::TL>): комірка<LLVM::Type>;
+зовнішня дія tsil_llvm_get_int64_type(L: комірка<LLVM::TL>): комірка<LLVM::Type>;
+зовнішня дія tsil_llvm_get_float32_type(L: комірка<LLVM::TL>): комірка<LLVM::Type>;
+зовнішня дія tsil_llvm_get_float64_type(L: комірка<LLVM::TL>): комірка<LLVM::Type>;
+
+зовнішня дія tsil_llvm_create_int8(L: комірка<LLVM::TL>, значення: ц8): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_int16(L: комірка<LLVM::TL>, значення: ц16): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_int32(L: комірка<LLVM::TL>, значення: ц32): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_int64(L: комірка<LLVM::TL>, значення: ц64): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_uint1(L: комірка<LLVM::TL>, значення: п8): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_uint8(L: комірка<LLVM::TL>, значення: п8): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_uint16(L: комірка<LLVM::TL>, значення: п16): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_uint32(L: комірка<LLVM::TL>, значення: п32): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_uint64(L: комірка<LLVM::TL>, значення: п64): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_float(L: комірка<LLVM::TL>, значення: д32): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_double(L: комірка<LLVM::TL>, значення: д64): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_create_string(L: комірка<LLVM::TL>, значення: памʼять<п8>): комірка<LLVM::Value>;
+
+зовнішня дія tsil_llvm_get_function_type(L: комірка<LLVM::TL>, функція: комірка<LLVM::Function>): комірка<LLVM::FunctionType>;
+зовнішня дія tsil_llvm_make_function_type(L: комірка<LLVM::TL>, тип_повернення: комірка<LLVM::Type>, розмір_параметрів: позитивне, параметри: памʼять<комірка<LLVM::Type>>, варарг: позитивне): комірка<LLVM::FunctionType>;
+
+зовнішня дія tsil_llvm_inst_call_value(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, тип: комірка<LLVM::Type>, значення: комірка<LLVM::Value>, розмір_аргументів: позитивне, аргументи: памʼять<комірка<LLVM::Value>>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_get_function_arg_value(L: комірка<LLVM::TL>, функція: комірка<LLVM::Function>, позиція: позитивне): комірка<LLVM::Value>;
+
+зовнішня дія tsil_llvm_inst_add(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fadd(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_sub(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fsub(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_mul(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fmul(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_udiv(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_sdiv(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fdiv(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_urem(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_srem(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_frem(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_sgt(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_ugt(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_ogt(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_ugt(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_sge(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_uge(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_oge(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_uge(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_slt(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_ult(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_olt(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_ult(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_sle(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_ule(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_ole(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_ule(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_eq(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_icmp_ne(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_oeq(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_one(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_ueq(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fcmp_une(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_shl(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_lshr(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_ashr(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_and(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_or(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_xor(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, ліво: комірка<LLVM::Value>, право: комірка<LLVM::Value>): комірка<LLVM::Value>;
+
+зовнішня дія tsil_llvm_inst_trunc(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_zext(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_sext(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fptrunc(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fpext(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fptoui(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_fptosi(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_uitofp(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_sitofp(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_ptrtoint(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_inttoptr(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_bitcast(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+
+секція LLVM {
+  дія struct(L: комірка<TL>, назва: памʼять<п8>): комірка<Type> {
+    вернути tsil_llvm_create_struct(L, назва);
+  }
+
+  дія struct_set_fields(L: комірка<TL>, с: комірка<Type>, розмір_полів: позитивне, поля: памʼять<комірка<Type>>) {
+    tsil_llvm_set_struct_fields(L, с, розмір_полів, поля);
+  }
+
+  дія function(L: комірка<TL>, лінкування: позитивне, назва: памʼять<п8>, тип_повернення: комірка<Type>, розмір_параметрів: позитивне, параметри: памʼять<комірка<Type>>, варарг: позитивне): комірка<Function> {
+    вернути tsil_llvm_declare_function(L, лінкування, назва, тип_повернення, розмір_параметрів, параметри, варарг);
+  }
+
+  дія block(L: комірка<TL>, функція: комірка<Function>, назва: памʼять<п8>): комірка<BasicBlock> {
+    вернути tsil_llvm_create_function_block(L, функція, назва);
+  }
+
+  дія alloca(L: комірка<TL>, block: комірка<BasicBlock>, назва: памʼять<п8>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_alloca(L, block, назва, тип);
+  }
+
+  дія store(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, алока: комірка<Value>) {
+    tsil_llvm_inst_store(L, block, значення, алока);
+  }
+
+  дія load(L: комірка<TL>, block: комірка<BasicBlock>, тип: комірка<Type>, значення: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_load(L, block, тип, значення);
+  }
+
+  дія br(L: комірка<TL>, звідки: комірка<BasicBlock>, куда: комірка<BasicBlock>) {
+    tsil_llvm_inst_br(L, звідки, куда);
+  }
+
+  дія brif(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, звідки: комірка<BasicBlock>, куда: комірка<BasicBlock>) {
+    tsil_llvm_inst_brif(L, block, значення, звідки, куда);
+  }
+
+  дія ret(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>) {
+    tsil_llvm_inst_ret(L, block, значення);
+  }
+
+  дія getelementptr(L: комірка<TL>, block: комірка<BasicBlock>, тип: комірка<Type>, значення: комірка<Value>, кількість_позицій: позитивне, позиції: памʼять<комірка<Value>>): комірка<Value> {
+    вернути tsil_llvm_inst_getelementptr(L, block, тип, значення, кількість_позицій, позиції);
+  }
+
+  дія call(L: комірка<TL>, block: комірка<BasicBlock>, тип: комірка<Type>, значення: комірка<Value>, розмір_аргументів: позитивне, аргументи: памʼять<комірка<Value>>): комірка<Value> {
+    вернути tsil_llvm_inst_call_value(L, block, тип, значення, розмір_аргументів, аргументи);
+  }
+
+  дія null(L: комірка<TL>): комірка<Value> {
+    вернути tsil_llvm_get_null(L);
+  }
+
+  дія void(L: комірка<TL>): комірка<Type> {
+    вернути tsil_llvm_get_void_type(L);
+  }
+
+  дія pointer(L: комірка<TL>): комірка<Type> {
+    вернути tsil_llvm_get_pointer_type(L);
+  }
+
+  дія і1(L: комірка<TL>): комірка<Type> {
+    вернути tsil_llvm_get_int1_type(L);
+  }
+
+  дія і8(L: комірка<TL>): комірка<Type> {
+    вернути tsil_llvm_get_int8_type(L);
+  }
+
+  дія і16(L: комірка<TL>): комірка<Type> {
+    вернути tsil_llvm_get_int16_type(L);
+  }
+
+  дія і32(L: комірка<TL>): комірка<Type> {
+    вернути tsil_llvm_get_int32_type(L);
+  }
+
+  дія і64(L: комірка<TL>): комірка<Type> {
+    вернути tsil_llvm_get_int64_type(L);
+  }
+
+  дія f32(L: комірка<TL>): комірка<Type> {
+    вернути tsil_llvm_get_float32_type(L);
+  }
+
+  дія f64(L: комірка<TL>): комірка<Type> {
+    вернути tsil_llvm_get_float64_type(L);
+  }
+
+  дія const_int8(L: комірка<TL>, значення: ц8): комірка<Value> {
+    вернути tsil_llvm_create_int8(L, значення);
+  }
+
+  дія const_int16(L: комірка<TL>, значення: ц16): комірка<Value> {
+    вернути tsil_llvm_create_int16(L, значення);
+  }
+
+  дія const_int32(L: комірка<TL>, значення: ц32): комірка<Value> {
+    вернути tsil_llvm_create_int32(L, значення);
+  }
+
+  дія const_int64(L: комірка<TL>, значення: ц64): комірка<Value> {
+    вернути tsil_llvm_create_int64(L, значення);
+  }
+
+  дія const_uint1(L: комірка<TL>, значення: п8): комірка<Value> {
+    вернути tsil_llvm_create_uint1(L, значення);
+  }
+
+  дія const_uint8(L: комірка<TL>, значення: п8): комірка<Value> {
+    вернути tsil_llvm_create_uint8(L, значення);
+  }
+
+  дія const_uint16(L: комірка<TL>, значення: п16): комірка<Value> {
+    вернути tsil_llvm_create_uint16(L, значення);
+  }
+
+  дія const_uint32(L: комірка<TL>, значення: п32): комірка<Value> {
+    вернути tsil_llvm_create_uint32(L, значення);
+  }
+
+  дія const_uint64(L: комірка<TL>, значення: п64): комірка<Value> {
+    вернути tsil_llvm_create_uint64(L, значення);
+  }
+
+  дія const_float(L: комірка<TL>, значення: д32): комірка<Value> {
+    вернути tsil_llvm_create_float(L, значення);
+  }
+
+  дія const_double(L: комірка<TL>, значення: д64): комірка<Value> {
+    вернути tsil_llvm_create_double(L, значення);
+  }
+
+  дія const_string(L: комірка<TL>, значення: памʼять<п8>): комірка<Value> {
+    вернути tsil_llvm_create_string(L, значення);
+  }
+
+  дія type_of_function(L: комірка<TL>, функція: комірка<Function>): комірка<FunctionType> {
+    вернути tsil_llvm_get_function_type(L, функція);
+  }
+
+  дія function_type(L: комірка<TL>, тип_повернення: комірка<Type>, розмір_параметрів: позитивне, параметри: памʼять<комірка<Type>>, варарг: позитивне): комірка<FunctionType> {
+    вернути tsil_llvm_make_function_type(L, тип_повернення, розмір_параметрів, параметри, варарг);
+  }
+
+  дія function_arg(L: комірка<TL>, функція: комірка<Function>, позиція: позитивне): комірка<Value> {
+    вернути tsil_llvm_get_function_arg_value(L, функція, позиція);
+  }
+
+  дія add(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_add(L, block, ліво, право);
+  }
+
+  дія fadd(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fadd(L, block, ліво, право);
+  }
+
+  дія sub(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_sub(L, block, ліво, право);
+  }
+
+  дія fsub(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fsub(L, block, ліво, право);
+  }
+
+  дія mul(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_mul(L, block, ліво, право);
+  }
+
+  дія fmul(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fmul(L, block, ліво, право);
+  }
+
+  дія udiv(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_udiv(L, block, ліво, право);
+  }
+
+  дія sdiv(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_sdiv(L, block, ліво, право);
+  }
+
+  дія fdiv(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fdiv(L, block, ліво, право);
+  }
+
+  дія urem(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_urem(L, block, ліво, право);
+  }
+
+  дія srem(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_srem(L, block, ліво, право);
+  }
+
+  дія frem(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_frem(L, block, ліво, право);
+  }
+
+  дія icmp_sgt(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_sgt(L, block, ліво, право);
+  }
+
+  дія icmp_ugt(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_ugt(L, block, ліво, право);
+  }
+
+  дія fcmp_ogt(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_ogt(L, block, ліво, право);
+  }
+
+  дія fcmp_ugt(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_ugt(L, block, ліво, право);
+  }
+  
+  дія icmp_sge(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_sge(L, block, ліво, право);
+  }
+  
+  дія icmp_uge(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_uge(L, block, ліво, право);
+  }
+  
+  дія fcmp_oge(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_oge(L, block, ліво, право);
+  }
+  
+  дія fcmp_uge(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_uge(L, block, ліво, право);
+  }
+  
+  дія icmp_slt(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_slt(L, block, ліво, право);
+  }
+  
+  дія icmp_ult(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_ult(L, block, ліво, право);
+  }
+  
+  дія fcmp_olt(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_olt(L, block, ліво, право);
+  }
+  
+  дія fcmp_ult(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_ult(L, block, ліво, право);
+  }
+  
+  дія icmp_sle(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_sle(L, block, ліво, право);
+  }
+  
+  дія icmp_ule(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_ule(L, block, ліво, право);
+  }
+  
+  дія fcmp_ole(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_ole(L, block, ліво, право);
+  }
+  
+  дія fcmp_ule(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_ule(L, block, ліво, право);
+  }
+
+  дія icmp_eq(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_eq(L, block, ліво, право);
+  }
+
+  дія icmp_ne(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_icmp_ne(L, block, ліво, право);
+  }
+
+  дія fcmp_oeq(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_oeq(L, block, ліво, право);
+  }
+
+  дія fcmp_one(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_one(L, block, ліво, право);
+  }
+
+  дія fcmp_ueq(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_ueq(L, block, ліво, право);
+  }
+
+  дія fcmp_une(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_fcmp_une(L, block, ліво, право);
+  }
+
+  дія shl(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_shl(L, block, ліво, право);
+  }
+
+  дія lshr(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_lshr(L, block, ліво, право);
+  }
+
+  дія ashr(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_ashr(L, block, ліво, право);
+  }
+
+  дія and(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_and(L, block, ліво, право);
+  }
+
+  дія or(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_or(L, block, ліво, право);
+  }
+
+  дія xor(L: комірка<TL>, block: комірка<BasicBlock>, ліво: комірка<Value>, право: комірка<Value>): комірка<Value> {
+    вернути tsil_llvm_inst_xor(L, block, ліво, право);
+  }
+  
+  дія trunc(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_trunc(L, block, значення, тип);
+  }
+
+  дія zext(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_zext(L, block, значення, тип);
+  }
+
+  дія sext(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_sext(L, block, значення, тип);
+  }
+
+  дія fptrunc(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_fptrunc(L, block, значення, тип);
+  }
+
+  дія fpext(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_fpext(L, block, значення, тип);
+  }
+
+  дія fptoui(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_fptoui(L, block, значення, тип);
+  }
+
+  дія fptosi(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_fptosi(L, block, значення, тип);
+  }
+
+  дія uitofp(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_uitofp(L, block, значення, тип);
+  }
+
+  дія sitofp(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_sitofp(L, block, значення, тип);
+  }
+
+  дія ptrtoint(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_ptrtoint(L, block, значення, тип);
+  }
+
+  дія inttoptr(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_inttoptr(L, block, значення, тип);
+  }
+
+  дія bitcast(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_inst_bitcast(L, block, значення, тип);
+  }
+}

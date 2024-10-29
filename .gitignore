@@ -32,6 +32,12 @@ a.out
 raylib-5.0_linux_amd64/
 .плавлення/
 .плавлення-бібліотеки/
+.плавлення-old/
+.плавлення-new/
+.плавлення-new1/
+.плавлення-new2/
+.плавлення-new3/
+.плавлення-use-original/
 release/
 build-antlr/
 .плавлення-use-original/
@@ -43,3 +49,8 @@ build-antlr/
 build-old/
 .тестування/
 x
+build-neo/
+build-old/
+.llvm-source-and-build/
+x
+.тестування/
