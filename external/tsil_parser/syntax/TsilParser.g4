@@ -117,7 +117,7 @@ simple_type: id=ID #simple_type_subject
 single_type: simple_type #type_simple_type
            | '(' ')' '-' '>' restyp=type #type_fn
            | param_type=single_type '-' '>' restyp=type #type_fn_simple
-           | '(' type (',' type)+ ')' '-' '>' restyp=type #type_fn_complex
+           | '(' type (',' type)* ')' '-' '>' restyp=type #type_fn_complex
            | '(' param (',' param)* ')' '-' '>' restyp=type #type_fn_complex_named;
 type: '(' type ')' #type_nested
     | single_type #type_single

@@ -13,11 +13,9 @@ if [ "$TSIL_MODE" == "use-original" ]; then
 elif [ "$TSIL_MODE" == "new2" ]; then
   TSIL="../build/ціль2"
   TSIL_EXECNAME="ціль3"
-  rm -rf ".плавлення-$TSIL_MODE"
 else
   TSIL="../build/ціль"
   TSIL_EXECNAME="ціль2"
-  rm -rf ".плавлення-$TSIL_MODE"
 fi
 
 export CXX="clang++"
