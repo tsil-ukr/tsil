@@ -4,14 +4,14 @@ set -e
 
 TSIL_MODE="$1"
 if [ -z "$TSIL_MODE" ]; then
-  TSIL_MODE="old"
+  TSIL_MODE="use-original"
 fi
 
-if [ "$TSIL_MODE" == "old" ]; then
+if [ "$TSIL_MODE" == "use-original" ]; then
   TSIL="../build-old/ціль"
 else
   TSIL="../build/ціль"
-  rm -rf .плавлення
+  rm -rf ".плавлення-$TSIL_MODE"
 fi
 
 export CXX="clang++"
@@ -71,13 +71,15 @@ PWDR="$(pwd)"
 cd КЦ
 for KTS_FILE in "${KTS_FILES[@]}"; do
   CHANGED_AT=$(stat -c %y $KTS_FILE)
-  CHANGED_AT_OLD=$(cat "../.плавлення/скомпільоване/$KTS_FILE.ll.changed_at" 2>/dev/null || echo "")
-  if [ ! -f "../.плавлення/скомпільоване/$KTS_FILE.ll" ] || [ "$CHANGED_AT" != "$CHANGED_AT_OLD" ]; then
-    echo "$TSIL ../.плавлення/скомпільоване/$KTS_FILE.ll скомпілювати --бібліотека=$PWDR/.плавлення-бібліотеки/бібліотека $KTS_FILE"
-    $TSIL ../.плавлення/скомпільоване/"$KTS_FILE".ll скомпілювати --бібліотека="$PWDR/.плавлення-бібліотеки/бібліотека" "$KTS_FILE"
-    echo "$CXX -c -o ../.плавлення/скомпільоване/$KTS_FILE.o ../.плавлення/скомпільоване/$KTS_FILE.ll -Wno-override-module"
-    $CXX -c -o ../.плавлення/скомпільоване/"$KTS_FILE".o ../.плавлення/скомпільоване/"$KTS_FILE".ll -Wno-override-module
-    echo "$CHANGED_AT" > "../.плавлення/скомпільоване/$KTS_FILE.ll.changed_at"
+  CHANGED_AT_OLD=$(cat "../.плавлення-$TSIL_MODE/скомпільоване/$KTS_FILE.ll.changed_at" 2>/dev/null || echo "")
+  if [ ! -f "../.плавлення-$TSIL_MODE/скомпільоване/$KTS_FILE.ll" ] || [ "$CHANGED_AT" != "$CHANGED_AT_OLD" ]; then
+    echo "$TSIL ../.плавлення-$TSIL_MODE/скомпільоване/$KTS_FILE.ll скомпілювати --бібліотека=$PWDR/.плавлення-бібліотеки/бібліотека $KTS_FILE"
+    $TSIL "../.плавлення-$TSIL_MODE/скомпільоване/"$KTS_FILE".ll" скомпілювати --бібліотека="$PWDR/.плавлення-бібліотеки/бібліотека" "$KTS_FILE"
+
+    echo "$CXX -c -o ../.плавлення-$TSIL_MODE/скомпільоване/$KTS_FILE.o ../.плавлення-$TSIL_MODE/скомпільоване/$KTS_FILE.ll -Wno-override-module"
+    $CXX -c -o "../.плавлення-$TSIL_MODE/скомпільоване/"$KTS_FILE".o" "../.плавлення-$TSIL_MODE/скомпільоване/"$KTS_FILE".ll" -Wno-override-module
+
+    echo "$CHANGED_AT" > "../.плавлення-$TSIL_MODE/скомпільоване/$KTS_FILE.ll.changed_at"
   fi
 done
 cd ..
