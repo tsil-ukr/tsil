@@ -11,7 +11,8 @@ if [ "$TSIL_MODE" == "use-original" ]; then
   TSIL="../build-old/ціль"
   TSIL_EXECNAME="ціль"
 elif [ "$TSIL_MODE" == "new2" ]; then
-  TSIL="../build/ціль2"
+  cp -r ./build/ціль3 ./build/ціль3-попередня
+  TSIL="../build/ціль3"
   TSIL_EXECNAME="ціль3"
 else
   TSIL="../build/ціль"
