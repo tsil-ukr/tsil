@@ -53,6 +53,7 @@
 зовнішня дія tsil_llvm_create_string(L: комірка<LLVM::TL>, значення: памʼять<п8>): комірка<LLVM::Value>;
 
 зовнішня дія tsil_llvm_get_function_type(L: комірка<LLVM::TL>, функція: комірка<LLVM::Function>): комірка<LLVM::FunctionType>;
+зовнішня дія tsil_llvm_make_function_type(L: комірка<LLVM::TL>, тип_повернення: комірка<LLVM::Type>, розмір_параметрів: позитивне, параметри: памʼять<комірка<LLVM::Type>>, варарг: позитивне): комірка<LLVM::FunctionType>;
 
 зовнішня дія tsil_llvm_inst_call_value(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, тип: комірка<LLVM::Type>, значення: комірка<LLVM::Value>, розмір_аргументів: позитивне, аргументи: памʼять<комірка<LLVM::Value>>): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_get_function_arg_value(L: комірка<LLVM::TL>, функція: комірка<LLVM::Function>, позиція: позитивне): комірка<LLVM::Value>;
@@ -250,6 +251,10 @@
 
   дія type_of_function(L: комірка<TL>, функція: комірка<Function>): комірка<FunctionType> {
     вернути tsil_llvm_get_function_type(L, функція);
+  }
+
+  дія function_type(L: комірка<TL>, тип_повернення: комірка<Type>, розмір_параметрів: позитивне, параметри: памʼять<комірка<Type>>, варарг: позитивне): комірка<FunctionType> {
+    вернути tsil_llvm_make_function_type(L, тип_повернення, розмір_параметрів, параметри, варарг);
   }
 
   дія function_arg(L: комірка<TL>, функція: комірка<Function>, позиція: позитивне): комірка<Value> {

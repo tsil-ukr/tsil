@@ -160,3 +160,33 @@ extern "C" char* прочитати_файл(char* path) {
                       std::istreambuf_iterator<char>());
   return strdup(content.c_str());
 }
+
+void str_replace_all(std::string& str,
+                     const std::string& from,
+                     const std::string& to) {
+  if (from.empty()) {
+    return;
+  }
+  size_t start_pos = 0;
+  while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+    str.replace(start_pos, from.length(), to);
+    start_pos += to.length();
+  }
+}
+
+extern "C" char* tsil_hex_to_dec(char* value) {
+  std::string strvalue = value;
+  str_replace_all(strvalue, "А", "A");
+  str_replace_all(strvalue, "а", "a");
+  str_replace_all(strvalue, "Б", "B");
+  str_replace_all(strvalue, "б", "b");
+  str_replace_all(strvalue, "В", "C");
+  str_replace_all(strvalue, "в", "c");
+  str_replace_all(strvalue, "Г", "D");
+  str_replace_all(strvalue, "г", "d");
+  str_replace_all(strvalue, "Ґ", "E");
+  str_replace_all(strvalue, "ґ", "e");
+  str_replace_all(strvalue, "Д", "F");
+  str_replace_all(strvalue, "д", "f");
+  return strdup(std::to_string(std::stoll(strvalue, nullptr, 16)).c_str());
+}

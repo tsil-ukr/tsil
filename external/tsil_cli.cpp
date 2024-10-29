@@ -1,4 +1,5 @@
 #include "tsil_cli.h"
+#include <filesystem>
 #include <optional>
 #include "tsil_llvm/tsil_llvm.h"
 #include "tsil_parser/parser.h"
@@ -26,7 +27,18 @@ void write_to_file_by_path(TsilCliConfig config,
                            unsigned char* data,
                            void* options) {
   auto path = reinterpret_cast<char*>(options);
+  auto pos = std::string(path).find_last_of('/');
+  if (pos != std::string::npos) {
+    auto folder = std::string(path).substr(0, pos);
+    if (!std::filesystem::exists(folder)) {
+      std::filesystem::create_directories(folder);
+    }
+  }
   std::ofstream ofs(path);
+  if (!ofs) {
+    config.println("Помилка запису у файл");
+    return;
+  }
   ofs.write(reinterpret_cast<char*>(data), size);
 }
 

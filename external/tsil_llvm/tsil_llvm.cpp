@@ -116,7 +116,7 @@ LLVMValue* tsil_llvm_inst_getelementptr(TL* m,
   for (int i = 0; i < indices_size; i++) {
     llvmIndices[i] = indices[i];
   }
-  return builder.CreateGEP(type, pointer, llvmIndices);
+  return builder.CreateGEP(type, pointer, llvmIndices, "inst");
 }
 
 void tsil_llvm_inst_store(TL* m,
@@ -155,7 +155,10 @@ LLVMValue* tsil_llvm_inst_call_value(TL* m,
   for (int i = 0; i < arguments_size; i++) {
     llvmArguments[i] = arguments[i];
   }
-  return builder.CreateCall(ft, value, llvmArguments);
+  if (ft->getReturnType()->isVoidTy()) {
+    return builder.CreateCall(ft, value, llvmArguments);
+  }
+  return builder.CreateCall(ft, value, llvmArguments, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_call_func(TL* m,
@@ -168,7 +171,12 @@ LLVMValue* tsil_llvm_inst_call_func(TL* m,
   for (int i = 0; i < arguments_size; i++) {
     llvmArguments[i] = arguments[i];
   }
-  return builder.CreateCall(static_cast<llvm::Function*>(func), llvmArguments);
+  if (func->getReturnType()->isVoidTy()) {
+    return builder.CreateCall(static_cast<llvm::Function*>(func),
+                              llvmArguments);
+  }
+  return builder.CreateCall(static_cast<llvm::Function*>(func), llvmArguments,
+                            "inst");
 }
 
 void tsil_llvm_inst_br(TL* m, LLVMBasicBlock* block, LLVMBasicBlock* target) {
@@ -191,7 +199,8 @@ LLVMValue* tsil_llvm_inst_icmp(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_EQ, left, right);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_EQ, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp(TL* m,
@@ -200,7 +209,8 @@ LLVMValue* tsil_llvm_inst_fcmp(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OEQ, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OEQ, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_add(TL* m,
@@ -208,7 +218,7 @@ LLVMValue* tsil_llvm_inst_add(TL* m,
                               LLVMValue* left,
                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateAdd(left, right);
+  return builder.CreateAdd(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fadd(TL* m,
@@ -216,7 +226,7 @@ LLVMValue* tsil_llvm_inst_fadd(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFAdd(left, right);
+  return builder.CreateFAdd(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_sub(TL* m,
@@ -224,7 +234,7 @@ LLVMValue* tsil_llvm_inst_sub(TL* m,
                               LLVMValue* left,
                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateSub(left, right);
+  return builder.CreateSub(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fsub(TL* m,
@@ -232,7 +242,7 @@ LLVMValue* tsil_llvm_inst_fsub(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFSub(left, right);
+  return builder.CreateFSub(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_mul(TL* m,
@@ -240,7 +250,7 @@ LLVMValue* tsil_llvm_inst_mul(TL* m,
                               LLVMValue* left,
                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateMul(left, right);
+  return builder.CreateMul(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fmul(TL* m,
@@ -248,7 +258,7 @@ LLVMValue* tsil_llvm_inst_fmul(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFMul(left, right);
+  return builder.CreateFMul(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_udiv(TL* m,
@@ -256,7 +266,7 @@ LLVMValue* tsil_llvm_inst_udiv(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateUDiv(left, right);
+  return builder.CreateUDiv(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_sdiv(TL* m,
@@ -264,7 +274,7 @@ LLVMValue* tsil_llvm_inst_sdiv(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateSDiv(left, right);
+  return builder.CreateSDiv(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fdiv(TL* m,
@@ -272,7 +282,7 @@ LLVMValue* tsil_llvm_inst_fdiv(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFDiv(left, right);
+  return builder.CreateFDiv(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_urem(TL* m,
@@ -280,7 +290,7 @@ LLVMValue* tsil_llvm_inst_urem(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateURem(left, right);
+  return builder.CreateURem(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_srem(TL* m,
@@ -288,7 +298,7 @@ LLVMValue* tsil_llvm_inst_srem(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateSRem(left, right);
+  return builder.CreateSRem(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_frem(TL* m,
@@ -296,7 +306,7 @@ LLVMValue* tsil_llvm_inst_frem(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFRem(left, right);
+  return builder.CreateFRem(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_icmp_sgt(TL* m,
@@ -304,7 +314,8 @@ LLVMValue* tsil_llvm_inst_icmp_sgt(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_SGT, left, right);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_SGT, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_icmp_ugt(TL* m,
@@ -312,7 +323,8 @@ LLVMValue* tsil_llvm_inst_icmp_ugt(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_UGT, left, right);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_UGT, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_ogt(TL* m,
@@ -320,7 +332,8 @@ LLVMValue* tsil_llvm_inst_fcmp_ogt(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OGT, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OGT, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_ugt(TL* m,
@@ -328,7 +341,8 @@ LLVMValue* tsil_llvm_inst_fcmp_ugt(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_UGT, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_UGT, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_icmp_sge(TL* m,
@@ -336,7 +350,8 @@ LLVMValue* tsil_llvm_inst_icmp_sge(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_SGE, left, right);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_SGE, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_icmp_uge(TL* m,
@@ -344,7 +359,8 @@ LLVMValue* tsil_llvm_inst_icmp_uge(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_UGE, left, right);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_UGE, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_oge(TL* m,
@@ -352,7 +368,8 @@ LLVMValue* tsil_llvm_inst_fcmp_oge(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OGE, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OGE, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_uge(TL* m,
@@ -360,7 +377,8 @@ LLVMValue* tsil_llvm_inst_fcmp_uge(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_UGE, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_UGE, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_icmp_slt(TL* m,
@@ -368,7 +386,8 @@ LLVMValue* tsil_llvm_inst_icmp_slt(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_SLT, left, right);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_SLT, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_icmp_ult(TL* m,
@@ -376,7 +395,8 @@ LLVMValue* tsil_llvm_inst_icmp_ult(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_ULT, left, right);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_ULT, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_olt(TL* m,
@@ -384,7 +404,8 @@ LLVMValue* tsil_llvm_inst_fcmp_olt(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OLT, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OLT, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_ult(TL* m,
@@ -392,7 +413,8 @@ LLVMValue* tsil_llvm_inst_fcmp_ult(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_ULT, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_ULT, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_icmp_sle(TL* m,
@@ -400,7 +422,8 @@ LLVMValue* tsil_llvm_inst_icmp_sle(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_SLE, left, right);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_SLE, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_icmp_ule(TL* m,
@@ -408,7 +431,8 @@ LLVMValue* tsil_llvm_inst_icmp_ule(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_ULE, left, right);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_ULE, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_ole(TL* m,
@@ -416,7 +440,8 @@ LLVMValue* tsil_llvm_inst_fcmp_ole(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OLE, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OLE, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_ule(TL* m,
@@ -424,7 +449,8 @@ LLVMValue* tsil_llvm_inst_fcmp_ule(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_ULE, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_ULE, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_icmp_eq(TL* m,
@@ -432,7 +458,8 @@ LLVMValue* tsil_llvm_inst_icmp_eq(TL* m,
                                   LLVMValue* left,
                                   LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_EQ, left, right);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_EQ, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_icmp_ne(TL* m,
@@ -440,7 +467,8 @@ LLVMValue* tsil_llvm_inst_icmp_ne(TL* m,
                                   LLVMValue* left,
                                   LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_NE, left, right);
+  return builder.CreateICmp(llvm::CmpInst::Predicate::ICMP_NE, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_oeq(TL* m,
@@ -448,7 +476,8 @@ LLVMValue* tsil_llvm_inst_fcmp_oeq(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OEQ, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_OEQ, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_one(TL* m,
@@ -456,7 +485,8 @@ LLVMValue* tsil_llvm_inst_fcmp_one(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_ONE, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_ONE, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_ueq(TL* m,
@@ -464,7 +494,8 @@ LLVMValue* tsil_llvm_inst_fcmp_ueq(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_UEQ, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_UEQ, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fcmp_une(TL* m,
@@ -472,7 +503,8 @@ LLVMValue* tsil_llvm_inst_fcmp_une(TL* m,
                                    LLVMValue* left,
                                    LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_UNE, left, right);
+  return builder.CreateFCmp(llvm::CmpInst::Predicate::FCMP_UNE, left, right,
+                            "inst");
 }
 
 LLVMValue* tsil_llvm_inst_and(TL* m,
@@ -480,7 +512,7 @@ LLVMValue* tsil_llvm_inst_and(TL* m,
                               LLVMValue* left,
                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateAnd(left, right);
+  return builder.CreateAnd(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_or(TL* m,
@@ -488,7 +520,7 @@ LLVMValue* tsil_llvm_inst_or(TL* m,
                              LLVMValue* left,
                              LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateOr(left, right);
+  return builder.CreateOr(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_xor(TL* m,
@@ -496,7 +528,7 @@ LLVMValue* tsil_llvm_inst_xor(TL* m,
                               LLVMValue* left,
                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateXor(left, right);
+  return builder.CreateXor(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_shl(TL* m,
@@ -504,7 +536,7 @@ LLVMValue* tsil_llvm_inst_shl(TL* m,
                               LLVMValue* left,
                               LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateShl(left, right);
+  return builder.CreateShl(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_lshr(TL* m,
@@ -512,7 +544,7 @@ LLVMValue* tsil_llvm_inst_lshr(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateLShr(left, right);
+  return builder.CreateLShr(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_ashr(TL* m,
@@ -520,7 +552,7 @@ LLVMValue* tsil_llvm_inst_ashr(TL* m,
                                LLVMValue* left,
                                LLVMValue* right) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateAShr(left, right);
+  return builder.CreateAShr(left, right, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_trunc(TL* m,
@@ -528,7 +560,7 @@ LLVMValue* tsil_llvm_inst_trunc(TL* m,
                                 LLVMValue* value,
                                 LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateTrunc(value, toType);
+  return builder.CreateTrunc(value, toType, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_zext(TL* m,
@@ -536,7 +568,7 @@ LLVMValue* tsil_llvm_inst_zext(TL* m,
                                LLVMValue* value,
                                LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateZExt(value, toType);
+  return builder.CreateZExt(value, toType, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_sext(TL* m,
@@ -544,7 +576,7 @@ LLVMValue* tsil_llvm_inst_sext(TL* m,
                                LLVMValue* value,
                                LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateSExt(value, toType);
+  return builder.CreateSExt(value, toType, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fptrunc(TL* m,
@@ -552,7 +584,7 @@ LLVMValue* tsil_llvm_inst_fptrunc(TL* m,
                                   LLVMValue* value,
                                   LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFPTrunc(value, toType);
+  return builder.CreateFPTrunc(value, toType, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fpext(TL* m,
@@ -560,7 +592,7 @@ LLVMValue* tsil_llvm_inst_fpext(TL* m,
                                 LLVMValue* value,
                                 LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFPExt(value, toType);
+  return builder.CreateFPExt(value, toType, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fptoui(TL* m,
@@ -568,7 +600,7 @@ LLVMValue* tsil_llvm_inst_fptoui(TL* m,
                                  LLVMValue* value,
                                  LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFPToUI(value, toType);
+  return builder.CreateFPToUI(value, toType, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_fptosi(TL* m,
@@ -576,7 +608,7 @@ LLVMValue* tsil_llvm_inst_fptosi(TL* m,
                                  LLVMValue* value,
                                  LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateFPToSI(value, toType);
+  return builder.CreateFPToSI(value, toType, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_uitofp(TL* m,
@@ -584,7 +616,7 @@ LLVMValue* tsil_llvm_inst_uitofp(TL* m,
                                  LLVMValue* value,
                                  LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateUIToFP(value, toType);
+  return builder.CreateUIToFP(value, toType, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_sitofp(TL* m,
@@ -592,7 +624,7 @@ LLVMValue* tsil_llvm_inst_sitofp(TL* m,
                                  LLVMValue* value,
                                  LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateSIToFP(value, toType);
+  return builder.CreateSIToFP(value, toType, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_ptrtoint(TL* m,
@@ -600,7 +632,7 @@ LLVMValue* tsil_llvm_inst_ptrtoint(TL* m,
                                    LLVMValue* value,
                                    LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreatePtrToInt(value, toType);
+  return builder.CreatePtrToInt(value, toType, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_inttoptr(TL* m,
@@ -608,7 +640,7 @@ LLVMValue* tsil_llvm_inst_inttoptr(TL* m,
                                    LLVMValue* value,
                                    LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateIntToPtr(value, toType);
+  return builder.CreateIntToPtr(value, toType, "inst");
 }
 
 LLVMValue* tsil_llvm_inst_bitcast(TL* m,
@@ -616,7 +648,7 @@ LLVMValue* tsil_llvm_inst_bitcast(TL* m,
                                   LLVMValue* value,
                                   LLVMType* toType) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateBitCast(value, toType);
+  return builder.CreateBitCast(value, toType, "inst");
 }
 
 LLVMType* tsil_llvm_type_get_pointer_to(TL* m, LLVMType* type) {
@@ -728,6 +760,18 @@ LLVMFunctionType* tsil_llvm_get_as_function_type(TL* m, LLVMValue* value) {
 
 LLVMFunctionType* tsil_llvm_get_function_type(TL* m, LLVMFunction* f) {
   return static_cast<llvm::Function*>(f)->getFunctionType();
+}
+
+LLVMFunctionType* tsil_llvm_make_function_type(TL* m,
+                                               LLVMType* ret_type,
+                                               unsigned long params_size,
+                                               LLVMType** params,
+                                               unsigned long isVarArg) {
+  std::vector<llvm::Type*> llvmParams(params_size);
+  for (int i = 0; i < params_size; i++) {
+    llvmParams[i] = params[i];
+  }
+  return llvm::FunctionType::get(ret_type, llvmParams, isVarArg);
 }
 
 LLVMValue* tsil_llvm_get_function_arg_value(TL* m,

@@ -334,6 +334,11 @@ LLVMValue* tsil_llvm_create_string(TL* m, char* value);
 LLVMType* tsil_llvm_get_type(TL* m, LLVMValue* value);
 LLVMFunctionType* tsil_llvm_get_as_function_type(TL* m, LLVMValue* value);
 LLVMFunctionType* tsil_llvm_get_function_type(TL* m, LLVMFunction* f);
+LLVMFunctionType* tsil_llvm_make_function_type(TL* m,
+                                               LLVMType* ret_type,
+                                               unsigned long params_size,
+                                               LLVMType** params,
+                                               unsigned long isVarArg);
 
 LLVMValue* tsil_llvm_get_function_arg_value(TL* m,
                                             LLVMFunction* f,

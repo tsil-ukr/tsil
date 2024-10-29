@@ -2,8 +2,6 @@
 
 set -e
 
-#rm -rf .плавлення
-
 TSIL_MODE="$1"
 if [ -z "$TSIL_MODE" ]; then
   TSIL_MODE="old"
@@ -13,6 +11,7 @@ if [ "$TSIL_MODE" == "old" ]; then
   TSIL="../build-old/ціль"
 else
   TSIL="../build/ціль"
+  rm -rf .плавлення
 fi
 
 export CXX="clang++"
