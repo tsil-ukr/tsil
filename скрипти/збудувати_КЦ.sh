@@ -9,8 +9,14 @@ fi
 
 if [ "$TSIL_MODE" == "use-original" ]; then
   TSIL="../build-old/ціль"
+  TSIL_EXECNAME="ціль"
+elif [ "$TSIL_MODE" == "new2" ]; then
+  TSIL="../build/ціль2"
+  TSIL_EXECNAME="ціль3"
+  rm -rf ".плавлення-$TSIL_MODE"
 else
   TSIL="../build/ціль"
+  TSIL_EXECNAME="ціль2"
   rm -rf ".плавлення-$TSIL_MODE"
 fi
 
@@ -89,6 +95,8 @@ cd build
 cmake ../external/ -G Ninja \
   -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always \
   -DTSIL_STATIC="ON" \
-  -DTSIL_LLVM_PATH="../../.llvm-source-and-build/llvm-project-19.1.0.build/llvm"
+  -DTSIL_LLVM_PATH="../../.llvm-source-and-build/llvm-project-19.1.0.build/llvm" \
+  -DTSIL_FUSE_PATH="../.плавлення-$TSIL_MODE" \
+  -DTSIL_EXECNAME="$TSIL_EXECNAME"
 ninja
 cd ..
