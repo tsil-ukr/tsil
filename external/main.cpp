@@ -6,56 +6,6 @@
 
 #include "tsil_cli.h"
 
-extern "C" size_t отримати_з_карти_субʼєктів(void* map,
-                                             char* name,
-                                             unsigned long* outType,
-                                             void** outData) {
-  auto m =
-      static_cast<std::map<std::string, std::pair<unsigned long, void*>>*>(map);
-  auto result = m->find(std::string(name));
-  if (result != m->end()) {
-    *outType = result->second.first;
-    *outData = result->second.second;
-    return true;
-  }
-  return false;
-}
-
-extern "C" void змінити_в_карті_субʼєктів(void* map,
-                                          char* name,
-                                          unsigned long type,
-                                          void* data) {
-  auto m =
-      static_cast<std::map<std::string, std::pair<unsigned long, void*>>*>(map);
-  m->insert_or_assign(std::string(name),
-                      std::pair<unsigned long, void*>({type, data}));
-}
-
-extern "C" void* створити_карту_субʼєктів() {
-  return new std::map<std::string, std::pair<unsigned long, void*>>();
-}
-
-extern "C" size_t отримати_з_карти_комірок(void* map,
-                                           char* name,
-                                           void** dataPtr) {
-  auto m = static_cast<std::map<std::string, void*>*>(map);
-  auto result = m->find(std::string(name));
-  if (result != m->end()) {
-    *dataPtr = result->second;
-    return true;
-  }
-  return false;
-}
-
-extern "C" void змінити_в_карті_комірок(void* map, char* name, void* data) {
-  auto m = static_cast<std::map<std::string, void*>*>(map);
-  m->insert_or_assign(std::string(name), data);
-}
-
-extern "C" void* створити_карту_комірок() {
-  return new std::map<std::string, void*>();
-}
-
 extern "C" unsigned char* зʼєднати_ю8(unsigned char* value,
                                       unsigned char* value2) {
   std::string str = (char*)value;
@@ -71,32 +21,29 @@ void printHelp() {
   std::cout << "Ціль " << TSIL_VERSION << std::endl;
   std::cout << std::endl;
   std::cout << "Використання:" << std::endl;
-  std::cout << "  ціль <ціль> <команда> [аргументи...]" << std::endl;
-  std::cout << std::endl;
-  std::cout << "  ціль версія" << std::endl;
-  std::cout << "  ціль допомога" << std::endl;
-  std::cout << "  ціль <команда> допомога" << std::endl;
+  std::cout << "  ціль [--опції-цілі]... [(вихід) [--опції-виходу]...]... "
+               "(команда) [--опції-команди]... [(вхід) [--опції-входу]...]..."
+            << std::endl;
   std::cout << std::endl;
   std::cout << "Команди:" << std::endl;
-  std::cout << "  <вихід> скомпілювати [опції...] <вхід>" << std::endl;
+  std::cout << "  допомога" << std::endl;
+  std::cout << "    Опис: надрукувати допомогу" << std::endl;
+  std::cout << "    Вихід: немає" << std::endl;
+  std::cout << "    Вхід: немає" << std::endl;
+  std::cout << "    Опції: немає" << std::endl;
+  std::cout << "  скомпілювати" << std::endl;
   std::cout << "    Опис: скомпілювати вхідний файл" << std::endl;
-  std::cout << "    Вихід: .o .ll .bc" << std::endl;
-  std::cout << "    Вхід: .ц" << std::endl;
-  std::cout << "    Опції:" << std::endl;
-  std::cout << "      --режим=<розробка|випуск>" << std::endl;
-  std::cout << "      --бібліотека=\"власний шлях до бібліотеки\"" << std::endl;
-  std::cout << std::endl;
-  std::cout << "  <вихід> сплавити [опції...]  <вхід...>" << std::endl;
-  std::cout << "    Опис: сплавити файли" << std::endl;
-  std::cout << "    Вихід: без розширення або .o .so .wasm" << std::endl;
-  std::cout << "    Вхід: .ц .c .cpp .ll .bc" << std::endl;
-  std::cout << "    Опції:" << std::endl;
-  std::cout << "      --режим=<розробка|випуск>" << std::endl;
-  std::cout << "      --бібліотека=\"власний шлях до бібліотеки\"" << std::endl;
-  std::cout << "      --кеш=<ні|ccache>" << std::endl;
-  std::cout << "      --clang=\"path to clang\"" << std::endl;
-  std::cout << "      --clang-override=\"custom clang options\"" << std::endl;
-  std::cout << "      --clang-append=\"additional clang options\"" << std::endl;
+  std::cout << "    Вихід:" << std::endl;
+  std::cout << "      Опції: " << std::endl;
+  std::cout << "        --формат=<o|ll>" << std::endl;
+  std::cout << "    Вхід:" << std::endl;
+  std::cout << "      Формат: .ц" << std::endl;
+  std::cout << "  сплавити" << std::endl;
+  std::cout << "    Опис: сплавити вхідні файли" << std::endl;
+  std::cout << "    Вихід:" << std::endl;
+  std::cout << "      Опції: немає" << std::endl;
+  std::cout << "    Вхід:" << std::endl;
+  std::cout << "      Формат: .ц .c .o .a" << std::endl;
 }
 
 int main(int argc, char** argv) {

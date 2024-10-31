@@ -46,7 +46,7 @@ struct TsilCliCompileCommand {
 };
 
 enum TsilCliFuseCommandOutputFormat {
-  TsilCliCompileCommandOutputFormatELF,
+  TsilCliFuseCommandOutputFormatELF,
 };
 
 struct TsilCliFuseCommandOutput {
@@ -66,7 +66,8 @@ struct TsilCliFuseCommand {
   size_t outputsSize;
   TsilCliFuseCommandOutput* outputs;
   TsilCliFuseCommandOptions options;
-  TsilCliFuseCommandInput input;
+  size_t inputsSize;
+  TsilCliFuseCommandInput* inputs;
 };
 
 struct TsilCliHelpCommand {

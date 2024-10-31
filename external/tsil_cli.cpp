@@ -48,8 +48,9 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
                               char** args,
                               TsilCliParsedCommand* parsedCommandPtr) {
   if (argsSize == 0) {
-    config.println("Не вказано команду");
-    return 1;
+    parsedCommandPtr->type = TsilCliParsedCommandTypeHelp;
+    parsedCommandPtr->c = TsilCliHelpCommand{};
+    return 0;
   }
 
   if (argsSize >= 1) {
@@ -103,8 +104,7 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
           new TsilCliCompileCommandOutput[compileCommand.outputsSize];
       for (size_t i = 0; i < outputs.size(); i++) {
         compileCommand.outputs[i].path = strdup(outputs[i].path.c_str());
-        compileCommand.outputs[i].format =
-            TsilCliCompileCommandOutputFormatLLVM;
+        compileCommand.outputs[i].format = TsilCliCompileCommandOutputFormatOBJ;
         if (std::string(outputs[i].path).ends_with(".ll")) {
           compileCommand.outputs[i].format =
               TsilCliCompileCommandOutputFormatLLVM;
@@ -174,7 +174,65 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
   }
 
   if (command == "сплавити") {
-    // ...
+    TsilCliFuseCommand fuseCommand;
+    fuseCommand.outputsSize = outputs.size();
+    if (fuseCommand.outputsSize > 0) {
+      fuseCommand.outputs =
+          new TsilCliFuseCommandOutput[fuseCommand.outputsSize];
+      for (size_t i = 0; i < outputs.size(); i++) {
+        fuseCommand.outputs[i].path = strdup(outputs[i].path.c_str());
+        fuseCommand.outputs[i].format = TsilCliFuseCommandOutputFormatELF;
+        for (auto [key, value] : outputs[i].options) {
+          if (key == "формат") {
+            if (value == "elf") {
+              fuseCommand.outputs[i].format = TsilCliFuseCommandOutputFormatELF;
+            } else {
+              config.println("Невідомий формат виходу");
+              return 1;
+            }
+          } else {
+            config.println(strdup(("Невідома опція виходу: --" + key).c_str()));
+            return 1;
+          }
+        }
+      }
+    } else {
+      fuseCommand.outputs = nullptr;
+    }
+    fuseCommand.options.libraryPath = "";
+    for (auto [key, value] : commandOptions) {
+      if (key == "бібліотека") {
+        if (value != std::nullopt) {
+          fuseCommand.options.libraryPath = value.value();
+        } else {
+          config.println("Не вказано значення для опції --бібліотека");
+          return 1;
+        }
+      } else {
+        config.println(strdup(("Невідома опція команди: --" + key).c_str()));
+        return 1;
+      }
+    }
+    if (inputs.empty()) {
+      config.println("Не вказано вхідний файл");
+      return 1;
+    }
+    if (inputs.size() > 1) {
+      config.println("Більше одного вхідного файлу не підтримується");
+      return 1;
+    }
+    fuseCommand.inputsSize = inputs.size();
+    if (fuseCommand.inputsSize > 0) {
+      fuseCommand.inputs = new TsilCliFuseCommandInput[fuseCommand.inputsSize];
+      for (size_t i = 0; i < inputs.size(); i++) {
+        fuseCommand.inputs[i].path = strdup(inputs[i].path.c_str());
+      }
+    } else {
+      fuseCommand.inputs = nullptr;
+    }
+    parsedCommandPtr->type = TsilCliParsedCommandTypeFuse;
+    parsedCommandPtr->c = fuseCommand;
+    return 0;
   }
 
   config.println("Невідома команда");
@@ -298,7 +356,7 @@ extern "C" int tsil_cli_do_compile(
                        outputWriter.options);
     return 0;
   } else {
-    config.println("Unsupported output format");
+    config.println("Такий формат виходу наразі не підтримується");
     return 1;
   }
 }
