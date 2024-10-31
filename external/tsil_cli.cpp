@@ -227,11 +227,7 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
       }
     }
     if (inputs.empty()) {
-      config.println("Не вказано вхідний файл");
-      return 1;
-    }
-    if (inputs.size() > 1) {
-      config.println("Більше одного вхідного файлу не підтримується");
+      config.println("Не вказано вхідні файли");
       return 1;
     }
     fuseCommand.inputsSize = inputs.size();
