@@ -112,6 +112,10 @@
 зовнішня дія tsil_llvm_inst_inttoptr(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_bitcast(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
 
+зовнішня дія tsil_llvm_make_external_global(L: комірка<LLVM::TL>, назва: памʼять<п8>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_make_local_global(L: комірка<LLVM::TL>, назва: памʼять<п8>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+зовнішня дія tsil_llvm_make_internal_global(L: комірка<LLVM::TL>, назва: памʼять<п8>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
+
 секція LLVM {
   дія struct(L: комірка<TL>, назва: памʼять<п8>): комірка<Type> {
     вернути tsil_llvm_create_struct(L, назва);
@@ -467,5 +471,17 @@
 
   дія bitcast(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, тип: комірка<Type>): комірка<Value> {
     вернути tsil_llvm_inst_bitcast(L, block, значення, тип);
+  }
+
+  дія make_external_global(L: комірка<TL>, назва: памʼять<п8>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_make_external_global(L, назва, тип);
+  }
+
+  дія make_local_global(L: комірка<TL>, назва: памʼять<п8>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_make_local_global(L, назва, тип);
+  }
+
+  дія make_internal_global(L: комірка<TL>, назва: памʼять<п8>, тип: комірка<Type>): комірка<Value> {
+    вернути tsil_llvm_make_internal_global(L, назва, тип);
   }
 }

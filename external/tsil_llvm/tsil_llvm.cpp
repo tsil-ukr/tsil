@@ -797,6 +797,24 @@ LLVMValue* tsil_llvm_get_null(TL* m) {
       llvm::PointerType::get(llvm::Type::getInt8Ty(*m->llvmContext), 0));
 }
 
+LLVMValue* tsil_llvm_make_external_global(TL* m, char* name, LLVMType* type) {
+  return new llvm::GlobalVariable(
+      *m->llvmModule, type, false,
+      llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr, name);
+}
+
+LLVMValue* tsil_llvm_make_local_global(TL* m, char* name, LLVMType* type) {
+  return new llvm::GlobalVariable(
+      *m->llvmModule, type, false,
+      llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr, name);
+}
+
+LLVMValue* tsil_llvm_make_internal_global(TL* m, char* name, LLVMType* type) {
+  return new llvm::GlobalVariable(
+      *m->llvmModule, type, false,
+      llvm::GlobalValue::LinkageTypes::PrivateLinkage, nullptr, name);
+}
+
 char* dumpLL(TL* m) {
   std::string str;
   llvm::raw_string_ostream os(str);
