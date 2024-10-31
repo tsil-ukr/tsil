@@ -28,11 +28,17 @@ void printHelp() {
   std::cout << "Команди:" << std::endl;
   std::cout << "  допомога" << std::endl;
   std::cout << "    Опис: надрукувати допомогу" << std::endl;
+  std::cout << "    Опції: немає" << std::endl;
   std::cout << "    Вихід: немає" << std::endl;
   std::cout << "    Вхід: немає" << std::endl;
+  std::cout << "  версія" << std::endl;
+  std::cout << "    Опис: надрукувати версію Цілі" << std::endl;
   std::cout << "    Опції: немає" << std::endl;
+  std::cout << "    Вихід: немає" << std::endl;
+  std::cout << "    Вхід: немає" << std::endl;
   std::cout << "  скомпілювати" << std::endl;
   std::cout << "    Опис: скомпілювати вхідний файл" << std::endl;
+  std::cout << "    Опції: немає" << std::endl;
   std::cout << "    Вихід:" << std::endl;
   std::cout << "      Опції: " << std::endl;
   std::cout << "        --формат=<o|ll>" << std::endl;
@@ -40,22 +46,30 @@ void printHelp() {
   std::cout << "      Формат: .ц" << std::endl;
   std::cout << "  сплавити" << std::endl;
   std::cout << "    Опис: сплавити вхідні файли" << std::endl;
+  std::cout << "    Опції:" << std::endl;
+  std::cout << "      --clang-options=\"додаткові опції до clang\""
+            << std::endl;
   std::cout << "    Вихід:" << std::endl;
-  std::cout << "      Опції: немає" << std::endl;
+  std::cout << "      Опції: " << std::endl;
+  std::cout << "        --формат=<elf>" << std::endl;
   std::cout << "    Вхід:" << std::endl;
-  std::cout << "      Формат: .ц .c .o .a" << std::endl;
+  std::cout << "      Формат: .ц .c .o .a .ll" << std::endl;
 }
 
 int main(int argc, char** argv) {
-  TsilCliConfig tsilCliConfig{.println = println};
+  TsilCliConfig tsilCliConfig{.path = argv[0], .println = println};
   TsilCliParsedCommand parsedCommand;
-  int result = tsil_cli_parse(tsilCliConfig, argv[0], argc - 1, argv + 1,
-                              &parsedCommand);
+  int result =
+      tsil_cli_parse(tsilCliConfig, argc - 1, argv + 1, &parsedCommand);
   if (result != 0) {
     return result;
   }
   if (parsedCommand.type == TsilCliParsedCommandTypeHelp) {
     printHelp();
+    return 0;
+  }
+  if (parsedCommand.type == TsilCliParsedCommandTypeVersion) {
+    tsilCliConfig.println(TSIL_VERSION);
     return 0;
   }
   if (parsedCommand.type == TsilCliParsedCommandTypeCompile) {

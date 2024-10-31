@@ -43,7 +43,6 @@ void write_to_file_by_path(TsilCliConfig config,
 }
 
 extern "C" int tsil_cli_parse(TsilCliConfig config,
-                              char* firstArg,
                               size_t argsSize,
                               char** args,
                               TsilCliParsedCommand* parsedCommandPtr) {
@@ -64,7 +63,7 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
     } else if ((std::string(args[0]) == "clang") ||
                (std::string(args[0]) == "clang++")) {
       TsilCliClangCommand clangCommand{};
-      clangCommand.path = firstArg;
+      clangCommand.path = config.path;
       clangCommand.prependArg = args[0];
       clangCommand.argsSize = argsSize - 1;
       clangCommand.args = args + 1;
@@ -77,6 +76,7 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
   auto toc = parseTOC(std::vector<std::string>(args, args + argsSize),
                       {
                           "допомога",
+                          "версія",
                           "скомпілювати",
                           "сплавити",
                       });
@@ -93,6 +93,12 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
   if (command == "допомога") {
     parsedCommandPtr->type = TsilCliParsedCommandTypeHelp;
     parsedCommandPtr->c = TsilCliHelpCommand{};
+    return 0;
+  }
+
+  if (command == "версія") {
+    parsedCommandPtr->type = TsilCliParsedCommandTypeVersion;
+    parsedCommandPtr->c = TsilCliVersionCommand{};
     return 0;
   }
 
@@ -208,6 +214,13 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
           config.println("Не вказано значення для опції --бібліотека");
           return 1;
         }
+      } else if (key == "clang-options") {
+        if (value != std::nullopt) {
+          fuseCommand.options.clangOptions = value.value();
+        } else {
+          config.println("Не вказано значення для опції --clang-options");
+          return 1;
+        }
       } else {
         config.println(strdup(("Невідома опція команди: --" + key).c_str()));
         return 1;
@@ -265,6 +278,15 @@ extern "C" int tsil_cli_run_compile_command(TsilCliConfig config,
 
 extern "C" int tsil_cli_run_fuse_command(TsilCliConfig config,
                                          TsilCliFuseCommand command) {
+  for (size_t i = 0; i < command.outputsSize; i++) {
+    auto output = command.outputs[i];
+    auto result =
+        tsil_cli_do_fuse(config, output.path, output.format, command.options,
+                         command.inputsSize, command.inputs);
+    if (result != 0) {
+      return result;
+    }
+  }
   return 0;
 }
 
@@ -359,6 +381,70 @@ extern "C" int tsil_cli_do_compile(
     config.println("Такий формат виходу наразі не підтримується");
     return 1;
   }
+}
+
+extern "C" int tsil_cli_do_fuse(TsilCliConfig config,
+                                char* outputPath,
+                                TsilCliFuseCommandOutputFormat outputFormat,
+                                TsilCliFuseCommandOptions options,
+                                unsigned long inputsSize,
+                                TsilCliFuseCommandInput* inputs) {
+  std::vector<std::string> clangInputPaths;
+  for (int i = 0; i < inputsSize; ++i) {
+    std::string inputPath = inputs[i].path;
+    if (inputPath.ends_with(".ц")) {
+      auto filename = std::filesystem::path(inputPath).filename().string();
+      auto filenameWithoutExtension =
+          filename.substr(0, filename.find_last_of("."));
+      auto pathHash = std::to_string(std::hash<std::string>{}(inputPath));
+      auto outputPath = std::filesystem::temp_directory_path().string() + "/" +
+                        filenameWithoutExtension + "-" + pathHash + ".o";
+      auto compileCommand = std::string(config.path) + " " + outputPath +
+                            " скомпілювати " + inputPath;
+      config.println(strdup(compileCommand.c_str()));
+      auto compileResult = system(compileCommand.c_str());
+      if (compileResult != 0) {
+        return compileResult;
+      }
+      inputs[i].path = strdup(outputPath.c_str());
+      clangInputPaths.push_back(inputs[i].path);
+    } else if (inputPath.ends_with(".c")) {
+      clangInputPaths.push_back(inputs[i].path);
+    } else if (inputPath.ends_with(".o")) {
+      clangInputPaths.push_back(inputs[i].path);
+    } else if (inputPath.ends_with(".a")) {
+      clangInputPaths.push_back(inputs[i].path);
+    } else if (inputPath.ends_with(".ll")) {
+      clangInputPaths.push_back(inputs[i].path);
+    } else {
+      config.println("Невідомий формат вхідного файлу");
+      return 1;
+    }
+  }
+  std::string clangCommand = std::string(config.path) + " clang";
+  if (options.clangOptions.empty()) {
+    clangCommand.append(" ");
+  } else {
+    if (!options.clangOptions.starts_with(" ")) {
+      clangCommand.append(" ");
+    }
+    clangCommand.append(options.clangOptions);
+    if (!options.clangOptions.ends_with(" ")) {
+      clangCommand.append(" ");
+    }
+  }
+  clangCommand.append("-o ");
+  clangCommand.append(outputPath);
+  for (auto inputPath : clangInputPaths) {
+    clangCommand.append(" ");
+    clangCommand.append(inputPath);
+  }
+  config.println(strdup(clangCommand.c_str()));
+  auto result = system(clangCommand.c_str());
+  if (result != 0) {
+    return result;
+  }
+  return 0;
 }
 
 extern "C" int tsil_cli_do_lld(TsilCliConfig config,

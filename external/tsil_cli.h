@@ -7,6 +7,7 @@
 #include <variant>
 
 struct TsilCliConfig {
+  char* path;
   void (*println)(char* message);
 };
 
@@ -59,6 +60,7 @@ struct TsilCliFuseCommandInput {
 };
 
 struct TsilCliFuseCommandOptions {
+  std::string clangOptions;
   std::string libraryPath;
 };
 
@@ -71,6 +73,10 @@ struct TsilCliFuseCommand {
 };
 
 struct TsilCliHelpCommand {
+  bool someDummyField;
+};
+
+struct TsilCliVersionCommand {
   bool someDummyField;
 };
 
@@ -88,6 +94,7 @@ struct TsilCliClangCommand {
 
 enum TsilCliParsedCommandType {
   TsilCliParsedCommandTypeHelp,
+  TsilCliParsedCommandTypeVersion,
   TsilCliParsedCommandTypeCompile,
   TsilCliParsedCommandTypeFuse,
   TsilCliParsedCommandTypeLLD,
@@ -97,6 +104,7 @@ enum TsilCliParsedCommandType {
 struct TsilCliParsedCommand {
   TsilCliParsedCommandType type;
   std::variant<TsilCliHelpCommand,
+               TsilCliVersionCommand,
                TsilCliCompileCommand,
                TsilCliFuseCommand,
                TsilCliLLDCommand,
@@ -105,7 +113,6 @@ struct TsilCliParsedCommand {
 };
 
 extern "C" int tsil_cli_parse(TsilCliConfig config,
-                              char* firstArg,
                               size_t argsSize,
                               char** args,
                               TsilCliParsedCommand* parsedCommandPtr);
@@ -124,12 +131,11 @@ extern "C" int tsil_cli_do_compile(
     char* inputSource);
 
 extern "C" int tsil_cli_do_fuse(TsilCliConfig config,
-                                TsilCliWriter outputWriter,
+                                char* outputPath,
                                 TsilCliFuseCommandOutputFormat outputFormat,
                                 TsilCliFuseCommandOptions options,
-                                char* outputPath,
-                                unsigned long inputPathsSize,
-                                char** inputPaths);
+                                unsigned long inputsSize,
+                                TsilCliFuseCommandInput* inputs);
 
 extern "C" int tsil_cli_do_lld(TsilCliConfig config, TsilCliLLDCommand command);
 extern "C" int tsil_cli_do_clang(TsilCliConfig config,
