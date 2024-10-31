@@ -789,6 +789,21 @@ namespace tsil::parser {
       TsilParser::Tsil_defineContext* ctx) {
     const auto асд_дані_ціль = new АСДДаніЦіль();
     асд_дані_ціль->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    if (ctx->td_external) {
+      асд_дані_ціль->видимість = АСДВидимістьЗовнішня;
+    }
+    if (ctx->td_local) {
+      асд_дані_ціль->видимість = АСДВидимістьМісцева;
+    } else {
+      асд_дані_ціль->видимість = АСДВидимістьВнутрішня;
+    }
+    if (ctx->td_var) {
+      асд_дані_ціль->модифікатор = 1;
+    } else if (ctx->td_immut) {
+      асд_дані_ціль->модифікатор = 2;
+    } else {
+      асд_дані_ціль->модифікатор = 0;
+    }
     if (ctx->type() != nullptr) {
       асд_дані_ціль->тип = AAV(visitContext(ctx->type()));
     } else {
@@ -1150,14 +1165,14 @@ namespace tsil::parser {
 
   std::any TsilASTVisitor::visitTake(TsilParser::TakeContext* ctx) {
     const auto асд_дані_взяти = new АСДДаніВзяти();
-        асд_дані_взяти->тип = ІД(this, ctx->type_id, ctx->type_id->getText());
+    асд_дані_взяти->тип = ІД(this, ctx->type_id, ctx->type_id->getText());
     std::vector<Ідентифікатор*> шлях;
     for (const auto& take_element : ctx->take_element()) {
       шлях.push_back(ІД(this, take_element, take_element->getText()));
     }
     асд_дані_взяти->довжина_шляху = шлях.size();
     асд_дані_взяти->шлях = VecToArr(шлях);
-        return AV(this, ctx, АСДВидВзяти, асд_дані_взяти);
+    return AV(this, ctx, АСДВидВзяти, асд_дані_взяти);
   }
 
 } // namespace tsil::parser

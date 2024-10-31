@@ -1007,7 +1007,6 @@ public:
 
   class  Diia_defineContext : public antlr4::ParserRuleContext {
   public:
-    antlr4::Token *not_var = nullptr;
     antlr4::Token *extern_ = nullptr;
     antlr4::Token *local = nullptr;
     antlr4::Token *intern = nullptr;
@@ -1022,7 +1021,6 @@ public:
     antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *SEMICOLON();
     BodyContext *body();
-    antlr4::tree::TerminalNode *KW_VAR();
     antlr4::tree::TerminalNode *LESSER();
     antlr4::tree::TerminalNode *GREATER();
     std::vector<ParamContext *> param();
@@ -1036,7 +1034,6 @@ public:
     TypeContext *type();
     std::vector<antlr4::tree::TerminalNode *> COMA();
     antlr4::tree::TerminalNode* COMA(size_t i);
-    antlr4::tree::TerminalNode *KW_NOT();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1049,22 +1046,27 @@ public:
 
   class  Tsil_defineContext : public antlr4::ParserRuleContext {
   public:
+    antlr4::Token *td_external = nullptr;
+    antlr4::Token *td_local = nullptr;
+    antlr4::Token *td_internal = nullptr;
     antlr4::Token *td_var = nullptr;
     antlr4::Token *td_immut = nullptr;
-    antlr4::Token *td_const = nullptr;
     antlr4::Token *id = nullptr;
     TsilParser::ExprContext *value_expr = nullptr;
     TsilParser::Typeless_objectContext *value_object = nullptr;
     Tsil_defineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_TSIL();
     antlr4::tree::TerminalNode *SEMICOLON();
     antlr4::tree::TerminalNode *ID();
-    antlr4::tree::TerminalNode *KW_VAR();
-    antlr4::tree::TerminalNode *KW_IMMUT();
-    antlr4::tree::TerminalNode *KW_TSIL();
     antlr4::tree::TerminalNode *COLON();
     TypeContext *type();
     antlr4::tree::TerminalNode *EQUAL();
+    antlr4::tree::TerminalNode *KW_PUBLIC();
+    antlr4::tree::TerminalNode *KW_LOCAL();
+    antlr4::tree::TerminalNode *KW_PRIVATE();
+    antlr4::tree::TerminalNode *KW_VAR();
+    antlr4::tree::TerminalNode *KW_IMMUT();
     ExprContext *expr();
     Typeless_objectContext *typeless_object();
 
