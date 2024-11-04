@@ -151,3 +151,19 @@ extern "C" char* tsil_hex_to_dec(char* value) {
   str_replace_all(strvalue, "д", "f");
   return strdup(std::to_string(std::stoll(strvalue, nullptr, 16)).c_str());
 }
+
+extern "C" char* tsil_replace_backslashes(char* value) {
+  std::string str = value;
+  str_replace_all(str, "\\n", "\n");
+  str_replace_all(str, "\\r", "\r");
+  str_replace_all(str, "\\t", "\t");
+  str_replace_all(str, "\\v", "\v");
+  str_replace_all(str, "\\0", "\0");
+  str_replace_all(str, "\\a", "\a");
+  str_replace_all(str, "\\b", "\b");
+  str_replace_all(str, "\\f", "\f");
+  str_replace_all(str, "\\e", "\e");
+  str_replace_all(str, "\\\\", "\\");
+  str_replace_all(str, "\\\"", "\"");
+  return strdup(str.c_str());
+}
