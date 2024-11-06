@@ -835,7 +835,15 @@ namespace tsil::parser {
   std::any TsilASTVisitor::visitSynonym(TsilParser::SynonymContext* ctx) {
     const auto асд_дані_синонім = new АСДДаніСинонім();
     асд_дані_синонім->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
-    асд_дані_синонім->значення = AAV(visitContext(ctx->expr()));
+    if (ctx->value_expr) {
+      асд_дані_синонім->значення = AAV(visitContext(ctx->value_expr));
+    } else if (ctx->value_object) {
+      асд_дані_синонім->значення = AAV(visitContext(ctx->value_object));
+    } else if (ctx->value_type) {
+      асд_дані_синонім->значення = AAV(visitContext(ctx->value_type));
+    } else {
+      асд_дані_синонім->значення = nullptr;
+    }
     const auto асд_значення_синонім =
         AV(this, ctx, АСДВидСинонім, асд_дані_синонім);
     if (ctx->first_gendef == nullptr) {

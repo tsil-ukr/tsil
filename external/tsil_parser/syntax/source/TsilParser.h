@@ -1105,15 +1105,20 @@ public:
   public:
     antlr4::Token *id = nullptr;
     TsilParser::GendefContext *first_gendef = nullptr;
+    TsilParser::ExprContext *value_expr = nullptr;
+    TsilParser::Typeless_objectContext *value_object = nullptr;
+    TsilParser::TypeContext *value_type = nullptr;
     SynonymContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *KW_SYNONYM();
     antlr4::tree::TerminalNode *EQUAL();
-    ExprContext *expr();
     antlr4::tree::TerminalNode *SEMICOLON();
     antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *LESSER();
     antlr4::tree::TerminalNode *GREATER();
+    ExprContext *expr();
+    Typeless_objectContext *typeless_object();
+    TypeContext *type();
     std::vector<GendefContext *> gendef();
     GendefContext* gendef(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COMA();
@@ -1132,6 +1137,9 @@ public:
   public:
     antlr4::Token *id = nullptr;
     TsilParser::GendefContext *first_gendef = nullptr;
+    TsilParser::ExprContext *value_expr = nullptr;
+    TsilParser::Typeless_objectContext *value_object = nullptr;
+    TsilParser::TypeContext *value_type = nullptr;
     Synonym_fnContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *KW_SYNONYM();
@@ -1140,10 +1148,12 @@ public:
     antlr4::tree::TerminalNode *EQUAL();
     std::vector<antlr4::tree::TerminalNode *> GREATER();
     antlr4::tree::TerminalNode* GREATER(size_t i);
-    ExprContext *expr();
     antlr4::tree::TerminalNode *SEMICOLON();
     antlr4::tree::TerminalNode *ID();
     antlr4::tree::TerminalNode *LESSER();
+    ExprContext *expr();
+    Typeless_objectContext *typeless_object();
+    TypeContext *type();
     std::vector<GendefContext *> gendef();
     GendefContext* gendef(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COMA();

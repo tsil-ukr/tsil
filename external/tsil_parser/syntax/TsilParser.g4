@@ -73,8 +73,8 @@ tsil_define: (td_external='зовнішня' | td_local='місцева' | td_in
 
 assign: id=ID '=' (value_expr=expr | value_object=typeless_object) ';';
 
-synonym: 'синонім' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '=' expr ';';
-synonym_fn: 'синонім' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' ')' '=' '>' expr ';';
+synonym: 'синонім' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '=' (value_expr=expr | value_object=typeless_object | value_type=type) ';';
+synonym_fn: 'синонім' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' ')' '=' '>' (value_expr=expr | value_object=typeless_object | value_type=type) ';';
 
 section_define: 'секція' id=ID (body)?;
 
