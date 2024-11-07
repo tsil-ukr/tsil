@@ -925,12 +925,15 @@ public:
     antlr4::Token *id = nullptr;
     TsilParser::ExprContext *value_expr = nullptr;
     TsilParser::Typeless_objectContext *value_object = nullptr;
+    antlr4::Token *autofill = nullptr;
     Object_argContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *EQUAL();
     ExprContext *expr();
     Typeless_objectContext *typeless_object();
     antlr4::tree::TerminalNode *ID();
+    std::vector<antlr4::tree::TerminalNode *> DOT();
+    antlr4::tree::TerminalNode* DOT(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

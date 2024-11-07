@@ -660,22 +660,27 @@ namespace tsil::parser {
     асд_дані_значення_обʼєкт->тип = AAV(visitContext(ctx->simple_type()));
     std::vector<АргументОбʼєкта*> args;
     for (const auto& argument : ctx->object_arg()) {
-      const auto аргумент_обʼєкта = new АргументОбʼєкта();
-      if (argument->id) {
-        аргумент_обʼєкта->ідентифікатор =
-            ІД(this, argument->id, argument->id->getText());
+      if (argument->autofill) {
+        асд_дані_значення_обʼєкт->автозаповнення = true;
       } else {
-        аргумент_обʼєкта->ідентифікатор = nullptr;
+        const auto аргумент_обʼєкта = new АргументОбʼєкта();
+        if (argument->id) {
+          аргумент_обʼєкта->ідентифікатор =
+              ІД(this, argument->id, argument->id->getText());
+        } else {
+          аргумент_обʼєкта->ідентифікатор = nullptr;
+        }
+        if (argument->value_expr) {
+          аргумент_обʼєкта->значення = AAV(visitContext(argument->value_expr));
+        } else if (argument->value_object) {
+          аргумент_обʼєкта->значення =
+              AAV(visitContext(argument->value_object));
+        } else {
+          аргумент_обʼєкта->значення = nullptr;
+        }
+        аргумент_обʼєкта->місцезнаходження = LOC(this, ctx);
+        args.push_back(аргумент_обʼєкта);
       }
-      if (argument->value_expr) {
-        аргумент_обʼєкта->значення = AAV(visitContext(argument->value_expr));
-      } else if (argument->value_object) {
-        аргумент_обʼєкта->значення = AAV(visitContext(argument->value_object));
-      } else {
-        аргумент_обʼєкта->значення = nullptr;
-      }
-      аргумент_обʼєкта->місцезнаходження = LOC(this, ctx);
-      args.push_back(аргумент_обʼєкта);
     }
     асд_дані_значення_обʼєкт->кількість_аргументів = args.size();
     асд_дані_значення_обʼєкт->аргументи = VecToArr(args);
@@ -688,22 +693,27 @@ namespace tsil::parser {
         new АСДДаніЗначенняБезтиповийОбʼєкт();
     std::vector<АргументОбʼєкта*> args;
     for (const auto& argument : ctx->object_arg()) {
-      const auto аргумент_обʼєкта = new АргументОбʼєкта();
-      if (argument->id) {
-        аргумент_обʼєкта->ідентифікатор =
-            ІД(this, argument->id, argument->id->getText());
+      if (argument->autofill) {
+        асд_дані_значення_безтиповий_обʼєкт->автозаповнення = true;
       } else {
-        аргумент_обʼєкта->ідентифікатор = nullptr;
+        const auto аргумент_обʼєкта = new АргументОбʼєкта();
+        if (argument->id) {
+          аргумент_обʼєкта->ідентифікатор =
+              ІД(this, argument->id, argument->id->getText());
+        } else {
+          аргумент_обʼєкта->ідентифікатор = nullptr;
+        }
+        if (argument->value_expr) {
+          аргумент_обʼєкта->значення = AAV(visitContext(argument->value_expr));
+        } else if (argument->value_object) {
+          аргумент_обʼєкта->значення =
+              AAV(visitContext(argument->value_object));
+        } else {
+          аргумент_обʼєкта->значення = nullptr;
+        }
+        аргумент_обʼєкта->місцезнаходження = LOC(this, ctx);
+        args.push_back(аргумент_обʼєкта);
       }
-      if (argument->value_expr) {
-        аргумент_обʼєкта->значення = AAV(visitContext(argument->value_expr));
-      } else if (argument->value_object) {
-        аргумент_обʼєкта->значення = AAV(visitContext(argument->value_object));
-      } else {
-        аргумент_обʼєкта->значення = nullptr;
-      }
-      аргумент_обʼєкта->місцезнаходження = LOC(this, ctx);
-      args.push_back(аргумент_обʼєкта);
     }
     асд_дані_значення_безтиповий_обʼєкт->кількість_аргументів = args.size();
     асд_дані_значення_безтиповий_обʼєкт->аргументи = VecToArr(args);

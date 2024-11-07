@@ -61,7 +61,7 @@ gendef: ID;
 
 expr: operation #expr_operation
     | simple_type '{' (object_arg (',' object_arg)* ','?)? '}' #expr_object;
-object_arg: (id=ID '=')? (value_expr=expr | value_object=typeless_object);
+object_arg: ((id=ID '=')? (value_expr=expr | value_object=typeless_object)) | autofill='.' '.' '.';
 typeless_object: '{' (object_arg (',' object_arg)* ','?)? '}';
 
 structure_define: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? (';' | ('{' (structure_element)* '}'));
