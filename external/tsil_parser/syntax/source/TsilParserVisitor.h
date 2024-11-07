@@ -145,6 +145,8 @@ public:
 
     virtual std::any visitSection_set(TsilParser::Section_setContext *context) = 0;
 
+    virtual std::any visitAssign_op(TsilParser::Assign_opContext *context) = 0;
+
     virtual std::any visitIf(TsilParser::IfContext *context) = 0;
 
     virtual std::any visitWhile(TsilParser::WhileContext *context) = 0;

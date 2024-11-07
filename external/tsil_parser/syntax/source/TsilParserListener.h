@@ -203,6 +203,9 @@ public:
   virtual void enterSection_set(TsilParser::Section_setContext *ctx) = 0;
   virtual void exitSection_set(TsilParser::Section_setContext *ctx) = 0;
 
+  virtual void enterAssign_op(TsilParser::Assign_opContext *ctx) = 0;
+  virtual void exitAssign_op(TsilParser::Assign_opContext *ctx) = 0;
+
   virtual void enterIf(TsilParser::IfContext *ctx) = 0;
   virtual void exitIf(TsilParser::IfContext *ctx) = 0;
 

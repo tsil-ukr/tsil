@@ -205,6 +205,9 @@ public:
   virtual void enterSection_set(TsilParser::Section_setContext * /*ctx*/) override { }
   virtual void exitSection_set(TsilParser::Section_setContext * /*ctx*/) override { }
 
+  virtual void enterAssign_op(TsilParser::Assign_opContext * /*ctx*/) override { }
+  virtual void exitAssign_op(TsilParser::Assign_opContext * /*ctx*/) override { }
+
   virtual void enterIf(TsilParser::IfContext * /*ctx*/) override { }
   virtual void exitIf(TsilParser::IfContext * /*ctx*/) override { }
 

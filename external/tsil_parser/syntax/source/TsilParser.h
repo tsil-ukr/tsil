@@ -35,9 +35,9 @@ public:
     RuleStructure_define = 18, RuleStructure_element = 19, RuleDiia_define = 20, 
     RuleTsil_define = 21, RuleAssign = 22, RuleSynonym = 23, RuleSynonym_fn = 24, 
     RuleSection_define = 25, RuleSet = 26, RulePosition_set = 27, RuleSection_set = 28, 
-    RuleIf = 29, RuleWhile = 30, RuleExec = 31, RuleBody = 32, RuleBody_element = 33, 
-    RuleReturn = 34, RuleSimple_type = 35, RuleSingle_type = 36, RuleType = 37, 
-    RuleParam = 38, RulePreproc = 39, RuleTake = 40, RuleTake_element = 41
+    RuleAssign_op = 29, RuleIf = 30, RuleWhile = 31, RuleExec = 32, RuleBody = 33, 
+    RuleBody_element = 34, RuleReturn = 35, RuleSimple_type = 36, RuleSingle_type = 37, 
+    RuleType = 38, RuleParam = 39, RulePreproc = 40, RuleTake = 41, RuleTake_element = 42
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -86,6 +86,7 @@ public:
   class SetContext;
   class Position_setContext;
   class Section_setContext;
+  class Assign_opContext;
   class IfContext;
   class WhileContext;
   class ExecContext;
@@ -1086,7 +1087,7 @@ public:
     TsilParser::Typeless_objectContext *value_object = nullptr;
     AssignContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *EQUAL();
+    Assign_opContext *assign_op();
     antlr4::tree::TerminalNode *SEMICOLON();
     antlr4::tree::TerminalNode *ID();
     ExprContext *expr();
@@ -1195,7 +1196,7 @@ public:
     SetContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *DOT();
-    antlr4::tree::TerminalNode *EQUAL();
+    Assign_opContext *assign_op();
     antlr4::tree::TerminalNode *SEMICOLON();
     AtomContext *atom();
     antlr4::tree::TerminalNode *ID();
@@ -1221,7 +1222,7 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *BRACKET_OPEN();
     antlr4::tree::TerminalNode *BRACKET_CLOSE();
-    antlr4::tree::TerminalNode *EQUAL();
+    Assign_opContext *assign_op();
     antlr4::tree::TerminalNode *SEMICOLON();
     AtomContext *atom();
     std::vector<ExprContext *> expr();
@@ -1247,7 +1248,7 @@ public:
     virtual size_t getRuleIndex() const override;
     std::vector<antlr4::tree::TerminalNode *> COLON();
     antlr4::tree::TerminalNode* COLON(size_t i);
-    antlr4::tree::TerminalNode *EQUAL();
+    Assign_opContext *assign_op();
     antlr4::tree::TerminalNode *SEMICOLON();
     AtomContext *atom();
     antlr4::tree::TerminalNode *ID();
@@ -1262,6 +1263,40 @@ public:
   };
 
   Section_setContext* section_set();
+
+  class  Assign_opContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *aop_mul = nullptr;
+    antlr4::Token *aop_div = nullptr;
+    antlr4::Token *aop_mod = nullptr;
+    antlr4::Token *aop_plus = nullptr;
+    antlr4::Token *aop_minus = nullptr;
+    antlr4::Token *aop_and = nullptr;
+    antlr4::Token *aop_xor = nullptr;
+    antlr4::Token *aop_or = nullptr;
+    Assign_opContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *EQUAL();
+    Op_lshiftContext *op_lshift();
+    Op_rshiftContext *op_rshift();
+    Op_urshiftContext *op_urshift();
+    antlr4::tree::TerminalNode *MULTIPLY();
+    antlr4::tree::TerminalNode *DIVIDE();
+    antlr4::tree::TerminalNode *MOD();
+    antlr4::tree::TerminalNode *PLUS();
+    antlr4::tree::TerminalNode *MINUS();
+    antlr4::tree::TerminalNode *AND();
+    antlr4::tree::TerminalNode *POWER();
+    antlr4::tree::TerminalNode *OR();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Assign_opContext* assign_op();
 
   class  IfContext : public antlr4::ParserRuleContext {
   public:

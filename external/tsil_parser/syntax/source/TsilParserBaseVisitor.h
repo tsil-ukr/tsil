@@ -267,6 +267,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitAssign_op(TsilParser::Assign_opContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitIf(TsilParser::IfContext *ctx) override {
     return visitChildren(ctx);
   }

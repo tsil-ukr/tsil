@@ -71,16 +71,18 @@ diia_define: (extern='зовнішня' | local='місцева' | intern='вн�
 
 tsil_define: (td_external='зовнішня' | td_local='місцева' | td_internal='внутрішня')? (td_var='змінна' | td_immut='стала')? 'ціль' id=ID (':' type)? ('=' (value_expr=expr | value_object=typeless_object))? ';';
 
-assign: id=ID '=' (value_expr=expr | value_object=typeless_object) ';';
+assign: id=ID assign_op (value_expr=expr | value_object=typeless_object) ';';
 
 synonym: 'синонім' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '=' (value_expr=expr | value_object=typeless_object | value_type=type) ';';
 synonym_fn: 'синонім' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' ')' '=' '>' (value_expr=expr | value_object=typeless_object | value_type=type) ';';
 
 section_define: 'секція' id=ID (body)?;
 
-set: object=atom '.' id=ID '=' (value_expr=expr | value_object=typeless_object) ';';
-position_set: object=atom '[' idx=expr ']' '=' (value_expr=expr | value_object=typeless_object) ';';
-section_set: object=atom ':' ':' id=ID '=' (value_expr=expr | value_object=typeless_object) ';';
+set: object=atom '.' id=ID assign_op (value_expr=expr | value_object=typeless_object) ';';
+position_set: object=atom '[' idx=expr ']' assign_op (value_expr=expr | value_object=typeless_object) ';';
+section_set: object=atom ':' ':' id=ID assign_op (value_expr=expr | value_object=typeless_object) ';';
+
+assign_op: (aop_mul='*' | aop_div='/' | aop_mod='%' | aop_plus='+' | aop_minus='-' | op_lshift | op_rshift | op_urshift | aop_and='&' | aop_xor='^' | aop_or='|')? '=';
 
 if: 'якщо' cond=operation ifok=body ('інакше' (ifnot=body | ifnotif=if))?;
 while: 'поки' cond=operation body;
