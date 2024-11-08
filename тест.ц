@@ -1,7 +1,1 @@
-зовнішня дія putchar(value: char): int;
-
-дія старт(): ц32 {
-  putchar(45);
-  putchar(10);
-  вернути 0;
-}
+зовнішня дія xyz(a: intx);
