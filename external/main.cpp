@@ -145,10 +145,10 @@ extern "C" char* tsil_hex_to_dec(char* value) {
   str_replace_all(strvalue, "в", "c");
   str_replace_all(strvalue, "Г", "D");
   str_replace_all(strvalue, "г", "d");
-  str_replace_all(strvalue, "Ґ", "E");
-  str_replace_all(strvalue, "ґ", "e");
-  str_replace_all(strvalue, "Д", "F");
-  str_replace_all(strvalue, "д", "f");
+  str_replace_all(strvalue, "Д", "E");
+  str_replace_all(strvalue, "д", "e");
+  str_replace_all(strvalue, "Е", "F");
+  str_replace_all(strvalue, "е", "f");
   return strdup(std::to_string(std::stoll(strvalue, nullptr, 16)).c_str());
 }
 
