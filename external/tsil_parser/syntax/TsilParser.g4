@@ -130,5 +130,5 @@ param: id=ID (':' type)?;
 preproc: '%' '[' 'якщо' cond=operation ']' (body_element)* ('%' '[' 'інакше' ']' (body_element)*)? '%' '[' '/' 'якщо' ']' #preproc_if
        | '%' '[' 'впасти' cond=operation ']' #preproc_throw;
 
-take: 'взяти' (type_id=ID)? take_element ('/' take_element)* ';';
+take: 'взяти' (type_id=ID)? (relative='.' '/')? take_element ('/' take_element)* ';';
 take_element: ID | STRING;

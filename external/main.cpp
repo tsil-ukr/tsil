@@ -167,3 +167,11 @@ extern "C" char* tsil_replace_backslashes(char* value) {
   str_replace_all(str, "\\\"", "\"");
   return strdup(str.c_str());
 }
+
+extern "C" char* отримати_шлях_до_папки_файлу(char* path) {
+  return strdup(std::filesystem::path(path).parent_path().c_str());
+}
+
+extern "C" char* вирівняти_шлях(char* path) {
+  return strdup(std::filesystem::path(path).lexically_normal().c_str());
+}

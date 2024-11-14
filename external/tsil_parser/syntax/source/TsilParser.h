@@ -1750,6 +1750,7 @@ public:
   class  TakeContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *type_id = nullptr;
+    antlr4::Token *relative = nullptr;
     TakeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *KW_IMPORT();
@@ -1759,6 +1760,7 @@ public:
     std::vector<antlr4::tree::TerminalNode *> DIVIDE();
     antlr4::tree::TerminalNode* DIVIDE(size_t i);
     antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *DOT();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

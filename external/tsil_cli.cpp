@@ -348,8 +348,11 @@ extern "C" int tsil_cli_do_compile(
     TsilCliCompileCommandOptions options,
     char* inputPath,
     char* inputSource) {
-  const auto L = tsil_llvm_create_tl(inputPath);
-  auto текстКоду = new ТекстКоду{.шлях = inputPath, .значення = inputSource};
+  auto fixedFullPathToFile =
+      strdup(std::filesystem::absolute(inputPath).c_str());
+  const auto L = tsil_llvm_create_tl(fixedFullPathToFile);
+  auto текстКоду =
+      new ТекстКоду{.шлях = fixedFullPathToFile, .значення = inputSource};
   const auto помилка_компіляції_цілі = скомпілювати_ціль_в_ll(L, текстКоду);
   if (помилка_компіляції_цілі != nullptr) {
     if (помилка_компіляції_цілі->місцезнаходження != nullptr) {
