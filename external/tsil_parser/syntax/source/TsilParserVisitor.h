@@ -159,6 +159,10 @@ public:
 
     virtual std::any visitReturn(TsilParser::ReturnContext *context) = 0;
 
+    virtual std::any visitLabel(TsilParser::LabelContext *context) = 0;
+
+    virtual std::any visitGoto(TsilParser::GotoContext *context) = 0;
+
     virtual std::any visitSimple_type_section_get(TsilParser::Simple_type_section_getContext *context) = 0;
 
     virtual std::any visitSimple_type_subject(TsilParser::Simple_type_subjectContext *context) = 0;

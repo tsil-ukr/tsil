@@ -208,6 +208,12 @@ namespace tsil::parser {
     if (const auto ctx = dynamic_cast<TsilParser::ReturnContext*>(context)) {
       return visitReturn(ctx);
     }
+    if (const auto ctx = dynamic_cast<TsilParser::LabelContext*>(context)) {
+      return visitLabel(ctx);
+    }
+    if (const auto ctx = dynamic_cast<TsilParser::GotoContext*>(context)) {
+      return visitGoto(ctx);
+    }
     if (const auto ctx =
             dynamic_cast<TsilParser::Simple_type_subjectContext*>(context)) {
       return visitSimple_type_subject(ctx);
@@ -1447,6 +1453,12 @@ namespace tsil::parser {
     if (ctx->return_() != nullptr) {
       return visitReturn(ctx->return_());
     }
+    if (ctx->label() != nullptr) {
+      return visitLabel(ctx->label());
+    }
+    if (ctx->goto_() != nullptr) {
+      return visitGoto(ctx->goto_());
+    }
     if (ctx->take() != nullptr) {
       return visitTake(ctx->take());
     }
@@ -1464,6 +1476,18 @@ namespace tsil::parser {
       асд_дані_вернути->значення = nullptr;
     }
     return AV(this, ctx, АСДВидВернути, асд_дані_вернути);
+  }
+
+  std::any TsilASTVisitor::visitLabel(TsilParser::LabelContext* ctx) {
+    const auto асд_дані_мітка = new АСДДаніМітка();
+    асд_дані_мітка->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    return AV(this, ctx, АСДВидМітка, асд_дані_мітка);
+  }
+
+  std::any TsilASTVisitor::visitGoto(TsilParser::GotoContext* ctx) {
+    const auto асд_дані_стрибнути = new АСДДаніСтрибнути();
+    асд_дані_стрибнути->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    return AV(this, ctx, АСДВидСтрибнути, асд_дані_стрибнути);
   }
 
   std::any TsilASTVisitor::visitSimple_type_subject(

@@ -295,6 +295,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitLabel(TsilParser::LabelContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitGoto(TsilParser::GotoContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitSimple_type_section_get(TsilParser::Simple_type_section_getContext *ctx) override {
     return visitChildren(ctx);
   }

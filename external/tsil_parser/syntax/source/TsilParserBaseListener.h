@@ -226,6 +226,12 @@ public:
   virtual void enterReturn(TsilParser::ReturnContext * /*ctx*/) override { }
   virtual void exitReturn(TsilParser::ReturnContext * /*ctx*/) override { }
 
+  virtual void enterLabel(TsilParser::LabelContext * /*ctx*/) override { }
+  virtual void exitLabel(TsilParser::LabelContext * /*ctx*/) override { }
+
+  virtual void enterGoto(TsilParser::GotoContext * /*ctx*/) override { }
+  virtual void exitGoto(TsilParser::GotoContext * /*ctx*/) override { }
+
   virtual void enterSimple_type_section_get(TsilParser::Simple_type_section_getContext * /*ctx*/) override { }
   virtual void exitSimple_type_section_get(TsilParser::Simple_type_section_getContext * /*ctx*/) override { }
 

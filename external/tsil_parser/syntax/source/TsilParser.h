@@ -17,14 +17,15 @@ public:
     KW_IMPORT = 12, KW_EXPORT = 13, KW_COMPOSITION = 14, KW_PROPERTY = 15, 
     KW_PUBLIC = 16, KW_PRIVATE = 17, KW_LOCAL = 18, KW_NOT = 19, KW_OR = 20, 
     KW_AND = 21, KW_VAR = 22, KW_IMMUT = 23, KW_SYNONYM = 24, KW_EXEC = 25, 
-    KW_TRY = 26, KW_CATCH = 27, KW_THROW = 28, EQUAL = 29, GREATER = 30, 
-    LESSER = 31, DOT = 32, PLUS = 33, MINUS = 34, MULTIPLY = 35, DIVIDE = 36, 
-    MOD = 37, POWER = 38, AND = 39, OR = 40, PAREN_OPEN = 41, PAREN_CLOSE = 42, 
-    BRACKET_OPEN = 43, BRACKET_CLOSE = 44, QUESTION = 45, COLON = 46, TILDA = 47, 
-    QUOTE = 48, DOUBLE_QUOTE = 49, EXCLAMATION = 50, COMA = 51, SEMICOLON = 52, 
-    QUOTE_OPEN = 53, QUOTE_CLOSE = 54, NUMBER = 55, TYPED_INTEGER = 56, 
-    INTEGER = 57, TYPED_FLOAT = 58, FLOAT = 59, HEX = 60, BIN = 61, ID = 62, 
-    STRING = 63, COMMENT = 64, LINE_COMMENT = 65, WS = 66, NL = 67
+    KW_TRY = 26, KW_CATCH = 27, KW_THROW = 28, KW_GOTO = 29, EQUAL = 30, 
+    GREATER = 31, LESSER = 32, DOT = 33, PLUS = 34, MINUS = 35, MULTIPLY = 36, 
+    DIVIDE = 37, MOD = 38, POWER = 39, AND = 40, OR = 41, PAREN_OPEN = 42, 
+    PAREN_CLOSE = 43, BRACKET_OPEN = 44, BRACKET_CLOSE = 45, QUESTION = 46, 
+    COLON = 47, TILDA = 48, QUOTE = 49, DOUBLE_QUOTE = 50, EXCLAMATION = 51, 
+    COMA = 52, SEMICOLON = 53, QUOTE_OPEN = 54, QUOTE_CLOSE = 55, NUMBER = 56, 
+    TYPED_INTEGER = 57, INTEGER = 58, TYPED_FLOAT = 59, FLOAT = 60, HEX = 61, 
+    BIN = 62, ID = 63, STRING = 64, COMMENT = 65, LINE_COMMENT = 66, WS = 67, 
+    NL = 68
   };
 
   enum {
@@ -36,8 +37,9 @@ public:
     RuleTsil_define = 21, RuleAssign = 22, RuleSynonym = 23, RuleSynonym_fn = 24, 
     RuleSection_define = 25, RuleSet = 26, RulePosition_set = 27, RuleSection_set = 28, 
     RuleAssign_op = 29, RuleIf = 30, RuleWhile = 31, RuleExec = 32, RuleBody = 33, 
-    RuleBody_element = 34, RuleReturn = 35, RuleSimple_type = 36, RuleSingle_type = 37, 
-    RuleType = 38, RuleParam = 39, RulePreproc = 40, RuleTake = 41, RuleTake_element = 42
+    RuleBody_element = 34, RuleReturn = 35, RuleLabel = 36, RuleGoto = 37, 
+    RuleSimple_type = 38, RuleSingle_type = 39, RuleType = 40, RuleParam = 41, 
+    RulePreproc = 42, RuleTake = 43, RuleTake_element = 44
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -93,6 +95,8 @@ public:
   class BodyContext;
   class Body_elementContext;
   class ReturnContext;
+  class LabelContext;
+  class GotoContext;
   class Simple_typeContext;
   class Single_typeContext;
   class TypeContext;
@@ -1402,6 +1406,8 @@ public:
     ReturnContext *return_();
     PreprocContext *preproc();
     TakeContext *take();
+    LabelContext *label();
+    GotoContext *goto_();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -1431,6 +1437,41 @@ public:
   };
 
   ReturnContext* return_();
+
+  class  LabelContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *id = nullptr;
+    LabelContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *COLON();
+    antlr4::tree::TerminalNode *ID();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  LabelContext* label();
+
+  class  GotoContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *id = nullptr;
+    GotoContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_GOTO();
+    antlr4::tree::TerminalNode *SEMICOLON();
+    antlr4::tree::TerminalNode *ID();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  GotoContext* goto_();
 
   class  Simple_typeContext : public antlr4::ParserRuleContext {
   public:

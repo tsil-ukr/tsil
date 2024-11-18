@@ -224,6 +224,12 @@ public:
   virtual void enterReturn(TsilParser::ReturnContext *ctx) = 0;
   virtual void exitReturn(TsilParser::ReturnContext *ctx) = 0;
 
+  virtual void enterLabel(TsilParser::LabelContext *ctx) = 0;
+  virtual void exitLabel(TsilParser::LabelContext *ctx) = 0;
+
+  virtual void enterGoto(TsilParser::GotoContext *ctx) = 0;
+  virtual void exitGoto(TsilParser::GotoContext *ctx) = 0;
+
   virtual void enterSimple_type_section_get(TsilParser::Simple_type_section_getContext *ctx) = 0;
   virtual void exitSimple_type_section_get(TsilParser::Simple_type_section_getContext *ctx) = 0;
 

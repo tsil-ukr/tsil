@@ -196,6 +196,10 @@ namespace tsil::parser {
 
     std::any visitReturn(TsilParser::ReturnContext* ctx) override;
 
+    std::any visitLabel(TsilParser::LabelContext* ctx) override;
+
+    std::any visitGoto(TsilParser::GotoContext* ctx) override;
+
     std::any visitType_nested(TsilParser::Type_nestedContext* ctx) override;
 
     std::any visitSimple_type_subject(

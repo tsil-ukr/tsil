@@ -28,6 +28,7 @@ KW_EXEC: 'виконати';
 KW_TRY: 'спробувати';
 KW_CATCH: 'зловити';
 KW_THROW: 'впасти';
+KW_GOTO: 'стрибнути';
 
 EQUAL: '=';
 GREATER: '>';

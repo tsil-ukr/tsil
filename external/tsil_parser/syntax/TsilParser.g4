@@ -108,8 +108,13 @@ body_element: structure_define
             | return
             | preproc
             | take
+            | label
+            | goto
             | semi=';';
 return: 'вернути' (value_expr=expr | value_object=typeless_object)? ';';
+
+label: id=ID ':';
+goto: 'стрибнути' id=ID ';';
 
 simple_type: id=ID #simple_type_subject
            | object=simple_type ':' ':' id=ID #simple_type_section_get
