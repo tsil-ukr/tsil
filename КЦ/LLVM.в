@@ -9,6 +9,7 @@
   структура Value;
   структура Function;
   структура BasicBlock;
+  структура BranchInst;
 }
 
 зовнішня дія tsil_llvm_create_tl(назва: памʼять<п8>): комірка<LLVM::TL>;
@@ -23,7 +24,8 @@
 зовнішня дія tsil_llvm_inst_alloca(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, назва: памʼять<п8>, тип: комірка<LLVM::Type>): комірка<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_store(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, алока: комірка<LLVM::Value>);
 зовнішня дія tsil_llvm_inst_load(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, тип: комірка<LLVM::Type>, значення: комірка<LLVM::Value>): комірка<LLVM::Value>;
-зовнішня дія tsil_llvm_inst_br(L: комірка<LLVM::TL>, звідки: комірка<LLVM::BasicBlock>, куда: комірка<LLVM::BasicBlock>);
+зовнішня дія tsil_llvm_inst_br(L: комірка<LLVM::TL>, звідки: комірка<LLVM::BasicBlock>, куда: комірка<LLVM::BasicBlock>): комірка<LLVM::BranchInst>;
+зовнішня дія tsil_llvm_set_br_successor(L: комірка<LLVM::TL>, branch_inst: комірка<LLVM::BranchInst>, куда: комірка<LLVM::BasicBlock>);
 зовнішня дія tsil_llvm_inst_brif(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>, звідки: комірка<LLVM::BasicBlock>, куда: комірка<LLVM::BasicBlock>);
 зовнішня дія tsil_llvm_inst_ret(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, значення: комірка<LLVM::Value>);
 зовнішня дія tsil_llvm_inst_getelementptr(L: комірка<LLVM::TL>, block: комірка<LLVM::BasicBlock>, тип: комірка<LLVM::Type>, значення: комірка<LLVM::Value>, кількість_позицій: позитивне, позиції: памʼять<комірка<LLVM::Value>>): комірка<LLVM::Value>;
@@ -145,8 +147,12 @@
     вернути tsil_llvm_inst_load(L, block, тип, значення);
   }
 
-  дія br(L: комірка<TL>, звідки: комірка<BasicBlock>, куда: комірка<BasicBlock>) {
-    tsil_llvm_inst_br(L, звідки, куда);
+  дія br(L: комірка<TL>, звідки: комірка<BasicBlock>, куда: комірка<BasicBlock>): комірка<BranchInst> {
+    вернути tsil_llvm_inst_br(L, звідки, куда);
+  }
+
+  дія set_br_successor(L: комірка<TL>, branch_inst: комірка<BranchInst>, куда: комірка<BasicBlock>) {
+    tsil_llvm_set_br_successor(L, branch_inst, куда);
   }
 
   дія brif(L: комірка<TL>, block: комірка<BasicBlock>, значення: комірка<Value>, звідки: комірка<BasicBlock>, куда: комірка<BasicBlock>) {

@@ -17,6 +17,9 @@ extern "C" {
 #ifndef TSIL_LLVM_BASIC_BLOCK_TYPE
 #define TSIL_LLVM_BASIC_BLOCK_TYPE void
 #endif
+#ifndef TSIL_LLVM_BRANCH_INST_TYPE
+#define TSIL_LLVM_BRANCH_INST_TYPE void
+#endif
 
 typedef TL_TYPE TL;
 typedef TSIL_LLVM_TYPE_TYPE LLVMType;
@@ -24,6 +27,7 @@ typedef TSIL_LLVM_FUNCTION_TYPE LLVMFunction;
 typedef TSIL_LLVM_FUNCTION_TYPE_TYPE LLVMFunctionType;
 typedef TSIL_LLVM_VALUE_TYPE LLVMValue;
 typedef TSIL_LLVM_BASIC_BLOCK_TYPE LLVMBasicBlock;
+typedef TSIL_LLVM_BRANCH_INST_TYPE LLVMBranchInst;
 
 #define tsil_llvm_LINKAGE_EXTERNAL 0
 #define tsil_llvm_LINKAGE_DSO_LOCAL 1
@@ -78,7 +82,12 @@ LLVMValue* tsil_llvm_inst_call_func(TL* m,
                                     LLVMFunction* func,
                                     unsigned long arguments_size,
                                     LLVMValue** arguments);
-void tsil_llvm_inst_br(TL* m, LLVMBasicBlock* block, LLVMBasicBlock* target);
+LLVMBranchInst* tsil_llvm_inst_br(TL* m,
+                                  LLVMBasicBlock* block,
+                                  LLVMBasicBlock* target);
+void tsil_llvm_set_br_successor(TL* m,
+                                LLVMBranchInst* branch_inst,
+                                LLVMBasicBlock* target);
 void tsil_llvm_inst_brif(TL* m,
                          LLVMBasicBlock* block,
                          LLVMValue* condition,

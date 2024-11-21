@@ -35,6 +35,7 @@ struct XLMStruct {
 #define TSIL_LLVM_TYPE_TYPE llvm::Type
 #define TSIL_LLVM_VALUE_TYPE llvm::Value
 #define TSIL_LLVM_BASIC_BLOCK_TYPE llvm::BasicBlock
+#define TSIL_LLVM_BRANCH_INST_TYPE llvm::BranchInst
 #include "tsil_llvm.h"
 
 extern "C" {
@@ -179,9 +180,17 @@ LLVMValue* tsil_llvm_inst_call_func(TL* m,
                             "inst");
 }
 
-void tsil_llvm_inst_br(TL* m, LLVMBasicBlock* block, LLVMBasicBlock* target) {
+LLVMBranchInst* tsil_llvm_inst_br(TL* m,
+                                  LLVMBasicBlock* block,
+                                  LLVMBasicBlock* target) {
   llvm::IRBuilder<> builder(block);
-  builder.CreateBr(target);
+  return builder.CreateBr(target);
+}
+
+void tsil_llvm_set_br_successor(TL* m,
+                                LLVMBranchInst* branch_inst,
+                                LLVMBasicBlock* target) {
+  branch_inst->setSuccessor(0, target);
 }
 
 void tsil_llvm_inst_brif(TL* m,
