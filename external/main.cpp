@@ -81,15 +81,6 @@ int main(int argc, char** argv) {
     TsilCliFuseCommand command = std::get<TsilCliFuseCommand>(parsedCommand.c);
     return tsil_cli_run_fuse_command(tsilCliConfig, command);
   }
-  if (parsedCommand.type == TsilCliParsedCommandTypeLLD) {
-    TsilCliLLDCommand command = std::get<TsilCliLLDCommand>(parsedCommand.c);
-    return tsil_cli_do_lld(tsilCliConfig, command);
-  }
-  if (parsedCommand.type == TsilCliParsedCommandTypeClang) {
-    TsilCliClangCommand command =
-        std::get<TsilCliClangCommand>(parsedCommand.c);
-    return tsil_cli_do_clang(tsilCliConfig, command);
-  }
   tsilCliConfig.println("Здається ви виявили помилку...");
   return 1;
 }

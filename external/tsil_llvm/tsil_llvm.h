@@ -367,6 +367,4 @@ LLVMValue* tsil_llvm_make_internal_global(TL* m, char* name, LLVMType* type);
 
 char* dumpLL(TL* m);
 void dumpOBJ(TL* m, std::vector<unsigned char>& out);
-int tsil_llvm_run_lld(int argc, char** argv);
-int tsil_clang_main(char* path, char* prependArg, size_t argsSize, char** args);
 }

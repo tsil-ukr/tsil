@@ -247,36 +247,5 @@ set(lld_libs
         lldCommon
 )
 
-set(clang_libs
-        clangFrontendTool
-        clangCodeGen
-        clangFrontend
-        clangDriver
-        clangSerialization
-        clangSema
-        clangStaticAnalyzerFrontend
-        clangStaticAnalyzerCheckers
-        clangStaticAnalyzerCore
-        clangAnalysis
-        clangASTMatchers
-        clangAST
-        clangParse
-        clangSema
-        clangAPINotes
-        clangBasic
-        clangEdit
-        clangLex
-        clangARCMigrate
-        clangRewriteFrontend
-        clangRewrite
-        clangCrossTU
-        clangIndex
-        clangToolingCore
-        clangExtractAPI
-        clangSupport
-        clangInstallAPI
-        clangAST
-)
-
-add_library(tsil_llvm STATIC tsil_llvm.cpp tsil_clang_cc1_main.cpp tsil_clang_cc1as_main.cpp tsil_clang_driver.cpp)
-target_link_libraries(tsil_llvm PUBLIC ${llvm_libs} ${lld_libs} ${clang_libs})
+add_library(tsil_llvm STATIC tsil_llvm.cpp)
+target_link_libraries(tsil_llvm PUBLIC ${llvm_libs} ${lld_libs})

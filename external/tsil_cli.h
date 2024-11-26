@@ -97,8 +97,6 @@ enum TsilCliParsedCommandType {
   TsilCliParsedCommandTypeVersion,
   TsilCliParsedCommandTypeCompile,
   TsilCliParsedCommandTypeFuse,
-  TsilCliParsedCommandTypeLLD,
-  TsilCliParsedCommandTypeClang,
 };
 
 struct TsilCliParsedCommand {
@@ -106,9 +104,7 @@ struct TsilCliParsedCommand {
   std::variant<TsilCliHelpCommand,
                TsilCliVersionCommand,
                TsilCliCompileCommand,
-               TsilCliFuseCommand,
-               TsilCliLLDCommand,
-               TsilCliClangCommand>
+               TsilCliFuseCommand>
       c;
 };
 
@@ -136,7 +132,3 @@ extern "C" int tsil_cli_do_fuse(TsilCliConfig config,
                                 TsilCliFuseCommandOptions options,
                                 unsigned long inputsSize,
                                 TsilCliFuseCommandInput* inputs);
-
-extern "C" int tsil_cli_do_lld(TsilCliConfig config, TsilCliLLDCommand command);
-extern "C" int tsil_cli_do_clang(TsilCliConfig config,
-                                 TsilCliClangCommand command);

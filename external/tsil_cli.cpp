@@ -52,27 +52,6 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
     return 0;
   }
 
-  if (argsSize >= 1) {
-    if (std::string(args[0]) == "lld") {
-      TsilCliLLDCommand lldCommand{};
-      lldCommand.argc = argsSize - 1;
-      lldCommand.argv = args + 1;
-      parsedCommandPtr->type = TsilCliParsedCommandTypeLLD;
-      parsedCommandPtr->c = lldCommand;
-      return 0;
-    } else if ((std::string(args[0]) == "clang") ||
-               (std::string(args[0]) == "clang++")) {
-      TsilCliClangCommand clangCommand{};
-      clangCommand.path = config.path;
-      clangCommand.prependArg = args[0];
-      clangCommand.argsSize = argsSize - 1;
-      clangCommand.args = args + 1;
-      parsedCommandPtr->type = TsilCliParsedCommandTypeClang;
-      parsedCommandPtr->c = clangCommand;
-      return 0;
-    }
-  }
-
   auto toc = parseTOC(std::vector<std::string>(args, args + argsSize),
                       {
                           "допомога",
@@ -397,7 +376,7 @@ extern "C" int tsil_cli_do_fuse(TsilCliConfig config,
           filename.substr(0, filename.find_last_of("."));
       auto pathHash = std::to_string(std::hash<std::string>{}(inputPath));
       auto outputPath = std::filesystem::temp_directory_path().string() + "/" +
-                        filenameWithoutExtension + "-" + pathHash + ".o";
+                        filenameWithoutExtension + "-" + pathHash + ".ll";
       auto compileCommand = std::string(config.path) + " " + outputPath +
                             " скомпілювати " + inputPath;
       config.println(strdup(compileCommand.c_str()));
@@ -420,7 +399,7 @@ extern "C" int tsil_cli_do_fuse(TsilCliConfig config,
       return 1;
     }
   }
-  std::string clangCommand = std::string(config.path) + " clang";
+  std::string clangCommand = "clang";
   if (options.clangOptions.empty()) {
     clangCommand.append(" ");
   } else {
@@ -444,15 +423,4 @@ extern "C" int tsil_cli_do_fuse(TsilCliConfig config,
     return result;
   }
   return 0;
-}
-
-extern "C" int tsil_cli_do_lld(TsilCliConfig config,
-                               TsilCliLLDCommand command) {
-  return tsil_llvm_run_lld(command.argc, command.argv);
-}
-
-extern "C" int tsil_cli_do_clang(TsilCliConfig config,
-                                 TsilCliClangCommand command) {
-  return tsil_clang_main(command.path, command.prependArg, command.argsSize,
-                         command.args);
 }
