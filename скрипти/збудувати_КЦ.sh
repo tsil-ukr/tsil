@@ -7,7 +7,10 @@ if [ -z "$TSIL" ]; then
   TSIL="ціль"
 fi
 TSIL_EXECNAME="ціль"
-cp -r "build/ціль" "build/ціль-$(date +%s)"
+# check if build/ціль exist
+if [ -f "build/ціль" ]; then
+  cp -r "build/ціль" "build/ціль-$(date +%s)"
+fi
 
 export CXX="clang++"
 export CC="clang"
