@@ -219,7 +219,7 @@
     }
     ціль gep_positions_llvm_values = виділити<адреса<LLVM::Value>>(2);
     gep_positions_llvm_values[0] = LLVM::const_int32(К.L, 0);
-    gep_positions_llvm_values[1] = LLVM::const_int32(К.L, позиція_знайденої_властивості як ц32);
+    gep_positions_llvm_values[1] = LLVM::const_int32(К.L, ц32(позиція_знайденої_властивості));
     ціль llvm_value_gep = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, тип.llvm_type, llvm_value, 2, gep_positions_llvm_values);
     ціль обʼєкт_значення: ОбʼєктНезавантаженогоЗначення;
     обʼєкт_значення.тип = властивість_структури.тип;
@@ -301,7 +301,7 @@
     }
     ціль gep_positions_llvm_values = виділити<адреса<LLVM::Value>>(2);
     gep_positions_llvm_values[0] = LLVM::const_int32(К.L, 0);
-    gep_positions_llvm_values[1] = LLVM::const_int32(К.L, позиція_знайденої_властивості як ц32);
+    gep_positions_llvm_values[1] = LLVM::const_int32(К.L, ц32(позиція_знайденої_властивості));
     ціль llvm_value_gep = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, тип.llvm_type, llvm_value, 2, gep_positions_llvm_values);
     ціль результат_аргумента_як_значення = отримати_як_значення(К, інформація_середовища, аргумент.місцезнаходження, аргумент.обʼєкт, властивість_структури.тип);
     якщо результат_аргумента_як_значення.помилка != пусто {

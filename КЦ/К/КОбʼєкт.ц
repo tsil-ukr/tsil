@@ -45,7 +45,7 @@
         }
         ціль gep_positions_llvm_values = виділити<адреса<LLVM::Value>>(2);
         gep_positions_llvm_values[0] = LLVM::const_int32(К.L, 0);
-        gep_positions_llvm_values[1] = LLVM::const_int32(К.L, позиція_властивості_структури як ц32);
+        gep_positions_llvm_values[1] = LLVM::const_int32(К.L, ц32(позиція_властивості_структури));
         ціль llvm_value_gep = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, тип.llvm_type, llvm_value, 2, gep_positions_llvm_values);
         ціль результат_компіляції_значення = скомпілювати_значення_як_значення(К, інформація_середовища, аргумент.значення, властивість_структури.тип);
         якщо результат_компіляції_значення.помилка != пусто {
