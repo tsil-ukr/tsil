@@ -17,15 +17,15 @@ public:
     KW_IMPORT = 12, KW_EXPORT = 13, KW_COMPOSITION = 14, KW_PROPERTY = 15, 
     KW_PUBLIC = 16, KW_PRIVATE = 17, KW_LOCAL = 18, KW_NOT = 19, KW_OR = 20, 
     KW_AND = 21, KW_VAR = 22, KW_IMMUT = 23, KW_SYNONYM = 24, KW_EXEC = 25, 
-    KW_TRY = 26, KW_CATCH = 27, KW_THROW = 28, KW_GOTO = 29, EQUAL = 30, 
-    GREATER = 31, LESSER = 32, DOT = 33, PLUS = 34, MINUS = 35, MULTIPLY = 36, 
-    DIVIDE = 37, MOD = 38, POWER = 39, AND = 40, OR = 41, PAREN_OPEN = 42, 
-    PAREN_CLOSE = 43, BRACKET_OPEN = 44, BRACKET_CLOSE = 45, QUESTION = 46, 
-    COLON = 47, TILDA = 48, QUOTE = 49, DOUBLE_QUOTE = 50, EXCLAMATION = 51, 
-    COMA = 52, SEMICOLON = 53, QUOTE_OPEN = 54, QUOTE_CLOSE = 55, NUMBER = 56, 
-    TYPED_INTEGER = 57, INTEGER = 58, TYPED_FLOAT = 59, FLOAT = 60, HEX = 61, 
-    BIN = 62, ID = 63, STRING = 64, COMMENT = 65, LINE_COMMENT = 66, WS = 67, 
-    NL = 68
+    KW_TRY = 26, KW_CATCH = 27, KW_THROW = 28, KW_GOTO = 29, KW_ENUM = 30, 
+    KW_ENUMERATE = 31, KW_IS = 32, EQUAL = 33, GREATER = 34, LESSER = 35, 
+    DOT = 36, PLUS = 37, MINUS = 38, MULTIPLY = 39, DIVIDE = 40, MOD = 41, 
+    POWER = 42, AND = 43, OR = 44, PAREN_OPEN = 45, PAREN_CLOSE = 46, BRACKET_OPEN = 47, 
+    BRACKET_CLOSE = 48, QUESTION = 49, COLON = 50, TILDA = 51, QUOTE = 52, 
+    DOUBLE_QUOTE = 53, EXCLAMATION = 54, COMA = 55, SEMICOLON = 56, QUOTE_OPEN = 57, 
+    QUOTE_CLOSE = 58, NUMBER = 59, TYPED_INTEGER = 60, INTEGER = 61, TYPED_FLOAT = 62, 
+    FLOAT = 63, HEX = 64, BIN = 65, ID = 66, STRING = 67, COMMENT = 68, 
+    LINE_COMMENT = 69, WS = 70, NL = 71
   };
 
   enum {
@@ -33,13 +33,14 @@ public:
     RuleOp_lshift = 5, RuleOp_rshift = 6, RuleOp_urshift = 7, RuleOp_lte = 8, 
     RuleOp_gte = 9, RuleOp_eq = 10, RuleOp_neq = 11, RuleOp_land = 12, RuleOp_lor = 13, 
     RuleGendef = 14, RuleExpr = 15, RuleObject_arg = 16, RuleTypeless_object = 17, 
-    RuleStructure_define = 18, RuleStructure_element = 19, RuleDiia_define = 20, 
-    RuleTsil_define = 21, RuleAssign = 22, RuleSynonym = 23, RuleSynonym_fn = 24, 
-    RuleSection_define = 25, RuleSet = 26, RulePosition_set = 27, RuleSection_set = 28, 
-    RuleAssign_op = 29, RuleIf = 30, RuleWhile = 31, RuleExec = 32, RuleBody = 33, 
-    RuleBody_element = 34, RuleReturn = 35, RuleLabel = 36, RuleGoto = 37, 
-    RuleSimple_type = 38, RuleSingle_type = 39, RuleType = 40, RuleParam = 41, 
-    RulePreproc = 42, RuleTake = 43, RuleTake_element = 44
+    RuleStructure_define = 18, RuleStructure_element = 19, RuleEnum_define = 20, 
+    RuleEnum_element = 21, RuleDiia_define = 22, RuleTsil_define = 23, RuleAssign = 24, 
+    RuleSynonym = 25, RuleSynonym_fn = 26, RuleSection_define = 27, RuleSet = 28, 
+    RulePosition_set = 29, RuleSection_set = 30, RuleAssign_op = 31, RuleIf = 32, 
+    RuleWhile = 33, RuleExec = 34, RuleBody = 35, RuleBody_element = 36, 
+    RuleReturn = 37, RuleLabel = 38, RuleGoto = 39, RuleSimple_type = 40, 
+    RuleSingle_type = 41, RuleType = 42, RuleParam = 43, RulePreproc = 44, 
+    RuleTake = 45, RuleTake_element = 46
   };
 
   explicit TsilParser(antlr4::TokenStream *input);
@@ -79,6 +80,8 @@ public:
   class Typeless_objectContext;
   class Structure_defineContext;
   class Structure_elementContext;
+  class Enum_defineContext;
+  class Enum_elementContext;
   class Diia_defineContext;
   class Tsil_defineContext;
   class AssignContext;
@@ -1013,6 +1016,52 @@ public:
 
   Structure_elementContext* structure_element();
 
+  class  Enum_defineContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *id = nullptr;
+    Enum_defineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KW_ENUM();
+    antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *SEMICOLON();
+    antlr4::tree::TerminalNode *QUOTE_OPEN();
+    antlr4::tree::TerminalNode *QUOTE_CLOSE();
+    std::vector<Enum_elementContext *> enum_element();
+    Enum_elementContext* enum_element(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> COMA();
+    antlr4::tree::TerminalNode* COMA(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Enum_defineContext* enum_define();
+
+  class  Enum_elementContext : public antlr4::ParserRuleContext {
+  public:
+    antlr4::Token *id = nullptr;
+    Enum_elementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *QUOTE_OPEN();
+    antlr4::tree::TerminalNode *QUOTE_CLOSE();
+    std::vector<ParamContext *> param();
+    ParamContext* param(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> SEMICOLON();
+    antlr4::tree::TerminalNode* SEMICOLON(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  Enum_elementContext* enum_element();
+
   class  Diia_defineContext : public antlr4::ParserRuleContext {
   public:
     antlr4::Token *extern_ = nullptr;
@@ -1388,6 +1437,7 @@ public:
     Body_elementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     Structure_defineContext *structure_define();
+    Enum_defineContext *enum_define();
     Diia_defineContext *diia_define();
     Tsil_defineContext *tsil_define();
     AssignContext *assign();

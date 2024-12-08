@@ -163,6 +163,10 @@ namespace tsil::parser {
       return visitStructure_define(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<TsilParser::Enum_defineContext*>(context)) {
+      return visitEnum_define(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<TsilParser::Diia_defineContext*>(context)) {
       return visitDiia_define(ctx);
     }
@@ -754,6 +758,46 @@ namespace tsil::parser {
       асд_дані_шаблон->параметри = VecToArr(params);
       return AV(this, ctx, АСДВидШаблон, асд_дані_шаблон);
     }
+  }
+
+  std::any TsilASTVisitor::visitEnum_define(
+      TsilParser::Enum_defineContext* ctx) {
+    const auto асд_дані_перелік = new АСДДаніПерелік();
+    асд_дані_перелік->ідентифікатор = ІД(this, ctx->id, ctx->id->getText());
+    std::vector<ЕлементПереліку*> elements;
+    for (const auto& enumElement : ctx->enum_element()) {
+      const auto елемент_переліку = new ЕлементПереліку();
+      елемент_переліку->ідентифікатор =
+          ІД(this, enumElement->id, enumElement->id->getText());
+      std::vector<Параметр*> params;
+      for (const auto& param : enumElement->param()) {
+        const auto any_param = visitParam(param);
+        params.push_back(std::any_cast<Параметр*>(any_param));
+      }
+      елемент_переліку->кількість_параметрів = params.size();
+      елемент_переліку->параметри = VecToArr(params);
+      елемент_переліку->місцезнаходження = LOC(this, enumElement);
+      elements.push_back(елемент_переліку);
+    }
+    асд_дані_перелік->кількість_елементів = elements.size();
+    асд_дані_перелік->елементи = VecToArr(elements);
+    const auto асд_значення_перелік =
+        AV(this, ctx, АСДВидПерелік, асд_дані_перелік);
+    return асд_значення_перелік;
+    //    if (ctx->first_gendef == nullptr) {
+    //      return асд_значення_перелік;
+    //    } else {
+    //      const auto асд_дані_шаблон = new АСДДаніШаблон();
+    //      асд_дані_шаблон->ідентифікатор = ІД(this, ctx->id,
+    //      ctx->id->getText()); асд_дані_шаблон->значення =
+    //      асд_значення_перелік; std::vector<Ідентифікатор*> params; for (const
+    //      auto& gendef : ctx->gendef()) {
+    //        params.push_back(ІД(this, gendef, gendef->getText()));
+    //      }
+    //      асд_дані_шаблон->кількість_параметрів = params.size();
+    //      асд_дані_шаблон->параметри = VecToArr(params);
+    //      return AV(this, ctx, АСДВидШаблон, асд_дані_шаблон);
+    //    }
   }
 
   std::any TsilASTVisitor::visitDiia_define(
@@ -1413,6 +1457,9 @@ namespace tsil::parser {
       TsilParser::Body_elementContext* ctx) {
     if (ctx->structure_define() != nullptr) {
       return visitStructure_define(ctx->structure_define());
+    }
+    if (ctx->enum_define() != nullptr) {
+      return visitEnum_define(ctx->enum_define());
     }
     if (ctx->diia_define() != nullptr) {
       return visitDiia_define(ctx->diia_define());

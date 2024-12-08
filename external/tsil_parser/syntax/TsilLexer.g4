@@ -29,6 +29,9 @@ KW_TRY: 'спробувати';
 KW_CATCH: 'зловити';
 KW_THROW: 'впасти';
 KW_GOTO: 'стрибнути';
+KW_ENUM: 'перелік';
+KW_ENUMERATE: 'перелічити';
+KW_IS: 'є';
 
 EQUAL: '=';
 GREATER: '>';

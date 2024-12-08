@@ -178,6 +178,12 @@ public:
   virtual void enterStructure_element(TsilParser::Structure_elementContext * /*ctx*/) override { }
   virtual void exitStructure_element(TsilParser::Structure_elementContext * /*ctx*/) override { }
 
+  virtual void enterEnum_define(TsilParser::Enum_defineContext * /*ctx*/) override { }
+  virtual void exitEnum_define(TsilParser::Enum_defineContext * /*ctx*/) override { }
+
+  virtual void enterEnum_element(TsilParser::Enum_elementContext * /*ctx*/) override { }
+  virtual void exitEnum_element(TsilParser::Enum_elementContext * /*ctx*/) override { }
+
   virtual void enterDiia_define(TsilParser::Diia_defineContext * /*ctx*/) override { }
   virtual void exitDiia_define(TsilParser::Diia_defineContext * /*ctx*/) override { }
 

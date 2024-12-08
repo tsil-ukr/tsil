@@ -231,6 +231,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitEnum_define(TsilParser::Enum_defineContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitEnum_element(TsilParser::Enum_elementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitDiia_define(TsilParser::Diia_defineContext *ctx) override {
     return visitChildren(ctx);
   }

@@ -127,6 +127,10 @@ public:
 
     virtual std::any visitStructure_element(TsilParser::Structure_elementContext *context) = 0;
 
+    virtual std::any visitEnum_define(TsilParser::Enum_defineContext *context) = 0;
+
+    virtual std::any visitEnum_element(TsilParser::Enum_elementContext *context) = 0;
+
     virtual std::any visitDiia_define(TsilParser::Diia_defineContext *context) = 0;
 
     virtual std::any visitTsil_define(TsilParser::Tsil_defineContext *context) = 0;

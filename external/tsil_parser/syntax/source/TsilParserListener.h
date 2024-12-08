@@ -176,6 +176,12 @@ public:
   virtual void enterStructure_element(TsilParser::Structure_elementContext *ctx) = 0;
   virtual void exitStructure_element(TsilParser::Structure_elementContext *ctx) = 0;
 
+  virtual void enterEnum_define(TsilParser::Enum_defineContext *ctx) = 0;
+  virtual void exitEnum_define(TsilParser::Enum_defineContext *ctx) = 0;
+
+  virtual void enterEnum_element(TsilParser::Enum_elementContext *ctx) = 0;
+  virtual void exitEnum_element(TsilParser::Enum_elementContext *ctx) = 0;
+
   virtual void enterDiia_define(TsilParser::Diia_defineContext *ctx) = 0;
   virtual void exitDiia_define(TsilParser::Diia_defineContext *ctx) = 0;
 

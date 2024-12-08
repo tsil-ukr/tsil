@@ -67,6 +67,9 @@ typeless_object: '{' (object_arg (',' object_arg)* ','?)? '}';
 structure_define: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? (';' | ('{' (structure_element)* '}'));
 structure_element: param ';';
 
+enum_define: 'перелік' id=ID (';' | ('{' (enum_element (',' enum_element)* ','?)? '}'));
+enum_element: id=ID ('{' (param ';')* '}')?;
+
 diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? (';' | body);
 
 tsil_define: (td_external='зовнішня' | td_local='місцева' | td_internal='внутрішня')? (td_var='змінна' | td_immut='стала')? 'ціль' id=ID (':' type)? ('=' (value_expr=expr | value_object=typeless_object))? ';';
@@ -91,6 +94,7 @@ exec: 'виконати' body ';';
 
 body: '{' (body_element)* '}';
 body_element: structure_define
+            | enum_define
             | diia_define
             | tsil_define
             | assign

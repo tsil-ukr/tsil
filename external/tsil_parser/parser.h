@@ -167,6 +167,8 @@ namespace tsil::parser {
     std::any visitStructure_define(
         TsilParser::Structure_defineContext* ctx) override;
 
+    std::any visitEnum_define(TsilParser::Enum_defineContext* ctx) override;
+
     std::any visitDiia_define(TsilParser::Diia_defineContext* ctx) override;
 
     std::any visitTsil_define(TsilParser::Tsil_defineContext* ctx) override;
