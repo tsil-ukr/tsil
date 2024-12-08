@@ -21,6 +21,7 @@ struct TsilCliWriter {
 
 enum TsilCliCompileCommandOutputFormat {
   TsilCliCompileCommandOutputFormatLLVM,
+  TsilCliCompileCommandOutputFormatBITCODE,
   TsilCliCompileCommandOutputFormatASM,
   TsilCliCompileCommandOutputFormatOBJ,
   TsilCliCompileCommandOutputFormatARCHIVE,

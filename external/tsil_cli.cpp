@@ -93,6 +93,9 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
         if (std::string(outputs[i].path).ends_with(".ll")) {
           compileCommand.outputs[i].format =
               TsilCliCompileCommandOutputFormatLLVM;
+        } else if (std::string(outputs[i].path).ends_with(".bc")) {
+          compileCommand.outputs[i].format =
+              TsilCliCompileCommandOutputFormatBITCODE;
         } else if (std::string(outputs[i].path).ends_with(".S")) {
           compileCommand.outputs[i].format =
               TsilCliCompileCommandOutputFormatASM;
@@ -108,6 +111,9 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
             if (value == "ll") {
               compileCommand.outputs[i].format =
                   TsilCliCompileCommandOutputFormatLLVM;
+            } else if (value == "bc") {
+              compileCommand.outputs[i].format =
+                  TsilCliCompileCommandOutputFormatBITCODE;
             } else if (value == "S") {
               compileCommand.outputs[i].format =
                   TsilCliCompileCommandOutputFormatASM;
@@ -344,17 +350,20 @@ extern "C" int tsil_cli_do_compile(
     }
   }
   if (outputFormat == TsilCliCompileCommandOutputFormatLLVM) {
-    auto llvm_out = dumpLL(L, nullptr);
-    outputWriter.write(config, strlen(llvm_out),
-                       reinterpret_cast<unsigned char*>(llvm_out),
+    char* llvm_out = nullptr;
+    size_t size = tsil_llvm_dump_ll(L, &llvm_out);
+    outputWriter.write(config, size, reinterpret_cast<unsigned char*>(llvm_out),
+                       outputWriter.options);
+    return 0;
+  } else if (outputFormat == TsilCliCompileCommandOutputFormatBITCODE) {
+    char* llvm_out = nullptr;
+    size_t size = tsil_llvm_dump_bc(L, &llvm_out);
+    outputWriter.write(config, size, reinterpret_cast<unsigned char*>(llvm_out),
                        outputWriter.options);
     return 0;
   } else if (outputFormat == TsilCliCompileCommandOutputFormatOBJ) {
-    std::vector<unsigned char> llvm_out;
-    dumpOBJ(L, llvm_out);
-    outputWriter.write(config, llvm_out.size(), llvm_out.data(),
-                       outputWriter.options);
-    return 0;
+    config.println("Такий формат виходу наразі не підтримується");
+    return 1;
   } else {
     config.println("Такий формат виходу наразі не підтримується");
     return 1;

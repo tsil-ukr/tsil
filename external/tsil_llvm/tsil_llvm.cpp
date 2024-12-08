@@ -1,5 +1,6 @@
 #include <iostream>
 #include "llvm/ADT/APFloat.h"
+#include "llvm/Bitcode/BitcodeWriter.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -818,84 +819,21 @@ LLVMValue* tsil_llvm_make_internal_global(TL* m, char* name, LLVMType* type) {
       llvm::GlobalValue::LinkageTypes::PrivateLinkage, nullptr, name);
 }
 
-char* dumpLL(TL* m, char* target) {
-  llvm::InitializeAllTargetInfos();
-  llvm::InitializeAllTargets();
-  llvm::InitializeAllTargetMCs();
-  llvm::InitializeAllAsmParsers();
-  llvm::InitializeAllAsmPrinters();
-
-  std::string TargetTriple;
-  if (target) {
-    TargetTriple = target;
-  } else {
-    TargetTriple = llvm::sys::getProcessTriple();
-  }
-  m->llvmModule->setTargetTriple(TargetTriple);
-
-  std::string Error;
-  auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
-
-  if (!Target) {
-    llvm::errs() << Error;
-    return nullptr;
-  }
-
-  auto CPU = "generic";
-  auto Features = "";
-
-  llvm::TargetOptions opt;
-  auto TheTargetMachine = Target->createTargetMachine(
-      TargetTriple, CPU, Features, opt, llvm::Reloc::Static);
-
-  m->llvmModule->setDataLayout(TheTargetMachine->createDataLayout());
-
-  std::string str;
-  llvm::raw_string_ostream os(str);
+size_t tsil_llvm_dump_ll(TL* m, char** out) {
+  llvm::SmallVector<char, 0> buffer;
+  llvm::raw_svector_ostream os(buffer);
   m->llvmModule->print(os, nullptr);
-  return strdup(os.str().c_str());
+  *out = new char[buffer.size()];
+  memcpy(*out, buffer.data(), buffer.size());
+  return buffer.size();
 }
 
-void dumpOBJ(TL* m, std::vector<unsigned char>& out) {
-  llvm::InitializeAllTargetInfos();
-  llvm::InitializeAllTargets();
-  llvm::InitializeAllTargetMCs();
-  llvm::InitializeAllAsmParsers();
-  llvm::InitializeAllAsmPrinters();
-
-  auto TargetTriple = llvm::sys::getDefaultTargetTriple();
-  m->llvmModule->setTargetTriple(TargetTriple);
-
-  std::string Error;
-  auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
-
-  if (!Target) {
-    llvm::errs() << Error;
-    return;
-  }
-
-  auto CPU = "generic";
-  auto Features = "";
-
-  llvm::TargetOptions opt;
-  auto TheTargetMachine = Target->createTargetMachine(
-      TargetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
-
-  m->llvmModule->setDataLayout(TheTargetMachine->createDataLayout());
-
-  llvm::SmallVector<char> data;
-  llvm::raw_svector_ostream dest(data);
-
-  llvm::legacy::PassManager pass;
-  auto FileType = llvm::CodeGenFileType::ObjectFile;
-
-  if (TheTargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
-    llvm::errs() << "TheTargetMachine can't emit a file of this type";
-    return;
-  }
-
-  pass.run(*m->llvmModule);
-
-  out = std::vector<unsigned char>(data.begin(), data.end());
+size_t tsil_llvm_dump_bc(TL* m, char** out) {
+  llvm::SmallVector<char, 0> buffer;
+  llvm::raw_svector_ostream os(buffer);
+  llvm::WriteBitcodeToFile(*m->llvmModule, os);
+  *out = new char[buffer.size()];
+  memcpy(*out, buffer.data(), buffer.size());
+  return buffer.size();
 }
 }
