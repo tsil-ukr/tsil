@@ -365,6 +365,6 @@ LLVMValue* tsil_llvm_make_external_global(TL* m, char* name, LLVMType* type);
 LLVMValue* tsil_llvm_make_local_global(TL* m, char* name, LLVMType* type);
 LLVMValue* tsil_llvm_make_internal_global(TL* m, char* name, LLVMType* type);
 
-char* dumpLL(TL* m);
+char* dumpLL(TL* m, char* target);
 void dumpOBJ(TL* m, std::vector<unsigned char>& out);
 }

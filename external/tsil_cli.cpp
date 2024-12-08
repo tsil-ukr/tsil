@@ -344,7 +344,7 @@ extern "C" int tsil_cli_do_compile(
     }
   }
   if (outputFormat == TsilCliCompileCommandOutputFormatLLVM) {
-    auto llvm_out = dumpLL(L);
+    auto llvm_out = dumpLL(L, nullptr);
     outputWriter.write(config, strlen(llvm_out),
                        reinterpret_cast<unsigned char*>(llvm_out),
                        outputWriter.options);

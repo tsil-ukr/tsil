@@ -13,7 +13,7 @@
 }
 
 зовнішня дія tsil_llvm_create_tl(назва: памʼять<п8>): адреса<LLVM::TL>;
-зовнішня дія dumpLL(L: адреса<LLVM::TL>): памʼять<п8>;
+зовнішня дія dumpLL(L: адреса<LLVM::TL>, target: памʼять<п8>): памʼять<п8>;
 
 зовнішня дія tsil_llvm_create_struct(L: адреса<LLVM::TL>, назва: памʼять<п8>): адреса<LLVM::Type>;
 зовнішня дія tsil_llvm_set_struct_fields(L: адреса<LLVM::TL>, с: адреса<LLVM::Type>, розмір_полів: позитивне, поля: памʼять<адреса<LLVM::Type>>);

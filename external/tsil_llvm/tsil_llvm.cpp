@@ -1,3 +1,4 @@
+#include <iostream>
 #include "llvm/ADT/APFloat.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Constants.h"
@@ -817,7 +818,38 @@ LLVMValue* tsil_llvm_make_internal_global(TL* m, char* name, LLVMType* type) {
       llvm::GlobalValue::LinkageTypes::PrivateLinkage, nullptr, name);
 }
 
-char* dumpLL(TL* m) {
+char* dumpLL(TL* m, char* target) {
+  llvm::InitializeAllTargetInfos();
+  llvm::InitializeAllTargets();
+  llvm::InitializeAllTargetMCs();
+  llvm::InitializeAllAsmParsers();
+  llvm::InitializeAllAsmPrinters();
+
+  std::string TargetTriple;
+  if (target) {
+    TargetTriple = target;
+  } else {
+    TargetTriple = llvm::sys::getProcessTriple();
+  }
+  m->llvmModule->setTargetTriple(TargetTriple);
+
+  std::string Error;
+  auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
+
+  if (!Target) {
+    llvm::errs() << Error;
+    return nullptr;
+  }
+
+  auto CPU = "generic";
+  auto Features = "";
+
+  llvm::TargetOptions opt;
+  auto TheTargetMachine = Target->createTargetMachine(
+      TargetTriple, CPU, Features, opt, llvm::Reloc::Static);
+
+  m->llvmModule->setDataLayout(TheTargetMachine->createDataLayout());
+
   std::string str;
   llvm::raw_string_ostream os(str);
   m->llvmModule->print(os, nullptr);

@@ -28,17 +28,10 @@ void printHelp() {
   std::cout << "Команди:" << std::endl;
   std::cout << "  допомога" << std::endl;
   std::cout << "    Опис: надрукувати допомогу" << std::endl;
-  std::cout << "    Опції: немає" << std::endl;
-  std::cout << "    Вихід: немає" << std::endl;
-  std::cout << "    Вхід: немає" << std::endl;
   std::cout << "  версія" << std::endl;
   std::cout << "    Опис: надрукувати версію Цілі" << std::endl;
-  std::cout << "    Опції: немає" << std::endl;
-  std::cout << "    Вихід: немає" << std::endl;
-  std::cout << "    Вхід: немає" << std::endl;
   std::cout << "  скомпілювати" << std::endl;
   std::cout << "    Опис: скомпілювати вхідний файл" << std::endl;
-  std::cout << "    Опції: немає" << std::endl;
   std::cout << "    Вихід:" << std::endl;
   std::cout << "      Опції: " << std::endl;
   std::cout << "        --формат=<o|ll>" << std::endl;
@@ -46,9 +39,6 @@ void printHelp() {
   std::cout << "      Формат: .ц" << std::endl;
   std::cout << "  сплавити" << std::endl;
   std::cout << "    Опис: сплавити вхідні файли" << std::endl;
-  std::cout << "    Опції:" << std::endl;
-  std::cout << "      --clang-options=\"додаткові опції до clang\""
-            << std::endl;
   std::cout << "    Вихід:" << std::endl;
   std::cout << "      Опції: " << std::endl;
   std::cout << "        --формат=<elf>" << std::endl;
