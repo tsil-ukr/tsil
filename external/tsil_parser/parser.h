@@ -136,6 +136,8 @@ namespace tsil::parser {
 
     std::any visitOperation_gte(TsilParser::Operation_gteContext* ctx) override;
 
+    std::any visitOperation_is(TsilParser::Operation_isContext* ctx) override;
+
     std::any visitOperation_eq(TsilParser::Operation_eqContext* ctx) override;
 
     std::any visitOperation_neq(TsilParser::Operation_neqContext* ctx) override;

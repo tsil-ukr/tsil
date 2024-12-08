@@ -524,6 +524,22 @@ public:
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  Operation_isContext : public OperationContext {
+  public:
+    Operation_isContext(OperationContext *ctx);
+
+    TsilParser::OperationContext *left = nullptr;
+    antlr4::Token *op = nullptr;
+    TsilParser::TypeContext *right = nullptr;
+    OperationContext *operation();
+    antlr4::tree::TerminalNode *KW_IS();
+    TypeContext *type();
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  Operation_mulContext : public OperationContext {
   public:
     Operation_mulContext(OperationContext *ctx);

@@ -69,6 +69,8 @@ public:
 
     virtual std::any visitOperation_mod(TsilParser::Operation_modContext *context) = 0;
 
+    virtual std::any visitOperation_is(TsilParser::Operation_isContext *context) = 0;
+
     virtual std::any visitOperation_mul(TsilParser::Operation_mulContext *context) = 0;
 
     virtual std::any visitOperation_gt(TsilParser::Operation_gtContext *context) = 0;

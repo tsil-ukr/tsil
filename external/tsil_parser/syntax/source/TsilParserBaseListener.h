@@ -91,6 +91,9 @@ public:
   virtual void enterOperation_mod(TsilParser::Operation_modContext * /*ctx*/) override { }
   virtual void exitOperation_mod(TsilParser::Operation_modContext * /*ctx*/) override { }
 
+  virtual void enterOperation_is(TsilParser::Operation_isContext * /*ctx*/) override { }
+  virtual void exitOperation_is(TsilParser::Operation_isContext * /*ctx*/) override { }
+
   virtual void enterOperation_mul(TsilParser::Operation_mulContext * /*ctx*/) override { }
   virtual void exitOperation_mul(TsilParser::Operation_mulContext * /*ctx*/) override { }
 

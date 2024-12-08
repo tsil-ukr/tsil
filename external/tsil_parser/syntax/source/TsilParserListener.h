@@ -89,6 +89,9 @@ public:
   virtual void enterOperation_mod(TsilParser::Operation_modContext *ctx) = 0;
   virtual void exitOperation_mod(TsilParser::Operation_modContext *ctx) = 0;
 
+  virtual void enterOperation_is(TsilParser::Operation_isContext *ctx) = 0;
+  virtual void exitOperation_is(TsilParser::Operation_isContext *ctx) = 0;
+
   virtual void enterOperation_mul(TsilParser::Operation_mulContext *ctx) = 0;
   virtual void exitOperation_mul(TsilParser::Operation_mulContext *ctx) = 0;
 

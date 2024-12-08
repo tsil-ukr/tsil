@@ -183,23 +183,23 @@
     вернути tsil_llvm_get_pointer_type(L);
   }
 
-  дія і1(L: адреса<TL>): адреса<Type> {
+  дія i1(L: адреса<TL>): адреса<Type> {
     вернути tsil_llvm_get_int1_type(L);
   }
 
-  дія і8(L: адреса<TL>): адреса<Type> {
+  дія i8(L: адреса<TL>): адреса<Type> {
     вернути tsil_llvm_get_int8_type(L);
   }
 
-  дія і16(L: адреса<TL>): адреса<Type> {
+  дія i16(L: адреса<TL>): адреса<Type> {
     вернути tsil_llvm_get_int16_type(L);
   }
 
-  дія і32(L: адреса<TL>): адреса<Type> {
+  дія i32(L: адреса<TL>): адреса<Type> {
     вернути tsil_llvm_get_int32_type(L);
   }
 
-  дія і64(L: адреса<TL>): адреса<Type> {
+  дія i64(L: адреса<TL>): адреса<Type> {
     вернути tsil_llvm_get_int64_type(L);
   }
 

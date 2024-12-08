@@ -111,6 +111,10 @@ namespace tsil::parser {
       return visitOperation_gte(ctx);
     }
     if (const auto ctx =
+            dynamic_cast<TsilParser::Operation_isContext*>(context)) {
+      return visitOperation_is(ctx);
+    }
+    if (const auto ctx =
             dynamic_cast<TsilParser::Operation_eqContext*>(context)) {
       return visitOperation_eq(ctx);
     }
@@ -571,6 +575,15 @@ namespace tsil::parser {
     const auto асд_дані_операція = new АСДДаніОперація();
     асд_дані_операція->ліво = AAV(visitContext(ctx->left));
     асд_дані_операція->операція = АСДОпераціяБільшеРівне;
+    асд_дані_операція->право = AAV(visitContext(ctx->right));
+    return AV(this, ctx, АСДВидОперація, асд_дані_операція);
+  }
+
+  std::any TsilASTVisitor::visitOperation_is(
+      TsilParser::Operation_isContext* ctx) {
+    const auto асд_дані_операція = new АСДДаніОперація();
+    асд_дані_операція->ліво = AAV(visitContext(ctx->left));
+    асд_дані_операція->операція = АСДОпераціяЄ;
     асд_дані_операція->право = AAV(visitContext(ctx->right));
     return AV(this, ctx, АСДВидОперація, асд_дані_операція);
   }

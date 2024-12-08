@@ -38,6 +38,7 @@ operation: NUMBER #operation_number
          | left=operation op=op_lte right=operation #operation_lte
          | left=operation op='>' right=operation #operation_gt
          | left=operation op=op_gte right=operation #operation_gte
+         | left=operation op='є' right=type #operation_is
          | left=operation op=op_eq right=operation #operation_eq
          | left=operation op=op_neq right=operation #operation_neq
          | left=operation op='&' right=operation #operation_and

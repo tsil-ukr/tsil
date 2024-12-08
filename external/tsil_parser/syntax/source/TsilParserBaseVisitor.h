@@ -115,6 +115,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitOperation_is(TsilParser::Operation_isContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitOperation_mul(TsilParser::Operation_mulContext *ctx) override {
     return visitChildren(ctx);
   }
