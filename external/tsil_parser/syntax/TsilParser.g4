@@ -65,11 +65,11 @@ expr: operation #expr_operation
 object_arg: ((id=ID '=')? (value_expr=expr | value_object=typeless_object)) | autofill='.' '.' '.';
 typeless_object: '{' (object_arg (',' object_arg)* ','?)? '}';
 
-structure_define: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? (';' | ('{' (structure_element)* '}'));
-structure_element: param ';';
+structure_define: 'структура' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? (';' | ('{' (structure_element (';' structure_element)* ';'?)? '}'));
+structure_element: param;
 
 enum_define: 'перелік' id=ID (';' | ('{' (enum_element (',' enum_element)* ','?)? '}'));
-enum_element: id=ID ('{' (param ';')* '}')?;
+enum_element: id=ID ('{' (param (';' param)* ';'?)? '}')?;
 
 diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? (';' | body);
 
