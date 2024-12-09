@@ -22,8 +22,8 @@
         gep_positions_for_type[0] = LLVM::const_int32(К.L, 0);
         gep_positions_for_type[1] = LLVM::const_int32(К.L, 0);
         ціль llvm_value_gep_type = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, значення.тип.llvm_type, значення.llvm_value, 2, gep_positions_for_type);
-        ціль llvm_real_value = LLVM::load(К.L, інформація_середовища.llvm_block, LLVM::i8(К.L), llvm_value_gep_type);
-        ціль llvm_expected_value = LLVM::const_int8(К.L, ц8(позиція_елемента_переліку));
+        ціль llvm_real_value = LLVM::load(К.L, інформація_середовища.llvm_block, LLVM::i64(К.L), llvm_value_gep_type);
+        ціль llvm_expected_value = LLVM::const_int64(К.L, ц64(позиція_елемента_переліку));
         ціль result = LLVM::icmp_eq(К.L, інформація_середовища.llvm_block, llvm_real_value, llvm_expected_value);
         вернути Результат { Обʼєкт { ВидОбʼєктаЗначення, дані = ОбʼєктЗначення { К.тип_логічне, result } }, помилка = пусто };
       }
