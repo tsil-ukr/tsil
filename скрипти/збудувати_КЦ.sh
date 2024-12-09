@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+set -x
 
 TSIL="$1"
 if [ -z "$TSIL" ]; then
@@ -72,11 +73,9 @@ for KTS_FILE in "${KTS_FILES[@]}"; do
   CHANGED_AT=$(stat -c %y $KTS_FILE)
   CHANGED_AT_OLD=$(cat "../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll.changed_at" 2>/dev/null || echo "")
   if [ ! -f "../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll" ] || [ "$CHANGED_AT" != "$CHANGED_AT_OLD" ]; then
-    echo "$TSIL ../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll скомпілювати --бібліотека=$PWDR/.плавлення-бібліотеки/бібліотека $KTS_FILE"
-    $TSIL "../.плавлення-КЦ/скомпільоване/"$KTS_FILE".ll" скомпілювати --бібліотека="$PWDR/.плавлення-бібліотеки/бібліотека" "$KTS_FILE"
+    $TSIL "../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll" скомпілювати --бібліотека="$PWDR/.плавлення-бібліотеки/бібліотека" "$KTS_FILE"
 
-    echo "$CXX -c -o ../.плавлення-КЦ/скомпільоване/$KTS_FILE.o ../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll -Wno-override-module"
-    $CXX -c -o "../.плавлення-КЦ/скомпільоване/"$KTS_FILE".o" "../.плавлення-КЦ/скомпільоване/"$KTS_FILE".ll" -Wno-override-module
+    $CXX -O0 -g -c -o "../.плавлення-КЦ/скомпільоване/$KTS_FILE.o" "../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll" -Wno-override-module
 
     echo "$CHANGED_AT" > "../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll.changed_at"
   fi
