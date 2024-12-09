@@ -207,14 +207,14 @@
     тип = обʼєкт_незавантаженого_значення.тип;
     llvm_value = обʼєкт_незавантаженого_значення.llvm_value;
 
-    якщо обʼєкт_незавантаженого_значення.тип.вид == ВидТипуЕлементПерелікуСтруктура {
-
-      ціль gep_positions_llvm_values = виділити<адреса<LLVM::Value>>(2);
-      gep_positions_llvm_values[0] = LLVM::const_int32(К.L, 0);
-      gep_positions_llvm_values[1] = LLVM::const_int32(К.L, 1);
-      llvm_value = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, тип.llvm_type, llvm_value, 2, gep_positions_llvm_values);
-      тип = тип.обʼєкт_типу_структури_елемента_переліку;
-
+    якщо обʼєкт_незавантаженого_значення.тип.вид == ВидТипуЕлементПереліку {
+      якщо обʼєкт_незавантаженого_значення.тип.обʼєкт_типу_структури_елемента_переліку != пусто {
+        ціль gep_positions_llvm_values = виділити<адреса<LLVM::Value>>(2);
+        gep_positions_llvm_values[0] = LLVM::const_int32(К.L, 0);
+        gep_positions_llvm_values[1] = LLVM::const_int32(К.L, 1);
+        llvm_value = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, тип.llvm_type, llvm_value, 2, gep_positions_llvm_values);
+        тип = тип.обʼєкт_типу_структури_елемента_переліку;
+      }
     }
 
     якщо тип.вид == ВидТипуАдреса {
