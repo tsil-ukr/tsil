@@ -49,6 +49,7 @@ function undecodeCode(value) {
             if (byte === 0) {
                 bytes.push('\\'.charCodeAt(0));
                 bytes.push('0'.charCodeAt(0));
+                bytes.push('0'.charCodeAt(0));
             } else {
                 bytes.push(byte);
             }
