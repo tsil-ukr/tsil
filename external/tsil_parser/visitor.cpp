@@ -782,13 +782,21 @@ namespace tsil::parser {
       const auto елемент_переліку = new ЕлементПереліку();
       елемент_переліку->ідентифікатор =
           ІД(this, enumElement->id, enumElement->id->getText());
-      std::vector<Параметр*> params;
-      for (const auto& param : enumElement->param()) {
-        const auto any_param = visitParam(param);
-        params.push_back(std::any_cast<Параметр*>(any_param));
+      if (enumElement->param().empty()) {
+        елемент_переліку->структура_ = nullptr;
+      } else {
+        const auto асд_дані_структура = new АСДДаніСтруктура();
+        асд_дані_структура->ідентифікатор =
+            ІД(this, enumElement->id, enumElement->id->getText());
+        std::vector<Параметр*> params;
+        for (const auto& param : enumElement->param()) {
+          const auto any_param = visitParam(param);
+          params.push_back(std::any_cast<Параметр*>(any_param));
+        }
+        асд_дані_структура->кількість_параметрів = params.size();
+        асд_дані_структура->параметри = VecToArr(params);
+        елемент_переліку->структура_ = асд_дані_структура;
       }
-      елемент_переліку->кількість_параметрів = params.size();
-      елемент_переліку->параметри = VecToArr(params);
       елемент_переліку->місцезнаходження = LOC(this, enumElement);
       elements.push_back(елемент_переліку);
     }
