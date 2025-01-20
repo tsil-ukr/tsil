@@ -34,16 +34,9 @@ void printHelp() {
   std::cout << "    Опис: скомпілювати вхідний файл" << std::endl;
   std::cout << "    Вихід:" << std::endl;
   std::cout << "      Опції: " << std::endl;
-  std::cout << "        --формат=<o|ll>" << std::endl;
+  std::cout << "        --формат=<ll>" << std::endl;
   std::cout << "    Вхід:" << std::endl;
   std::cout << "      Формат: .ц" << std::endl;
-  std::cout << "  сплавити" << std::endl;
-  std::cout << "    Опис: сплавити вхідні файли" << std::endl;
-  std::cout << "    Вихід:" << std::endl;
-  std::cout << "      Опції: " << std::endl;
-  std::cout << "        --формат=<elf>" << std::endl;
-  std::cout << "    Вхід:" << std::endl;
-  std::cout << "      Формат: .ц .c .o .a .ll" << std::endl;
 }
 
 int main(int argc, char** argv) {
