@@ -339,6 +339,7 @@ LLVMValue* tsil_llvm_create_uint64(TL* m, unsigned long value);
 LLVMValue* tsil_llvm_create_float(TL* m, float value);
 LLVMValue* tsil_llvm_create_double(TL* m, double value);
 LLVMValue* tsil_llvm_create_string(TL* m, char* value);
+LLVMValue* tsil_llvm_create_string_KD(TL* m, char* value);
 
 LLVMType* tsil_llvm_get_type(TL* m, LLVMValue* value);
 LLVMFunctionType* tsil_llvm_get_as_function_type(TL* m, LLVMValue* value);

@@ -13,6 +13,7 @@ set(TSIL_SRC
         main.cpp
         tsil_cli.cpp
         bib.c
+        ../.плавлення-КЦ/скомпільоване/КД/КД.ц.o
         ../.плавлення-КЦ/скомпільоване/біб.ц.o
         ../.плавлення-КЦ/скомпільоване/Обʼєкт.ц.o
         ../.плавлення-КЦ/скомпільоване/ОбʼєктГрупиДій.ц.o
@@ -67,5 +68,5 @@ if (DEFINED TSIL_STATIC)
 else ()
     target_link_options(tsil PUBLIC)
 endif ()
-target_compile_options(tsil PUBLIC -fexceptions -O0 -g -DTSIL_VERSION="${TSIL_VERSION}")
+target_compile_options(tsil PUBLIC -fexceptions -O3 -DTSIL_VERSION="${TSIL_VERSION}")
 set_target_properties(tsil PROPERTIES OUTPUT_NAME "${TSIL_EXECNAME}")

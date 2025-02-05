@@ -52,6 +52,7 @@
 зовнішня дія tsil_llvm_create_float(L: адреса<LLVM::TL>, значення: д32): адреса<LLVM::Value>;
 зовнішня дія tsil_llvm_create_double(L: адреса<LLVM::TL>, значення: д64): адреса<LLVM::Value>;
 зовнішня дія tsil_llvm_create_string(L: адреса<LLVM::TL>, значення: памʼять<п8>): адреса<LLVM::Value>;
+зовнішня дія tsil_llvm_create_string_KD(L: адреса<LLVM::TL>, значення: памʼять<п8>): адреса<LLVM::Value>;
 
 зовнішня дія tsil_llvm_get_function_type(L: адреса<LLVM::TL>, функція: адреса<LLVM::Function>): адреса<LLVM::FunctionType>;
 зовнішня дія tsil_llvm_make_function_type(L: адреса<LLVM::TL>, тип_повернення: адреса<LLVM::Type>, розмір_параметрів: позитивне, параметри: памʼять<адреса<LLVM::Type>>, варарг: позитивне): адреса<LLVM::FunctionType>;
@@ -256,6 +257,10 @@
 
   дія const_string(L: адреса<TL>, значення: памʼять<п8>): адреса<Value> {
     вернути tsil_llvm_create_string(L, значення);
+  }
+
+  дія const_string_KD(L: адреса<TL>, значення: памʼять<п8>): адреса<Value> {
+    вернути tsil_llvm_create_string_KD(L, значення);
   }
 
   дія type_of_function(L: адреса<TL>, функція: адреса<Function>): адреса<FunctionType> {

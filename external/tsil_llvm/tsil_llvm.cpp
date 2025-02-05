@@ -745,6 +745,15 @@ LLVMValue* tsil_llvm_create_string(TL* m, char* value) {
       llvm::ConstantDataArray::getString(*m->llvmContext, value));
 }
 
+LLVMValue* tsil_llvm_create_string_KD(TL* m, char* value) {
+  return new llvm::GlobalVariable(
+      *m->llvmModule,
+      llvm::ArrayType::get(llvm::Type::getInt8Ty(*m->llvmContext),
+                           strlen(value) + 1),
+      true, llvm::GlobalValue::LinkageTypes::PrivateLinkage,
+      llvm::ConstantDataArray::getString(*m->llvmContext, value));
+}
+
 LLVMType* tsil_llvm_get_type(TL* m, LLVMValue* value) {
   return value->getType();
 }
