@@ -6,13 +6,6 @@
 
 #include "tsil_cli.h"
 
-extern "C" unsigned char* зʼєднати_ю8(unsigned char* value,
-                                      unsigned char* value2) {
-  std::string str = (char*)value;
-  std::string str2 = (char*)value2;
-  return (unsigned char*)strdup((str + str2).c_str());
-}
-
 void println(char* message) {
   std::cout << message << std::endl;
 }
