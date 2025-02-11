@@ -24,13 +24,13 @@
   місцева дія скомпілювати_тіло_дії(К: адреса<Компілятор>, обʼєкт_дії: адреса<ОбʼєктДії>, інформація_середовища: ІнформаціяСередовища, тіло: адреса<СписокАСДЗначень>): адреса<ПомилкаКомпіляції> {
     обʼєкт_дії.має_тіло = позитивне(так);
     обʼєкт_дії.llvm_return_value = пусто;
-    обʼєкт_дії.llvm_alloca_block = LLVM::block(К.L, обʼєкт_дії.llvm_function, ю8сі"alloca");
-    обʼєкт_дії.llvm_entry_block = LLVM::block(К.L, обʼєкт_дії.llvm_function, ю8сі"entry");
-    обʼєкт_дії.llvm_return_block = LLVM::block(К.L, обʼєкт_дії.llvm_function, ю8сі"return");
+    обʼєкт_дії.llvm_alloca_block = LLVM::block(К.L, обʼєкт_дії.llvm_function, ю8"alloca");
+    обʼєкт_дії.llvm_entry_block = LLVM::block(К.L, обʼєкт_дії.llvm_function, ю8"entry");
+    обʼєкт_дії.llvm_return_block = LLVM::block(К.L, обʼєкт_дії.llvm_function, ю8"return");
     якщо обʼєкт_дії.тип_результату == К.тип_ніщо {
       LLVM::ret(К.L, обʼєкт_дії.llvm_return_block, пусто);
     } інакше {
-      обʼєкт_дії.llvm_return_value = LLVM::alloca(К.L, обʼєкт_дії.llvm_alloca_block, ю8сі"return", обʼєкт_дії.тип_результату.llvm_type);
+      обʼєкт_дії.llvm_return_value = LLVM::alloca(К.L, обʼєкт_дії.llvm_alloca_block, ю8"return", обʼєкт_дії.тип_результату.llvm_type);
       ціль loaded_llvm_return_value = LLVM::load(К.L, обʼєкт_дії.llvm_return_block, обʼєкт_дії.тип_результату.llvm_type, обʼєкт_дії.llvm_return_value);
       LLVM::ret(К.L, обʼєкт_дії.llvm_return_block, loaded_llvm_return_value);
     }
@@ -39,7 +39,7 @@
     поки пх < обʼєкт_дії.параметри.розмір {
       ціль параметр = обʼєкт_дії.параметри.дані[пх];
       ціль param_llvm_value = tsil_llvm_get_function_arg_value(К.L, обʼєкт_дії.llvm_function, пх);
-      ціль param_alloca_llvm_value = LLVM::alloca(К.L, обʼєкт_дії.llvm_alloca_block, ю8_в_ю8сі(параметр.назва.значення), параметр.тип.llvm_type);
+      ціль param_alloca_llvm_value = LLVM::alloca(К.L, обʼєкт_дії.llvm_alloca_block, параметр.назва.значення, параметр.тип.llvm_type);
       LLVM::store(К.L, обʼєкт_дії.llvm_entry_block, param_llvm_value, param_alloca_llvm_value);
       ціль обʼєкт_незавантаженого_значення: ОбʼєктНезавантаженогоЗначення;
       обʼєкт_незавантаженого_значення.тип = параметр.тип;
@@ -187,7 +187,7 @@
       дані.видимість = АСДВидимістьЗовнішня;
     }
     // потім: перевіряти кількість параметрів, типи параметрів і тип результату якщо назва старт
-    обʼєкт_дії.llvm_function = LLVM::function(К.L, отримати_LLVM_LINKAGE_з_асд_видимості(дані.видимість), ю8_в_ю8сі(повна_назва), обʼєкт_дії.тип_результату.llvm_type, обʼєкт_дії.параметри.розмір, llvm_param_types, 0);
+    обʼєкт_дії.llvm_function = LLVM::function(К.L, отримати_LLVM_LINKAGE_з_асд_видимості(дані.видимість), повна_назва, обʼєкт_дії.тип_результату.llvm_type, обʼєкт_дії.параметри.розмір, llvm_param_types, 0);
     ціль llvm_function_type = LLVM::type_of_function(К.L, обʼєкт_дії.llvm_function);
     обʼєкт_дії.тип = виділити_обʼєкт_типу(ВидТипуДія);
     обʼєкт_дії.тип.параметри_дії = обʼєкт_дії.параметри;

@@ -16,9 +16,9 @@
       ціль помилка_компіляції = виділити_помилку_компіляції_значення_умови_має_бути_логічним(дані.умова.місцезнаходження);
       вернути РезультатКомпіляціїЯкщо { помилка = помилка_компіляції, ... };
     }
-    ціль if_body_llvm_block = LLVM::block(К.L, інформація_середовища.обʼєкт_дії.llvm_function, ю8сі"if_body");
-    ціль if_body_llvm_else_block = LLVM::block(К.L, інформація_середовища.обʼєкт_дії.llvm_function, ю8сі"if_body_else");
-    ціль if_body_llvm_exit_block = LLVM::block(К.L, інформація_середовища.обʼєкт_дії.llvm_function, ю8сі"if_body_exit");
+    ціль if_body_llvm_block = LLVM::block(К.L, інформація_середовища.обʼєкт_дії.llvm_function, ю8"if_body");
+    ціль if_body_llvm_else_block = LLVM::block(К.L, інформація_середовища.обʼєкт_дії.llvm_function, ю8"if_body_else");
+    ціль if_body_llvm_exit_block = LLVM::block(К.L, інформація_середовища.обʼєкт_дії.llvm_function, ю8"if_body_exit");
     LLVM::brif(К.L, інформація_середовища.llvm_block, обʼєкт_значення_умови.llvm_value, if_body_llvm_block, if_body_llvm_else_block);
     ціль середовище_якщо = створити_середовище(інформація_середовища.середовище);
     ціль результат_компіляції_тіла = скомпілювати_блок(

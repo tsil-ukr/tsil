@@ -33,8 +33,9 @@ TL* tsil_llvm_create_tl(char* name) {
   return xlModule;
 }
 
-LLVMType* tsil_llvm_create_struct(TL* m, char* name) {
-  return llvm::StructType::create(*m->llvmContext, name);
+LLVMType* tsil_llvm_create_struct(TL* m, char* name, size_t name_size) {
+  return llvm::StructType::create(*m->llvmContext,
+                                  std::string(name, name_size));
 }
 
 LLVMType* tsil_llvm_set_struct_fields(TL* m,
@@ -52,6 +53,7 @@ LLVMType* tsil_llvm_set_struct_fields(TL* m,
 LLVMFunction* tsil_llvm_declare_function(TL* m,
                                          size_t linkage,
                                          char* name,
+                                         size_t name_size,
                                          LLVMType* ret_type,
                                          unsigned long params_size,
                                          LLVMType** params,
@@ -70,7 +72,7 @@ LLVMFunction* tsil_llvm_declare_function(TL* m,
   }
   auto function = llvm::Function::Create(
       llvm::FunctionType::get(ret_type, llvmParams, isVarArg), linkageType,
-      name, m->llvmModule);
+      std::string(name, name_size), m->llvmModule);
   if (linkage == tsil_llvm_LINKAGE_DSO_LOCAL) {
     function->setDSOLocal(true);
   }
@@ -79,17 +81,19 @@ LLVMFunction* tsil_llvm_declare_function(TL* m,
 
 LLVMBasicBlock* tsil_llvm_create_function_block(TL* m,
                                                 LLVMFunction* f,
-                                                char* name) {
-  return llvm::BasicBlock::Create(*m->llvmContext, name,
+                                                char* name,
+                                                size_t name_size) {
+  return llvm::BasicBlock::Create(*m->llvmContext, std::string(name, name_size),
                                   static_cast<llvm::Function*>(f));
 }
 
 LLVMValue* tsil_llvm_inst_alloca(TL* m,
                                  LLVMBasicBlock* block,
                                  char* name,
+                                 size_t name_size,
                                  LLVMType* type) {
   llvm::IRBuilder<> builder(block);
-  return builder.CreateAlloca(type, nullptr, name);
+  return builder.CreateAlloca(type, nullptr, std::string(name, name_size));
 }
 
 LLVMValue* tsil_llvm_inst_getelementptr(TL* m,
@@ -736,22 +740,24 @@ LLVMValue* tsil_llvm_create_double(TL* m, double value) {
   return llvm::ConstantFP::get(*m->llvmContext, llvm::APFloat(value));
 }
 
-LLVMValue* tsil_llvm_create_string(TL* m, char* value) {
+LLVMValue* tsil_llvm_create_string(TL* m, char* value, size_t value_size) {
   return new llvm::GlobalVariable(
       *m->llvmModule,
       llvm::ArrayType::get(llvm::Type::getInt8Ty(*m->llvmContext),
-                           strlen(value) + 1),
+                           value_size + 1),
       true, llvm::GlobalValue::LinkageTypes::PrivateLinkage,
-      llvm::ConstantDataArray::getString(*m->llvmContext, value));
+      llvm::ConstantDataArray::getString(*m->llvmContext,
+                                         std::string(value, value_size)));
 }
 
-LLVMValue* tsil_llvm_create_string_KD(TL* m, char* value) {
+LLVMValue* tsil_llvm_create_string_KD(TL* m, char* value, size_t value_size) {
   return new llvm::GlobalVariable(
       *m->llvmModule,
       llvm::ArrayType::get(llvm::Type::getInt8Ty(*m->llvmContext),
-                           strlen(value) + 1),
+                           value_size + 1),
       true, llvm::GlobalValue::LinkageTypes::PrivateLinkage,
-      llvm::ConstantDataArray::getString(*m->llvmContext, value));
+      llvm::ConstantDataArray::getString(*m->llvmContext,
+                                         std::string(value, value_size)));
 }
 
 LLVMType* tsil_llvm_get_type(TL* m, LLVMValue* value) {
@@ -801,22 +807,34 @@ LLVMValue* tsil_llvm_get_null(TL* m) {
       llvm::PointerType::get(llvm::Type::getInt8Ty(*m->llvmContext), 0));
 }
 
-LLVMValue* tsil_llvm_make_external_global(TL* m, char* name, LLVMType* type) {
+LLVMValue* tsil_llvm_make_external_global(TL* m,
+                                          char* name,
+                                          size_t name_size,
+                                          LLVMType* type) {
   return new llvm::GlobalVariable(
       *m->llvmModule, type, false,
-      llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr, name);
+      llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr,
+      std::string(name, name_size));
 }
 
-LLVMValue* tsil_llvm_make_local_global(TL* m, char* name, LLVMType* type) {
+LLVMValue* tsil_llvm_make_local_global(TL* m,
+                                       char* name,
+                                       size_t name_size,
+                                       LLVMType* type) {
   return new llvm::GlobalVariable(
       *m->llvmModule, type, false,
-      llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr, name);
+      llvm::GlobalValue::LinkageTypes::ExternalLinkage, nullptr,
+      std::string(name, name_size));
 }
 
-LLVMValue* tsil_llvm_make_internal_global(TL* m, char* name, LLVMType* type) {
+LLVMValue* tsil_llvm_make_internal_global(TL* m,
+                                          char* name,
+                                          size_t name_size,
+                                          LLVMType* type) {
   return new llvm::GlobalVariable(
       *m->llvmModule, type, false,
-      llvm::GlobalValue::LinkageTypes::PrivateLinkage, nullptr, name);
+      llvm::GlobalValue::LinkageTypes::PrivateLinkage, nullptr,
+      std::string(name, name_size));
 }
 
 size_t tsil_llvm_dump_ll(TL* m, char** out) {

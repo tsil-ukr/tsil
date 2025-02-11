@@ -12,15 +12,13 @@
   структура BranchInst;
 }
 
-зовнішня дія tsil_llvm_create_tl(назва: памʼять<п8>): адреса<LLVM::TL>;
-
-зовнішня дія tsil_llvm_create_struct(L: адреса<LLVM::TL>, назва: памʼять<п8>): адреса<LLVM::Type>;
+зовнішня дія tsil_llvm_create_struct(L: адреса<LLVM::TL>, name: памʼять<п8>, name_size: size_t): адреса<LLVM::Type>;
 зовнішня дія tsil_llvm_set_struct_fields(L: адреса<LLVM::TL>, с: адреса<LLVM::Type>, розмір_полів: позитивне, поля: памʼять<адреса<LLVM::Type>>);
 
-зовнішня дія tsil_llvm_declare_function(L: адреса<LLVM::TL>, лінкування: позитивне, назва: памʼять<п8>, тип_повернення: адреса<LLVM::Type>, розмір_параметрів: позитивне, параметри: памʼять<адреса<LLVM::Type>>, варарг: позитивне): адреса<LLVM::Function>;
-зовнішня дія tsil_llvm_create_function_block(L: адреса<LLVM::TL>, функція: адреса<LLVM::Function>, назва: памʼять<п8>): адреса<LLVM::BasicBlock>;
+зовнішня дія tsil_llvm_declare_function(L: адреса<LLVM::TL>, linkage: позитивне, name: памʼять<п8>, name_size: size_t, тип_повернення: адреса<LLVM::Type>, розмір_параметрів: позитивне, параметри: памʼять<адреса<LLVM::Type>>, варарг: позитивне): адреса<LLVM::Function>;
+зовнішня дія tsil_llvm_create_function_block(L: адреса<LLVM::TL>, function: адреса<LLVM::Function>, name: памʼять<п8>, name_size: size_t): адреса<LLVM::BasicBlock>;
 
-зовнішня дія tsil_llvm_inst_alloca(L: адреса<LLVM::TL>, block: адреса<LLVM::BasicBlock>, назва: памʼять<п8>, тип: адреса<LLVM::Type>): адреса<LLVM::Value>;
+зовнішня дія tsil_llvm_inst_alloca(L: адреса<LLVM::TL>, block: адреса<LLVM::BasicBlock>, name: памʼять<п8>, name_size: size_t, тип: адреса<LLVM::Type>): адреса<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_store(L: адреса<LLVM::TL>, block: адреса<LLVM::BasicBlock>, значення: адреса<LLVM::Value>, алока: адреса<LLVM::Value>);
 зовнішня дія tsil_llvm_inst_load(L: адреса<LLVM::TL>, block: адреса<LLVM::BasicBlock>, тип: адреса<LLVM::Type>, значення: адреса<LLVM::Value>): адреса<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_br(L: адреса<LLVM::TL>, звідки: адреса<LLVM::BasicBlock>, куда: адреса<LLVM::BasicBlock>): адреса<LLVM::BranchInst>;
@@ -51,8 +49,8 @@
 зовнішня дія tsil_llvm_create_uint64(L: адреса<LLVM::TL>, значення: п64): адреса<LLVM::Value>;
 зовнішня дія tsil_llvm_create_float(L: адреса<LLVM::TL>, значення: д32): адреса<LLVM::Value>;
 зовнішня дія tsil_llvm_create_double(L: адреса<LLVM::TL>, значення: д64): адреса<LLVM::Value>;
-зовнішня дія tsil_llvm_create_string(L: адреса<LLVM::TL>, значення: памʼять<п8>): адреса<LLVM::Value>;
-зовнішня дія tsil_llvm_create_string_KD(L: адреса<LLVM::TL>, значення: памʼять<п8>): адреса<LLVM::Value>;
+зовнішня дія tsil_llvm_create_string(L: адреса<LLVM::TL>, value: памʼять<п8>, value_size: size_t): адреса<LLVM::Value>;
+зовнішня дія tsil_llvm_create_string_KD(L: адреса<LLVM::TL>, value: памʼять<п8>, value_size: size_t): адреса<LLVM::Value>;
 
 зовнішня дія tsil_llvm_get_function_type(L: адреса<LLVM::TL>, функція: адреса<LLVM::Function>): адреса<LLVM::FunctionType>;
 зовнішня дія tsil_llvm_make_function_type(L: адреса<LLVM::TL>, тип_повернення: адреса<LLVM::Type>, розмір_параметрів: позитивне, параметри: памʼять<адреса<LLVM::Type>>, варарг: позитивне): адреса<LLVM::FunctionType>;
@@ -114,29 +112,29 @@
 зовнішня дія tsil_llvm_inst_inttoptr(L: адреса<LLVM::TL>, block: адреса<LLVM::BasicBlock>, значення: адреса<LLVM::Value>, тип: адреса<LLVM::Type>): адреса<LLVM::Value>;
 зовнішня дія tsil_llvm_inst_bitcast(L: адреса<LLVM::TL>, block: адреса<LLVM::BasicBlock>, значення: адреса<LLVM::Value>, тип: адреса<LLVM::Type>): адреса<LLVM::Value>;
 
-зовнішня дія tsil_llvm_make_external_global(L: адреса<LLVM::TL>, назва: памʼять<п8>, тип: адреса<LLVM::Type>): адреса<LLVM::Value>;
-зовнішня дія tsil_llvm_make_local_global(L: адреса<LLVM::TL>, назва: памʼять<п8>, тип: адреса<LLVM::Type>): адреса<LLVM::Value>;
-зовнішня дія tsil_llvm_make_internal_global(L: адреса<LLVM::TL>, назва: памʼять<п8>, тип: адреса<LLVM::Type>): адреса<LLVM::Value>;
+зовнішня дія tsil_llvm_make_external_global(L: адреса<LLVM::TL>, name: памʼять<п8>, name_size: size_t, тип: адреса<LLVM::Type>): адреса<LLVM::Value>;
+зовнішня дія tsil_llvm_make_local_global(L: адреса<LLVM::TL>, name: памʼять<п8>, name_size: size_t, тип: адреса<LLVM::Type>): адреса<LLVM::Value>;
+зовнішня дія tsil_llvm_make_internal_global(L: адреса<LLVM::TL>, name: памʼять<п8>, name_size: size_t, тип: адреса<LLVM::Type>): адреса<LLVM::Value>;
 
 секція LLVM {
-  дія struct(L: адреса<TL>, назва: памʼять<п8>): адреса<Type> {
-    вернути tsil_llvm_create_struct(L, назва);
+  дія struct(L: адреса<TL>, назва: ю8): адреса<Type> {
+    вернути tsil_llvm_create_struct(L, назва.дані, size_t(назва.розмір));
   }
 
   дія struct_set_fields(L: адреса<TL>, с: адреса<Type>, розмір_полів: позитивне, поля: памʼять<адреса<Type>>) {
     tsil_llvm_set_struct_fields(L, с, розмір_полів, поля);
   }
 
-  дія function(L: адреса<TL>, лінкування: позитивне, назва: памʼять<п8>, тип_повернення: адреса<Type>, розмір_параметрів: позитивне, параметри: памʼять<адреса<Type>>, варарг: позитивне): адреса<Function> {
-    вернути tsil_llvm_declare_function(L, лінкування, назва, тип_повернення, розмір_параметрів, параметри, варарг);
+  дія function(L: адреса<TL>, лінкування: позитивне, назва: ю8, тип_повернення: адреса<Type>, розмір_параметрів: позитивне, параметри: памʼять<адреса<Type>>, варарг: позитивне): адреса<Function> {
+    вернути tsil_llvm_declare_function(L, лінкування, назва.дані, назва.розмір, тип_повернення, розмір_параметрів, параметри, варарг);
   }
 
-  дія block(L: адреса<TL>, функція: адреса<Function>, назва: памʼять<п8>): адреса<BasicBlock> {
-    вернути tsil_llvm_create_function_block(L, функція, назва);
+  дія block(L: адреса<TL>, функція: адреса<Function>, назва: ю8): адреса<BasicBlock> {
+    вернути tsil_llvm_create_function_block(L, функція, назва.дані, назва.розмір);
   }
 
-  дія alloca(L: адреса<TL>, block: адреса<BasicBlock>, назва: памʼять<п8>, тип: адреса<Type>): адреса<Value> {
-    вернути tsil_llvm_inst_alloca(L, block, назва, тип);
+  дія alloca(L: адреса<TL>, block: адреса<BasicBlock>, назва: ю8, тип: адреса<Type>): адреса<Value> {
+    вернути tsil_llvm_inst_alloca(L, block, назва.дані, назва.розмір, тип);
   }
 
   дія store(L: адреса<TL>, block: адреса<BasicBlock>, значення: адреса<Value>, алока: адреса<Value>) {
@@ -255,12 +253,12 @@
     вернути tsil_llvm_create_double(L, значення);
   }
 
-  дія const_string(L: адреса<TL>, значення: памʼять<п8>): адреса<Value> {
-    вернути tsil_llvm_create_string(L, значення);
+  дія const_string(L: адреса<TL>, значення: ю8): адреса<Value> {
+    вернути tsil_llvm_create_string(L, значення.дані, значення.розмір);
   }
 
-  дія const_string_KD(L: адреса<TL>, значення: памʼять<п8>): адреса<Value> {
-    вернути tsil_llvm_create_string_KD(L, значення);
+  дія const_string_KD(L: адреса<TL>, значення: текст): адреса<Value> {
+    вернути tsil_llvm_create_string_KD(L, значення.дані, значення.розмір);
   }
 
   дія type_of_function(L: адреса<TL>, функція: адреса<Function>): адреса<FunctionType> {
@@ -483,15 +481,15 @@
     вернути tsil_llvm_inst_bitcast(L, block, значення, тип);
   }
 
-  дія make_external_global(L: адреса<TL>, назва: памʼять<п8>, тип: адреса<Type>): адреса<Value> {
-    вернути tsil_llvm_make_external_global(L, назва, тип);
+  дія make_external_global(L: адреса<TL>, назва: ю8, тип: адреса<Type>): адреса<Value> {
+    вернути tsil_llvm_make_external_global(L, назва.дані, назва.розмір, тип);
   }
 
-  дія make_local_global(L: адреса<TL>, назва: памʼять<п8>, тип: адреса<Type>): адреса<Value> {
-    вернути tsil_llvm_make_local_global(L, назва, тип);
+  дія make_local_global(L: адреса<TL>, назва: ю8, тип: адреса<Type>): адреса<Value> {
+    вернути tsil_llvm_make_local_global(L, назва.дані, назва.розмір, тип);
   }
 
-  дія make_internal_global(L: адреса<TL>, назва: памʼять<п8>, тип: адреса<Type>): адреса<Value> {
-    вернути tsil_llvm_make_internal_global(L, назва, тип);
+  дія make_internal_global(L: адреса<TL>, назва: ю8, тип: адреса<Type>): адреса<Value> {
+    вернути tsil_llvm_make_internal_global(L, назва.дані, назва.розмір, тип);
   }
 }

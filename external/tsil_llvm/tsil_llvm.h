@@ -35,7 +35,7 @@ typedef TSIL_LLVM_BRANCH_INST_TYPE LLVMBranchInst;
 
 TL* tsil_llvm_create_tl(char* name);
 
-LLVMType* tsil_llvm_create_struct(TL* m, char* name);
+LLVMType* tsil_llvm_create_struct(TL* m, char* name, size_t name_size);
 LLVMType* tsil_llvm_set_struct_fields(TL* m,
                                       LLVMType* st,
                                       unsigned long fields_size,
@@ -44,17 +44,20 @@ LLVMType* tsil_llvm_set_struct_fields(TL* m,
 LLVMFunction* tsil_llvm_declare_function(TL* m,
                                          size_t linkage,
                                          char* name,
+                                         size_t name_size,
                                          LLVMType* ret_type,
                                          unsigned long params_size,
                                          LLVMType** params,
                                          unsigned long isVarArg);
 LLVMBasicBlock* tsil_llvm_create_function_block(TL* m,
                                                 LLVMFunction* f,
-                                                char* name);
+                                                char* name,
+                                                size_t name_size);
 
 LLVMValue* tsil_llvm_inst_alloca(TL* m,
                                  LLVMBasicBlock* block,
                                  char* name,
+                                 size_t name_size,
                                  LLVMType* type);
 LLVMValue* tsil_llvm_inst_getelementptr(TL* m,
                                         LLVMBasicBlock* block,
@@ -338,8 +341,8 @@ LLVMValue* tsil_llvm_create_uint32(TL* m, unsigned int value);
 LLVMValue* tsil_llvm_create_uint64(TL* m, unsigned long value);
 LLVMValue* tsil_llvm_create_float(TL* m, float value);
 LLVMValue* tsil_llvm_create_double(TL* m, double value);
-LLVMValue* tsil_llvm_create_string(TL* m, char* value);
-LLVMValue* tsil_llvm_create_string_KD(TL* m, char* value);
+LLVMValue* tsil_llvm_create_string(TL* m, char* value, size_t value_size);
+LLVMValue* tsil_llvm_create_string_KD(TL* m, char* value, size_t value_size);
 
 LLVMType* tsil_llvm_get_type(TL* m, LLVMValue* value);
 LLVMFunctionType* tsil_llvm_get_as_function_type(TL* m, LLVMValue* value);
@@ -362,9 +365,18 @@ LLVMType* tsil_llvm_create_function_type(TL* m,
 
 LLVMValue* tsil_llvm_get_null(TL* m);
 
-LLVMValue* tsil_llvm_make_external_global(TL* m, char* name, LLVMType* type);
-LLVMValue* tsil_llvm_make_local_global(TL* m, char* name, LLVMType* type);
-LLVMValue* tsil_llvm_make_internal_global(TL* m, char* name, LLVMType* type);
+LLVMValue* tsil_llvm_make_external_global(TL* m,
+                                          char* name,
+                                          size_t name_size,
+                                          LLVMType* type);
+LLVMValue* tsil_llvm_make_local_global(TL* m,
+                                       char* name,
+                                       size_t name_size,
+                                       LLVMType* type);
+LLVMValue* tsil_llvm_make_internal_global(TL* m,
+                                          char* name,
+                                          size_t name_size,
+                                          LLVMType* type);
 
 size_t tsil_llvm_dump_ll(TL* m, char** out);
 size_t tsil_llvm_dump_bc(TL* m, char** out);
