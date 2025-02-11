@@ -73,6 +73,7 @@ namespace tsil::parser {
                     const std::string& значення) {
     const auto ідентифікатор = new Ідентифікатор();
     ідентифікатор->значення = strdup(значення.c_str());
+    ідентифікатор->розмір_значення = strlen(значення.c_str());
     ідентифікатор->місцезнаходження = LOC(visitor, context);
     return ідентифікатор;
   }
@@ -82,6 +83,7 @@ namespace tsil::parser {
                     const std::string& значення) {
     const auto ідентифікатор = new Ідентифікатор();
     ідентифікатор->значення = strdup(значення.c_str());
+    ідентифікатор->розмір_значення = strlen(значення.c_str());
     ідентифікатор->місцезнаходження = LOC(visitor, token);
     return ідентифікатор;
   }
@@ -110,6 +112,7 @@ namespace tsil::parser {
     error->місцезнаходження->рядок = line;
     error->місцезнаходження->стовпець = charPositionInLine;
     error->повідомлення = strdup(msg.c_str());
+    error->розмір_повідомлення = strlen(msg.c_str());
     this->errors.push_back(error);
   }
 
@@ -140,7 +143,8 @@ namespace tsil::parser {
 } // namespace tsil::parser
 
 extern "C" РезультатРозборуЦілі* розібрати_ціль(ТекстКоду* текст_коду) {
-  antlr4::ANTLRInputStream input(текст_коду->значення);
+  antlr4::ANTLRInputStream input(
+      std::string_view(текст_коду->значення, текст_коду->розмір_значення));
 
   const auto lexer_error_listener = new tsil::parser::TsilParserErrorListener();
   lexer_error_listener->текст_коду = текст_коду;

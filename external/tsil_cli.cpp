@@ -313,10 +313,13 @@ void printCompilerError(Місцезнаходження* місцезнаход
   const auto line = std::to_string(місцезнаходження->рядок);
   const auto column = std::to_string(місцезнаходження->стовпець);
   const auto message = повідомлення;
-  std::cerr << місцезнаходження->текст_коду->шлях << ":"
-            << line + ":" + column + ": " << message << std::endl;
-  const auto [new_start, code_line] = strtrim(strgetline(
-      місцезнаходження->текст_коду->значення, місцезнаходження->рядок));
+  std::cerr << std::string(місцезнаходження->текст_коду->шлях,
+                           місцезнаходження->текст_коду->розмір_шляху)
+            << ":" << line + ":" + column + ": " << message << std::endl;
+  const auto [new_start, code_line] = strtrim(
+      strgetline(std::string(місцезнаходження->текст_коду->значення,
+                             місцезнаходження->текст_коду->розмір_значення),
+                 місцезнаходження->рядок));
   std::string prefix = line + "| ";
   std::cerr << prefix << code_line << std::endl;
   for (size_t i = 0;
@@ -336,8 +339,10 @@ extern "C" int tsil_cli_do_compile(
   auto fixedFullPathToFile =
       strdup(std::filesystem::absolute(inputPath).c_str());
   const auto L = tsil_llvm_create_tl(fixedFullPathToFile);
-  auto текстКоду =
-      new ТекстКоду{.шлях = fixedFullPathToFile, .значення = inputSource};
+  auto текстКоду = new ТекстКоду{.шлях = fixedFullPathToFile,
+                                 .розмір_шляху = strlen(fixedFullPathToFile),
+                                 .значення = inputSource,
+                                 .розмір_значення = strlen(inputSource)};
   const auto помилка_компіляції_цілі = скомпілювати_ціль_в_ll(L, текстКоду);
   if (помилка_компіляції_цілі != nullptr) {
     if (помилка_компіляції_цілі->місцезнаходження != nullptr) {
