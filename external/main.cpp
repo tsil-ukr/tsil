@@ -61,8 +61,11 @@ int main(int argc, char** argv) {
   return 1;
 }
 
-extern "C" char* позитивне_в_ю8(unsigned long value) {
-  return (char*)strdup(std::to_string(value).c_str());
+extern "C" void позитивне_в_ю8(unsigned long value,
+                               char** out,
+                               size_t* out_size) {
+  *out = (char*)strdup(std::to_string(value).c_str());
+  *out_size = strlen(*out);
 }
 
 extern "C" char* отримати_копію_cwd() {
@@ -102,8 +105,11 @@ void str_replace_all(std::string& str,
   }
 }
 
-extern "C" char* tsil_hex_to_dec(char* value) {
-  std::string strvalue = value;
+extern "C" char* tsil_hex_to_dec(char* value,
+                                 size_t value_size,
+                                 char** out,
+                                 size_t* out_size) {
+  std::string strvalue(value, value_size);
   str_replace_all(strvalue, "А", "A");
   str_replace_all(strvalue, "а", "a");
   str_replace_all(strvalue, "Б", "B");
@@ -116,7 +122,8 @@ extern "C" char* tsil_hex_to_dec(char* value) {
   str_replace_all(strvalue, "д", "e");
   str_replace_all(strvalue, "Е", "F");
   str_replace_all(strvalue, "е", "f");
-  return strdup(std::to_string(std::stoll(strvalue, nullptr, 16)).c_str());
+  *out = strdup(std::to_string(std::stoll(strvalue, nullptr, 16)).c_str());
+  *out_size = strlen(*out);
 }
 
 extern "C" char* tsil_replace_backslashes(char* value) {
