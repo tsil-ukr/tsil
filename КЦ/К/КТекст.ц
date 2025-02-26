@@ -33,13 +33,13 @@
 
       ціль gep_positions_for_value = виділити<адреса<LLVM::Value>>(2);
       gep_positions_for_value[0] = LLVM::const_int32(К.L, 0);
-      gep_positions_for_value[1] = LLVM::const_int32(К.L, 0);
+      gep_positions_for_value[1] = LLVM::const_int32(К.L, 1);
       ціль llvm_value_struct_gep_value = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, К.тип_т8.llvm_type, llvm_value_struct, 2, gep_positions_for_value);
       LLVM::store(К.L, інформація_середовища.llvm_block, llvm_value_value, llvm_value_struct_gep_value);
 
       ціль gep_positions_for_size = виділити<адреса<LLVM::Value>>(2);
       gep_positions_for_size[0] = LLVM::const_int32(К.L, 0);
-      gep_positions_for_size[1] = LLVM::const_int32(К.L, 1);
+      gep_positions_for_size[1] = LLVM::const_int32(К.L, 0);
       ціль llvm_value_struct_gep_size = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, К.тип_т8.llvm_type, llvm_value_struct, 2, gep_positions_for_size);
       LLVM::store(К.L, інформація_середовища.llvm_block, LLVM::const_uint64(К.L, п64(розмір_значення)), llvm_value_struct_gep_size);
 
@@ -83,13 +83,13 @@
 
       ціль gep_positions_for_value = виділити<адреса<LLVM::Value>>(2);
       gep_positions_for_value[0] = LLVM::const_int32(К.L, 0);
-      gep_positions_for_value[1] = LLVM::const_int32(К.L, 0);
+      gep_positions_for_value[1] = LLVM::const_int32(К.L, 1);
       ціль llvm_value_struct_gep_value = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, К.тип_ю8.llvm_type, llvm_value_struct, 2, gep_positions_for_value);
       LLVM::store(К.L, інформація_середовища.llvm_block, llvm_value_value, llvm_value_struct_gep_value);
 
       ціль gep_positions_for_size = виділити<адреса<LLVM::Value>>(2);
       gep_positions_for_size[0] = LLVM::const_int32(К.L, 0);
-      gep_positions_for_size[1] = LLVM::const_int32(К.L, 1);
+      gep_positions_for_size[1] = LLVM::const_int32(К.L, 0);
       ціль llvm_value_struct_gep_size = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, К.тип_ю8.llvm_type, llvm_value_struct, 2, gep_positions_for_size);
       LLVM::store(К.L, інформація_середовища.llvm_block, LLVM::const_uint64(К.L, п64(strlen(val))), llvm_value_struct_gep_size);
 
