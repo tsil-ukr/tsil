@@ -6,6 +6,7 @@
 секція ц {
   місцева дія скомпілювати_текст(К: адреса<Компілятор>, інформація_середовища: ІнформаціяСередовища, місцезнаходження: адреса<Місцезнаходження>, дані: адреса<АСДДаніЗначенняТекст>, очікуваний_тип: адреса<ОбʼєктТипу>): Результат {
     якщо дані.ідентифікатор == пусто {
+    } інакше якщо перевірити_чи_ю8_рівні(ю8 { дані.ідентифікатор.значення, дані.ідентифікатор.розмір_значення }, ю8"т8") {
       змінна ціль val: памʼять<п8> = пусто;
       змінна ціль розмір_значення: позитивне = 0;
       якщо strlen(дані.значення) == 0 {
@@ -28,25 +29,25 @@
         вернути результат_помилка(помилка_компіляції);
       }
 
-      ціль llvm_value_struct = LLVM::alloca(К.L, інформація_середовища.обʼєкт_дії.llvm_alloca_block, ю8"construct", К.тип_текст.llvm_type);
+      ціль llvm_value_struct = LLVM::alloca(К.L, інформація_середовища.обʼєкт_дії.llvm_alloca_block, ю8"construct", К.тип_т8.llvm_type);
 
       ціль gep_positions_for_value = виділити<адреса<LLVM::Value>>(2);
       gep_positions_for_value[0] = LLVM::const_int32(К.L, 0);
       gep_positions_for_value[1] = LLVM::const_int32(К.L, 0);
-      ціль llvm_value_struct_gep_value = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, К.тип_текст.llvm_type, llvm_value_struct, 2, gep_positions_for_value);
+      ціль llvm_value_struct_gep_value = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, К.тип_т8.llvm_type, llvm_value_struct, 2, gep_positions_for_value);
       LLVM::store(К.L, інформація_середовища.llvm_block, llvm_value_value, llvm_value_struct_gep_value);
 
       ціль gep_positions_for_size = виділити<адреса<LLVM::Value>>(2);
       gep_positions_for_size[0] = LLVM::const_int32(К.L, 0);
       gep_positions_for_size[1] = LLVM::const_int32(К.L, 1);
-      ціль llvm_value_struct_gep_size = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, К.тип_текст.llvm_type, llvm_value_struct, 2, gep_positions_for_size);
+      ціль llvm_value_struct_gep_size = LLVM::getelementptr(К.L, інформація_середовища.llvm_block, К.тип_т8.llvm_type, llvm_value_struct, 2, gep_positions_for_size);
       LLVM::store(К.L, інформація_середовища.llvm_block, LLVM::const_uint64(К.L, п64(розмір_значення)), llvm_value_struct_gep_size);
 
       ціль обʼєкт_значення: ОбʼєктНезавантаженогоЗначення;
-      обʼєкт_значення.тип = К.тип_текст;
+      обʼєкт_значення.тип = К.тип_т8;
       обʼєкт_значення.llvm_value = llvm_value_struct;
       вернути Результат { Обʼєкт { ВидОбʼєктаНезавантаженеЗначення, дані = обʼєкт_значення }, помилка = пусто };
-    } інакше якщо перевірити_чи_ю8_рівні(ю8 { дані.ідентифікатор.значення, дані.ідентифікатор.розмір_значення }, ю8"сі") {
+    } інакше якщо перевірити_чи_ю8_рівні(ю8 { дані.ідентифікатор.значення, дані.ідентифікатор.розмір_значення }, ю8"т8сі") {
       змінна ціль значення = виділити<п8>(strlen(дані.значення) + 1);
       змінна ціль розмір_значення: позитивне = 0;
       якщо strlen(дані.значення) == 0 {
