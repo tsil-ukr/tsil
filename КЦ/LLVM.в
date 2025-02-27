@@ -257,7 +257,7 @@
     вернути tsil_llvm_create_string(L, значення.дані, значення.розмір);
   }
 
-  дія const_string_KD(L: адреса<TL>, значення: текст): адреса<Value> {
+  дія const_string_KD(L: адреса<TL>, значення: т8): адреса<Value> {
     вернути tsil_llvm_create_string_KD(L, значення.дані, значення.розмір);
   }
 
