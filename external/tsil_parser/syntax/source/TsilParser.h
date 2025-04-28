@@ -1123,15 +1123,14 @@ public:
     antlr4::Token *td_local = nullptr;
     antlr4::Token *td_internal = nullptr;
     antlr4::Token *td_var = nullptr;
-    antlr4::Token *td_immut = nullptr;
     antlr4::Token *id = nullptr;
     TsilParser::ExprContext *value_expr = nullptr;
     TsilParser::Typeless_objectContext *value_object = nullptr;
     Tsil_defineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *KW_TSIL();
     antlr4::tree::TerminalNode *SEMICOLON();
     antlr4::tree::TerminalNode *ID();
+    antlr4::tree::TerminalNode *KW_TSIL();
     antlr4::tree::TerminalNode *COLON();
     TypeContext *type();
     antlr4::tree::TerminalNode *EQUAL();
@@ -1139,7 +1138,6 @@ public:
     antlr4::tree::TerminalNode *KW_LOCAL();
     antlr4::tree::TerminalNode *KW_PRIVATE();
     antlr4::tree::TerminalNode *KW_VAR();
-    antlr4::tree::TerminalNode *KW_IMMUT();
     ExprContext *expr();
     Typeless_objectContext *typeless_object();
 

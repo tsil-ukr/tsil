@@ -64,10 +64,6 @@ set(TSIL_SRC
 
 add_executable(tsil ${TSIL_SRC})
 target_link_libraries(tsil PUBLIC tsil_parser tsil_llvm tsil_toc)
-if (DEFINED TSIL_STATIC)
-    target_link_options(tsil PUBLIC -static)
-else ()
-    target_link_options(tsil PUBLIC)
-endif ()
-target_compile_options(tsil PUBLIC -fexceptions -O3 -DTSIL_VERSION="${TSIL_VERSION}")
-set_target_properties(tsil PROPERTIES OUTPUT_NAME "${TSIL_EXECNAME}")
+target_link_options(tsil PUBLIC -static -fvisibility=hidden -flto -Wl,--strip-all)
+target_compile_options(tsil PUBLIC -O3 -g0 -fexceptions -DTSIL_VERSION="${TSIL_VERSION}")
+set_target_properties(tsil PROPERTIES OUTPUT_NAME "ціль")

@@ -8,7 +8,7 @@
 
 struct TsilCliConfig {
   char* path;
-  void (*println)(char* message);
+  void (*println)(const char* message);
 };
 
 struct TsilCliWriter {
@@ -30,6 +30,7 @@ enum TsilCliCompileCommandOutputFormat {
 struct TsilCliCompileCommandOutput {
   char* path;
   TsilCliCompileCommandOutputFormat format;
+  std::string targetTriple;
 };
 
 struct TsilCliCompileCommandInput {
@@ -37,7 +38,7 @@ struct TsilCliCompileCommandInput {
 };
 
 struct TsilCliCompileCommandOptions {
-  std::string libraryPath;
+  void* dummy;
 };
 
 struct TsilCliCompileCommand {
@@ -61,8 +62,8 @@ struct TsilCliFuseCommandInput {
 };
 
 struct TsilCliFuseCommandOptions {
+  std::string targetTriple;
   std::string clangOptions;
-  std::string libraryPath;
 };
 
 struct TsilCliFuseCommand {
@@ -123,6 +124,7 @@ extern "C" int tsil_cli_do_compile(
     TsilCliConfig config,
     TsilCliWriter outputWriter,
     TsilCliCompileCommandOutputFormat outputFormat,
+    std::string outputTriple,
     TsilCliCompileCommandOptions options,
     char* inputPath,
     char* inputSource);

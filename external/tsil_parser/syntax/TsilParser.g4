@@ -73,7 +73,7 @@ enum_element: id=ID ('{' (param (';' param)* ';'?)? '}')?;
 
 diia_define: (extern='зовнішня' | local='місцева' | intern='внутрішня')? 'дія' id=ID ('<' first_gendef=gendef (',' gendef)* '>')? '(' (param (',' param)*)? ')' (':' restyp=type)? (';' | body);
 
-tsil_define: (td_external='зовнішня' | td_local='місцева' | td_internal='внутрішня')? (td_var='змінна' | td_immut='стала')? 'ціль' id=ID (':' type)? ('=' (value_expr=expr | value_object=typeless_object))? ';';
+tsil_define: (td_external='зовнішня' | td_local='місцева' | td_internal='внутрішня')? ((td_var='змінна' ('ціль')?) | 'ціль') id=ID (':' type)? ('=' (value_expr=expr | value_object=typeless_object))? ';';
 
 assign: id=ID assign_op (value_expr=expr | value_object=typeless_object) ';';
 

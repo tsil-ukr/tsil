@@ -33,7 +33,7 @@ typedef TSIL_LLVM_BRANCH_INST_TYPE LLVMBranchInst;
 #define tsil_llvm_LINKAGE_DSO_LOCAL 1
 #define tsil_llvm_LINKAGE_INTERNAL 2
 
-TL* tsil_llvm_create_tl(char* name);
+TL* tsil_llvm_create_tl(const char* name, const char* targetTriple);
 
 LLVMType* tsil_llvm_create_struct(TL* m, char* name, size_t name_size);
 LLVMType* tsil_llvm_set_struct_fields(TL* m,

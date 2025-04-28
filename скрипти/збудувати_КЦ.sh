@@ -7,7 +7,6 @@ TSIL="$1"
 if [ -z "$TSIL" ]; then
   TSIL="ціль"
 fi
-TSIL_EXECNAME="ціль"
 # check if build/ціль exist
 if [ -f "build/ціль" ]; then
   cp -r "build/ціль" "build/ціль-$(date +%s)"
@@ -75,7 +74,7 @@ for KTS_FILE in "${KTS_FILES[@]}"; do
   CHANGED_AT=$(stat -c %y $KTS_FILE)
   CHANGED_AT_OLD=$(cat "../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll.changed_at" 2>/dev/null || echo "")
   if [ ! -f "../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll" ] || [ "$CHANGED_AT" != "$CHANGED_AT_OLD" ]; then
-    $TSIL "../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll" скомпілювати --бібліотека="$PWDR/.плавлення-бібліотеки/бібліотека" "$KTS_FILE"
+    $TSIL "../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll" скомпілювати "$KTS_FILE"
 
     $CXX -O3 -c -o "../.плавлення-КЦ/скомпільоване/$KTS_FILE.o" "../.плавлення-КЦ/скомпільоване/$KTS_FILE.ll" -Wno-override-module
 
@@ -88,8 +87,6 @@ mkdir -p build
 cd build
 cmake ../external/ -G Ninja \
   -DCMAKE_CXX_FLAGS=-fdiagnostics-color=always \
-  -DTSIL_STATIC="ON" \
-  -DTSIL_LLVM_PATH="../../.llvm-source-and-build/llvm-project-19.1.0.build/llvm" \
-  -DTSIL_EXECNAME="$TSIL_EXECNAME"
+  -DTSIL_LLVM_PATH="../../.llvm-source-and-build/llvm-project-19.1.0.build/llvm"
 ninja
 cd ..

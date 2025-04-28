@@ -128,6 +128,13 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
               config.println("Невідомий формат виходу");
               return 1;
             }
+          } else if (key == "triple") {
+            if (value != std::nullopt) {
+              compileCommand.outputs[i].targetTriple = value.value();
+            } else {
+              config.println("Не вказано значення для опції --triple");
+              return 1;
+            }
           } else {
             config.println(strdup(("Невідома опція виходу: --" + key).c_str()));
             return 1;
@@ -137,19 +144,9 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
     } else {
       compileCommand.outputs = nullptr;
     }
-    compileCommand.options.libraryPath = "";
     for (auto [key, value] : commandOptions) {
-      if (key == "бібліотека") {
-        if (value != std::nullopt) {
-          compileCommand.options.libraryPath = value.value();
-        } else {
-          config.println("Не вказано значення для опції --бібліотека");
-          return 1;
-        }
-      } else {
-        config.println(strdup(("Невідома опція команди: --" + key).c_str()));
-        return 1;
-      }
+      config.println(strdup(("Невідома опція команди: --" + key).c_str()));
+      return 1;
     }
     if (inputs.empty()) {
       config.println("Не вказано вхідний файл");
@@ -191,13 +188,12 @@ extern "C" int tsil_cli_parse(TsilCliConfig config,
     } else {
       fuseCommand.outputs = nullptr;
     }
-    fuseCommand.options.libraryPath = "";
     for (auto [key, value] : commandOptions) {
-      if (key == "бібліотека") {
+      if (key == "triple") {
         if (value != std::nullopt) {
-          fuseCommand.options.libraryPath = value.value();
+          fuseCommand.options.targetTriple = value.value();
         } else {
-          config.println("Не вказано значення для опції --бібліотека");
+          config.println("Не вказано значення для опції --triple");
           return 1;
         }
       } else if (key == "clang-options") {
@@ -249,8 +245,8 @@ extern "C" int tsil_cli_run_compile_command(TsilCliConfig config,
                                           write_to_file_by_path,
                                           output.path,
                                       },
-                                      output.format, command.options, inputPath,
-                                      inputSource);
+                                      output.format, output.targetTriple,
+                                      command.options, inputPath, inputSource);
     if (result != 0) {
       return result;
     }
@@ -334,12 +330,15 @@ extern "C" int tsil_cli_do_compile(
     TsilCliConfig config,
     TsilCliWriter outputWriter,
     TsilCliCompileCommandOutputFormat outputFormat,
+    std::string outputTriple,
     TsilCliCompileCommandOptions options,
     char* inputPath,
     char* inputSource) {
   auto fixedFullPathToFile =
       strdup(std::filesystem::absolute(inputPath).c_str());
-  const auto L = tsil_llvm_create_tl(fixedFullPathToFile);
+  const auto L = tsil_llvm_create_tl(
+      fixedFullPathToFile,
+      outputTriple.empty() ? nullptr : outputTriple.c_str());
   auto текстКоду = new ТекстКоду{.шлях = fixedFullPathToFile,
                                  .розмір_шляху = strlen(fixedFullPathToFile),
                                  .значення = inputSource,
@@ -426,6 +425,13 @@ extern "C" int tsil_cli_do_fuse(TsilCliConfig config,
   } else {
     if (!options.clangOptions.starts_with(" ")) {
       clangCommand.append(" ");
+    }
+    if (!options.targetTriple.empty()) {
+      clangCommand.append("-target");
+      clangCommand.append(options.targetTriple);
+      if (!options.clangOptions.ends_with(" ")) {
+        clangCommand.append(" ");
+      }
     }
     clangCommand.append(options.clangOptions);
     if (!options.clangOptions.ends_with(" ")) {

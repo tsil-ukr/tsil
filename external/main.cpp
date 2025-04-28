@@ -6,7 +6,7 @@
 
 #include "tsil_cli.h"
 
-void println(char* message) {
+void println(const char* message) {
   std::cout << message << std::endl;
 }
 
@@ -28,6 +28,7 @@ void printHelp() {
   std::cout << "    Вихід:" << std::endl;
   std::cout << "      Опції: " << std::endl;
   std::cout << "        --формат=<ll>" << std::endl;
+  std::cout << "        --triple=<LLVM_TRIPLE>" << std::endl;
   std::cout << "    Вхід:" << std::endl;
   std::cout << "      Формат: .ц" << std::endl;
 }
@@ -105,10 +106,10 @@ void str_replace_all(std::string& str,
   }
 }
 
-extern "C" char* tsil_hex_to_dec(char* value,
-                                 size_t value_size,
-                                 char** out,
-                                 size_t* out_size) {
+extern "C" void tsil_hex_to_dec(char* value,
+                                size_t value_size,
+                                char** out,
+                                size_t* out_size) {
   std::string strvalue(value, value_size);
   str_replace_all(strvalue, "А", "A");
   str_replace_all(strvalue, "а", "a");

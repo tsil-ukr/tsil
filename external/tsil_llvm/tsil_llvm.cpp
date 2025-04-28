@@ -1,14 +1,19 @@
+#include <llvm/Bitcode/BitcodeWriter.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Instructions.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Type.h>
+#include <llvm/MC/TargetRegistry.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/Target/TargetMachine.h>
+#include <llvm/Target/TargetOptions.h>
+#include <llvm/TargetParser/Host.h>
 #include <iostream>
-#include "llvm/Bitcode/BitcodeWriter.h"
-#include "llvm/IR/BasicBlock.h"
-#include "llvm/IR/Constants.h"
-#include "llvm/IR/DerivedTypes.h"
-#include "llvm/IR/Function.h"
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/Instructions.h"
-#include "llvm/IR/LLVMContext.h"
-#include "llvm/IR/Module.h"
-#include "llvm/IR/Type.h"
 
 struct XLMStruct {
   llvm::LLVMContext* llvmContext;
@@ -25,11 +30,31 @@ struct XLMStruct {
 #include "tsil_llvm.h"
 
 extern "C" {
-TL* tsil_llvm_create_tl(char* name) {
+TL* tsil_llvm_create_tl(const char* name, const char* targetTriple) {
+  llvm::InitializeAllTargetInfos();
+  llvm::InitializeAllTargets();
+  llvm::InitializeAllTargetMCs();
+  llvm::InitializeAllAsmParsers();
+  llvm::InitializeAllAsmPrinters();
   const auto xlModule = new TL();
   xlModule->llvmContext = new llvm::LLVMContext();
   xlModule->llvmModule = new llvm::Module(name, *xlModule->llvmContext);
   xlModule->llvmBuilder = new llvm::IRBuilder<>(*xlModule->llvmContext);
+  std::string TargetTriple =
+      targetTriple ? targetTriple : llvm::sys::getDefaultTargetTriple();
+  xlModule->llvmModule->setTargetTriple(TargetTriple);
+  std::string Error;
+  auto Target = llvm::TargetRegistry::lookupTarget(TargetTriple, Error);
+  if (!Error.empty()) {
+    std::cout << Error << std::endl;
+    return nullptr;
+  }
+  auto CPU = "generic";
+  auto Features = "";
+  llvm::TargetOptions opt;
+  auto TheTargetMachine = Target->createTargetMachine(
+      TargetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
+  xlModule->llvmModule->setDataLayout(TheTargetMachine->createDataLayout());
   return xlModule;
 }
 
