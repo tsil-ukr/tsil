@@ -14,4 +14,4 @@ bash скрипти/збудувати_КЦ.sh "$TSIL"
 mkdir -p випуски/"$VERSION"/ціль-"$VERSION"-x86_64-linux-gnu/bin
 cp "build/ціль" випуски/"$VERSION"/ціль-"$VERSION"-x86_64-linux-gnu/bin/ціль
 cd випуски/"$VERSION"
-zip -r -9 ціль-"$VERSION"-x86_64-linux-gnu.zip ціль-"$VERSION"-x86_64-linux-gnu
+tar -czvf ціль-"$VERSION"-x86_64-linux-gnu.tar.gz ціль-"$VERSION"-x86_64-linux-gnu
