@@ -30,7 +30,7 @@ void printHelp() {
   std::cout << "        --формат=<ll>" << std::endl;
   std::cout << "        --triple=<LLVM_TRIPLE>" << std::endl;
   std::cout << "    Вхід:" << std::endl;
-  std::cout << "      Формат: .ц" << std::endl;
+  std::cout << "      Формат: .ю8.ц" << std::endl;
 }
 
 int main(int argc, char** argv) {

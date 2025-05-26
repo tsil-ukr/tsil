@@ -390,7 +390,7 @@ extern "C" int tsil_cli_do_fuse(TsilCliConfig config,
   std::vector<std::string> clangInputPaths;
   for (int i = 0; i < inputsSize; ++i) {
     std::string inputPath = inputs[i].path;
-    if (inputPath.ends_with(".ц")) {
+    if (inputPath.ends_with(".ю8.ц")) {
       auto filename = std::filesystem::path(inputPath).filename().string();
       auto filenameWithoutExtension =
           filename.substr(0, filename.find_last_of("."));
