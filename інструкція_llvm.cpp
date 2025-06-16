@@ -1,0 +1,640 @@
+#include <llvm/Bitcode/BitcodeWriter.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Constants.h>
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/Instructions.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Type.h>
+#include <llvm/MC/TargetRegistry.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/Target/TargetMachine.h>
+#include <llvm/Target/TargetOptions.h>
+#include <llvm/TargetParser/Host.h>
+#include <iostream>
+
+extern "C" {
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+#define п8 uint8_t
+#define п16 uint16_t
+#define п32 uint32_t
+#define п64 uint64_t
+#define ц8 int8_t
+#define ц16 int16_t
+#define ц32 int32_t
+#define ц64 int64_t
+#define д32 float
+#define д64 double
+#define логічне uint8_t
+#define позитивне п64
+#define ціле ц64
+#define дійсне д64
+#define ніщо void
+#define невідома_адреса void*
+#define невідома_памʼять void*
+#define памʼять_п8 п8*
+#define адреса_памʼять_п8 п8**
+#define памʼять_памʼять_п8 п8**
+#define адреса_позитивне позитивне*
+typedef struct т8 {
+  позитивне розмір;
+  памʼять_п8 дані;
+} т8;
+typedef struct ю8 {
+  позитивне розмір;
+  памʼять_п8 дані;
+} ю8;
+#define памʼять_т8 т8*
+#define памʼять_ю8 ю8*
+
+#define ІНСТРУКЦІЯ_ВНУТРІШНЯ 1
+#define ІНСТРУКЦІЯ_МІСЦЕВА 2
+#define ІНСТРУКЦІЯ_ЗОВНІШНЯ 3
+
+#define ПРОЦЕСОР_Х86_64 1
+#define ПРОЦЕСОР_АРМ64 2
+
+#define СИСТЕМА_ЛІНУКС_ГНУ 1
+
+typedef struct Аркуш Аркуш;
+typedef struct Параметр Параметр;
+typedef struct Параметри Параметри;
+typedef llvm::Function Інструкція;
+typedef llvm::Value Значення;
+typedef llvm::Type Тип;
+typedef llvm::BasicBlock Крок;
+typedef llvm::BranchInst Стрибок;
+
+struct Аркуш {
+  std::unique_ptr<llvm::LLVMContext> llvmContext;
+  std::unique_ptr<llvm::Module> llvmModule;
+  std::unique_ptr<llvm::IRBuilder<>> llvmBuilder;
+};
+
+struct Параметр {
+  Тип* тип;
+};
+
+struct Параметри {
+  позитивне розмір;
+  Параметр* дані;
+  позитивне вмісткість;
+};
+
+void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
+                                 Параметри* параметри,
+                                 Параметр* параметр) {
+  if (параметри->розмір == параметри->вмісткість) {
+    параметри->вмісткість += 1;
+    параметри->дані = (Параметр*)realloc(
+        параметри->дані, sizeof(Параметр) * параметри->вмісткість);
+  }
+  параметри->дані[параметри->розмір] = *параметр;
+  параметри->розмір += 1;
+}
+
+Аркуш* __ПМЛЛВМ__створити_аркуш(ю8* назва,
+                                позитивне процесор,
+                                позитивне система) {
+  llvm::InitializeAllTargetInfos();
+  llvm::InitializeAllTargets();
+  llvm::InitializeAllTargetMCs();
+  llvm::InitializeAllAsmParsers();
+  llvm::InitializeAllAsmPrinters();
+
+  std::string name((char*)назва->дані, назва->розмір);
+
+  auto аркуш = new Аркуш();
+  аркуш->llvmContext = std::make_unique<llvm::LLVMContext>();
+  аркуш->llvmModule = std::make_unique<llvm::Module>(name, *аркуш->llvmContext);
+  аркуш->llvmBuilder = std::make_unique<llvm::IRBuilder<>>(*аркуш->llvmContext);
+
+  std::string targetTriple;
+
+  if (процесор) {
+    if (процесор == ПРОЦЕСОР_Х86_64) {
+      targetTriple = "x86_64-unknown";
+    } else if (процесор == ПРОЦЕСОР_АРМ64) {
+      targetTriple = "arm64-unknown";
+    } else {
+      return nullptr;
+    }
+    if (система == СИСТЕМА_ЛІНУКС_ГНУ) {
+      targetTriple += "-linux-gnu";
+    } else {
+      return nullptr;
+    }
+  } else {
+    targetTriple = llvm::sys::getDefaultTargetTriple();
+  }
+
+  аркуш->llvmModule->setTargetTriple(targetTriple);
+
+  std::string Error;
+  auto Target = llvm::TargetRegistry::lookupTarget(targetTriple, Error);
+  if (!Error.empty()) {
+    std::cout << Error << std::endl;
+    return nullptr;
+  }
+
+  auto CPU = "generic";
+  auto Features = "";
+  llvm::TargetOptions opt;
+  auto TheTargetMachine = Target->createTargetMachine(
+      targetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
+  аркуш->llvmModule->setDataLayout(TheTargetMachine->createDataLayout());
+
+  return аркуш;
+}
+
+Інструкція* __ПМЛЛВМ__створити_інструкцію(Аркуш* аркуш,
+                                          позитивне доступність,
+                                          ю8* назва,
+                                          Параметри* параметри,
+                                          Тип* тип_результату) {
+  llvm::Function::LinkageTypes linkageType;
+  if (доступність == ІНСТРУКЦІЯ_ЗОВНІШНЯ) {
+    linkageType = llvm::Function::ExternalLinkage;
+  } else if (доступність == ІНСТРУКЦІЯ_МІСЦЕВА) {
+    linkageType = llvm::Function::ExternalLinkage;
+  } else {
+    linkageType = llvm::Function::PrivateLinkage;
+  }
+
+  std::string name((char*)назва->дані, назва->розмір);
+
+  std::vector<llvm::Type*> llvmParams(параметри->розмір);
+  for (int i = 0; i < параметри->розмір; i++) {
+    llvmParams[i] = параметри->дані[i].тип;
+  }
+
+  auto function = llvm::Function::Create(
+      llvm::FunctionType::get(тип_результату == nullptr
+                                  ? llvm::Type::getVoidTy(*аркуш->llvmContext)
+                                  : тип_результату,
+                              llvmParams, false),
+      linkageType, name, *аркуш->llvmModule);
+
+  if (доступність == ІНСТРУКЦІЯ_МІСЦЕВА) {
+    function->setDSOLocal(true);
+  }
+
+  return function;
+}
+
+Тип* __ПМЛЛВМ__отримати_тип_інструкції(Інструкція* інструкція) {
+  return інструкція->getFunctionType();
+}
+
+Тип* __ПМЛЛВМ__створити_тип_інструкції(Аркуш* аркуш,
+                                       Параметри* параметри,
+                                       Тип* тип_результату) {
+  std::vector<llvm::Type*> llvmParams(параметри->розмір);
+  for (int i = 0; i < параметри->розмір; i++) {
+    llvmParams[i] = параметри->дані[i].тип;
+  }
+
+  return llvm::FunctionType::get(тип_результату, llvmParams, false);
+}
+
+Крок* __ПМЛЛВМ__створити_крок(Інструкція* інструкція, ю8* назва) {
+  std::string name((char*)назва->дані, назва->розмір);
+
+  return llvm::BasicBlock::Create(інструкція->getContext(), name, інструкція);
+}
+
+Тип* __ПМЛЛВМ__створити_структуру(Аркуш* аркуш,
+                                  ю8* назва,
+                                  Параметри* параметри) {
+  std::string name((char*)назва->дані, назва->розмір);
+
+  auto structType = llvm::StructType::create(*аркуш->llvmContext, name);
+
+  std::vector<llvm::Type*> llvmFields(параметри->розмір);
+  for (int i = 0; i < параметри->розмір; i++) {
+    llvmFields[i] = параметри->дані[i].тип;
+  }
+  structType->setBody(llvmFields);
+
+  return structType;
+}
+
+Значення* __ПМЛЛВМ__виконати_дію(Крок* крок,
+                                 Тип* тип,
+                                 Значення* значення,
+                                 позитивне кількість_аргументів,
+                                 Значення** аргументи) {
+  llvm::IRBuilder<> builder(крок);
+  std::vector<llvm::Value*> llvmArguments(кількість_аргументів);
+  for (int i = 0; i < кількість_аргументів; i++) {
+    llvmArguments[i] = аргументи[i];
+  }
+  auto type = reinterpret_cast<llvm::FunctionType*>(тип);
+  if (type->getReturnType()->isVoidTy()) {
+    return builder.CreateCall(type, значення, llvmArguments);
+  }
+  return builder.CreateCall(type, значення, llvmArguments, "виконати_дію");
+}
+
+Значення* __ПМЛЛВМ__отримати_значення_пусто(Аркуш* аркуш) {
+  return llvm::ConstantPointerNull::get(
+      llvm::PointerType::get(llvm::Type::getInt8Ty(*аркуш->llvmContext), 0));
+}
+
+Тип* __ПМЛЛВМ__отримати_тип_ніщо(Аркуш* аркуш) {
+  return llvm::Type::getVoidTy(*аркуш->llvmContext);
+}
+
+Тип* __ПМЛЛВМ__отримати_тип_адреса(Аркуш* аркуш) {
+  return llvm::PointerType::get(llvm::Type::getVoidTy(*аркуш->llvmContext), 0);
+}
+
+Тип* __ПМЛЛВМ__отримати_тип_б1(Аркуш* аркуш) {
+  return llvm::Type::getInt1Ty(*аркуш->llvmContext);
+}
+
+Тип* __ПМЛЛВМ__отримати_тип_б8(Аркуш* аркуш) {
+  return llvm::Type::getInt8Ty(*аркуш->llvmContext);
+}
+
+Тип* __ПМЛЛВМ__отримати_тип_б16(Аркуш* аркуш) {
+  return llvm::Type::getInt16Ty(*аркуш->llvmContext);
+}
+
+Тип* __ПМЛЛВМ__отримати_тип_б32(Аркуш* аркуш) {
+  return llvm::Type::getInt32Ty(*аркуш->llvmContext);
+}
+
+Тип* __ПМЛЛВМ__отримати_тип_б64(Аркуш* аркуш) {
+  return llvm::Type::getInt64Ty(*аркуш->llvmContext);
+}
+
+Тип* __ПМЛЛВМ__отримати_тип_д32(Аркуш* аркуш) {
+  return llvm::Type::getFloatTy(*аркуш->llvmContext);
+}
+
+Тип* __ПМЛЛВМ__отримати_тип_д64(Аркуш* аркуш) {
+  return llvm::Type::getDoubleTy(*аркуш->llvmContext);
+}
+
+Значення* __ПМЛЛВМ__створити_ц8(Аркуш* аркуш, ц8 значення) {
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(8, значення));
+}
+
+Значення* __ПМЛЛВМ__створити_ц16(Аркуш* аркуш, ц16 значення) {
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(16, значення));
+}
+
+Значення* __ПМЛЛВМ__створити_ц32(Аркуш* аркуш, ц32 значення) {
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(32, значення));
+}
+
+Значення* __ПМЛЛВМ__створити_ц64(Аркуш* аркуш, ц64 значення) {
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(64, значення));
+}
+
+Значення* __ПМЛЛВМ__створити_п8(Аркуш* аркуш, п8 значення) {
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(8, значення));
+}
+
+Значення* __ПМЛЛВМ__створити_п16(Аркуш* аркуш, п16 значення) {
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(16, значення));
+}
+
+Значення* __ПМЛЛВМ__створити_п32(Аркуш* аркуш, п32 значення) {
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(32, значення));
+}
+
+Значення* __ПМЛЛВМ__створити_п64(Аркуш* аркуш, п64 значення) {
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(64, значення));
+}
+
+Значення* __ПМЛЛВМ__створити_д32(Аркуш* аркуш, д32 значення) {
+  return llvm::ConstantFP::get(*аркуш->llvmContext, llvm::APFloat(значення));
+}
+
+Значення* __ПМЛЛВМ__створити_д64(Аркуш* аркуш, д64 значення) {
+  return llvm::ConstantFP::get(*аркуш->llvmContext, llvm::APFloat(значення));
+}
+
+Значення* __ПМЛЛВМ__вказівка_накопичити(Крок* крок, Тип* тип) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateAlloca(тип);
+}
+
+Значення* __ПМЛЛВМ__вказівка_додати_ц8(Крок* крок,
+                                       Значення* ліво,
+                                       Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateAdd(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_додати_ц16(Крок* крок,
+                                        Значення* ліво,
+                                        Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateAdd(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_додати_ц32(Крок* крок,
+                                        Значення* ліво,
+                                        Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateAdd(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_додати_ц64(Крок* крок,
+                                        Значення* ліво,
+                                        Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateAdd(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_додати_п8(Крок* крок,
+                                       Значення* ліво,
+                                       Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateAdd(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_додати_п16(Крок* крок,
+                                        Значення* ліво,
+                                        Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateAdd(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_додати_п32(Крок* крок,
+                                        Значення* ліво,
+                                        Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateAdd(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_додати_п64(Крок* крок,
+                                        Значення* ліво,
+                                        Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateAdd(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_додати_д32(Крок* крок,
+                                        Значення* ліво,
+                                        Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFAdd(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_додати_д64(Крок* крок,
+                                        Значення* ліво,
+                                        Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFAdd(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_відняти_ц8(Крок* крок,
+                                        Значення* ліво,
+                                        Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSub(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_відняти_ц16(Крок* крок,
+                                         Значення* ліво,
+                                         Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSub(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_відняти_ц32(Крок* крок,
+                                         Значення* ліво,
+                                         Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSub(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_відняти_ц64(Крок* крок,
+                                         Значення* ліво,
+                                         Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSub(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_відняти_п8(Крок* крок,
+                                        Значення* ліво,
+                                        Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSub(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_відняти_п16(Крок* крок,
+                                         Значення* ліво,
+                                         Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSub(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_відняти_п32(Крок* крок,
+                                         Значення* ліво,
+                                         Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSub(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_відняти_п64(Крок* крок,
+                                         Значення* ліво,
+                                         Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSub(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_відняти_д32(Крок* крок,
+                                         Значення* ліво,
+                                         Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFSub(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_відняти_д64(Крок* крок,
+                                         Значення* ліво,
+                                         Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFSub(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_помножити_ц8(Крок* крок,
+                                          Значення* ліво,
+                                          Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateMul(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_помножити_ц16(Крок* крок,
+                                           Значення* ліво,
+                                           Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateMul(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_помножити_ц32(Крок* крок,
+                                           Значення* ліво,
+                                           Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateMul(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_помножити_ц64(Крок* крок,
+                                           Значення* ліво,
+                                           Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateMul(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_помножити_п8(Крок* крок,
+                                          Значення* ліво,
+                                          Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateMul(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_помножити_п16(Крок* крок,
+                                           Значення* ліво,
+                                           Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateMul(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_помножити_п32(Крок* крок,
+                                           Значення* ліво,
+                                           Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateMul(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_помножити_п64(Крок* крок,
+                                           Значення* ліво,
+                                           Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateMul(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_помножити_д32(Крок* крок,
+                                           Значення* ліво,
+                                           Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFMul(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_помножити_д64(Крок* крок,
+                                           Значення* ліво,
+                                           Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFMul(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_поділити_ц8(Крок* крок,
+                                         Значення* ліво,
+                                         Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSDiv(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_поділити_ц16(Крок* крок,
+                                          Значення* ліво,
+                                          Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSDiv(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_поділити_ц32(Крок* крок,
+                                          Значення* ліво,
+                                          Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSDiv(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_поділити_ц64(Крок* крок,
+                                          Значення* ліво,
+                                          Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSDiv(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_поділити_п8(Крок* крок,
+                                         Значення* ліво,
+                                         Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUDiv(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_поділити_п16(Крок* крок,
+                                          Значення* ліво,
+                                          Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUDiv(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_поділити_п32(Крок* крок,
+                                          Значення* ліво,
+                                          Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUDiv(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_поділити_п64(Крок* крок,
+                                          Значення* ліво,
+                                          Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUDiv(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_поділити_д32(Крок* крок,
+                                          Значення* ліво,
+                                          Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFDiv(ліво, право);
+}
+
+Значення* __ПМЛЛВМ__вказівка_поділити_д64(Крок* крок,
+                                          Значення* ліво,
+                                          Значення* право) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFDiv(ліво, право);
+}
+
+Стрибок* __ПМЛЛВМ__вказівка_стрибнути(Крок* крок, Крок* куди) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateBr(куди);
+}
+
+void __ПМЛЛВМ__вказівка_записати(Крок* крок,
+                                 Значення* значення,
+                                 Значення* куди) {
+  llvm::IRBuilder<> builder(крок);
+  builder.CreateStore(значення, куди);
+}
+
+Значення* __ПМЛЛВМ__вказівка_прочитати(Крок* крок, Тип* тип, Значення* звідки) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateLoad(тип, звідки);
+}
+
+логічне __ПМЛЛВМ__отримати_лл(Аркуш* аркуш,
+                              позитивне* вихід_розміру,
+                              памʼять_п8* вихід_даних) {
+  llvm::SmallVector<char, 0> buffer;
+  llvm::raw_svector_ostream os(buffer);
+  аркуш->llvmModule->print(os, nullptr);
+  *вихід_даних = (памʼять_п8) new char[buffer.size()];
+  memcpy(*вихід_даних, buffer.data(), buffer.size());
+  *вихід_розміру = buffer.size();
+  return true;
+}
+}
