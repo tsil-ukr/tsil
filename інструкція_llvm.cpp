@@ -1491,6 +1491,11 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
   return builder.CreateXor(ліво, право);
 }
 
+Значення* __ПМЛЛВМ__вказівка_як(Крок* крок, Значення* значення, Тип* тип) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateBitCast(значення, тип);
+}
+
 Значення* __ПМЛЛВМ__перетворити_адресу_на_п64(Крок* крок, Значення* значення) {
   llvm::IRBuilder<> builder(крок);
   return builder.CreatePtrToInt(значення,
