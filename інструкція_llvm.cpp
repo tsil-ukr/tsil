@@ -1512,10 +1512,585 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
   return builder.CreateGEP(тип, значення, positions);
 }
 
-Значення* __ПМЛЛВМ__перетворити_адресу_на_п64(Крок* крок, Значення* значення) {
+Значення* __ПМЛЛВМ__перетворити_логічне_на_ц8(Крок* крок, Значення* значення) {
   llvm::IRBuilder<> builder(крок);
-  return builder.CreatePtrToInt(значення,
-                                llvm::Type::getInt64Ty(крок->getContext()));
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_логічне_на_ц16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_логічне_на_ц32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_логічне_на_ц64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_логічне_на_п8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_логічне_на_п16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_логічне_на_п32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_логічне_на_п64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_логічне_на_д32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUIToFP(значення,
+                              llvm::Type::getFloatTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_логічне_на_д64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUIToFP(значення,
+                              llvm::Type::getDoubleTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_логічне_на_адресу(Крок* крок,
+                                                  Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateIntToPtr(
+      значення,
+      llvm::PointerType::get(llvm::Type::getVoidTy(крок->getContext()), 0));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц8_на_логічне(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt1Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц8_на_ц16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц8_на_ц32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц8_на_ц64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц8_на_п8(Крок* крок, Значення* значення) {
+  return значення;
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц8_на_п16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц8_на_п32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц8_на_п64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц8_на_д32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSIToFP(значення,
+                              llvm::Type::getFloatTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц8_на_д64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSIToFP(значення,
+                              llvm::Type::getDoubleTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц8_на_адресу(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateIntToPtr(
+      значення,
+      llvm::PointerType::get(llvm::Type::getVoidTy(крок->getContext()), 0));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц16_на_логічне(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt1Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц16_на_ц8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц16_на_ц32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц16_на_ц64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц16_на_п8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц16_на_п16(Крок* крок, Значення* значення) {
+  return значення;
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц16_на_п32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц16_на_п64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц16_на_д32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSIToFP(значення,
+                              llvm::Type::getFloatTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц16_на_д64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSIToFP(значення,
+                              llvm::Type::getDoubleTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц16_на_адресу(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateIntToPtr(
+      значення,
+      llvm::PointerType::get(llvm::Type::getVoidTy(крок->getContext()), 0));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц32_на_логічне(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt1Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц32_на_ц8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц32_на_ц16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц32_на_ц64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц32_на_п8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц32_на_п16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц32_на_п32(Крок* крок, Значення* значення) {
+  return значення;
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц32_на_п64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц32_на_д32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSIToFP(значення,
+                              llvm::Type::getFloatTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц32_на_д64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSIToFP(значення,
+                              llvm::Type::getDoubleTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц32_на_адресу(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateIntToPtr(
+      значення,
+      llvm::PointerType::get(llvm::Type::getVoidTy(крок->getContext()), 0));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц64_на_логічне(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt1Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц64_на_ц8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц64_на_ц16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц64_на_ц32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц64_на_п8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц64_на_п16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц64_на_п32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц64_на_п64(Крок* крок, Значення* значення) {
+  return значення;
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц64_на_д32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSIToFP(значення,
+                              llvm::Type::getFloatTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц64_на_д64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateSIToFP(значення,
+                              llvm::Type::getDoubleTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_ц64_на_адресу(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateIntToPtr(
+      значення,
+      llvm::PointerType::get(llvm::Type::getVoidTy(крок->getContext()), 0));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п8_на_логічне(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt1Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п8_на_ц8(Крок* крок, Значення* значення) {
+  return значення;
+}
+
+Значення* __ПМЛЛВМ__перетворити_п8_на_ц16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п8_на_ц32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п8_на_ц64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п8_на_п16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п8_на_п32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п8_на_п64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п8_на_д32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUIToFP(значення,
+                              llvm::Type::getFloatTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п8_на_д64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUIToFP(значення,
+                              llvm::Type::getDoubleTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п8_на_адресу(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateIntToPtr(
+      значення,
+      llvm::PointerType::get(llvm::Type::getVoidTy(крок->getContext()), 0));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п16_на_логічне(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt1Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п16_на_ц8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п16_на_ц16(Крок* крок, Значення* значення) {
+  return значення;
+}
+
+Значення* __ПМЛЛВМ__перетворити_п16_на_ц32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п16_на_ц64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п16_на_п8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п16_на_п32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п16_на_п64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п16_на_д32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUIToFP(значення,
+                              llvm::Type::getFloatTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п16_на_д64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUIToFP(значення,
+                              llvm::Type::getDoubleTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п16_на_адресу(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateIntToPtr(
+      значення,
+      llvm::PointerType::get(llvm::Type::getVoidTy(крок->getContext()), 0));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п32_на_логічне(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt1Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п32_на_ц8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п32_на_ц16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п32_на_ц32(Крок* крок, Значення* значення) {
+  return значення;
+}
+
+Значення* __ПМЛЛВМ__перетворити_п32_на_ц64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п32_на_п8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п32_на_п16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п32_на_п64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateZExt(значення,
+                            llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п32_на_д32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUIToFP(значення,
+                              llvm::Type::getFloatTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п32_на_д64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUIToFP(значення,
+                              llvm::Type::getDoubleTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п32_на_адресу(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateIntToPtr(
+      значення,
+      llvm::PointerType::get(llvm::Type::getVoidTy(крок->getContext()), 0));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п64_на_логічне(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt1Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п64_на_ц8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п64_на_ц16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п64_на_ц32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п64_на_ц64(Крок* крок, Значення* значення) {
+  return значення;
+}
+
+Значення* __ПМЛЛВМ__перетворити_п64_на_п8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п64_на_п16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п64_на_п32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateTrunc(значення,
+                             llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п64_на_д32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUIToFP(значення,
+                              llvm::Type::getFloatTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_п64_на_д64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateUIToFP(значення,
+                              llvm::Type::getDoubleTy(крок->getContext()));
 }
 
 Значення* __ПМЛЛВМ__перетворити_п64_на_адресу(Крок* крок, Значення* значення) {
@@ -1523,6 +2098,200 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
   return builder.CreateIntToPtr(
       значення,
       llvm::PointerType::get(llvm::Type::getVoidTy(крок->getContext()), 0));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д32_на_логічне(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToUI(значення,
+                              llvm::Type::getInt1Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д32_на_ц8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToSI(значення,
+                              llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д32_на_ц16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToSI(значення,
+                              llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д32_на_ц32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToSI(значення,
+                              llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д32_на_ц64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToSI(значення,
+                              llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д32_на_п8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToUI(значення,
+                              llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д32_на_п16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToUI(значення,
+                              llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д32_на_п32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToUI(значення,
+                              llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д32_на_п64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToUI(значення,
+                              llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д32_на_д64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPExt(значення,
+                             llvm::Type::getDoubleTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д32_на_адресу(Крок* крок, Значення* значення) {
+  return NULL;
+}
+
+Значення* __ПМЛЛВМ__перетворити_д64_на_логічне(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToUI(значення,
+                              llvm::Type::getInt1Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д64_на_ц8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToSI(значення,
+                              llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д64_на_ц16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToSI(значення,
+                              llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д64_на_ц32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToSI(значення,
+                              llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д64_на_ц64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToSI(значення,
+                              llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д64_на_п8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToUI(значення,
+                              llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д64_на_п16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToUI(значення,
+                              llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д64_на_п32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToUI(значення,
+                              llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д64_на_п64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPToUI(значення,
+                              llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д64_на_д32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateFPTrunc(значення,
+                               llvm::Type::getFloatTy(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_д64_на_адресу(Крок* крок, Значення* значення) {
+  // todo: wtf
+  return NULL;
+}
+
+Значення* __ПМЛЛВМ__перетворити_адресу_на_логічне(Крок* крок,
+                                                  Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreatePtrToInt(значення,
+                                llvm::Type::getInt1Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_адресу_на_ц8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreatePtrToInt(значення,
+                                llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_адресу_на_ц16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreatePtrToInt(значення,
+                                llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_адресу_на_ц32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreatePtrToInt(значення,
+                                llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_адресу_на_ц64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreatePtrToInt(значення,
+                                llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_адресу_на_п8(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreatePtrToInt(значення,
+                                llvm::Type::getInt8Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_адресу_на_п16(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreatePtrToInt(значення,
+                                llvm::Type::getInt16Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_адресу_на_п32(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreatePtrToInt(значення,
+                                llvm::Type::getInt32Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_адресу_на_п64(Крок* крок, Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreatePtrToInt(значення,
+                                llvm::Type::getInt64Ty(крок->getContext()));
+}
+
+Значення* __ПМЛЛВМ__перетворити_адресу_на_д32(Крок* крок, Значення* значення) {
+  // todo: wtf
+  return NULL;
+}
+
+Значення* __ПМЛЛВМ__перетворити_адресу_на_д64(Крок* крок, Значення* значення) {
+  // todo: wtf
+  return NULL;
 }
 
 Стрибок* __ПМЛЛВМ__вказівка_стрибнути(Крок* крок, Крок* куди) {
