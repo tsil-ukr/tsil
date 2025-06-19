@@ -284,20 +284,24 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
   return llvm::Type::getDoubleTy(*аркуш->llvmContext);
 }
 
+Значення* __ПМЛЛВМ__створити_логічне(Аркуш* аркуш, логічне значення) {
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(1, значення));
+}
+
 Значення* __ПМЛЛВМ__створити_ц8(Аркуш* аркуш, ц8 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(8, значення));
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(8, значення, true));
 }
 
 Значення* __ПМЛЛВМ__створити_ц16(Аркуш* аркуш, ц16 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(16, значення));
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(16, значення, true));
 }
 
 Значення* __ПМЛЛВМ__створити_ц32(Аркуш* аркуш, ц32 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(32, значення));
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(32, значення, true));
 }
 
 Значення* __ПМЛЛВМ__створити_ц64(Аркуш* аркуш, ц64 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(64, значення));
+  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(64, значення, true));
 }
 
 Значення* __ПМЛЛВМ__створити_п8(Аркуш* аркуш, п8 значення) {
@@ -2297,6 +2301,14 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
 Стрибок* __ПМЛЛВМ__вказівка_стрибнути(Крок* крок, Крок* куди) {
   llvm::IRBuilder<> builder(крок);
   return builder.CreateBr(куди);
+}
+
+Стрибок* __ПМЛЛВМ__вказівка_стрибнути_якщо(Крок* крок,
+                                           Значення* значення,
+                                           Крок* якщо_так,
+                                           Крок* якщо_ні) {
+  llvm::IRBuilder<> builder(крок);
+  return builder.CreateCondBr(значення, якщо_так, якщо_ні);
 }
 
 void __ПМЛЛВМ__вказівка_записати(Крок* крок,
