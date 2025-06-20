@@ -226,6 +226,14 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
   return structType;
 }
 
+void __ПМЛЛВМ__заповнити_параметри_структури(Тип* тип, Параметри* параметри) {
+  std::vector<llvm::Type*> llvmFields(параметри->розмір);
+  for (int i = 0; i < параметри->розмір; i++) {
+    llvmFields[i] = параметри->дані[i].тип;
+  }
+  reinterpret_cast<llvm::StructType*>(тип)->setBody(llvmFields);
+}
+
 Значення* __ПМЛЛВМ__виконати_дію(Крок* крок,
                                  Тип* тип,
                                  Значення* значення,
@@ -289,19 +297,23 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
 }
 
 Значення* __ПМЛЛВМ__створити_ц8(Аркуш* аркуш, ц8 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(8, значення, true));
+  return llvm::ConstantInt::get(*аркуш->llvmContext,
+                                llvm::APInt(8, значення, true));
 }
 
 Значення* __ПМЛЛВМ__створити_ц16(Аркуш* аркуш, ц16 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(16, значення, true));
+  return llvm::ConstantInt::get(*аркуш->llvmContext,
+                                llvm::APInt(16, значення, true));
 }
 
 Значення* __ПМЛЛВМ__створити_ц32(Аркуш* аркуш, ц32 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(32, значення, true));
+  return llvm::ConstantInt::get(*аркуш->llvmContext,
+                                llvm::APInt(32, значення, true));
 }
 
 Значення* __ПМЛЛВМ__створити_ц64(Аркуш* аркуш, ц64 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(64, значення, true));
+  return llvm::ConstantInt::get(*аркуш->llvmContext,
+                                llvm::APInt(64, значення, true));
 }
 
 Значення* __ПМЛЛВМ__створити_п8(Аркуш* аркуш, п8 значення) {
