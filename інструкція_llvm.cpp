@@ -340,6 +340,22 @@ void __ПМЛЛВМ__заповнити_параметри_структури(Т
   return llvm::ConstantFP::get(*аркуш->llvmContext, llvm::APFloat(значення));
 }
 
+Значення* __ПМЛЛВМ__створити_т8(Аркуш* аркуш, т8* значення) {
+  return nullptr;
+}
+
+Значення* __ПМЛЛВМ__створити_байти(Аркуш* аркуш,
+                                   позитивне розмір,
+                                   памʼять_п8 дані) {
+  auto constantString = llvm::ConstantDataArray::getString(
+      *аркуш->llvmContext, std::string((char*)дані, розмір));
+
+  return new llvm::GlobalVariable(
+      *аркуш->llvmModule,
+      llvm::ArrayType::get(llvm::Type::getInt8Ty(*аркуш->llvmContext), розмір),
+      true, llvm::GlobalValue::LinkageTypes::PrivateLinkage, constantString);
+}
+
 Значення* __ПМЛЛВМ__вказівка_накопичити(Крок* крок, Тип* тип) {
   llvm::IRBuilder<> builder(крок);
   return builder.CreateAlloca(тип);
