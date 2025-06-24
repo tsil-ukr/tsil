@@ -251,6 +251,12 @@ void __ПМЛЛВМ__заповнити_параметри_структури(Т
   return builder.CreateCall(type, значення, llvmArguments, "виконати_дію");
 }
 
+позитивне __ПМЛЛВМ__отримати_розмір_типу_для_виділення(Аркуш* аркуш, Тип* тип) {
+  llvm::DataLayout DL(аркуш->llvmModule.get());
+
+  return DL.getTypeAllocSize(тип);
+}
+
 Значення* __ПМЛЛВМ__отримати_значення_пусто(Аркуш* аркуш) {
   return llvm::ConstantPointerNull::get(
       llvm::PointerType::get(llvm::Type::getInt8Ty(*аркуш->llvmContext), 0));
