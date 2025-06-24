@@ -63,7 +63,7 @@ typedef struct ю8 {
 
 #define СИСТЕМА_ЛІНУКС_ГНУ 1
 
-typedef struct Аркуш Аркуш;
+typedef struct Модуль Модуль;
 typedef struct Параметр Параметр;
 typedef struct Параметри Параметри;
 typedef llvm::Function Інструкція;
@@ -72,7 +72,7 @@ typedef llvm::Type Тип;
 typedef llvm::BasicBlock Крок;
 typedef llvm::BranchInst Стрибок;
 
-struct Аркуш {
+struct Модуль {
   std::unique_ptr<llvm::LLVMContext> llvmContext;
   std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<llvm::IRBuilder<>> llvmBuilder;
@@ -88,7 +88,7 @@ struct Параметри {
   позитивне вмісткість;
 };
 
-void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
+void __ПМЛЛВМ__покласти_параметр(Модуль* модуль,
                                  Параметри* параметри,
                                  Параметр* параметр) {
   if (параметри->розмір == параметри->вмісткість) {
@@ -100,7 +100,7 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
   параметри->розмір += 1;
 }
 
-Аркуш* __ПМЛЛВМ__створити_аркуш(ю8* назва,
+Модуль* __ПМЛЛВМ__створити_модуль(ю8* назва,
                                 позитивне процесор,
                                 позитивне система) {
   llvm::InitializeAllTargetInfos();
@@ -111,10 +111,10 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
 
   std::string name((char*)назва->дані, назва->розмір);
 
-  auto аркуш = new Аркуш();
-  аркуш->llvmContext = std::make_unique<llvm::LLVMContext>();
-  аркуш->llvmModule = std::make_unique<llvm::Module>(name, *аркуш->llvmContext);
-  аркуш->llvmBuilder = std::make_unique<llvm::IRBuilder<>>(*аркуш->llvmContext);
+  auto модуль = new Модуль();
+  модуль->llvmContext = std::make_unique<llvm::LLVMContext>();
+  модуль->llvmModule = std::make_unique<llvm::Module>(name, *модуль->llvmContext);
+  модуль->llvmBuilder = std::make_unique<llvm::IRBuilder<>>(*модуль->llvmContext);
 
   std::string targetTriple;
 
@@ -135,7 +135,7 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
     targetTriple = llvm::sys::getDefaultTargetTriple();
   }
 
-  аркуш->llvmModule->setTargetTriple(targetTriple);
+  модуль->llvmModule->setTargetTriple(targetTriple);
 
   std::string Error;
   auto Target = llvm::TargetRegistry::lookupTarget(targetTriple, Error);
@@ -149,12 +149,12 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
   llvm::TargetOptions opt;
   auto TheTargetMachine = Target->createTargetMachine(
       targetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
-  аркуш->llvmModule->setDataLayout(TheTargetMachine->createDataLayout());
+  модуль->llvmModule->setDataLayout(TheTargetMachine->createDataLayout());
 
-  return аркуш;
+  return модуль;
 }
 
-Інструкція* __ПМЛЛВМ__створити_інструкцію(Аркуш* аркуш,
+Інструкція* __ПМЛЛВМ__створити_інструкцію(Модуль* модуль,
                                           позитивне доступність,
                                           ю8* назва,
                                           Параметри* параметри,
@@ -177,10 +177,10 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
 
   auto function = llvm::Function::Create(
       llvm::FunctionType::get(тип_результату == nullptr
-                                  ? llvm::Type::getVoidTy(*аркуш->llvmContext)
+                                  ? llvm::Type::getVoidTy(*модуль->llvmContext)
                                   : тип_результату,
                               llvmParams, false),
-      linkageType, name, *аркуш->llvmModule);
+      linkageType, name, *модуль->llvmModule);
 
   if (доступність == ІНСТРУКЦІЯ_МІСЦЕВА) {
     function->setDSOLocal(true);
@@ -193,7 +193,7 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
   return інструкція->getFunctionType();
 }
 
-Тип* __ПМЛЛВМ__створити_тип_інструкції(Аркуш* аркуш,
+Тип* __ПМЛЛВМ__створити_тип_інструкції(Модуль* модуль,
                                        Параметри* параметри,
                                        Тип* тип_результату) {
   std::vector<llvm::Type*> llvmParams(параметри->розмір);
@@ -210,12 +210,12 @@ void __ПМЛЛВМ__покласти_параметр(Аркуш* аркуш,
   return llvm::BasicBlock::Create(інструкція->getContext(), name, інструкція);
 }
 
-Тип* __ПМЛЛВМ__створити_структуру(Аркуш* аркуш,
+Тип* __ПМЛЛВМ__створити_структуру(Модуль* модуль,
                                   ю8* назва,
                                   Параметри* параметри) {
   std::string name((char*)назва->дані, назва->розмір);
 
-  auto structType = llvm::StructType::create(*аркуш->llvmContext, name);
+  auto structType = llvm::StructType::create(*модуль->llvmContext, name);
 
   std::vector<llvm::Type*> llvmFields(параметри->розмір);
   for (int i = 0; i < параметри->розмір; i++) {
@@ -251,114 +251,114 @@ void __ПМЛЛВМ__заповнити_параметри_структури(Т
   return builder.CreateCall(type, значення, llvmArguments, "виконати_дію");
 }
 
-позитивне __ПМЛЛВМ__отримати_розмір_типу_для_виділення(Аркуш* аркуш, Тип* тип) {
-  llvm::DataLayout DL(аркуш->llvmModule.get());
+позитивне __ПМЛЛВМ__отримати_розмір_типу_для_виділення(Модуль* модуль, Тип* тип) {
+  llvm::DataLayout DL(модуль->llvmModule.get());
 
   return DL.getTypeAllocSize(тип);
 }
 
-Значення* __ПМЛЛВМ__отримати_значення_пусто(Аркуш* аркуш) {
+Значення* __ПМЛЛВМ__отримати_значення_пусто(Модуль* модуль) {
   return llvm::ConstantPointerNull::get(
-      llvm::PointerType::get(llvm::Type::getInt8Ty(*аркуш->llvmContext), 0));
+      llvm::PointerType::get(llvm::Type::getInt8Ty(*модуль->llvmContext), 0));
 }
 
-Тип* __ПМЛЛВМ__отримати_тип_ніщо(Аркуш* аркуш) {
-  return llvm::Type::getVoidTy(*аркуш->llvmContext);
+Тип* __ПМЛЛВМ__отримати_тип_ніщо(Модуль* модуль) {
+  return llvm::Type::getVoidTy(*модуль->llvmContext);
 }
 
-Тип* __ПМЛЛВМ__отримати_тип_адреса(Аркуш* аркуш) {
-  return llvm::PointerType::get(llvm::Type::getVoidTy(*аркуш->llvmContext), 0);
+Тип* __ПМЛЛВМ__отримати_тип_адреса(Модуль* модуль) {
+  return llvm::PointerType::get(llvm::Type::getVoidTy(*модуль->llvmContext), 0);
 }
 
-Тип* __ПМЛЛВМ__отримати_тип_б1(Аркуш* аркуш) {
-  return llvm::Type::getInt1Ty(*аркуш->llvmContext);
+Тип* __ПМЛЛВМ__отримати_тип_б1(Модуль* модуль) {
+  return llvm::Type::getInt1Ty(*модуль->llvmContext);
 }
 
-Тип* __ПМЛЛВМ__отримати_тип_б8(Аркуш* аркуш) {
-  return llvm::Type::getInt8Ty(*аркуш->llvmContext);
+Тип* __ПМЛЛВМ__отримати_тип_б8(Модуль* модуль) {
+  return llvm::Type::getInt8Ty(*модуль->llvmContext);
 }
 
-Тип* __ПМЛЛВМ__отримати_тип_б16(Аркуш* аркуш) {
-  return llvm::Type::getInt16Ty(*аркуш->llvmContext);
+Тип* __ПМЛЛВМ__отримати_тип_б16(Модуль* модуль) {
+  return llvm::Type::getInt16Ty(*модуль->llvmContext);
 }
 
-Тип* __ПМЛЛВМ__отримати_тип_б32(Аркуш* аркуш) {
-  return llvm::Type::getInt32Ty(*аркуш->llvmContext);
+Тип* __ПМЛЛВМ__отримати_тип_б32(Модуль* модуль) {
+  return llvm::Type::getInt32Ty(*модуль->llvmContext);
 }
 
-Тип* __ПМЛЛВМ__отримати_тип_б64(Аркуш* аркуш) {
-  return llvm::Type::getInt64Ty(*аркуш->llvmContext);
+Тип* __ПМЛЛВМ__отримати_тип_б64(Модуль* модуль) {
+  return llvm::Type::getInt64Ty(*модуль->llvmContext);
 }
 
-Тип* __ПМЛЛВМ__отримати_тип_д32(Аркуш* аркуш) {
-  return llvm::Type::getFloatTy(*аркуш->llvmContext);
+Тип* __ПМЛЛВМ__отримати_тип_д32(Модуль* модуль) {
+  return llvm::Type::getFloatTy(*модуль->llvmContext);
 }
 
-Тип* __ПМЛЛВМ__отримати_тип_д64(Аркуш* аркуш) {
-  return llvm::Type::getDoubleTy(*аркуш->llvmContext);
+Тип* __ПМЛЛВМ__отримати_тип_д64(Модуль* модуль) {
+  return llvm::Type::getDoubleTy(*модуль->llvmContext);
 }
 
-Значення* __ПМЛЛВМ__створити_логічне(Аркуш* аркуш, логічне значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(1, значення));
+Значення* __ПМЛЛВМ__створити_логічне(Модуль* модуль, логічне значення) {
+  return llvm::ConstantInt::get(*модуль->llvmContext, llvm::APInt(1, значення));
 }
 
-Значення* __ПМЛЛВМ__створити_ц8(Аркуш* аркуш, ц8 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext,
+Значення* __ПМЛЛВМ__створити_ц8(Модуль* модуль, ц8 значення) {
+  return llvm::ConstantInt::get(*модуль->llvmContext,
                                 llvm::APInt(8, значення, true));
 }
 
-Значення* __ПМЛЛВМ__створити_ц16(Аркуш* аркуш, ц16 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext,
+Значення* __ПМЛЛВМ__створити_ц16(Модуль* модуль, ц16 значення) {
+  return llvm::ConstantInt::get(*модуль->llvmContext,
                                 llvm::APInt(16, значення, true));
 }
 
-Значення* __ПМЛЛВМ__створити_ц32(Аркуш* аркуш, ц32 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext,
+Значення* __ПМЛЛВМ__створити_ц32(Модуль* модуль, ц32 значення) {
+  return llvm::ConstantInt::get(*модуль->llvmContext,
                                 llvm::APInt(32, значення, true));
 }
 
-Значення* __ПМЛЛВМ__створити_ц64(Аркуш* аркуш, ц64 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext,
+Значення* __ПМЛЛВМ__створити_ц64(Модуль* модуль, ц64 значення) {
+  return llvm::ConstantInt::get(*модуль->llvmContext,
                                 llvm::APInt(64, значення, true));
 }
 
-Значення* __ПМЛЛВМ__створити_п8(Аркуш* аркуш, п8 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(8, значення));
+Значення* __ПМЛЛВМ__створити_п8(Модуль* модуль, п8 значення) {
+  return llvm::ConstantInt::get(*модуль->llvmContext, llvm::APInt(8, значення));
 }
 
-Значення* __ПМЛЛВМ__створити_п16(Аркуш* аркуш, п16 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(16, значення));
+Значення* __ПМЛЛВМ__створити_п16(Модуль* модуль, п16 значення) {
+  return llvm::ConstantInt::get(*модуль->llvmContext, llvm::APInt(16, значення));
 }
 
-Значення* __ПМЛЛВМ__створити_п32(Аркуш* аркуш, п32 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(32, значення));
+Значення* __ПМЛЛВМ__створити_п32(Модуль* модуль, п32 значення) {
+  return llvm::ConstantInt::get(*модуль->llvmContext, llvm::APInt(32, значення));
 }
 
-Значення* __ПМЛЛВМ__створити_п64(Аркуш* аркуш, п64 значення) {
-  return llvm::ConstantInt::get(*аркуш->llvmContext, llvm::APInt(64, значення));
+Значення* __ПМЛЛВМ__створити_п64(Модуль* модуль, п64 значення) {
+  return llvm::ConstantInt::get(*модуль->llvmContext, llvm::APInt(64, значення));
 }
 
-Значення* __ПМЛЛВМ__створити_д32(Аркуш* аркуш, д32 значення) {
-  return llvm::ConstantFP::get(*аркуш->llvmContext, llvm::APFloat(значення));
+Значення* __ПМЛЛВМ__створити_д32(Модуль* модуль, д32 значення) {
+  return llvm::ConstantFP::get(*модуль->llvmContext, llvm::APFloat(значення));
 }
 
-Значення* __ПМЛЛВМ__створити_д64(Аркуш* аркуш, д64 значення) {
-  return llvm::ConstantFP::get(*аркуш->llvmContext, llvm::APFloat(значення));
+Значення* __ПМЛЛВМ__створити_д64(Модуль* модуль, д64 значення) {
+  return llvm::ConstantFP::get(*модуль->llvmContext, llvm::APFloat(значення));
 }
 
-Значення* __ПМЛЛВМ__створити_т8(Аркуш* аркуш, т8* значення) {
+Значення* __ПМЛЛВМ__створити_т8(Модуль* модуль, т8* значення) {
   return nullptr;
 }
 
-Значення* __ПМЛЛВМ__створити_байти(Аркуш* аркуш,
+Значення* __ПМЛЛВМ__створити_байти(Модуль* модуль,
                                    позитивне розмір,
                                    памʼять_п8 дані) {
   auto constantString = llvm::ConstantDataArray::getString(
-      *аркуш->llvmContext, std::string((char*)дані, розмір));
+      *модуль->llvmContext, std::string((char*)дані, розмір));
 
   return new llvm::GlobalVariable(
-      *аркуш->llvmModule,
-      llvm::ArrayType::get(llvm::Type::getInt8Ty(*аркуш->llvmContext), розмір),
+      *модуль->llvmModule,
+      llvm::ArrayType::get(llvm::Type::getInt8Ty(*модуль->llvmContext), розмір),
       true, llvm::GlobalValue::LinkageTypes::PrivateLinkage, constantString);
 }
 
@@ -2371,12 +2371,12 @@ void __ПМЛЛВМ__вказівка_вернути_значення(Крок* 
   builder.CreateRet(значення);
 }
 
-логічне __ПМЛЛВМ__отримати_лл(Аркуш* аркуш,
+логічне __ПМЛЛВМ__отримати_лл(Модуль* модуль,
                               позитивне* вихід_розміру,
                               памʼять_п8* вихід_даних) {
   llvm::SmallVector<char, 0> buffer;
   llvm::raw_svector_ostream os(buffer);
-  аркуш->llvmModule->print(os, nullptr);
+  модуль->llvmModule->print(os, nullptr);
   *вихід_даних = (памʼять_п8) new char[buffer.size()];
   memcpy(*вихід_даних, buffer.data(), buffer.size());
   *вихід_розміру = buffer.size();
