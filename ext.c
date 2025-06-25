@@ -1,3 +1,4 @@
+#include <libgen.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -95,6 +96,56 @@ extern void __КЦ__прочитати_файл(Виділяч* виділяч,
   Байти дані = {.розмір = read_size, .дані = (памʼять_п8)buffer};
   *успіх = true;
   *вихід = дані;
+}
+
+extern логічне __КЦ__перевірити_чи_шлях_існує(Виділяч* виділяч, Шлях* шлях) {
+  char* filename =
+      (char*)виділяч->виділити_сиру_памʼять(виділяч, шлях->розмір + 1);
+  memcpy(filename, шлях->дані, шлях->розмір);
+  filename[шлях->розмір] = 0;
+
+  FILE* file = fopen(filename, "rb");
+
+  if (file) {
+    free(filename);
+    fclose(file);
+    return true;
+  } else {
+    free(filename);
+    return false;
+  }
+}
+
+extern логічне __КЦ__отримати_директорію_шляху_до_файлу(Виділяч* виділяч,
+                                                        Шлях* вхід,
+                                                        Шлях* вихід) {
+  char* filename =
+      (char*)виділяч->виділити_сиру_памʼять(виділяч, вхід->розмір + 1);
+  memcpy(filename, вхід->дані, вхід->розмір);
+  filename[вхід->розмір] = 0;
+
+  const char* absolute_path = strdup(realpath(filename, NULL));
+  free((void*)filename);
+  if (absolute_path == NULL) {
+    return false;
+  }
+  const char* parent_path = dirname((char*)absolute_path);
+  if (parent_path == NULL) {
+    return false;
+  } else {
+    вихід->розмір = strlen(parent_path);
+    вихід->дані = (памʼять_п8)strdup(parent_path);
+    free((void*)absolute_path);
+  }
+  return true;
+}
+
+extern логічне __КЦ__отримати_поточну_директорію_процесу(Виділяч* виділяч,
+                                                         Шлях* вихід) {
+  const char* cwd = getcwd(NULL, 0);
+  вихід->розмір = strlen(cwd);
+  вихід->дані = (памʼять_п8)cwd;
+  return true;
 }
 
 extern ц32 розпочати(позитивне кількість_аргументів, Байти* байти);
