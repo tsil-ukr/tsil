@@ -148,6 +148,21 @@ extern логічне __КЦ__отримати_поточну_директорі
   return true;
 }
 
+extern логічне __КЦ__отримати_абсолютний_шлях(Виділяч* виділяч,
+                                              Шлях* вхід,
+                                              Шлях* вихід) {
+  char* filename =
+      (char*)виділяч->виділити_сиру_памʼять(виділяч, вхід->розмір + 1);
+  memcpy(filename, вхід->дані, вхід->розмір);
+  filename[вхід->розмір] = 0;
+
+  char* absolute_path = realpath(filename, NULL);
+
+  вихід->розмір = strlen(absolute_path);
+  вихід->дані = (памʼять_п8)absolute_path;
+  return true;
+}
+
 extern ц32 розпочати(позитивне кількість_аргументів, Байти* байти);
 
 int main(int argc, char** argv) {
