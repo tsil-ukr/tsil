@@ -11,8 +11,8 @@ mkdir -p build/біб
 mkdir -p build/біб/КД
 
 COMPILED_C_FILES=""
-#CXX_OPTIONS="-g -O0"
-CXX_OPTIONS="-O3"
+CXX_OPTIONS="-g -O0"
+#CXX_OPTIONS="-O3"
 
 doCompile() {
 #  ./out/старт "$1" > build/"$1".ll
