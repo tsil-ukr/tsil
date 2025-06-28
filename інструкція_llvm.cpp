@@ -384,7 +384,7 @@ void __ПМЛЛВМ__заповнити_параметри_структури(Т
                                    позитивне розмір,
                                    памʼять_п8 дані) {
   auto constantString = llvm::ConstantDataArray::getString(
-      *модуль->llvmContext, std::string((char*)дані, розмір));
+      *модуль->llvmContext, std::string((char*)дані, розмір), false);
 
   return new llvm::GlobalVariable(
       *модуль->llvmModule,
