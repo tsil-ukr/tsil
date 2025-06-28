@@ -20,6 +20,8 @@ doCompile() {
   COMPILED_C_FILES="$COMPILED_C_FILES build/$1.ll"
 }
 
+doCompile "КЦ/КЦ.ю8.ц"
+doCompile "ПМ/ПМ2.ю8.ц"
 doCompile "КЦ/ОбʼєктТипу.ю8.ц"
 doCompile "КЦ/перекладач/Текст.ю8.ц"
 doCompile "КЦ/перекладач/Ціль.ю8.ц"
@@ -32,7 +34,6 @@ doCompile "КЦ/розбирач/розбирач.ю8.ц"
 doCompile "КЦ/перекладач/Взяти.ю8.ц"
 doCompile "КЦ/перекладач/ВиконатиШаблон.ю8.ц"
 doCompile "КЦ/ОбʼєктШаблону.ю8.ц"
-doCompile "КЦ/КЦ.ю8.ц"
 doCompile "КЦ/перекладач/Тіло.ю8.ц"
 doCompile "КЦ/Помилка.ю8.ц"
 doCompile "КЦ/перекладач/ВаріативнийТип.ю8.ц"
@@ -40,7 +41,6 @@ doCompile "КЦ/перекладач/Вернути.ю8.ц"
 doCompile "КЦ/перекладач/Крок.ю8.ц"
 doCompile "КЦ/перекладач/Стрибнути.ю8.ц"
 doCompile "КЦ/перекладач/Обʼєкт.ю8.ц"
-doCompile "ПМ/ПМ.ю8.ц"
 doCompile "КЦ/Обʼєкт.ю8.ц"
 doCompile "КЦ/ОбʼєктДії.ю8.ц"
 doCompile "КЦ/ОбʼєктСекції.ю8.ц"
@@ -65,13 +65,19 @@ doCompile "КЦ/перекладач/Однооперація.ю8.ц"
 doCompile "КЦ/перекладач/Число.ю8.ц"
 doCompile "КЦ/перекладач/ТипДії.ю8.ц"
 doCompile "біб/КД/КД.ю8.ц"
+#doCompile "ПМ/ПМ.ю8.ц"
 
 clang $CXX_OPTIONS -c -o build/біб/bib.o біб/bib.c
 clang $CXX_OPTIONS -c -o build/ext.o ext.c
 
+#clang++ $CXX_OPTIONS -o out/старт \
+#  $COMPILED_C_FILES \
+#  build/ext.o \
+#  build/біб/bib.o \
+#  інструкція_llvm.cpp \
+#  `llvm-config --cxxflags --ldflags --system-libs --libs`
+
 clang++ $CXX_OPTIONS -o out/старт \
   $COMPILED_C_FILES \
   build/ext.o \
-  build/біб/bib.o \
-  інструкція_llvm.cpp \
-  `llvm-config --cxxflags --ldflags --system-libs --libs`
+  build/біб/bib.o
