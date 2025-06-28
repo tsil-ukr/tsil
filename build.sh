@@ -60,7 +60,7 @@ doCompile "КЦ/перекладач/Синонім.ю8.ц"
 doCompile "КЦ/перекладач/Однооперація.ю8.ц"
 doCompile "КЦ/перекладач/Число.ю8.ц"
 doCompile "КЦ/перекладач/ТипДії.ю8.ц"
-doCompile "КД/КД.ю8.ц"
+doCompile "біб/КД/КД.ю8.ц"
 
 clang -g -O0 -c -o build/біб/bib.o біб/bib.c
 clang -g -O0 -c -o build/ext.o ext.c
