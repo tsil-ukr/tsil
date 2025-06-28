@@ -171,5 +171,7 @@ int main(int argc, char** argv) {
     Байти байти = {.розмір = strlen(argv[i]), .дані = (памʼять_п8)argv[i]};
     аргументи[i] = байти;
   }
-  return розпочати(argc, аргументи);
+  int res = розпочати(argc, аргументи);
+  free(аргументи);
+  return res;
 }
