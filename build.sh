@@ -6,12 +6,16 @@ mkdir -p out
 mkdir -p build/ПМ
 mkdir -p build/КЦ
 mkdir -p build/КЦ/розбирач
+mkdir -p build/КЦ/перекладач
 mkdir -p build/біб
+mkdir -p build/біб/КД
 
 COMPILED_C_FILES=""
+#CXX_OPTIONS="-g -O0"
+CXX_OPTIONS="-O3"
 
 doCompile() {
-#  ./out/старт "$1" > "$1".ll
+#  ./out/старт "$1" > build/"$1".ll
   ціль build/"$1".ll скомпілювати "$1"
   COMPILED_C_FILES="$COMPILED_C_FILES build/$1.ll"
 }
@@ -62,10 +66,10 @@ doCompile "КЦ/перекладач/Число.ю8.ц"
 doCompile "КЦ/перекладач/ТипДії.ю8.ц"
 doCompile "біб/КД/КД.ю8.ц"
 
-clang -g -O0 -c -o build/біб/bib.o біб/bib.c
-clang -g -O0 -c -o build/ext.o ext.c
+clang $CXX_OPTIONS -c -o build/біб/bib.o біб/bib.c
+clang $CXX_OPTIONS -c -o build/ext.o ext.c
 
-clang++ -g -O0 -o out/старт \
+clang++ $CXX_OPTIONS -o out/старт \
   $COMPILED_C_FILES \
   build/ext.o \
   build/біб/bib.o \
