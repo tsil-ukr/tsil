@@ -14,12 +14,15 @@ COMPILED_C_FILES=""
 CXX_OPTIONS="-g -O0"
 #CXX_OPTIONS="-O3"
 
+#TSIL="./out/старт"
+TSIL="ціль"
+
 doCompile() {
-#  ./out/старт "$1" > build/"$1".ll
-  ціль build/"$1".ll скомпілювати "$1"
+  $TSIL build/"$1".ll скомпілювати "$1"
   COMPILED_C_FILES="$COMPILED_C_FILES build/$1.ll"
 }
 
+doCompile "старт.ю8.ц"
 doCompile "КЦ/Компілятор.ю8.ц"
 doCompile "КЦ/Середовище.ю8.ц"
 doCompile "КЦ/ТекстКоду.ю8.ц"
@@ -29,7 +32,6 @@ doCompile "КЦ/значення/ОбʼєктТипу.ю8.ц"
 doCompile "КЦ/перекладач/Текст.ю8.ц"
 doCompile "КЦ/перекладач/Ціль.ю8.ц"
 doCompile "КЦ/значення/ОбʼєктНезавантаженогоЗначення.ю8.ц"
-doCompile "старт.ю8.ц"
 doCompile "КЦ/перекладач/Шаблон.ю8.ц"
 doCompile "КЦ/перекладач/Структура.ю8.ц"
 doCompile "КЦ/перекладач/Дія.ю8.ц"
