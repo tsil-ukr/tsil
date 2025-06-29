@@ -124,7 +124,7 @@ extern логічне __КЦ__отримати_директорію_шляху_�
   memcpy(filename, вхід->дані, вхід->розмір);
   filename[вхід->розмір] = 0;
 
-  const char* absolute_path = strdup(realpath(filename, NULL));
+  const char* absolute_path = realpath(filename, NULL);
   free((void*)filename);
   if (absolute_path == NULL) {
     return false;
@@ -134,8 +134,7 @@ extern логічне __КЦ__отримати_директорію_шляху_�
     return false;
   } else {
     вихід->розмір = strlen(parent_path);
-    вихід->дані = (памʼять_п8)strdup(parent_path);
-    free((void*)absolute_path);
+    вихід->дані = (памʼять_п8)parent_path;
   }
   return true;
 }
@@ -157,6 +156,8 @@ extern логічне __КЦ__отримати_абсолютний_шлях(В�
   filename[вхід->розмір] = 0;
 
   char* absolute_path = realpath(filename, NULL);
+
+  free((void*)filename);
 
   вихід->розмір = strlen(absolute_path);
   вихід->дані = (памʼять_п8)absolute_path;
