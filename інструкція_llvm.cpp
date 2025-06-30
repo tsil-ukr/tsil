@@ -9,6 +9,7 @@
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Type.h>
 #include <llvm/MC/TargetRegistry.h>
+#include <llvm/Support/ManagedStatic.h>
 #include <llvm/Support/TargetSelect.h>
 #include <llvm/Target/TargetMachine.h>
 #include <llvm/Target/TargetOptions.h>
@@ -76,6 +77,7 @@ struct Модуль {
   std::unique_ptr<llvm::LLVMContext> llvmContext;
   std::unique_ptr<llvm::Module> llvmModule;
   std::unique_ptr<llvm::IRBuilder<>> llvmBuilder;
+  llvm::TargetMachine* llvmTargetMachine;
 };
 
 struct Параметр {
@@ -149,9 +151,10 @@ void __ПМЛЛВМ__покласти_параметр(Модуль* модул�
   auto CPU = "generic";
   auto Features = "";
   llvm::TargetOptions opt;
-  auto TheTargetMachine = Target->createTargetMachine(
+  модуль->llvmTargetMachine = Target->createTargetMachine(
       targetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
-  модуль->llvmModule->setDataLayout(TheTargetMachine->createDataLayout());
+  модуль->llvmModule->setDataLayout(
+      модуль->llvmTargetMachine->createDataLayout());
 
   return модуль;
 }
@@ -2430,9 +2433,21 @@ void __ПМЛЛВМ__вказівка_вернути_значення(Крок* 
   llvm::SmallVector<char, 0> buffer;
   llvm::raw_svector_ostream os(buffer);
   модуль->llvmModule->print(os, nullptr);
-  *вихід_даних = (памʼять_п8) new char[buffer.size()];
-  memcpy(*вихід_даних, buffer.data(), buffer.size());
-  *вихід_розміру = buffer.size();
-  return true;
+  if (buffer.empty()) {
+    *вихід_даних = nullptr;
+    *вихід_розміру = 0;
+    return true;
+  } else {
+    *вихід_даних = (памʼять_п8)malloc(buffer.size());
+    memcpy(*вихід_даних, buffer.data(), buffer.size());
+    *вихід_розміру = buffer.size();
+    return true;
+  }
+}
+
+void __ПМЛЛВМ__знищити_модуль(Модуль* модуль) {
+  delete модуль->llvmTargetMachine;
+  llvm::llvm_shutdown();
+  delete модуль;
 }
 }

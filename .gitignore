@@ -1,6 +1,5 @@
 .idea/
 build/
 out/
-тест.ю8.ll
 тест
-тест.ll
+*.ll
