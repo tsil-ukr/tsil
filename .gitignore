@@ -3,3 +3,4 @@ build/
 out/
 тест
 *.ll
+*.o
