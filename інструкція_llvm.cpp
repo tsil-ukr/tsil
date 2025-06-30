@@ -6,6 +6,7 @@
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/Instructions.h>
 #include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/LegacyPassManager.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/Type.h>
 #include <llvm/MC/TargetRegistry.h>
@@ -2433,6 +2434,35 @@ void __ПМЛЛВМ__вказівка_вернути_значення(Крок* 
   llvm::SmallVector<char, 0> buffer;
   llvm::raw_svector_ostream os(buffer);
   модуль->llvmModule->print(os, nullptr);
+  if (buffer.empty()) {
+    *вихід_даних = nullptr;
+    *вихід_розміру = 0;
+    return true;
+  } else {
+    *вихід_даних = (памʼять_п8)malloc(buffer.size());
+    memcpy(*вихід_даних, buffer.data(), buffer.size());
+    *вихід_розміру = buffer.size();
+    return true;
+  }
+}
+
+логічне __ПМЛЛВМ__отримати_обджект(Модуль* модуль,
+                                   позитивне* вихід_розміру,
+                                   памʼять_п8* вихід_даних) {
+  llvm::SmallVector<char, 0> buffer;
+  llvm::raw_svector_ostream dest(buffer);
+
+  llvm::legacy::PassManager pass;
+  auto FileType = llvm::CodeGenFileType::ObjectFile;
+
+  if (модуль->llvmTargetMachine->addPassesToEmitFile(pass, dest, nullptr,
+                                                     FileType)) {
+    llvm::errs() << "TheTargetMachine can't emit a file of this type";
+    return false;
+  }
+
+  pass.run(*модуль->llvmModule);
+
   if (buffer.empty()) {
     *вихід_даних = nullptr;
     *вихід_розміру = 0;
