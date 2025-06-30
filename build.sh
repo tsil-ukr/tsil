@@ -7,6 +7,7 @@ mkdir -p build/ПМ
 mkdir -p build/КЦ
 mkdir -p build/КЦ/розбирач
 mkdir -p build/КЦ/перекладач
+mkdir -p build/КЦ/значення
 mkdir -p build/біб
 mkdir -p build/біб/КД
 
