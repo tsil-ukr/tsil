@@ -15,8 +15,8 @@ COMPILED_C_FILES=""
 CXX_OPTIONS="-g -O0"
 #CXX_OPTIONS="-O3"
 
-TSIL="./out/старт"
-#TSIL="ціль"
+#TSIL="./out/старт"
+TSIL="ціль"
 
 doCompile() {
   $TSIL build/"$1".ll скомпілювати "$1"
