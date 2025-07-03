@@ -421,6 +421,15 @@ void __ПМЛЛВМ__заповнити_параметри_структури(Т
       true, llvm::GlobalValue::LinkageTypes::PrivateLinkage, constantString);
 }
 
+Значення* __ПМЛЛВМ__створити_обʼєкт(Модуль* модуль,
+                                    Тип* тип,
+                                    позитивне кількість_аргументів,
+                                    Значення** аргументи) {
+  return llvm::ConstantStruct::get(
+      (llvm::StructType*)тип,
+      llvm::ArrayRef((llvm::Constant**)аргументи, кількість_аргументів));
+}
+
 Значення* __ПМЛЛВМ__вказівка_накопичити(Крок* крок, Тип* тип) {
   llvm::IRBuilder<> builder(крок);
   return builder.CreateAlloca(тип, nullptr, "v");
