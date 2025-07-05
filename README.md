@@ -3,9 +3,9 @@
 Для будування треба:
 
 - Ціль 0.37.1
-- Clang
-- Ninja
-- Linux
+- Clang/Clang++/LLVM (працює з 20.1.6)
+- Ninja (працює з 1.12.1)
+- GNU/Linux
 
 Для початку треба підготувати LLVM:
 
@@ -21,8 +21,4 @@ sh external/scripts/llvm.sh
 sh external/scripts/build.sh
 ```
 
-Скомпільований бінарник буде тут:
-
-```shell
-./out/ціль
-```
+Скомпільований бінарник буде в директорії `out`.
