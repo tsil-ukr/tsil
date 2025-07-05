@@ -87,14 +87,13 @@ doCompile "ПМ/ПМ.ю8.ц"
 #doCompile "ПМ/ПМ2.ю8.ц"
 
 clang $CXX_OPTIONS -c -o build/біб/bib.o біб/bib.c
-clang $CXX_OPTIONS -c -o build/ext.o ext.c
 
 clang++ $CXX_OPTIONS -o out/старт \
   $COMPILED_C_FILES \
-  build/ext.o \
   build/біб/bib.o \
-  інструкція_llvm.cpp \
-  `llvm-config --cxxflags --ldflags --system-libs --libs`
+  external/tsil.cpp \
+  external/pm_llvm.cpp \
+  `./.llvm-source-and-build/llvm-project-20.1.6.build/llvm/bin/llvm-config --cxxflags --ldflags --system-libs --libs`
 
 #clang++ $CXX_OPTIONS -o out/старт \
 #  $COMPILED_C_FILES \

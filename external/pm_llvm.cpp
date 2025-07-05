@@ -75,9 +75,9 @@ typedef llvm::BasicBlock Крок;
 typedef llvm::BranchInst Стрибок;
 
 struct Модуль {
-  std::unique_ptr<llvm::LLVMContext> llvmContext;
-  std::unique_ptr<llvm::Module> llvmModule;
-  std::unique_ptr<llvm::IRBuilder<>> llvmBuilder;
+  llvm::LLVMContext* llvmContext;
+  llvm::Module* llvmModule;
+  llvm::IRBuilder<>* llvmBuilder;
   llvm::TargetMachine* llvmTargetMachine;
 };
 
@@ -115,11 +115,9 @@ void __ПМЛЛВМ__покласти_параметр(Модуль* модул�
   std::string name((char*)назва->дані, назва->розмір);
 
   auto модуль = new Модуль();
-  модуль->llvmContext = std::make_unique<llvm::LLVMContext>();
-  модуль->llvmModule =
-      std::make_unique<llvm::Module>(name, *модуль->llvmContext);
-  модуль->llvmBuilder =
-      std::make_unique<llvm::IRBuilder<>>(*модуль->llvmContext);
+  модуль->llvmContext = new llvm::LLVMContext();
+  модуль->llvmModule = new llvm::Module(name, *модуль->llvmContext);
+  модуль->llvmBuilder = new llvm::IRBuilder<>(*модуль->llvmContext);
 
   std::string targetTriple;
 
@@ -283,9 +281,7 @@ void __ПМЛЛВМ__заповнити_параметри_структури(Т
     return 0;
   }
 
-  llvm::DataLayout DL(модуль->llvmModule.get());
-
-  return DL.getTypeAllocSize(тип);
+  return модуль->llvmModule->getDataLayout().getTypeAllocSize(тип);
 }
 
 Значення* __ПМЛЛВМ__створити_глобальну(Модуль* модуль,

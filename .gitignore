@@ -1,6 +1,9 @@
 .idea/
+.llvm-source-and-build/
 build/
 out/
+package/
+releases/
 тест
 *.ll
 *.o
