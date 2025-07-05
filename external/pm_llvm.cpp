@@ -1607,6 +1607,92 @@ void __ПМЛЛВМ__заповнити_параметри_структури(Т
   return builder.CreateXor(ліво, право, "v");
 }
 
+Значення* __ПМЛЛВМ__вказівка_двійкове_заперечення_логічне(Крок* крок,
+                                                          Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+
+  auto* allOnes =
+      llvm::ConstantInt::get(builder.getInt1Ty(), 0xFFFFFFFF, false);
+
+  return builder.CreateXor(значення, allOnes, "v");
+}
+
+Значення* __ПМЛЛВМ__вказівка_двійкове_заперечення_ц8(Крок* крок,
+                                                     Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+
+  auto* allOnes = llvm::ConstantInt::get(builder.getInt8Ty(), -1, true);
+
+  return builder.CreateXor(значення, allOnes, "v");
+}
+
+Значення* __ПМЛЛВМ__вказівка_двійкове_заперечення_ц16(Крок* крок,
+                                                      Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+
+  auto* allOnes = llvm::ConstantInt::get(builder.getInt16Ty(), -1, true);
+
+  return builder.CreateXor(значення, allOnes, "v");
+}
+
+Значення* __ПМЛЛВМ__вказівка_двійкове_заперечення_ц32(Крок* крок,
+                                                      Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+
+  auto* allOnes = llvm::ConstantInt::get(builder.getInt32Ty(), -1, true);
+
+  return builder.CreateXor(значення, allOnes, "v");
+}
+
+Значення* __ПМЛЛВМ__вказівка_двійкове_заперечення_ц64(Крок* крок,
+                                                      Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+
+  auto* allOnes = llvm::ConstantInt::get(builder.getInt64Ty(), -1, true);
+
+  return builder.CreateXor(значення, allOnes, "v");
+}
+
+Значення* __ПМЛЛВМ__вказівка_двійкове_заперечення_п8(Крок* крок,
+                                                     Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+
+  auto* allOnes =
+      llvm::ConstantInt::get(builder.getInt8Ty(), 0xFFFFFFFF, false);
+
+  return builder.CreateXor(значення, allOnes, "v");
+}
+
+Значення* __ПМЛЛВМ__вказівка_двійкове_заперечення_п16(Крок* крок,
+                                                      Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+
+  auto* allOnes =
+      llvm::ConstantInt::get(builder.getInt16Ty(), 0xFFFFFFFF, false);
+
+  return builder.CreateXor(значення, allOnes, "v");
+}
+
+Значення* __ПМЛЛВМ__вказівка_двійкове_заперечення_п32(Крок* крок,
+                                                      Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+
+  auto* allOnes =
+      llvm::ConstantInt::get(builder.getInt32Ty(), 0xFFFFFFFF, false);
+
+  return builder.CreateXor(значення, allOnes, "v");
+}
+
+Значення* __ПМЛЛВМ__вказівка_двійкове_заперечення_п64(Крок* крок,
+                                                      Значення* значення) {
+  llvm::IRBuilder<> builder(крок);
+
+  auto* allOnes =
+      llvm::ConstantInt::get(builder.getInt64Ty(), 0xFFFFFFFF, false);
+
+  return builder.CreateXor(значення, allOnes, "v");
+}
+
 Значення* __ПМЛЛВМ__вказівка_як(Крок* крок, Значення* значення, Тип* тип) {
   llvm::IRBuilder<> builder(крок);
   return builder.CreateBitCast(значення, тип, "v");
