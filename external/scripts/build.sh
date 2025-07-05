@@ -13,11 +13,12 @@ OutDir="out/$Version/$Target"
 BuildDir="build/$Version/$Target"
 CompilationFiles="$(cat ФайлиКомпіляції)"
 CompiledFiles=""
+ClangOptions="-DTSIL_VERSION=\"$Version\""
 if [ "$Mode" = "release" ]
 then
-  ClangOptions="-O3 -flto"
+  ClangOptions="$ClangOptions -O3 -flto"
 else
-  ClangOptions="-g -O0"
+  ClangOptions="$ClangOptions -g -O0"
 fi
 
 mkdir -p "$OutDir"
