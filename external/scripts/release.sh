@@ -11,10 +11,9 @@ if [ -d "releases/$Version" ]; then
   exit 1
 fi
 
-
 mkdir -p "releases/$Version"
 
-sh external/scripts/build.sh
+sh external/scripts/build.sh release
 sh external/scripts/package.sh
 
 cp "package/$Version/$TsilTarget/ціль-$Version-$TsilTarget.tar.gz" "releases/$Version"

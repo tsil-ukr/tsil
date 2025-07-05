@@ -2,6 +2,7 @@
 set -e
 
 Target="linux-x86_64"
+Mode="$1"
 
 if [ -z "$TSIL" ]
 then
@@ -12,8 +13,12 @@ OutDir="out/$Version/$Target"
 BuildDir="build/$Version/$Target"
 CompilationFiles="$(cat ФайлиКомпіляції)"
 CompiledFiles=""
-#ClangOptions="-O3 -flto"
-ClangOptions="-g -O0"
+if [ "$Mode" = "release" ]
+then
+  ClangOptions="-O3 -flto"
+else
+  ClangOptions="-g -O0"
+fi
 
 mkdir -p "$OutDir"
 mkdir -p "$BuildDir/source/external"
@@ -24,6 +29,7 @@ do
   case "$CompilationFile" in
     *".ц")
       LLCompilationFile="$CompilationFile.ll"
+      mkdir -p "$(dirname "$BuildDir/source/$LLCompilationFile")"
       Command="$TSIL $BuildDir/source/$LLCompilationFile скомпілювати $CompilationFile"
       echo "$Command"
       $Command
@@ -35,6 +41,7 @@ do
       ;;
     *".c")
       LLCompilationFile="$CompilationFile.o"
+      mkdir -p "$(dirname "$BuildDir/source/$LLCompilationFile")"
       Command="clang $ClangOptions -c -o $BuildDir/source/$LLCompilationFile $CompilationFile"
       echo "$Command"
       $Command
@@ -45,6 +52,7 @@ do
       fi
       ;;
     *)
+      mkdir -p "$(dirname "$BuildDir/source/$LLCompilationFile")"
       Command="cp $CompilationFile $BuildDir/source/$CompilationFile"
       echo "$Command"
       $Command
