@@ -16,7 +16,7 @@ CompiledFiles=""
 ClangOptions="-DTSIL_VERSION=\"$Version\""
 if [ "$Mode" = "release" ]
 then
-  ClangOptions="$ClangOptions -O3 -flto"
+  ClangOptions="$ClangOptions -static -O3 -flto"
 else
   ClangOptions="$ClangOptions -g -O0"
 fi
