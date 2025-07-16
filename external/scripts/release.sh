@@ -38,24 +38,38 @@ rm -rf "releases/$Version/ціль-$Version"
 cd "releases/$Version"
 
 PRIVATE_KEY_FILE="$RunDir/.releasegpgkey"
+TMP_GPG_HOME=$(mktemp -d)
 
-FINGERPRINT=$(gpg --with-colons --import-options show-only --import "$PRIVATE_KEY_FILE" 2>/dev/null \
+export GNUPGHOME="$TMP_GPG_HOME"
+
+# Import the private key into temporary keyring
+gpg --batch --yes --import "$PRIVATE_KEY_FILE" >/dev/null 2>&1
+
+# Get fingerprint from this keyring
+FINGERPRINT=$(gpg --with-colons --list-secret-keys --fingerprint \
   | awk -F: '/^fpr:/ {print $10; exit}')
 
 if [ -z "$FINGERPRINT" ]; then
-  echo "Failed to get fingerprint"
+  echo "Failed to get fingerprint (no secret key found)"
   exit 1
 fi
 
 echo "Using fingerprint: $FINGERPRINT"
 
-for file in ціль-$Version-linux-x86_64.tar.gz ціль-$Version-linux-x86_64-prepared.tar.gz ціль-$Version.tar.gz; do
+for file in ціль-"$Version"-linux-x86_64.tar.gz ціль-"$Version".tar.gz; do
+  if [ ! -f "$file" ]; then
+    echo "File not found: $file"
+    continue
+  fi
+
   sha256sum "$file" > "$file.sha256"
 
-  gpg --local-user "$FINGERPRINT" --clearsign --output "$file".sha256.signed "$file".sha256
+  # Sign using the imported key ONLY inside this GNUPGHOME
+  gpg --batch --yes --local-user "$FINGERPRINT" --clearsign \
+    --output "$file.sha256.signed" "$file.sha256"
 done
 
-gpg --batch --yes --delete-secret-keys "$FINGERPRINT"
-gpg --batch --yes --delete-keys "$FINGERPRINT"
+# Clean up the temporary keyring
+rm -rf "$TMP_GPG_HOME"
 
 cd -
