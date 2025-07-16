@@ -38,6 +38,7 @@ rm -rf "releases/$Version/ціль-$Version"
 cd "releases/$Version"
 
 PRIVATE_KEY_FILE="$RunDir/.releasegpgkey"
+PRIVATE_KEY_FILE_PASSPHRASE="$RunDir/.releasegpgkeypassphrase"
 TMP_GPG_HOME=$(mktemp -d)
 
 export GNUPGHOME="$TMP_GPG_HOME"
@@ -56,7 +57,10 @@ fi
 
 echo "Using fingerprint: $FINGERPRINT"
 
-for file in ціль-"$Version"-linux-x86_64.tar.gz ціль-"$Version".tar.gz; do
+# Read passphrase from file (trim spaces/newlines)
+PASSPHRASE=$(<"$PRIVATE_KEY_FILE_PASSPHRASE")
+
+for file in app-"$Version"-linux-x86_64.tar.gz app-"$Version".tar.gz; do
   if [ ! -f "$file" ]; then
     echo "File not found: $file"
     continue
@@ -65,8 +69,8 @@ for file in ціль-"$Version"-linux-x86_64.tar.gz ціль-"$Version".tar.gz; 
   sha256sum "$file" > "$file.sha256"
 
   # Sign using the imported key ONLY inside this GNUPGHOME
-  gpg --batch --yes --local-user "$FINGERPRINT" --clearsign \
-    --output "$file.sha256.signed" "$file.sha256"
+  gpg --batch --yes --pinentry-mode loopback --passphrase "$PASSPHRASE" \
+    --local-user "$FINGERPRINT" --clearsign --output "$file.sha256.signed" "$file.sha256"
 done
 
 # Clean up the temporary keyring

@@ -12,3 +12,4 @@ releases/
 *.ллвмір
 *.ллвмобдж
 .releasegpgkey
+.releasegpgkeypassphrase
