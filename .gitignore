@@ -10,3 +10,4 @@ releases/
 *.o
 *.ллвмір
 *.ллвмобдж
+.releasegpgkey
