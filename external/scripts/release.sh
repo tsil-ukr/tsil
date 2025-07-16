@@ -49,7 +49,7 @@ fi
 
 echo "Using fingerprint: $FINGERPRINT"
 
-for file in мавка-$Version-linux-x86_64.tar.gz мавка-$Version-linux-x86_64-prepared.tar.gz мавка-$Version.tar.gz; do
+for file in ціль-$Version-linux-x86_64.tar.gz ціль-$Version-linux-x86_64-prepared.tar.gz ціль-$Version.tar.gz; do
   sha256sum "$file" > "$file.sha256"
 
   gpg --local-user "$FINGERPRINT" --clearsign --output "$file".sha256.signed "$file".sha256
