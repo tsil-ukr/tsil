@@ -18,7 +18,7 @@ sh external/scripts/package.sh
 
 mkdir -p "releases/$Version"
 
-cp "package/$Version/$TsilTarget/ціль-$Version-$TsilTarget.tar.gz" "releases/$Version"
+cp "package/$Version/$TsilTarget/ціль-$Version-$TsilTarget.tar.xz" "releases/$Version"
 
 mkdir -p "releases/$Version/ціль-$Version"
 
@@ -30,7 +30,7 @@ $ReleaseFiles
 ReleaseFiles_HEREDOC_INPUT
 
 cd "releases/$Version"
-tar -czvf "ціль-$Version.tar.gz" "ціль-$Version"
+tar -cJvf "ціль-$Version.tar.xz" "ціль-$Version"
 cd -
 
 rm -rf "releases/$Version/ціль-$Version"
@@ -60,7 +60,7 @@ echo "Using fingerprint: $FINGERPRINT"
 # Read passphrase from file (trim spaces/newlines)
 PASSPHRASE=$(<"$PRIVATE_KEY_FILE_PASSPHRASE")
 
-for file in ціль-"$Version"-linux-x86_64.tar.gz ціль-"$Version".tar.gz; do
+for file in ціль-"$Version"-linux-x86_64.tar.xz ціль-"$Version".tar.xz; do
   if [ ! -f "$file" ]; then
     echo "File not found: $file"
     continue
