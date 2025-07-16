@@ -60,7 +60,7 @@ echo "Using fingerprint: $FINGERPRINT"
 # Read passphrase from file (trim spaces/newlines)
 PASSPHRASE=$(<"$PRIVATE_KEY_FILE_PASSPHRASE")
 
-for file in app-"$Version"-linux-x86_64.tar.gz app-"$Version".tar.gz; do
+for file in ціль-"$Version"-linux-x86_64.tar.gz ціль-"$Version".tar.gz; do
   if [ ! -f "$file" ]; then
     echo "File not found: $file"
     continue
