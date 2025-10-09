@@ -2613,8 +2613,11 @@ void __ПМЛЛВМ__вказівка_вернути_значення(Крок* 
 }
 
 void __ПМЛЛВМ__знищити_модуль(Модуль* модуль) {
-  delete модуль->llvmTargetMachine;
   llvm::llvm_shutdown();
+  delete модуль->llvmTargetMachine;
+  delete модуль->llvmModule;
+  delete модуль->llvmContext;
+  delete модуль->llvmBuilder;
   delete модуль;
 }
 }
