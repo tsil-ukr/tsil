@@ -18,10 +18,11 @@ if [ "$Mode" = "release" ]
 then
   ClangOptions="$ClangOptions -static -O3 -flto"
 else
-  ClangOptions="$ClangOptions -g -O0"
+  ClangOptions="$ClangOptions -ggdb -O0"
 fi
 
 mkdir -p "$OutDir"
+mkdir -p "$BuildDir/source/ЛЛВМ"
 mkdir -p "$BuildDir/source/external"
 mkdir -p "$BuildDir/source/біб/турбо"
 
