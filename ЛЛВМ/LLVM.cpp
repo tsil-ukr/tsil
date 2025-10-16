@@ -88,6 +88,70 @@ void __ЛЛВМ__деініціалізувати() {
   // llvm::llvm_shutdown();
 }
 
+Тип* __ЛЛВМ__тип_войд() {
+  return llvm::Type::getVoidTy(*llvmContext);
+}
+
+Тип* __ЛЛВМ__тип_пойнтер() {
+  return llvm::PointerType::get(*llvmContext, 0);
+}
+
+Тип* __ЛЛВМ__тип_і1() {
+  return llvm::Type::getInt1Ty(*llvmContext);
+}
+
+Тип* __ЛЛВМ__тип_і8() {
+  return llvm::Type::getInt8Ty(*llvmContext);
+}
+
+Тип* __ЛЛВМ__тип_і16() {
+  return llvm::Type::getInt16Ty(*llvmContext);
+}
+
+Тип* __ЛЛВМ__тип_і32() {
+  return llvm::Type::getInt32Ty(*llvmContext);
+}
+
+Тип* __ЛЛВМ__тип_і64() {
+  return llvm::Type::getInt64Ty(*llvmContext);
+}
+
+Тип* __ЛЛВМ__тип_флоат() {
+  return llvm::Type::getFloatTy(*llvmContext);
+}
+
+Тип* __ЛЛВМ__тип_даубл() {
+  return llvm::Type::getDoubleTy(*llvmContext);
+}
+
+Тип* __ЛЛВМ__тип_функція(натуральне кількість_параметрів,
+                         Тип** параметри,
+                         Тип* тип_результату) {
+  return llvm::FunctionType::get(
+      тип_результату == nullptr ? llvm::Type::getVoidTy(*llvmContext)
+                                : тип_результату,
+      llvm::ArrayRef<llvm::Type*>(параметри, кількість_параметрів), false);
+}
+
+Тип* __ЛЛВМ__тип_аррай(Тип* тип_елемента, натуральне розмір) {
+  return llvm::ArrayType::get(тип_елемента, розмір);
+}
+
+Тип* __ЛЛВМ__тип(ю8* назва, натуральне кількість_параметрів, Тип** параметри) {
+  std::string name((char*)назва->дані, назва->розмір);
+
+  auto structType = llvm::StructType::create(*llvmContext, name);
+
+  std::vector<llvm::Type*> llvmFields(кількість_параметрів);
+  for (int i = 0; i < кількість_параметрів; i++) {
+    llvmFields[i] = параметри[i];
+  }
+
+  structType->setBody(llvmFields);
+
+  return structType;
+}
+
 Модуль* __ЛЛВМ__створити_модуль(ю8* назва,
                                 натуральне архітектура,
                                 натуральне система) {
