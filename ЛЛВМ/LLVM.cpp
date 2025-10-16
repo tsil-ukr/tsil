@@ -19,6 +19,13 @@
 
 static std::unique_ptr<llvm::LLVMContext> llvmContext;
 
+typedef llvm::Module Модуль;
+typedef llvm::Function Функція;
+typedef llvm::Value Значення;
+typedef llvm::Type Тип;
+typedef llvm::BasicBlock БазовийБлок;
+typedef llvm::BranchInst ІнструкціяРозгалуження;
+
 extern "C" {
 #include <stdint.h>
 #include <stdio.h>
@@ -64,13 +71,6 @@ typedef struct ю8 {
 #define ПОСТАЧАЛЬНИК_ЗАГАЛЬНИЙ 1
 
 #define СИСТЕМА_ЛІНУКС 1
-
-typedef llvm::Module Модуль;
-typedef llvm::Function Функція;
-typedef llvm::Value Значення;
-typedef llvm::Type Тип;
-typedef llvm::BasicBlock БазовийБлок;
-typedef llvm::BranchInst ІнструкціяРозгалуження;
 
 void __ЛЛВМ__ініціалізувати() {
   llvm::InitializeAllTargetInfos();
@@ -169,7 +169,7 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
       llvmParams, false);
 
   auto function =
-      llvm::Function::Create(functionType, linkageType, name, *модуль);
+      llvm::Function::Create(functionType, linkageType, name, модуль);
 
   if (видимість == ВИДИМІСТЬ_МІСЦЕВА) {
     function->setDSOLocal(true);
@@ -185,8 +185,6 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
   llvm::raw_svector_ostream os(buffer);
 
   модуль->print(os, nullptr);
-
-  std::cout << "wtf" << std::endl;
 
   if (buffer.empty()) {
     *вихід_розміру = 0;
