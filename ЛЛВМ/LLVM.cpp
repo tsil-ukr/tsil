@@ -152,6 +152,55 @@ void __ЛЛВМ__деініціалізувати() {
   return structType;
 }
 
+Значення* __ЛЛВМ__нулл() {
+  return llvm::ConstantPointerNull::get(
+      llvm::PointerType::get(llvm::Type::getVoidTy(*llvmContext), 0));
+}
+
+Значення* __ЛЛВМ__і1(н8 значення) {
+  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(1, значення));
+}
+
+Значення* __ЛЛВМ__і8(н8 значення) {
+  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(8, значення));
+}
+
+Значення* __ЛЛВМ__і16(н16 значення) {
+  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(1, значення));
+}
+
+Значення* __ЛЛВМ__і32(н32 значення) {
+  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(32, значення));
+}
+
+Значення* __ЛЛВМ__і64(н64 значення) {
+  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(64, значення));
+}
+
+Значення* __ЛЛВМ__і8ц(ц8 значення) {
+  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(8, значення, true));
+}
+
+Значення* __ЛЛВМ__і16ц(ц16 значення) {
+  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(16, значення, true));
+}
+
+Значення* __ЛЛВМ__і32ц(ц32 значення) {
+  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(32, значення, true));
+}
+
+Значення* __ЛЛВМ__і64ц(ц64 значення) {
+  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(64, значення, true));
+}
+
+Значення* __ЛЛВМ__флоат(р32 значення) {
+  return llvm::ConstantFP::get(*llvmContext, llvm::APFloat(значення));
+}
+
+Значення* __ЛЛВМ__даубл(р64 значення) {
+  return llvm::ConstantFP::get(*llvmContext, llvm::APFloat(значення));
+}
+
 Модуль* __ЛЛВМ__створити_модуль(ю8* назва,
                                 натуральне архітектура,
                                 натуральне система) {
@@ -240,6 +289,22 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
   }
 
   return function;
+}
+
+Значення* __ЛЛВМ__отримати_аргумент_функції(Функція* функція,
+                                            натуральне позиція) {
+  return функція->getArg(позиція);
+}
+
+Значення* __ЛЛВМ__створити_базовий_блок(Функція* функція, ю8* назва) {
+  std::string name((char*)назва->дані, назва->розмір);
+
+  return llvm::BasicBlock::Create(*llvmContext, name, функція);
+}
+
+Значення* __ЛЛВМ__інст_аллока(БазовийБлок* базовий_блок, Тип* тип) {
+  llvm::IRBuilder<> builder(базовий_блок);
+  return builder.CreateAlloca(тип, nullptr, "alloca");
 }
 
 логічне __ЛЛВМ__отримати_ір(Модуль* модуль,

@@ -13,3 +13,4 @@ releases/
 *.ллвмо
 .releasegpgkey
 .releasegpgkeypassphrase
+.vscode/
