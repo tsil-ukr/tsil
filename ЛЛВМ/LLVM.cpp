@@ -472,7 +472,7 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
                                Значення* ліво,
                                Значення* право) {
   llvm::IRBuilder<> builder(базовий_блок);
-  return builder.CreateFCmpUGE(ліво, право, "fcmpugetmp");
+  return builder.CreateICmpSGE(ліво, право, "icmpsgetmp");
 }
 
 Значення* __ЛЛВМ__інст_фцмпуге(БазовийБлок* базовий_блок,
