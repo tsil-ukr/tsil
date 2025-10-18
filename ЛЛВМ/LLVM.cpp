@@ -677,6 +677,40 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
   return builder.CreateRet(значення);
 }
 
+Значення* __ЛЛВМ__інст_калл(БазовийБлок* базовий_блок,
+                            Тип* тип,
+                            Значення* значення,
+                            натуральне кількість_аргументів,
+                            Значення** аргументи) {
+  llvm::IRBuilder<> builder(базовий_блок);
+
+  std::vector<llvm::Value*> llvmArguments(кількість_аргументів);
+  for (int i = 0; i < кількість_аргументів; i++) {
+    llvmArguments[i] = аргументи[i];
+  }
+
+  auto type = reinterpret_cast<llvm::FunctionType*>(тип);
+
+  if (type->getReturnType()->isVoidTy()) {
+    return builder.CreateCall(type, значення, llvmArguments);
+  }
+
+  return builder.CreateCall(type, значення, llvmArguments, "calltmp");
+}
+
+Значення* __ЛЛВМ__інст_бр(БазовийБлок* базовий_блок, БазовийБлок* куди) {
+  llvm::IRBuilder<> builder(базовий_блок);
+  return builder.CreateBr(куди);
+}
+
+Значення* __ЛЛВМ__інст_кондбр(БазовийБлок* базовий_блок,
+                              Значення* умова,
+                              БазовийБлок* якщо_істина,
+                              БазовийБлок* якщо_хиба) {
+  llvm::IRBuilder<> builder(базовий_блок);
+  return builder.CreateCondBr(умова, якщо_істина, якщо_хиба);
+}
+
 логічне __ЛЛВМ__отримати_ір(Модуль* модуль,
                             натуральне* вихід_розміру,
                             н8** вихід_даних) {
