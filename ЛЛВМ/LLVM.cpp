@@ -569,6 +569,15 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
                            "getelementptrtmp");
 }
 
+Значення* __ЛЛВМ__екстракт_валуе(БазовийБлок* базовий_блок,
+                                 Значення* значення,
+                                 натуральне індекс) {
+  llvm::IRBuilder<> builder(базовий_блок);
+
+  return builder.CreateExtractValue(
+      значення, {static_cast<unsigned int>(індекс)}, "extractvaluetmp");
+}
+
 Значення* __ЛЛВМ__інст_сторе(БазовийБлок* базовий_блок,
                              Значення* значення,
                              Значення* куди) {
@@ -658,6 +667,14 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
                                 Тип* тип) {
   llvm::IRBuilder<> builder(базовий_блок);
   return builder.CreatePtrToInt(значення, тип, "ptrtointtmp");
+}
+
+Значення* __ЛЛВМ__інст_рет(БазовийБлок* базовий_блок, Значення* значення) {
+  llvm::IRBuilder<> builder(базовий_блок);
+  if (значення == nullptr) {
+    return builder.CreateRetVoid();
+  }
+  return builder.CreateRet(значення);
 }
 
 логічне __ЛЛВМ__отримати_ір(Модуль* модуль,
