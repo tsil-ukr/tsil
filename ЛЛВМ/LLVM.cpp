@@ -158,7 +158,7 @@ void __ЛЛВМ__деініціалізувати() {
 }
 
 Значення* __ЛЛВМ__і1(н8 значення) {
-  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(1, значення));
+  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(1, значення ? 1 : 0));
 }
 
 Значення* __ЛЛВМ__і8(н8 значення) {
@@ -166,7 +166,7 @@ void __ЛЛВМ__деініціалізувати() {
 }
 
 Значення* __ЛЛВМ__і16(н16 значення) {
-  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(1, значення));
+  return llvm::ConstantInt::get(*llvmContext, llvm::APInt(16, значення));
 }
 
 Значення* __ЛЛВМ__і32(н32 значення) {
@@ -709,6 +709,56 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
                               БазовийБлок* якщо_хиба) {
   llvm::IRBuilder<> builder(базовий_блок);
   return builder.CreateCondBr(умова, якщо_істина, якщо_хиба);
+}
+
+Значення* __ЛЛВМ__створити_глобал_варіабле(Модуль* модуль,
+                                           натуральне видимість,
+                                           ю8* назва,
+                                           Тип* тип) {
+  llvm::GlobalValue::LinkageTypes linkageType;
+  if (видимість == ВИДИМІСТЬ_ЗОВНІШНЯ) {
+    linkageType = llvm::GlobalValue::ExternalLinkage;
+  } else if (видимість == ВИДИМІСТЬ_МІСЦЕВА) {
+    linkageType = llvm::GlobalValue::ExternalLinkage;
+  } else {
+    linkageType = llvm::GlobalValue::PrivateLinkage;
+  }
+
+  std::string name((char*)назва->дані, назва->розмір);
+
+  auto globalVar =
+      new llvm::GlobalVariable(*модуль, тип, false, linkageType, nullptr, name);
+
+  if (видимість == ВИДИМІСТЬ_МІСЦЕВА) {
+    globalVar->setDSOLocal(true);
+  }
+
+  return globalVar;
+}
+
+Значення* __ЛЛВМ__створити_глобал_константу_даних(Модуль* модуль,
+                                                  натуральне розмір,
+                                                  н8* дані) {
+  auto constantString = llvm::ConstantDataArray::getString(
+      *llvmContext, std::string((char*)дані, розмір), false);
+
+  return new llvm::GlobalVariable(
+      *модуль,
+      llvm::ArrayType::get(llvm::Type::getInt8Ty(*llvmContext), розмір), true,
+      llvm::GlobalValue::LinkageTypes::PrivateLinkage, constantString);
+}
+
+Значення* __ЛЛВМ__констант_структ(Модуль* модуль,
+                                  Тип* тип,
+                                  натуральне кількість_аргументів,
+                                  Значення** аргументи) {
+  return llvm::ConstantStruct::get(
+      (llvm::StructType*)тип,
+      llvm::ArrayRef((llvm::Constant**)аргументи, кількість_аргументів));
+}
+
+Значення* __ЛЛВМ__констант_нулл_валуе(Модуль* модуль, Тип* тип) {
+  return llvm::Constant::getNullValue(тип);
 }
 
 логічне __ЛЛВМ__отримати_ір(Модуль* модуль,
