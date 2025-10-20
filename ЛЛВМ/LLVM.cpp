@@ -761,9 +761,9 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
   return llvm::Constant::getNullValue(тип);
 }
 
-логічне __ЛЛВМ__отримати_ір(Модуль* модуль,
-                            натуральне* вихід_розміру,
-                            н8** вихід_даних) {
+логічне __ЛЛВМ__перетворити_на_ллвмір(Модуль* модуль,
+                                      натуральне* вихід_розміру,
+                                      н8** вихід_даних) {
   llvm::SmallVector<char, 0> buffer;
   llvm::raw_svector_ostream os(buffer);
 
@@ -779,6 +779,51 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
     *вихід_даних = (н8*)malloc(buffer.size());
     memcpy(*вихід_даних, buffer.data(), buffer.size());
 
+    return true;
+  }
+}
+
+логічне __ЛЛВМ__перетворити_на_ллвмо(Модуль* модуль,
+                                     натуральне* вихід_розміру,
+                                     н8** вихід_даних) {
+  auto targetTriple = модуль->getTargetTriple();
+
+  std::string Error;
+  auto Target = llvm::TargetRegistry::lookupTarget(targetTriple, Error);
+  if (!Error.empty()) {
+    std::cout << Error << std::endl;
+    return false;
+  }
+
+  auto CPU = "generic";
+  auto Features = "";
+
+  llvm::TargetOptions opt;
+
+  auto llvmTargetMachine = Target->createTargetMachine(
+      targetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
+
+  llvm::SmallVector<char, 0> buffer;
+  llvm::raw_svector_ostream dest(buffer);
+
+  llvm::legacy::PassManager pass;
+  auto FileType = llvm::CodeGenFileType::ObjectFile;
+
+  if (llvmTargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
+    llvm::errs() << "TheTargetMachine can't emit a file of this type";
+    return false;
+  }
+
+  pass.run(*модуль);
+
+  if (buffer.empty()) {
+    *вихід_даних = nullptr;
+    *вихід_розміру = 0;
+    return true;
+  } else {
+    *вихід_даних = (н8*)malloc(buffer.size());
+    memcpy(*вихід_даних, buffer.data(), buffer.size());
+    *вихід_розміру = buffer.size();
     return true;
   }
 }
