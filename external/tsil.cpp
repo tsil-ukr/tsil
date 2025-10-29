@@ -7,6 +7,62 @@ extern "C" {
 #include <string.h>
 #include <unistd.h>
 
+extern "C" void* д_константа_Т8_розмір = nullptr;
+extern "C" void* д_константа_Т8_дані = nullptr;
+extern "C" void* д_константа_Т8_т8 = nullptr;
+extern "C" void* д_константа_Т8_т32 = nullptr;
+extern "C" void* д_константа_Т8_ю8 = nullptr;
+extern "C" void* д_константа_Т8_ю32 = nullptr;
+extern "C" void* д_константа_Т8_ніщо = nullptr;
+extern "C" void* д_константа_Т8_адреса = nullptr;
+extern "C" void* д_константа_Т8_невідома_адреса = nullptr;
+extern "C" void* д_константа_Т8_памʼять = nullptr;
+extern "C" void* д_константа_Т8_невідома_памʼять = nullptr;
+extern "C" void* д_константа_Т8_логічне = nullptr;
+extern "C" void* д_константа_Т8_ціле = nullptr;
+extern "C" void* д_константа_Т8_позитивне = nullptr;
+extern "C" void* д_константа_Т8_природне = nullptr;
+extern "C" void* д_константа_Т8_натуральне = nullptr;
+extern "C" void* д_константа_Т8_ц8 = nullptr;
+extern "C" void* д_константа_Т8_ц16 = nullptr;
+extern "C" void* д_константа_Т8_ц32 = nullptr;
+extern "C" void* д_константа_Т8_ц64 = nullptr;
+extern "C" void* д_константа_Т8_п8 = nullptr;
+extern "C" void* д_константа_Т8_п16 = nullptr;
+extern "C" void* д_константа_Т8_п32 = nullptr;
+extern "C" void* д_константа_Т8_п64 = nullptr;
+extern "C" void* д_константа_Т8_н8 = nullptr;
+extern "C" void* д_константа_Т8_н16 = nullptr;
+extern "C" void* д_константа_Т8_н32 = nullptr;
+extern "C" void* д_константа_Т8_н64 = nullptr;
+extern "C" void* д_константа_Т8_р32 = nullptr;
+extern "C" void* д_константа_Т8_р64 = nullptr;
+extern "C" void* д_константа_Т8_д32 = nullptr;
+extern "C" void* д_константа_Т8_д64 = nullptr;
+extern "C" void* д_константа_Т8_так = nullptr;
+extern "C" void* д_константа_Т8_ні = nullptr;
+extern "C" void* д_константа_Т8_пусто = nullptr;
+extern "C" void* д_константа_Т8_визначення = nullptr;
+extern "C" void* д_константа_Т8_обʼявлення = nullptr;
+extern "C" void* д_константа_Т8_біб = nullptr;
+extern "C" void* д_константа_Т8_вміст = nullptr;
+extern "C" void* д_константа_Т8__розділювач_шляху = nullptr;
+extern "C" void* д_константа_Т8__розділювач_шляху__визначення = nullptr;
+extern "C" void* д_константа_Т8__розділювач_шляху__обʼявлення = nullptr;
+extern "C" void* д_константа_Т8__закінчення_шляху__вц = nullptr;
+extern "C" void* д_константа_Т8__закінчення_шляху__оц = nullptr;
+extern "C" void* д_константа_Т8_тіло_якщо = nullptr;
+extern "C" void* д_константа_Т8_тіло_інакше = nullptr;
+extern "C" void* д_константа_Т8_тіло_якщо_вихід = nullptr;
+extern "C" void* д_константа_Т8_накопичення = nullptr;
+extern "C" void* д_константа_Т8_вихід = nullptr;
+extern "C" void* д_константа_Т8_початок = nullptr;
+extern "C" void* д_константа_Т8_або_інакше = nullptr;
+extern "C" void* д_константа_Т8_або_вихід = nullptr;
+extern "C" void* д_константа_Т8_умова_поки = nullptr;
+extern "C" void* д_константа_Т8_тіло_поки = nullptr;
+extern "C" void* д_константа_Т8_тіло_поки_вихід = nullptr;
+
 #define п8 uint8_t
 #define п16 uint16_t
 #define п32 uint32_t
