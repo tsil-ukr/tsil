@@ -9,8 +9,6 @@ extern "C" {
 
 extern "C" void* д_константа_Т8_розмір = nullptr;
 extern "C" void* д_константа_Т8_дані = nullptr;
-extern "C" void* д_константа_Т8_т8 = nullptr;
-extern "C" void* д_константа_Т8_ю8 = nullptr;
 extern "C" void* д_константа_Т8_ніщо = nullptr;
 extern "C" void* д_константа_Т8_адреса = nullptr;
 extern "C" void* д_константа_Т8_невідома_адреса = nullptr;
