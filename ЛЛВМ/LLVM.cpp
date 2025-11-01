@@ -46,7 +46,7 @@ extern "C" {
 #define логічне uint8_t
 #define природне п64
 #define ціле ц64
-#define дійсне д64
+#define дробове д64
 #define ніщо void
 #define невідома_адреса void*
 #define невідома_памʼять void*
