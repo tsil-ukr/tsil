@@ -131,15 +131,13 @@ extern void __біб__надрукувати_ю8(ю8 значення) {
   fwrite(&newline, 1, 1, stdout);
 }
 
-extern void __біб__перетворити_природне_на_ю8(Виділяч* виділяч,
-                                              природне значення,
-                                              ю8* вихід) {
+extern void __біб__перетворити_природне_на_ю8(природне значення, ю8* вихід) {
   int length = snprintf(NULL, 0, "%ld", значення);
   if (length < 0) {
     return;
   }
 
-  char* buffer = (char*)виділяч->виділити_сиру_памʼять(виділяч, length + 1);
+  char* buffer = (char*)malloc(length + 1);
   if (!buffer) {
     return;
   }
