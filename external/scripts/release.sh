@@ -5,10 +5,14 @@ set -x
 RunDir="$PWD"
 
 Version="$(cat Версія)"
-TsilTarget="linux-x86_64"
+TsilTarget="лінукс-ікс86_64"
 ReleaseFiles=$(cat ФайлиВипуску)
+BuildDir="будування/$Version/$TsilTarget"
+BuildSourceDir="$BuildDir/напівготове"
+BuildOutDir="$BuildDir/готове"
+BuildPackageDir="$BuildDir/пакування"
 
-if [ -d "releases/$Version" ]; then
+if [ -d "випуски/$Version" ]; then
   echo "Випуск $Version вже існує"
   exit 1
 fi
@@ -16,26 +20,26 @@ fi
 sh external/scripts/build.sh release
 sh external/scripts/package.sh
 
-mkdir -p "releases/$Version"
+mkdir -p "випуски/$Version"
 
-cp "package/$Version/$TsilTarget/ціль-$Version-$TsilTarget.tar.xz" "releases/$Version"
+cp "$BuildPackageDir/ціль-$Version-$TsilTarget.tar.xz" "випуски/$Version"
 
-mkdir -p "releases/$Version/ціль-$Version"
+mkdir -p "випуски/$Version/ціль-$Version"
 
 while IFS='' read -r ReleaseFile
 do
-  cp -r "$ReleaseFile" "releases/$Version/ціль-$Version"
+  cp -r "$ReleaseFile" "випуски/$Version/ціль-$Version"
 done <<ReleaseFiles_HEREDOC_INPUT
 $ReleaseFiles
 ReleaseFiles_HEREDOC_INPUT
 
-cd "releases/$Version"
+cd "випуски/$Version"
 tar -cJvf "ціль-$Version.tar.xz" "ціль-$Version"
 cd -
 
-rm -rf "releases/$Version/ціль-$Version"
+rm -rf "випуски/$Version/ціль-$Version"
 
-cd "releases/$Version"
+cd "випуски/$Version"
 
 PRIVATE_KEY_FILE="$RunDir/.releasegpgkey"
 PRIVATE_KEY_FILE_PASSPHRASE="$RunDir/.releasegpgkeypassphrase"
@@ -60,7 +64,7 @@ echo "Using fingerprint: $FINGERPRINT"
 # Read passphrase from file (trim spaces/newlines)
 PASSPHRASE=$(<"$PRIVATE_KEY_FILE_PASSPHRASE")
 
-for file in ціль-"$Version"-linux-x86_64.tar.xz ціль-"$Version".tar.xz; do
+for file in ціль-"$Version"-лінукс-ікс86_64.tar.xz ціль-"$Version".tar.xz; do
   if [ ! -f "$file" ]; then
     echo "File not found: $file"
     continue

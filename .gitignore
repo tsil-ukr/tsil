@@ -1,6 +1,8 @@
 .idea/
 .llvm-source-and-build/
 build/
+будування/
+випуски/
 out/
 package/
 releases/

@@ -3,14 +3,15 @@ set -e
 set -x
 
 TsilVersion="$(cat Версія)"
-TsilTarget="linux-x86_64"
+TsilTarget="лінукс-ікс86_64"
+BuildDir="будування/$TsilVersion/$TsilTarget"
+BuildSourceDir="$BuildDir/напівготове"
+BuildOutDir="$BuildDir/готове"
+BuildPackageDir="$BuildDir/пакування"
 
-PackageDir="package/$TsilVersion/$TsilTarget"
-OutDir="out/$TsilVersion/$TsilTarget"
+mkdir -p "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget/bin"
 
-mkdir -p "$PackageDir/ціль-$TsilVersion-$TsilTarget/bin"
-
-cp "$OutDir/ціль" "$PackageDir/ціль-$TsilVersion-$TsilTarget/bin"
-cd "$PackageDir"
+cp "$BuildOutDir/ціль" "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget/bin"
+cd "$BuildPackageDir"
 tar -cJvf "ціль-$TsilVersion-$TsilTarget.tar.xz" "ціль-$TsilVersion-$TsilTarget"
 cd -

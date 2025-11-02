@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -e
 
-Target="linux-x86_64"
+Target="лінукс-ікс86_64"
 Mode="$1"
 
 if [ -z "$TSIL" ]
@@ -9,10 +9,12 @@ then
   TSIL="ціль"
 fi
 Version="$(cat Версія)"
-OutDir="out/$Version/$Target"
-BuildDir="build/$Version/$Target"
+BuildDir="будування/$Version/$Target"
+BuildSourceDir="$BuildDir/напівготове"
+BuildOutDir="$BuildDir/готове"
 CompilationFiles="$(cat ФайлиКомпіляції)"
-CompiledFiles=""
+LLCompiledFiles=""
+CCompiledFiles=""
 ClangOptions="-DTSIL_VERSION=\"$Version\""
 if [ "$Mode" = "release" ]
 then
@@ -21,47 +23,48 @@ else
   ClangOptions="$ClangOptions -g -O0"
 fi
 
-mkdir -p "$OutDir"
-mkdir -p "$BuildDir/source/ЛЛВМ"
-mkdir -p "$BuildDir/source/external"
-mkdir -p "$BuildDir/source/біб/турбо"
+mkdir -p "$BuildOutDir"
+mkdir -p "$BuildSourceDir"
+mkdir -p "$BuildSourceDir/ЛЛВМ"
+mkdir -p "$BuildSourceDir/external"
+mkdir -p "$BuildSourceDir/біб/турбо"
 
 while IFS='' read -r CompilationFile
 do
   case "$CompilationFile" in
     *".ц")
-      LLCompilationFile="$CompilationFile.ll"
-      mkdir -p "$(dirname "$BuildDir/source/$LLCompilationFile")"
-      Command="$TSIL $BuildDir/source/$LLCompilationFile --формат=ллвмір --архітектура=ікс86_64 --система=лінукс скомпілювати $CompilationFile --біб=./БЦ"
+      LLCompilationFile="$CompilationFile.ллвмір"
+      mkdir -p "$(dirname "$BuildSourceDir/$LLCompilationFile")"
+      Command="$TSIL $BuildSourceDir/$LLCompilationFile --формат=ллвмір --архітектура=ікс86_64 --система=лінукс скомпілювати $CompilationFile --біб=./БЦ"
       echo "$Command"
       $Command
-      if [ -z "$CompiledFiles" ]; then
-        CompiledFiles=$(printf "%s" "$BuildDir/source/$LLCompilationFile")
+      if [ -z "$LLCompiledFiles" ]; then
+        LLCompiledFiles=$(printf "%s" "$BuildSourceDir/$LLCompilationFile")
       else
-        CompiledFiles=$(printf "$CompiledFiles %s" "$BuildDir/source/$LLCompilationFile")
+        LLCompiledFiles=$(printf "$LLCompiledFiles %s" "$BuildSourceDir/$LLCompilationFile")
       fi
       ;;
     *".c")
       LLCompilationFile="$CompilationFile.o"
-      mkdir -p "$(dirname "$BuildDir/source/$LLCompilationFile")"
-      Command="clang $ClangOptions -c -o $BuildDir/source/$LLCompilationFile $CompilationFile"
+      mkdir -p "$(dirname "$BuildSourceDir/$LLCompilationFile")"
+      Command="clang $ClangOptions -c -o $BuildSourceDir/$LLCompilationFile $CompilationFile"
       echo "$Command"
       $Command
-      if [ -z "$CompiledFiles" ]; then
-        CompiledFiles=$(printf "%s" "$BuildDir/source/$LLCompilationFile")
+      if [ -z "$CCompiledFiles" ]; then
+        CCompiledFiles=$(printf "%s" "$BuildSourceDir/$LLCompilationFile")
       else
-        CompiledFiles=$(printf "$CompiledFiles %s" "$BuildDir/source/$LLCompilationFile")
+        CCompiledFiles=$(printf "$CCompiledFiles %s" "$BuildSourceDir/$LLCompilationFile")
       fi
       ;;
     *)
-      mkdir -p "$(dirname "$BuildDir/source/$LLCompilationFile")"
-      Command="cp $CompilationFile $BuildDir/source/$CompilationFile"
+      mkdir -p "$(dirname "$BuildSourceDir/$LLCompilationFile")"
+      Command="cp $CompilationFile $BuildSourceDir/$CompilationFile"
       echo "$Command"
       $Command
-      if [ -z "$CompiledFiles" ]; then
-        CompiledFiles=$(printf "%s" "$BuildDir/source/$CompilationFile")
+      if [ -z "$CCompiledFiles" ]; then
+        CCompiledFiles=$(printf "%s" "$BuildSourceDir/$CompilationFile")
       else
-        CompiledFiles=$(printf "$CompiledFiles %s" "$BuildDir/source/$CompilationFile")
+        CCompiledFiles=$(printf "$CCompiledFiles %s" "$BuildSourceDir/$CompilationFile")
       fi
       ;;
   esac
@@ -76,6 +79,6 @@ then
   LlvmConfig="./.llvm-source-and-build/llvm-project-20.1.6.build/llvm/bin/llvm-config"
 fi
 
-Command="clang++ $ClangOptions -o $OutDir/ціль $CompiledFiles `$LlvmConfig --cxxflags --ldflags --system-libs --libs`"
+Command="clang++ $ClangOptions -o $BuildOutDir/ціль $CCompiledFiles -x ir $LLCompiledFiles `$LlvmConfig --cxxflags --ldflags --system-libs --libs`"
 echo "$Command"
 $Command
