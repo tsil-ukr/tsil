@@ -23,152 +23,27 @@ extern "C" {
 #define ніщо void
 #define невідома_адреса void*
 #define невідома_памʼять void*
-#define памʼять_п8 п8*
-#define адреса_памʼять_п8 п8**
-#define памʼять_памʼять_п8 п8**
-#define адреса_природне природне*
 typedef struct т8 {
   природне розмір;
-  памʼять_п8 дані;
+  п8* дані;
 } т8;
 typedef struct ю8 {
   природне розмір;
-  памʼять_п8 дані;
+  п8* дані;
 } ю8;
-typedef struct Шлях {
-  природне розмір;
-  памʼять_п8 дані;
-} Шлях;
-typedef struct Байти {
-  природне розмір;
-  памʼять_п8 дані;
-} Байти;
-
-extern void __КЦ__прочитати_файл(Шлях* шлях, Байти* вихід, логічне* успіх) {
-  char* filename = (char*)malloc(шлях->розмір + 1);
-  memcpy(filename, шлях->дані, шлях->розмір);
-  filename[шлях->розмір] = 0;
-
-  FILE* file = fopen(filename, "rb");
-
-  free(filename);
-
-  if (!file) {
-    *успіх = false;
-    return;
-  }
-
-  fseek(file, 0, SEEK_END);
-  long filesize = ftell(file);
-  rewind(file);
-
-  char* buffer = (char*)malloc(filesize);
-  if (!buffer) {
-    fclose(file);
-    *успіх = false;
-    return;
-  }
-
-  size_t read_size = fread(buffer, 1, filesize, file);
-
-  fclose(file);
-
-  Байти дані = {.розмір = read_size, .дані = (памʼять_п8)buffer};
-  *успіх = true;
-  *вихід = дані;
-}
-
-void __КЦ__записати_файл(Шлях* шлях, Байти* значення, логічне* успіх) {
-  char* filename = (char*)malloc(шлях->розмір + 1);
-  memcpy(filename, шлях->дані, шлях->розмір);
-  filename[шлях->розмір] = 0;
-
-  FILE* file = fopen(filename, "wb");
-
-  free((void*)filename);
-
-  if (!file) {
-    *успіх = false;
-    return;
-  }
-
-  fwrite(значення->дані, 1, значення->розмір, file);
-
-  fclose(file);
-
-  *успіх = true;
-}
-
-логічне __КЦ__перевірити_чи_шлях_існує(Шлях* шлях) {
-  char* filename = (char*)malloc(шлях->розмір + 1);
-  memcpy(filename, шлях->дані, шлях->розмір);
-  filename[шлях->розмір] = 0;
-
-  FILE* file = fopen(filename, "rb");
-
-  if (file) {
-    free(filename);
-    fclose(file);
-    return true;
-  } else {
-    free(filename);
-    return false;
-  }
-}
-
-логічне __КЦ__отримати_директорію_шляху_до_файлу(Шлях* вхід, Шлях* вихід) {
-  char* filename = (char*)malloc(вхід->розмір + 1);
-  memcpy(filename, вхід->дані, вхід->розмір);
-  filename[вхід->розмір] = 0;
-
-  const char* absolute_path = realpath(filename, NULL);
-  free((void*)filename);
-  if (absolute_path == NULL) {
-    return false;
-  }
-  const char* parent_path = dirname((char*)absolute_path);
-  if (parent_path == NULL) {
-    return false;
-  } else {
-    вихід->розмір = strlen(parent_path);
-    вихід->дані = (памʼять_п8)parent_path;
-  }
-  return true;
-}
-
-логічне __КЦ__отримати_поточну_директорію_процесу(Шлях* вихід) {
-  const char* cwd = getcwd(NULL, 0);
-  вихід->розмір = strlen(cwd);
-  вихід->дані = (памʼять_п8)cwd;
-  return true;
-}
-
-логічне __КЦ__отримати_абсолютний_шлях(Шлях* вхід, Шлях* вихід) {
-  char* filename = (char*)malloc(вхід->розмір + 1);
-  memcpy(filename, вхід->дані, вхід->розмір);
-  filename[вхід->розмір] = 0;
-
-  char* absolute_path = realpath(filename, NULL);
-
-  free((void*)filename);
-
-  вихід->розмір = strlen(absolute_path);
-  вихід->дані = (памʼять_п8)absolute_path;
-  return true;
-}
 
 void __КЦ__отримати_версію_цілі_як_ю8(ю8* вихід) {
   вихід->розмір = strlen(TSIL_VERSION);
-  вихід->дані = (памʼять_п8)TSIL_VERSION;
+  вихід->дані = (п8*)TSIL_VERSION;
 }
 
-ц32 розпочати(природне кількість_аргументів, Байти* байти);
+ц32 розпочати(природне кількість_аргументів, ю8* байти);
 }
 
 int main(int argc, char** argv) {
-  auto аргументи = (Байти*)malloc(sizeof(Байти) * argc);
+  auto аргументи = (ю8*)malloc(sizeof(ю8) * argc);
   for (int i = 0; i < argc; ++i) {
-    Байти байти = {.розмір = strlen(argv[i]), .дані = (памʼять_п8)argv[i]};
+    ю8 байти = {.розмір = strlen(argv[i]), .дані = (п8*)argv[i]};
     аргументи[i] = байти;
   }
   int res = розпочати(argc, аргументи);
