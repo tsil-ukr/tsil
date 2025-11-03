@@ -50,15 +50,15 @@ extern "C" {
 #define ніщо void
 #define невідома_адреса void*
 #define невідома_памʼять void*
-typedef struct т8 {
+typedef struct кд {
   природне розмір;
   п8* дані;
-} т8;
+} кд;
 typedef struct ю8 {
   природне розмір;
   п8* дані;
 } ю8;
-#define памʼять_кд т8*
+#define памʼять_кд кд*
 #define памʼять_ю8 ю8*
 
 #define ВИДИМІСТЬ_ВНУТРІШНЯ 1
