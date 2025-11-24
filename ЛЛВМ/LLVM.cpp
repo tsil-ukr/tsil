@@ -65,10 +65,14 @@ typedef struct ю8 {
 #define ВИДИМІСТЬ_МІСЦЕВА 2
 #define ВИДИМІСТЬ_ЗОВНІШНЯ 3
 
-#define АРХІТЕКТУРА_ІКС86_64 2
-#define АРХІТЕКТУРА_АРМ64 3
+#define АРХІТЕКТУРА_ІКС86 2
+#define АРХІТЕКТУРА_ІКС86_64 3
+#define АРХІТЕКТУРА_ААРЧ64 4
 
 #define СИСТЕМА_ЛІНУКС 2
+#define СИСТЕМА_ФРІБСД 3
+#define СИСТЕМА_МАКОС 4
+#define СИСТЕМА_ВІНДОВС 5
 
 void __ЛЛВМ__ініціалізувати() {
   llvm::InitializeAllTargetInfos();
@@ -209,16 +213,23 @@ void __ЛЛВМ__деініціалізувати() {
   std::string targetTriple;
 
   if (архітектура) {
-    if (архітектура == АРХІТЕКТУРА_ІКС86_64) {
+    if (архітектура == АРХІТЕКТУРА_ІКС86) {
+      targetTriple = "i386";
+    } else if (архітектура == АРХІТЕКТУРА_ІКС86_64) {
       targetTriple = "x86_64";
-    } else if (архітектура == АРХІТЕКТУРА_АРМ64) {
-      targetTriple = "arm64";
+    } else if (архітектура == АРХІТЕКТУРА_ААРЧ64) {
+      targetTriple = "aarch64";
     } else {
       return nullptr;
     }
-    targetTriple += "-pc";
     if (система == СИСТЕМА_ЛІНУКС) {
-      targetTriple += "-linux-gnu";
+      targetTriple += "-pc-linux-gnu";
+    } else if (система == СИСТЕМА_ФРІБСД) {
+      targetTriple += "-pc-freebsd-gnu";
+    } else if (система == СИСТЕМА_МАКОС) {
+      targetTriple += "-apple-darwin";
+    } else if (система == СИСТЕМА_ВІНДОВС) {
+      targetTriple += "-pc-windows-gnu";
     } else {
       return nullptr;
     }
