@@ -65,14 +65,12 @@ typedef struct ю8 {
 #define ВИДИМІСТЬ_МІСЦЕВА 2
 #define ВИДИМІСТЬ_ЗОВНІШНЯ 3
 
-#define АРХІТЕКТУРА_ІКС86 2
-#define АРХІТЕКТУРА_ІКС86_64 3
-#define АРХІТЕКТУРА_ААРЧ64 4
-
-#define СИСТЕМА_ЛІНУКС 2
-#define СИСТЕМА_ФРІБСД 3
-#define СИСТЕМА_МАКОС 4
-#define СИСТЕМА_ВІНДОВС 5
+#define ПЛАТФОРМА_ІКС86_64_ЛІНУКС 10
+#define ПЛАТФОРМА_ІКС86_64_МАКОС 11
+#define ПЛАТФОРМА_ІКС86_64_ВІНДОВС 12
+#define ПЛАТФОРМА_ААРЧ64_ЛІНУКС 20
+#define ПЛАТФОРМА_ААРЧ64_МАКОС 21
+#define ПЛАТФОРМА_ААРЧ64_ВІНДОВС 22
 
 void __ЛЛВМ__ініціалізувати() {
   llvm::InitializeAllTargetInfos();
@@ -203,33 +201,26 @@ void __ЛЛВМ__деініціалізувати() {
   return llvm::ConstantFP::get(*llvmContext, llvm::APFloat(значення));
 }
 
-Модуль* __ЛЛВМ__створити_модуль(ю8* назва,
-                                природне архітектура,
-                                природне система) {
+Модуль* __ЛЛВМ__створити_модуль(ю8* назва, природне платформа) {
   std::string name((char*)назва->дані, назва->розмір);
 
   auto llvmModule = new llvm::Module(name, *llvmContext);
 
   std::string targetTriple;
 
-  if (архітектура) {
-    if (архітектура == АРХІТЕКТУРА_ІКС86) {
-      targetTriple = "i386";
-    } else if (архітектура == АРХІТЕКТУРА_ІКС86_64) {
-      targetTriple = "x86_64";
-    } else if (архітектура == АРХІТЕКТУРА_ААРЧ64) {
-      targetTriple = "aarch64";
-    } else {
-      return nullptr;
-    }
-    if (система == СИСТЕМА_ЛІНУКС) {
-      targetTriple += "-pc-linux-gnu";
-    } else if (система == СИСТЕМА_ФРІБСД) {
-      targetTriple += "-pc-freebsd-gnu";
-    } else if (система == СИСТЕМА_МАКОС) {
-      targetTriple += "-apple-darwin";
-    } else if (система == СИСТЕМА_ВІНДОВС) {
-      targetTriple += "-pc-windows-gnu";
+  if (платформа) {
+    if (платформа == ПЛАТФОРМА_ІКС86_64_ЛІНУКС) {
+      targetTriple = "x86_64-pc-linux-gnu";
+    } else if (платформа == ПЛАТФОРМА_ІКС86_64_МАКОС) {
+      targetTriple = "x86_64-apple-darwin";
+    } else if (платформа == ПЛАТФОРМА_ІКС86_64_ВІНДОВС) {
+      targetTriple = "x86_64-pc-windows-gnu";
+    } else if (платформа == ПЛАТФОРМА_ААРЧ64_ЛІНУКС) {
+      targetTriple = "aarch64-pc-linux-gnu";
+    } else if (платформа == ПЛАТФОРМА_ААРЧ64_МАКОС) {
+      targetTriple = "aarch64-apple-darwin";
+    } else if (платформа == ПЛАТФОРМА_ААРЧ64_ВІНДОВС) {
+      targetTriple = "aarch64-pc-windows-gnu";
     } else {
       return nullptr;
     }
