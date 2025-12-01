@@ -35,7 +35,7 @@ do
     *".ц")
       LLCompilationFile="$CompilationFile.ллвмір"
       mkdir -p "$(dirname "$BuildSourceDir/$LLCompilationFile")"
-      Command="$TSIL $BuildSourceDir/$LLCompilationFile --формат=ллвмір --архітектура=ікс86_64 --система=лінукс скомпілювати $CompilationFile --біб=./БЦ"
+      Command="$TSIL $BuildSourceDir/$LLCompilationFile --формат=ллвмір --платформа=лінукс-ікс86_64 скомпілювати $CompilationFile --біб=./БЦ"
       echo "$Command"
       $Command
       if [ -z "$LLCompiledFiles" ]; then
