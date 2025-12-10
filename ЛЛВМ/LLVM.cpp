@@ -71,6 +71,8 @@ typedef struct ю8 {
 #define ПЛАТФОРМА_МАКОС_ААРЧ64 21
 #define ПЛАТФОРМА_ВІНДОВС_ІКС86_64 30
 #define ПЛАТФОРМА_ВІНДОВС_ААРЧ64 31
+#define ПЛАТФОРМА_ВАСМ32 40
+#define ПЛАТФОРМА_ВАСМ64 41
 
 void __ЛЛВМ__ініціалізувати() {
   llvm::InitializeAllTargetInfos();
@@ -221,6 +223,10 @@ void __ЛЛВМ__деініціалізувати() {
       targetTriple = "x86_64-pc-windows-gnu";
     } else if (платформа == ПЛАТФОРМА_ВІНДОВС_ААРЧ64) {
       targetTriple = "aarch64-pc-windows-gnu";
+    } else if (платформа == ПЛАТФОРМА_ВАСМ32) {
+      targetTriple = "wasm32-unknown-unknown";
+    } else if (платформа == ПЛАТФОРМА_ВАСМ64) {
+      targetTriple = "wasm64-unknown-unknown";
     } else {
       return nullptr;
     }
