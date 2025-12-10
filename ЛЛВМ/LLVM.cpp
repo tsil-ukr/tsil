@@ -1,21 +1,21 @@
-#include <llvm/Bitcode/BitcodeWriter.h>
-#include <llvm/IR/BasicBlock.h>
-#include <llvm/IR/Constants.h>
-#include <llvm/IR/DerivedTypes.h>
-#include <llvm/IR/Function.h>
-#include <llvm/IR/IRBuilder.h>
-#include <llvm/IR/Instructions.h>
-#include <llvm/IR/LLVMContext.h>
-#include <llvm/IR/LegacyPassManager.h>
-#include <llvm/IR/Module.h>
-#include <llvm/IR/Type.h>
-#include <llvm/MC/TargetRegistry.h>
-#include <llvm/Support/ManagedStatic.h>
-#include <llvm/Support/TargetSelect.h>
-#include <llvm/Target/TargetMachine.h>
-#include <llvm/Target/TargetOptions.h>
-#include <llvm/TargetParser/Host.h>
 #include <iostream>
+#include "llvm/Bitcode/BitcodeWriter.h"
+#include "llvm/IR/BasicBlock.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Type.h"
+#include "llvm/MC/TargetRegistry.h"
+#include "llvm/Support/ManagedStatic.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Target/TargetOptions.h"
+#include "llvm/TargetParser/Host.h"
 
 static std::unique_ptr<llvm::LLVMContext> llvmContext;
 
@@ -137,19 +137,19 @@ void __ЛЛВМ__деініціалізувати() {
   return llvm::ArrayType::get(тип_елемента, розмір);
 }
 
-Тип* __ЛЛВМ__тип(ю8* назва, природне кількість_параметрів, Тип** параметри) {
+Тип* __ЛЛВМ__тип(ю8* назва,
+                 природне кількість_параметрів,
+                 Тип** параметри,
+                 природне пакована) {
   std::string name((char*)назва->дані, назва->розмір);
-
-  auto structType = llvm::StructType::create(*llvmContext, name);
 
   std::vector<llvm::Type*> llvmFields(кількість_параметрів);
   for (int i = 0; i < кількість_параметрів; i++) {
     llvmFields[i] = параметри[i];
   }
 
-  structType->setBody(llvmFields);
-
-  return structType;
+  return llvm::StructType::create(*llvmContext, llvmFields, name,
+                                  static_cast<bool>(пакована));
 }
 
 Значення* __ЛЛВМ__нулл() {
