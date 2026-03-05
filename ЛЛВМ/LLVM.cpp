@@ -41,12 +41,12 @@ extern "C" {
 #define ц16 int16_t
 #define ц32 int32_t
 #define ц64 int64_t
-#define д32 float
-#define д64 double
+#define р32 float
+#define р64 double
 #define логічне uint8_t
 #define природне п64
 #define ціле ц64
-#define дробове д64
+#define дробове р64
 #define ніщо void
 #define невідома_адреса void*
 #define невідома_памʼять void*
@@ -195,11 +195,11 @@ void __ЛЛВМ__деініціалізувати() {
   return llvm::ConstantInt::get(*llvmContext, llvm::APInt(64, значення, true));
 }
 
-Значення* __ЛЛВМ__флоат(д32 значення) {
+Значення* __ЛЛВМ__флоат(р32 значення) {
   return llvm::ConstantFP::get(*llvmContext, llvm::APFloat(значення));
 }
 
-Значення* __ЛЛВМ__даубл(д64 значення) {
+Значення* __ЛЛВМ__даубл(р64 значення) {
   return llvm::ConstantFP::get(*llvmContext, llvm::APFloat(значення));
 }
 

@@ -35,8 +35,8 @@ int make_nonblocking(int fd) {
 #define ц16 int16_t
 #define ц32 int32_t
 #define ц64 int64_t
-#define д32 float
-#define д64 double
+#define р32 float
+#define р64 double
 #define логічне uint8_t
 #define природне п64
 #define ціле ц64
