@@ -62,7 +62,6 @@ typedef struct ю8 {
 #define памʼять_ю8 ю8*
 
 #define ВИДИМІСТЬ_ВНУТРІШНЯ 1
-#define ВИДИМІСТЬ_МІСЦЕВА 2
 #define ВИДИМІСТЬ_ЗОВНІШНЯ 3
 
 #define ПЛАТФОРМА_ЛІНУКС_ІКС86_64 10
@@ -269,8 +268,6 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
   llvm::Function::LinkageTypes linkageType;
   if (видимість == ВИДИМІСТЬ_ЗОВНІШНЯ) {
     linkageType = llvm::Function::ExternalLinkage;
-  } else if (видимість == ВИДИМІСТЬ_МІСЦЕВА) {
-    linkageType = llvm::Function::ExternalLinkage;
   } else {
     linkageType = llvm::Function::PrivateLinkage;
   }
@@ -287,14 +284,7 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
                                 : тип_результату,
       llvmParams, false);
 
-  auto function =
-      llvm::Function::Create(functionType, linkageType, name, модуль);
-
-  if (видимість == ВИДИМІСТЬ_МІСЦЕВА) {
-    function->setDSOLocal(true);
-  }
-
-  return function;
+  return llvm::Function::Create(functionType, linkageType, name, модуль);
 }
 
 Значення* __ЛЛВМ__отримати_аргумент_функції(Функція* функція,
@@ -722,22 +712,14 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
   llvm::GlobalValue::LinkageTypes linkageType;
   if (видимість == ВИДИМІСТЬ_ЗОВНІШНЯ) {
     linkageType = llvm::GlobalValue::ExternalLinkage;
-  } else if (видимість == ВИДИМІСТЬ_МІСЦЕВА) {
-    linkageType = llvm::GlobalValue::ExternalLinkage;
   } else {
     linkageType = llvm::GlobalValue::PrivateLinkage;
   }
 
   std::string name((char*)назва->дані, назва->розмір);
 
-  auto globalVar =
-      new llvm::GlobalVariable(*модуль, тип, false, linkageType, nullptr, name);
-
-  if (видимість == ВИДИМІСТЬ_МІСЦЕВА) {
-    globalVar->setDSOLocal(true);
-  }
-
-  return globalVar;
+  return new llvm::GlobalVariable(*модуль, тип, false, linkageType, nullptr,
+                                  name);
 }
 
 Значення* __ЛЛВМ__створити_глобал_константу_даних(Модуль* модуль,
