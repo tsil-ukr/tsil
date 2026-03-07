@@ -15,7 +15,7 @@ BuildOutDir="$BuildDir/готове"
 CompilationFiles="$(cat ФайлиКомпіляції)"
 LLCompiledFiles=""
 CCompiledFiles=""
-ClangOptions="-DTSIL_VERSION=\"$Version\""
+ClangOptions="-DTSIL_VERSION=\"$Version\" --target=x86_64-pc-linux-gnu"
 if [ "$Mode" = "release" ]
 then
   ClangOptions="$ClangOptions -static -O3 -flto"
