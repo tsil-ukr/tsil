@@ -9,9 +9,9 @@ BuildSourceDir="$BuildDir/напівготове"
 BuildOutDir="$BuildDir/готове"
 BuildPackageDir="$BuildDir/пакування"
 
-mkdir -p "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget/bin"
+mkdir -p "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget/програми"
 
-cp "$BuildOutDir/ціль" "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget/bin"
+cp "$BuildOutDir/ціль" "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget/програми"
 cd "$BuildPackageDir"
 tar -cJvf "ціль-$TsilVersion-$TsilTarget.tar.xz" "ціль-$TsilVersion-$TsilTarget"
 cd -
