@@ -24,8 +24,8 @@
 #define природне п64
 #define ціле ц64
 #define ніщо void
-#define невідома_адреса void*
-#define невідома_памʼять void*
+#define адреса_ніщо void*
+#define памʼять_ніщо void*
 
 typedef struct текст текст;
 typedef struct ю8 ю8;

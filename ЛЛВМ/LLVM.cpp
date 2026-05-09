@@ -48,8 +48,8 @@ extern "C" {
 #define ціле ц64
 #define дробове р64
 #define ніщо void
-#define невідома_адреса void*
-#define невідома_памʼять void*
+#define адреса_ніщо void*
+#define памʼять <ніщо> void*
 typedef struct кд {
   природне розмір;
   п8* дані;
