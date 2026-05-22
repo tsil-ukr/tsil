@@ -32,7 +32,7 @@ mkdir -p "$BuildSourceDir/біб/турбо"
 while IFS='' read -r CompilationFile
 do
   case "$CompilationFile" in
-    *".ц")
+    *".к")
       LLCompilationFile="$CompilationFile.ллвмір"
       mkdir -p "$(dirname "$BuildSourceDir/$LLCompilationFile")"
       Command="$TSIL $BuildSourceDir/$LLCompilationFile --формат=ллвмір --платформа=лінукс-ікс86_64 скомпілювати $CompilationFile --біб=./БЦ"
