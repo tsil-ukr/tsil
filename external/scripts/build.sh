@@ -74,9 +74,11 @@ CompilationFiles_HEREDOC_INPUT
 
 LlvmConfig="llvm-config"
 
-if [ -f "./.llvm-source-and-build/llvm-project-20.1.6.build/llvm/bin/llvm-config" ];
+if [ -f "./.llvm-source-and-build/llvm-project-22.1.5.build/llvm-linux-x86_64/bin/llvm-config" ];
 then
-  LlvmConfig="./.llvm-source-and-build/llvm-project-20.1.6.build/llvm/bin/llvm-config"
+  LlvmConfig="./.llvm-source-and-build/llvm-project-22.1.5.build/llvm-linux-x86_64/bin/llvm-config"
+else
+  echo "LLVM не знайдено, використовуємо системний LLVM. Щоб збудувати LLVM, запустіть ./external/scripts/llvm.sh"
 fi
 
 Command="clang++ $ClangOptions -o $BuildOutDir/ціль $CCompiledFiles -x ir $LLCompiledFiles `$LlvmConfig --cxxflags --ldflags --system-libs --libs`"

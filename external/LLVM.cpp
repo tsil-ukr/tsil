@@ -1,5 +1,4 @@
 #include <iostream>
-#include "llvm/Bitcode/BitcodeWriter.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -11,7 +10,6 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
 #include "llvm/MC/TargetRegistry.h"
-#include "llvm/Support/ManagedStatic.h"
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Target/TargetMachine.h"
 #include "llvm/Target/TargetOptions.h"
@@ -77,8 +75,6 @@ void __ЛЛВМ__ініціалізувати() {
   llvm::InitializeAllTargetInfos();
   llvm::InitializeAllTargets();
   llvm::InitializeAllTargetMCs();
-  llvm::InitializeAllAsmParsers();
-  llvm::InitializeAllAsmPrinters();
 
   llvmContext = std::make_unique<llvm::LLVMContext>();
 }
@@ -155,7 +151,7 @@ void __ЛЛВМ__деініціалізувати() {
 
 Значення* __ЛЛВМ__нулл() {
   return llvm::ConstantPointerNull::get(
-      llvm::PointerType::get(llvm::Type::getVoidTy(*llvmContext), 0));
+      llvm::PointerType::get(*llvmContext, 0));
 }
 
 Значення* __ЛЛВМ__і1(п8 значення) {
@@ -207,30 +203,30 @@ void __ЛЛВМ__деініціалізувати() {
 
   auto llvmModule = new llvm::Module(name, *llvmContext);
 
-  std::string targetTriple;
+  llvm::Triple targetTriple;
 
   if (платформа) {
     if (платформа == ПЛАТФОРМА_ЛІНУКС_ІКС86_64) {
-      targetTriple = "x86_64-pc-linux-gnu";
+      targetTriple = llvm::Triple("x86_64-pc-linux-gnu");
     } else if (платформа == ПЛАТФОРМА_ЛІНУКС_ААРЧ64) {
-      targetTriple = "aarch64-pc-linux-gnu";
+      targetTriple = llvm::Triple("aarch64-pc-linux-gnu");
     } else if (платформа == ПЛАТФОРМА_МАКОС_ІКС86_64) {
-      targetTriple = "x86_64-apple-darwin";
+      targetTriple = llvm::Triple("x86_64-apple-darwin");
     } else if (платформа == ПЛАТФОРМА_МАКОС_ААРЧ64) {
-      targetTriple = "aarch64-apple-darwin";
+      targetTriple = llvm::Triple("aarch64-apple-darwin");
     } else if (платформа == ПЛАТФОРМА_ВІНДОВС_ІКС86_64) {
-      targetTriple = "x86_64-pc-windows-gnu";
+      targetTriple = llvm::Triple("x86_64-pc-windows-gnu");
     } else if (платформа == ПЛАТФОРМА_ВІНДОВС_ААРЧ64) {
-      targetTriple = "aarch64-pc-windows-gnu";
+      targetTriple = llvm::Triple("aarch64-pc-windows-gnu");
     } else if (платформа == ПЛАТФОРМА_ВАСМ32) {
-      targetTriple = "wasm32-unknown-unknown";
+      targetTriple = llvm::Triple("wasm32-unknown-unknown");
     } else if (платформа == ПЛАТФОРМА_ВАСМ64) {
-      targetTriple = "wasm64-unknown-unknown";
+      targetTriple = llvm::Triple("wasm64-unknown-unknown");
     } else {
       return nullptr;
     }
   } else {
-    targetTriple = llvm::sys::getDefaultTargetTriple();
+    targetTriple = llvm::Triple(llvm::sys::getDefaultTargetTriple());
   }
 
   llvmModule->setTargetTriple(targetTriple);
@@ -765,51 +761,6 @@ void __ЛЛВМ__знищити_модуль(Модуль* модуль) {
     *вихід_даних = (п8*)malloc(buffer.size());
     memcpy(*вихід_даних, buffer.data(), buffer.size());
 
-    return true;
-  }
-}
-
-логічне __ЛЛВМ__перетворити_на_ллвмо(Модуль* модуль,
-                                     природне* вихід_розміру,
-                                     п8** вихід_даних) {
-  auto targetTriple = модуль->getTargetTriple();
-
-  std::string Error;
-  auto Target = llvm::TargetRegistry::lookupTarget(targetTriple, Error);
-  if (!Error.empty()) {
-    std::cout << Error << std::endl;
-    return false;
-  }
-
-  auto CPU = "generic";
-  auto Features = "";
-
-  llvm::TargetOptions opt;
-
-  auto llvmTargetMachine = Target->createTargetMachine(
-      targetTriple, CPU, Features, opt, llvm::Reloc::PIC_);
-
-  llvm::SmallVector<char, 0> buffer;
-  llvm::raw_svector_ostream dest(buffer);
-
-  llvm::legacy::PassManager pass;
-  auto FileType = llvm::CodeGenFileType::ObjectFile;
-
-  if (llvmTargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
-    llvm::errs() << "TheTargetMachine can't emit a file of this type";
-    return false;
-  }
-
-  pass.run(*модуль);
-
-  if (buffer.empty()) {
-    *вихід_даних = nullptr;
-    *вихід_розміру = 0;
-    return true;
-  } else {
-    *вихід_даних = (п8*)malloc(buffer.size());
-    memcpy(*вихід_даних, buffer.data(), buffer.size());
-    *вихід_розміру = buffer.size();
     return true;
   }
 }

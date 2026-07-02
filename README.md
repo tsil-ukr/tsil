@@ -3,7 +3,7 @@
 Для будування треба:
 
 - Ціль 0.68.0
-- Clang/Clang++/LLVM (~20.1.6)
+- Clang/Clang++/LLVM (~22.1.5)
 - CMake
 - Ninja (~1.12.1)
 - GNU/Linux
