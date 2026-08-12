@@ -24,6 +24,7 @@ else
 fi
 
 mkdir -p "$BuildOutDir"
+mkdir -p "$BuildOutDir/програми"
 mkdir -p "$BuildSourceDir"
 mkdir -p "$BuildSourceDir/ЛЛВМ"
 mkdir -p "$BuildSourceDir/external"
@@ -81,6 +82,10 @@ else
   echo "LLVM не знайдено, використовуємо системний LLVM. Щоб збудувати LLVM, запустіть ./external/scripts/llvm.sh"
 fi
 
-Command="clang++ $ClangOptions -o $BuildOutDir/ціль $CCompiledFiles -x ir $LLCompiledFiles `$LlvmConfig --cxxflags --ldflags --system-libs --libs`"
+Command="clang++ $ClangOptions -o $BuildOutDir/програми/ціль $CCompiledFiles -x ir $LLCompiledFiles `$LlvmConfig --cxxflags --ldflags --system-libs --libs`"
+echo "$Command"
+$Command
+
+Command="cp основа.в.ц $BuildOutDir/програми"
 echo "$Command"
 $Command
