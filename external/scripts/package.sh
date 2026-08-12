@@ -12,6 +12,7 @@ BuildPackageDir="$BuildDir/пакування"
 mkdir -p "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget/програми"
 
 cp "$BuildOutDir/програми/ціль" "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget/програми"
+cp "$BuildOutDir/програми/основа.в.ц" "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget/програми"
 cd "$BuildPackageDir"
 tar -cJvf "ціль-$TsilVersion-$TsilTarget.tar.xz" "ціль-$TsilVersion-$TsilTarget"
 cd -
