@@ -13,7 +13,6 @@ mkdir -p "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget/програми"
 
 cp "$BuildOutDir/програми/ціль" "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget/програми"
 cp "$BuildOutDir/основа.в.ц" "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget"
-cp "$BuildOutDir/main.c" "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget"
 cp -a "$BuildOutDir/біб" "$BuildPackageDir/ціль-$TsilVersion-$TsilTarget"
 cd "$BuildPackageDir"
 tar -cJvf "ціль-$TsilVersion-$TsilTarget.tar.xz" "ціль-$TsilVersion-$TsilTarget"

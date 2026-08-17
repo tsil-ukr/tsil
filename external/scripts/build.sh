@@ -89,10 +89,6 @@ Command="cp основа.в.ц $BuildOutDir"
 echo "$Command"
 $Command
 
-Command="cp main.c $BuildOutDir"
-echo "$Command"
-$Command
-
 Command="rm -rf $BuildOutDir/біб"
 echo "$Command"
 $Command
