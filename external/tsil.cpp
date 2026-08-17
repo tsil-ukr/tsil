@@ -5,6 +5,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #if defined(_WIN32)
@@ -40,6 +41,10 @@ typedef struct ю8 {
   п8* дані;
   природне розмір;
 } ю8;
+typedef struct Шлях {
+  природне розмір;
+  п8* дані;
+} Шлях;
 
 static char* get_exe_path(void) {
 #if defined(_WIN32)
@@ -126,6 +131,99 @@ void __КЦ__отримати_шлях_до_цілі_як_ю8(ю8* вихід) {
   }
   вихід->дані = (п8*)exe_path;
   вихід->розмір = strlen(exe_path);
+}
+
+static char* шлях_до_c_рядка(const Шлях* ш) {
+  if (!ш || !ш->дані)
+    return NULL;
+  char* str = (char*)malloc(ш->розмір + 1);
+  if (!str)
+    return NULL;
+  memcpy(str, ш->дані, ш->розмір);
+  str[ш->розмір] = '\0';
+  return str;
+}
+
+ц32 __КЦ__кланг_лінк(Шлях* вих,
+                     природне кф,
+                     Шлях* сф,
+                     природне кллвір,
+                     Шлях* сллвмір) {
+  if (!вих || !вих->дані)
+    return -1;
+
+  char* вих_str = шлях_до_c_рядка(вих);
+  if (!вих_str)
+    return -1;
+
+  size_t total_args = 3 + (кф) + (кллвір * 3) + 1;
+  char** args = (char**)malloc(sizeof(char*) * total_args);
+  if (!args) {
+    free(вих_str);
+    return -1;
+  }
+
+  size_t idx = 0;
+  args[idx++] = strdup("clang");
+  args[idx++] = strdup("-o");
+  args[idx++] = вих_str;
+
+  for (природне i = 0; i < кф; ++i) {
+    char* in_str = шлях_до_c_рядка(&сф[i]);
+    if (!in_str) {
+      for (size_t j = 0; j < idx; ++j)
+        free(args[j]);
+      free(args);
+      return -1;
+    }
+    args[idx++] = in_str;
+  }
+
+  for (природне i = 0; i < кллвір; ++i) {
+    char* in_str = шлях_до_c_рядка(&сллвмір[i]);
+    if (!in_str) {
+      for (size_t j = 0; j < idx; ++j)
+        free(args[j]);
+      free(args);
+      return -1;
+    }
+    args[idx++] = strdup("-x");
+    args[idx++] = strdup("ir");
+    args[idx++] = in_str;
+  }
+  args[idx] = NULL;
+
+  for (size_t i = 0; args[i] != NULL; ++i) {
+    printf("%s ", args[i]);
+  }
+  printf("\n");
+  fflush(stdout);
+
+  pid_t pid = fork();
+  if (pid == 0) {
+    execvp("clang", args);
+    _exit(127);
+  } else if (pid < 0) {
+    for (size_t j = 0; j < idx; ++j) {
+      free(args[j]);
+    }
+    free(args);
+    return -1;
+  }
+
+  int status = 0;
+  waitpid(pid, &status, 0);
+
+  for (size_t j = 0; j < idx; ++j) {
+    free(args[j]);
+  }
+  free(args);
+
+  if (WIFEXITED(status)) {
+    return WEXITSTATUS(status);
+  }
+
+  return -1;
 }
 
 ц32 почати(природне кількість_аргументів, ю8* аргументи);

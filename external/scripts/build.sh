@@ -86,6 +86,10 @@ Command="clang++ $ClangOptions -o $BuildOutDir/програми/ціль $CCompi
 echo "$Command"
 $Command
 
-Command="cp основа.в.ц $BuildOutDir/програми"
+Command="cp основа.в.ц $BuildOutDir"
+echo "$Command"
+$Command
+
+Command="cp main.c $BuildOutDir"
 echo "$Command"
 $Command
