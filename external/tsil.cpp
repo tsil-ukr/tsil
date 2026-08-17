@@ -44,6 +44,7 @@ typedef struct ю8 {
 typedef struct Шлях {
   природне розмір;
   п8* дані;
+  природне вмісткість;
 } Шлях;
 
 static char* get_exe_path(void) {

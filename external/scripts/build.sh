@@ -93,3 +93,11 @@ $Command
 Command="cp main.c $BuildOutDir"
 echo "$Command"
 $Command
+
+Command="rm -rf $BuildOutDir/біб"
+echo "$Command"
+$Command
+
+Command="cp -a біб $BuildOutDir"
+echo "$Command"
+$Command
