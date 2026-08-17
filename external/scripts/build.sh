@@ -28,7 +28,6 @@ mkdir -p "$BuildOutDir/програми"
 mkdir -p "$BuildSourceDir"
 mkdir -p "$BuildSourceDir/ЛЛВМ"
 mkdir -p "$BuildSourceDir/external"
-mkdir -p "$BuildSourceDir/біб/турбо"
 
 while IFS='' read -r CompilationFile
 do
@@ -98,6 +97,6 @@ Command="rm -rf $BuildOutDir/біб"
 echo "$Command"
 $Command
 
-Command="cp -a біб $BuildOutDir"
+Command="cp -a БЦ $BuildOutDir/біб"
 echo "$Command"
 $Command
