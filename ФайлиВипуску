@@ -5,7 +5,6 @@ external/
 ЛЛВМ/
 ПМ/
 ПМЛЛВМ/
-.clang-format
 .gitignore
 README.md
 Версія
