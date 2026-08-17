@@ -193,11 +193,11 @@ static char* шлях_до_c_рядка(const Шлях* ш) {
   }
   args[idx] = NULL;
 
-  for (size_t i = 0; args[i] != NULL; ++i) {
-    printf("%s ", args[i]);
-  }
-  printf("\n");
-  fflush(stdout);
+  // for (size_t i = 0; args[i] != NULL; ++i) {
+  //   printf("%s ", args[i]);
+  // }
+  // printf("\n");
+  // fflush(stdout);
 
   pid_t pid = fork();
   if (pid == 0) {
