@@ -7,7 +7,6 @@ external/
 ПМЛЛВМ/
 .clang-format
 .gitignore
-main.c
 README.md
 Версія
 основа.в.ц
