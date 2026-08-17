@@ -6,6 +6,7 @@ external/
 ПМ/
 ПМЛЛВМ/
 .gitignore
+main.c
 README.md
 Версія
 основа.в.ц
