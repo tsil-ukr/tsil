@@ -5,6 +5,7 @@ external/
 ЛЛВМ/
 ПМ/
 ПМЛЛВМ/
+.clang-format
 .gitignore
 main.c
 README.md
