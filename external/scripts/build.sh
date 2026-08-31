@@ -93,6 +93,6 @@ Command="rm -rf $BuildOutDir/біб"
 echo "$Command"
 $Command
 
-Command="cp -a БЦ $BuildOutDir/біб"
+Command="cp -a біб $BuildOutDir/біб"
 echo "$Command"
 $Command
