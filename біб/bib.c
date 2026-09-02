@@ -1,14 +1,4 @@
-#include <arpa/inet.h>
-#include <libgen.h>
-#include <liburing.h>
-#include <memory.h>
-#include <netinet/in.h>
-#include <poll.h>
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <unistd.h>
 
 #include "./tsil.h"
 
@@ -44,8 +34,8 @@ void бібц__друк_кд(п8* дані, природне розмір) {
   природне розмір_ю8;
   природне позиція_помилки;
 
-  статус = бібц__кд_в_ю8(дані, розмір, false, &дані_ю8, &розмір_ю8,
-                         &позиція_помилки);
+  статус =
+      бібц__кд_в_ю8(дані, розмір, 0, &дані_ю8, &розмір_ю8, &позиція_помилки);
   if (статус != 0) {
     return;
   }

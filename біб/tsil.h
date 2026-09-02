@@ -1,6 +1,7 @@
 #ifndef TSIL_H
 #define TSIL_H
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef uint8_t п8;
 typedef uint16_t п16;
