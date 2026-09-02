@@ -13,8 +13,8 @@ typedef int64_t ц64;
 typedef float р32;
 typedef double р64;
 typedef uint8_t логічне;
-typedef п64 природне;
-typedef ц64 ціле;
+typedef size_t природне;
+typedef ssize_t ціле;
 typedef void ніщо;
 typedef void* адреса;
 
