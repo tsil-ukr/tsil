@@ -16,8 +16,7 @@ typedef uint8_t логічне;
 typedef п64 природне;
 typedef ц64 ціле;
 typedef void ніщо;
-typedef void* адреса_ніщо;
-typedef void* памʼять_ніщо;
+typedef void* адреса;
 
 typedef struct кд кд;
 typedef struct ю8 ю8;
