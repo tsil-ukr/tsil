@@ -2,6 +2,7 @@
 #define TSIL_H
 #include <stdint.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 typedef uint8_t п8;
 typedef uint16_t п16;
@@ -18,6 +19,10 @@ typedef size_t природне;
 typedef ssize_t ціле;
 typedef void ніщо;
 typedef void* адреса;
+
+const логічне ні = 0;
+const логічне так = 1;
+const адреса пусто = NULL;
 
 typedef struct кд кд;
 typedef struct ю8 ю8;
