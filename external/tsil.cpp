@@ -146,10 +146,10 @@ static char* шлях_до_c_рядка(const Шлях* ш) {
 }
 
 ц32 КЦ__кланг_лінк(Шлях* вих,
-                     природне кф,
-                     Шлях* сф,
-                     природне кллвір,
-                     Шлях* сллвмір) {
+                   природне кф,
+                   Шлях* сф,
+                   природне кллвір,
+                   Шлях* сллвмір) {
   if (!вих || !вих->дані)
     return -1;
 
@@ -226,6 +226,36 @@ static char* шлях_до_c_рядка(const Шлях* ш) {
   }
 
   return -1;
+}
+
+static void uint64_to_string(uint64_t val, char* buf, size_t buf_size) {
+  snprintf(buf, buf_size, "%llu", (unsigned long long)val);
+}
+
+static void double_to_hex_string(double val, char* buf, size_t buf_size) {
+  snprintf(buf, buf_size, "%a", val);
+}
+
+ніщо перетворити_п64_в_ю8(п64 значення,
+                          п8** вихід_даних,
+                          природне* вихід_розміру) {
+  char* str = (char*)malloc(21);
+
+  uint64_to_string(значення, str, 21);
+
+  *вихід_даних = (п8*)str;
+  *вихід_розміру = strlen(str);
+}
+
+ніщо перетворити_р64_в_ю8(р64 значення,
+                          п8** вихід_даних,
+                          природне* вихід_розміру) {
+  char* str = (char*)malloc(21);
+
+  double_to_hex_string(значення, str, 21);
+
+  *вихід_даних = (п8*)str;
+  *вихід_розміру = strlen(str);
 }
 
 ц32 почати(природне кількість_аргументів, ю8* аргументи);
