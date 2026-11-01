@@ -73,4 +73,5 @@
 БЦ/біб.ц
 external/LLVM.cpp
 external/tsil.cpp
+external/extsilint.c
 БЦ/bib.c
