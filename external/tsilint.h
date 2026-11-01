@@ -166,4 +166,13 @@ static const логічне ні = 0;
 static const логічне так = 1;
 static const адреса пусто = 0;
 
+#define БІТКАСТ(dest_type, source_type, source_val) \
+  (((union {                                        \
+     source_type src;                               \
+     dest_type dst;                                 \
+   }){.src = (source_val)})                         \
+       .dst)
+
+double fmod(double x, double y);
+
 #endif /* TSILINT */

@@ -16,9 +16,11 @@ CompilationFiles="$(cat ФайлиКомпіляції)"
 LLCompiledFiles=""
 CCompiledFiles=""
 ClangOptions="-DTSIL_VERSION=\"$Version\" --target=x86_64-pc-linux-gnu"
+ClangExeOptions=""
 if [ "$Mode" = "release" ]
 then
-  ClangOptions="$ClangOptions -static -O3 -flto"
+  ClangOptions="$ClangOptions -O3"
+  ClangExeOptions="$ClangExeOptions -static -flto"
 else
   ClangOptions="$ClangOptions -g -O0"
 fi
@@ -38,22 +40,26 @@ do
       Command="$TSIL $BuildSourceDir/$LLCompilationFile --формат=ллвмір --платформа=ікс86_64-пк-лінукс-гну скомпілювати $CompilationFile --біб=./БЦ"
       echo "$Command"
       $Command
-      if [ -z "$LLCompiledFiles" ]; then
-        LLCompiledFiles=$(printf "%s" "$BuildSourceDir/$LLCompilationFile")
-      else
-        LLCompiledFiles=$(printf "$LLCompiledFiles %s" "$BuildSourceDir/$LLCompilationFile")
-      fi
-      ;;
-    *".c")
-      LLCompilationFile="$CompilationFile.o"
-      mkdir -p "$(dirname "$BuildSourceDir/$LLCompilationFile")"
-      Command="clang $ClangOptions -c -o $BuildSourceDir/$LLCompilationFile $CompilationFile"
+
+      Command="clang $ClangOptions -c -o $BuildSourceDir/$LLCompilationFile.o -x ir $BuildSourceDir/$LLCompilationFile"
       echo "$Command"
       $Command
       if [ -z "$CCompiledFiles" ]; then
-        CCompiledFiles=$(printf "%s" "$BuildSourceDir/$LLCompilationFile")
+        CCompiledFiles=$(printf "%s" "$BuildSourceDir/$LLCompilationFile.o")
       else
-        CCompiledFiles=$(printf "$CCompiledFiles %s" "$BuildSourceDir/$LLCompilationFile")
+        CCompiledFiles=$(printf "$CCompiledFiles %s" "$BuildSourceDir/$LLCompilationFile.o")
+      fi
+      ;;
+    *".c")
+      CCompilationFile="$CompilationFile.o"
+      mkdir -p "$(dirname "$BuildSourceDir/$CCompilationFile")"
+      Command="clang $ClangOptions -c -o $BuildSourceDir/$CCompilationFile $CompilationFile"
+      echo "$Command"
+      $Command
+      if [ -z "$CCompiledFiles" ]; then
+        CCompiledFiles=$(printf "%s" "$BuildSourceDir/$CCompilationFile")
+      else
+        CCompiledFiles=$(printf "$CCompiledFiles %s" "$BuildSourceDir/$CCompilationFile")
       fi
       ;;
     *)
@@ -81,7 +87,7 @@ else
   echo "LLVM не знайдено, використовуємо системний LLVM. Щоб збудувати LLVM, запустіть ./external/scripts/llvm.sh"
 fi
 
-Command="clang++ $ClangOptions -o $BuildOutDir/програми/ціль $CCompiledFiles -x ir $LLCompiledFiles `$LlvmConfig --cxxflags --ldflags --system-libs --libs`"
+Command="clang++ $ClangOptions $ClangExeOptions -o $BuildOutDir/програми/ціль $CCompiledFiles $LLCompiledFiles `$LlvmConfig --cxxflags --ldflags --system-libs --libs`"
 echo "$Command"
 $Command
 
