@@ -162,8 +162,8 @@ typedef ssize_t ціле;
 typedef void ніщо;
 typedef void* адреса;
 
-const логічне ні = 0;
-const логічне так = 1;
-const адреса пусто = 0;
+static const логічне ні = 0;
+static const логічне так = 1;
+static const адреса пусто = 0;
 
 #endif /* TSILINT */
