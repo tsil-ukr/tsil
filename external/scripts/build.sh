@@ -25,29 +25,56 @@ else
   ClangOptions="$ClangOptions -g -O0"
 fi
 
+ShouldCompileAsLLVMIR="no"
+
 mkdir -p "$BuildOutDir"
 mkdir -p "$BuildOutDir/програми"
 mkdir -p "$BuildSourceDir"
 mkdir -p "$BuildSourceDir/ЛЛВМ"
 mkdir -p "$BuildSourceDir/external"
 
+compile_as_llvmir() {
+  CompilationFile="$1"
+  LLCompilationFile="$CompilationFile.ллвмір"
+  mkdir -p "$(dirname "$BuildSourceDir/$LLCompilationFile")"
+  Command="$TSIL $BuildSourceDir/$LLCompilationFile --формат=ллвмір --платформа=ікс86_64-пк-лінукс-гну скомпілювати $CompilationFile --біб=./БЦ"
+  echo "$Command"
+  $Command
+  if [ -z "$LLCompiledFiles" ]; then
+    LLCompiledFiles=$(printf "%s" "$BuildSourceDir/$LLCompilationFile")
+  else
+    LLCompiledFiles=$(printf "$LLCompiledFiles %s" "$BuildSourceDir/$LLCompilationFile")
+  fi
+}
+
+compile_as_obj() {
+  CompilationFile="$1"
+  CiangCompilationFile="$CompilationFile.сіанг"
+  mkdir -p "$(dirname "$BuildSourceDir/$CiangCompilationFile")"
+  Command="$TSIL $BuildSourceDir/$CiangCompilationFile --формат=сіанг --платформа=ікс86_64-пк-лінукс-гну скомпілювати $CompilationFile --біб=./БЦ"
+  echo "$Command"
+  $Command
+
+  mv "$BuildSourceDir/$CiangCompilationFile" "$BuildSourceDir/$CiangCompilationFile.c"
+  CCompilationFile="$CiangCompilationFile.c"
+  Command="clang $ClangOptions -c -o $BuildSourceDir/$CCompilationFile.o $BuildSourceDir/$CCompilationFile"
+  echo "$Command"
+  $Command
+  if [ -z "$CCompiledFiles" ]; then
+    CCompiledFiles=$(printf "%s" "$BuildSourceDir/$CCompilationFile.o")
+  else
+    CCompiledFiles=$(printf "$CCompiledFiles %s" "$BuildSourceDir/$CCompilationFile.o")
+  fi
+}
+
 while IFS='' read -r CompilationFile
 do
   case "$CompilationFile" in
     *".ц")
-      LLCompilationFile="$CompilationFile.ллвмір"
-      mkdir -p "$(dirname "$BuildSourceDir/$LLCompilationFile")"
-      Command="$TSIL $BuildSourceDir/$LLCompilationFile --формат=ллвмір --платформа=ікс86_64-пк-лінукс-гну скомпілювати $CompilationFile --біб=./БЦ"
-      echo "$Command"
-      $Command
-
-      Command="clang $ClangOptions -c -o $BuildSourceDir/$LLCompilationFile.o -x ir $BuildSourceDir/$LLCompilationFile"
-      echo "$Command"
-      $Command
-      if [ -z "$CCompiledFiles" ]; then
-        CCompiledFiles=$(printf "%s" "$BuildSourceDir/$LLCompilationFile.o")
+      if [ "$ShouldCompileAsLLVMIR" = "yes" ]; then
+        compile_as_llvmir "$CompilationFile"
       else
-        CCompiledFiles=$(printf "$CCompiledFiles %s" "$BuildSourceDir/$LLCompilationFile.o")
+        compile_as_obj "$CompilationFile"
       fi
       ;;
     *".c")
@@ -87,7 +114,7 @@ else
   echo "LLVM не знайдено, використовуємо системний LLVM. Щоб збудувати LLVM, запустіть ./external/scripts/llvm.sh"
 fi
 
-Command="clang++ $ClangOptions $ClangExeOptions -o $BuildOutDir/програми/ціль $CCompiledFiles $LLCompiledFiles `$LlvmConfig --cxxflags --ldflags --system-libs --libs`"
+Command="clang++ $ClangOptions $ClangExeOptions -o $BuildOutDir/програми/ціль $CCompiledFiles -x ir $LLCompiledFiles `$LlvmConfig --cxxflags --ldflags --system-libs --libs`"
 echo "$Command"
 $Command
 
