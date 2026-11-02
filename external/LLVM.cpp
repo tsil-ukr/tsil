@@ -72,6 +72,7 @@ typedef struct ю8 {
 #define ПЛАТФОРМА_ААРЧ64_ПК_ВІНДОВС_МСВС 33
 #define ПЛАТФОРМА_ВАСМ32 40
 #define ПЛАТФОРМА_ВАСМ64 41
+#define ПЛАТФОРМА_ЕСП32С3 50
 
 void ЛЛВМ__ініціалізувати() {
   llvm::InitializeAllTargetInfos();
@@ -232,6 +233,8 @@ void ЛЛВМ__деініціалізувати() {
       targetTriple = llvm::Triple("wasm32-unknown-unknown");
     } else if (платформа == ПЛАТФОРМА_ВАСМ64) {
       targetTriple = llvm::Triple("wasm64-unknown-unknown");
+    } else if (платформа == ПЛАТФОРМА_ЕСП32С3) {
+      targetTriple = llvm::Triple("esp32s3");
     } else {
       return nullptr;
     }
