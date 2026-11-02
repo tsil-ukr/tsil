@@ -25,7 +25,7 @@ else
   ClangOptions="$ClangOptions -g -O0"
 fi
 
-ShouldCompileAsLLVMIR="no"
+ShouldCompileAsLLVMIR="yes"
 
 mkdir -p "$BuildOutDir"
 mkdir -p "$BuildOutDir/програми"
