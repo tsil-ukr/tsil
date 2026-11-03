@@ -25,7 +25,11 @@ else
   ClangOptions="$ClangOptions -g -O0"
 fi
 
-ShouldCompileAsLLVMIR="yes"
+CompileAs="$2"
+if [ -z "$CompileAs" ]
+then
+  CompileAs="ir"
+fi
 
 mkdir -p "$BuildOutDir"
 mkdir -p "$BuildOutDir/програми"
@@ -71,7 +75,7 @@ while IFS='' read -r CompilationFile
 do
   case "$CompilationFile" in
     *".ц")
-      if [ "$ShouldCompileAsLLVMIR" = "yes" ]; then
+      if [ "$CompileAs" = "ir" ]; then
         compile_as_llvmir "$CompilationFile"
       else
         compile_as_obj "$CompilationFile"
