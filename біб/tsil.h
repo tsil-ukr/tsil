@@ -20,9 +20,9 @@ typedef ssize_t ціле;
 typedef void ніщо;
 typedef void* адреса;
 
-const логічне ні = 0;
-const логічне так = 1;
-const адреса пусто = NULL;
+static const логічне ні = 0;
+static const логічне так = 1;
+static const адреса пусто = NULL;
 
 typedef struct кд кд;
 typedef struct ю8 ю8;
