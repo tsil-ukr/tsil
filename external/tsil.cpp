@@ -188,6 +188,8 @@ static char* шлях_до_c_рядка(const Шлях* ш) {
       free(args);
       return -1;
     }
+    args[idx++] = strdup("-x");
+    args[idx++] = strdup("c");
     args[idx++] = in_str;
   }
   args[idx] = NULL;
