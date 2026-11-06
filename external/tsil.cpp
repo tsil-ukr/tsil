@@ -148,7 +148,7 @@ static char* шлях_до_c_рядка(const Шлях* ш) {
 ц32 КЦ__кланг_лінк(Шлях* вих,
                    природне кф,
                    Шлях* сф,
-                   природне кллвір,
+                   природне ксіанг,
                    Шлях* ссіанг) {
   if (!вих || !вих->дані)
     return -1;
@@ -157,7 +157,7 @@ static char* шлях_до_c_рядка(const Шлях* ш) {
   if (!вих_str)
     return -1;
 
-  size_t total_args = 3 + (кф) + (кллвір * 3) + 1;
+  size_t total_args = 3 + (кф) + (ксіанг * 3) + 1;
   char** args = (char**)malloc(sizeof(char*) * total_args);
   if (!args) {
     free(вих_str);
@@ -180,7 +180,7 @@ static char* шлях_до_c_рядка(const Шлях* ш) {
     args[idx++] = in_str;
   }
 
-  for (природне i = 0; i < кллвір; ++i) {
+  for (природне i = 0; i < ксіанг; ++i) {
     char* in_str = шлях_до_c_рядка(&ссіанг[i]);
     if (!in_str) {
       for (size_t j = 0; j < idx; ++j)
@@ -188,8 +188,6 @@ static char* шлях_до_c_рядка(const Шлях* ш) {
       free(args);
       return -1;
     }
-    args[idx++] = strdup("-x");
-    args[idx++] = strdup("ir");
     args[idx++] = in_str;
   }
   args[idx] = NULL;
