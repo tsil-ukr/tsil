@@ -6,10 +6,12 @@
 - Clang/Clang++
 - GNU/Linux
 
-Після чого можна пробувати будувати саму Ціль:
+```shell
+sh external/scripts/build.sh debug
+```
 
 ```shell
-sh external/scripts/build.sh
+sh external/scripts/build.sh release
 ```
 
 Скомпільований бінарник буде в директорії `будування/{версія}/{платформа}/готове`.
